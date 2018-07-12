@@ -1,0 +1,42 @@
+package io.github.beelzebu.matrix.listeners;
+
+import io.github.beelzebu.matrix.Main;
+import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Titles;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+
+public class PlayerDeathListener implements Listener {
+
+    private final Main plugin;
+    private final MatrixAPI core = MatrixAPI.getInstance();
+
+    public PlayerDeathListener(Main main) {
+        plugin = main;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDeath(PlayerDeathEvent e) {
+        int stay = plugin.getConfig().getInt("Death Titles.Stay", 60);
+        Player p = e.getEntity();
+        try {
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                p.spigot().respawn();
+            }, 1L);
+        } catch (Exception ignore) { // Doesn't work in 1.8 or earlier
+        }
+        Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+            if (!plugin.getConfig().getString("Death Titles.Mode", "Disabled").equalsIgnoreCase("disabled")) {
+                if (plugin.getConfig().getString("Death Titles.Mode").equalsIgnoreCase("pvp") && p.getKiller() != null) {
+                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.spigot().getLocale()), core.getString("Death Titles.Subtitle", p.spigot().getLocale()));
+                } else {
+                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.spigot().getLocale()), core.getString("Death Titles.Subtitle", p.spigot().getLocale()));
+                }
+            }
+        }, 10L);
+    }
+}

@@ -1,0 +1,113 @@
+# Nifheim Core plugin By: Beelzebu
+# This is the official Core of Nifheim.
+# If you need help, visit: https://matrix.net/foro/descargas/3/discussion/
+
+# Version of this file, don't edit!
+version: 10
+
+# ========== Universal (BungeeCord and Bukkit) ==========
+
+# The prefix that will be used in the messages with the %prefix% placeholder.
+Prefix: '&a&lNifheim &8&l>&7'
+
+Redis:
+  Host: localhost
+  Port: 6379
+  Password: S3CUR3P4SSW0RD
+
+# This is the server type, can be: LOBBY, MINIGAME_BUNGEE, MINIGAME_MULTIARENA or SURVIVAL.
+# It is SURVIVAL by default because SURVIVAL does not modify anything existing,
+# only adds new things, like stats tracker.
+Server Type: SURVIVAL
+
+# The server table for the MySQL stats system.
+Server Table: Lobby
+
+# World used as Lobby in MINIGAME_MULTIARENA
+Lobby World: Lobby
+
+# Here you can disable commands from THIS plugin to not be loaded.
+Disabled Commands:
+- helpop
+- nick
+- launchpads
+
+# Enabling this means that the plugin will send debug messages to the console.
+Debug: false
+
+# ========== Bukkit/Spigot ==========
+
+ChatControl:
+  Caps:
+    # Set the caps to lowercase.
+    Convert: true
+    # This is the max caps allowed per message
+    # Isn't recomended set this in 0 or below
+    # Default: 10
+    Max Caps: 10
+    # This is the min percentage of caps in a
+    # message before convert the caps.
+    # Default: 90
+    Min Percentage: 90
+
+# This prevents the portal duplication bugs denying the teleport of entities that aren't players
+# If Strict Mode is true, only Players can teleport, but if is false, only Exp Orbs are denied to be teleported.
+PortalFix:
+  Strict Mode: true
+
+# Commands on first join, this feature executes all the commands in the list the first time that
+# a player joins to the server after a reload of the plugin.
+Join cmds:
+- 'lagg clear'
+- 'lagg gc'
+
+# Here you can enable or disable the dependency of this plugin in others.
+Hooks:
+  # Used to vanish staffs and the /nick command.
+  Essentials: true
+  # Used for the protection in the lobby.
+  WorldGuard: true
+
+# Death titles, this sends a title, subtitle and/or actionbar message when the player death
+# Possible modes: Always, PvP. Disabled.
+# In mode Always, the titles are send every time that a olayer dies, PvP is only for PvP and
+# Disabled is for disable this feature.
+Death Titles:
+  Mode: Always
+  Stay: 60
+  
+# ========== BungeeCord/Waterfall ==========
+
+Channels:
+  Helper:
+    Command: 'h'
+    Permission: 'matrix.staff.aprendiz'
+    Color: 'a'
+  Mod:
+    Command: 'm'
+    Permission: 'matrix.staff.mod'
+    Color: 'd'
+  Builder:
+    Command: 'c'
+    Permission: 'matrix.staff.builder'
+    Color: '3'
+  Admin:
+    Command: 'ac'
+    Permission: 'matrix.staff.admin'
+    Color: 'c'
+  Owner:
+    Command: 'o'
+    Permission: 'matrix.staff.owner'
+    Color: '4'
+
+# Server aliases for tablist
+Lobby1: Lobby
+Lobby2: Lobby
+Survival: Towny
+Tests: Tests Server
+
+# List of youtubers for the /yt command
+Youtubers:
+#  YoutuberName:
+#    Canal: youtubechannel.com
+#    Twitter: twitter.com/youtuber

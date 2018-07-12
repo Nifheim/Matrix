@@ -1,0 +1,7 @@
+# Matrix data file, here is saved general data.
+
+Spawn:
+  World: ''
+  Location: ''
+Powerups: []
+LaunchPads: []

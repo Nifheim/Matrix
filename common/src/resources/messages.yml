@@ -1,0 +1,197 @@
+# This is the message file of Nifheim Core, if you
+# want to disable a message, leave it empty.
+# Example: No Permissions: ''
+
+# The version of this file, don't edit!
+version: 10
+
+Chat:
+  GlobalMute:
+    Mute: '%prefix% &eThe chat is now muted!'
+    Unmute: '%prefix% &eYou can speak again.'
+    No Bypass: '%prefix% &cIn this moment the chat is muted by an staff, please use &f/msg &cinstead.'
+  No Caps: '%prefix% &c&lHey! &7Please avoid the use of caps.'
+  ChatClear:
+    Silent: '%prefix% &cThe chat was cleared.'
+    Normal: '%prefix% &cThe chat was cleared by %player%.'
+  Command Watcher:
+    Enabled: '%prefix% &aYou enabled your command watcher.'
+    Disabled: '%prefix% &cYou disabled your command watcher.'
+    Format: '&4[CW]&c %player%: &6%msg%'
+Item Utils:
+  AddLore:
+    Help: '%prefix% &7Please use &c"/alore <message>"&7.'
+    Successful: '%prefix% &7You successful added the lore &r%line% &7to this item.'
+  RemoveLore:
+    Help: '%prefix% &7Please use &c"/rlore <line>"&7.'
+    Successful: '%prefix% &7You successful removed the lore &r%line% &7from this item.'
+  Rename:
+    Help: '%prefix% &7Please use &c"/ren <name>"&7.'
+    Successful: '%prefix% &7The new name of this item is &r%name%&7.'
+  No Item: '%prefix% &c&lSorry! &7You need an item in your hand.'
+  No Number: '%prefix% &c&lSorry! &6%arg% &7isn''t a number.'
+Essentials:
+  Vanish:
+    Usage: '%prefix% &7Please use &c"/vanish (player)"&7.'
+    Enabled: ''
+  Freeze:
+    Usage: '%prefix% &7Please use &c"/freeze <player> (message)"&7.'
+    Target: '%prefix%&c&l Hey!&7 You where frozen by an staff member, &4&lDON''T DISCONNECT&7.'
+NetworkXP:
+  Help:
+    User:
+    - '&8&m+-------------------------------------------------+'
+    - '%prefix% Avaliable commands:'
+    - ' '
+    - ' &a/matrix xp ? &f- &7Show this help message.'
+    - ' &a/matrix xp get [player] &f- &7Shows the levels of the player.'
+    - '&8&m+-------------------------------------------------+'
+    Admin:
+    - '&8&m+-------------------------------------------------+'
+    - '%prefix% Avaliable commands:'
+    - ' '
+    - ' &a/matrix xp ? &f- &7Show this help message.'
+    - ' &a/matrix xp add [player] &f- &7Add levels to the player.'
+    - '&8&m+-------------------------------------------------+'
+  LevelUP:
+  - '&6&m-----------------------------------------------'
+  - ''
+  - '&7¡Congratulations &c%player%&7 you''ve level up!'
+  - '&7Your new level is: %level%'
+  - '&7You need &e%next%&7 xp points to reach the next level.'
+  - ''
+  - '&6&m-----------------------------------------------'
+  Get:
+    Self: '%prefix% You have &a%level% &7xp levels and need &a%xp% &7points for reach the next level.'
+    Target: '%prefix% &a%player% &7has &a%level% &7xp levels and need &a%xp% &7points for reach the next level.'
+    No Target: '%prefix% &a%player% &7isn''t online.'
+  Add:
+    Help:
+    - '%prefix% &cPlease use &7/matrix xp add [player] [ammount](L)'
+    Sender: '%prefix% &7You added &a%level% &7level(s) and &a%xp%&7 xp point(s) to &a%player%&7!'
+    Target: '%prefix% &7You received &a%level% &7level(s) and &a%xp%&7 xp point(s)'
+Death Titles:
+  Title: '&cYou''re dead! :('
+  Subtitle: ''
+Lobby items:
+  Server selector:
+    Name: '&6Game selector &7(Right Click)'
+  Options:
+    Name: '&6Options &7(Right Click)'
+  Profile:
+    Name: '&cMy Profile &7(Right Click)'
+Options:
+  Status:
+    Enabled: '&aEnabled'
+    Disabled: '&cDisabled'
+  Title: '&6Options GUI'
+  Fly:
+    Name: '&8Fly'
+    Lore:
+    - ''
+    - '&7Click to enable/disable'
+    - '&7your fly status.'
+    - ''
+    - '&7&oCurrently: %status%'
+  Speed:
+    Name: '&8Speed'
+    Lore:
+    - ''
+    - '&7Click to enable/disable'
+    - '&your speed.'
+    - ''
+    - '&7&oCurrently: %status%'
+  Chat:
+    Name: '&8Chat'
+    Lore:
+    - ''
+    - '&7Click to enable/disable'
+    - '&7your chat.'
+    - ''
+    - '&7&oCurrently: %status%'
+  Hide:
+    Name: '&8Hide players'
+    Lore:
+    - ''
+    - '&7Click to change your'
+    - '&7hide players settings'
+  Hide:
+    Name: '&8Hide players'
+    Lore:
+    - ''
+    - '&7Click to change your'
+    - '&7hide players settings.'
+Social:
+  Profile:
+    Name: '&cMy Profile'
+    Lore:
+    - ''
+    - ' &4ᐅ&7 Rank: &6%vault_group%'
+    - ' &4ᐅ&7 Clan: &6'
+    - ' &4ᐅ&7 Level: &6%ncore-stats_level%'
+    - ' &4ᐅ&7 Coins: &6%coins_amount%'
+    Items:
+      Opciones:
+        Material: REDSTONE_COMPARATOR:0:1
+        Name: '§aOptions'
+        Slot: 22
+        Lore:
+        - ''
+        - '&7Click here to see and change your'
+        - '&7Lobby and minigame options.'
+        Command: 'options'
+      Reglas:
+        Material: BOOK:0:1
+        Name: '§aReglas del servidor'
+        Slot: 29
+        Lore:
+        - ''
+        - '&7Click to open a menu where you'
+        - '&7can read the server rules, but remember'
+        - '&7that anyways you must read the rules'
+        - '&7in the forums because this can be'
+        - '&7outdated!'
+        - ''
+        - '&6&nwww.matrix.net/reglas-minecraft/'
+        Command: 'reglas'
+      Stats:
+        Material: MAP:0:1
+        Name: '§aStats'
+        Slot: 30
+        Lore:
+        - ''
+        - '&7Click to see your stats in the'
+        - '&7minigames of the Network.'
+        Command: 'estadisticas'
+      Logros:
+        Material: BOOK_AND_QUILL:0:1
+        Name: '§aAchievments'
+        Slot: 31
+        Lore:
+        - ''
+        - '&8Comming soon...'
+        Close: true
+  Friends:
+    Name: '&aFriends'
+    Lore:
+    - ''
+    - '&7See your friend list and'
+    - '&7interact with them.'
+  Party:
+    Name: '&6Party'
+    Lore:
+    - ''
+    - '&7Create a party to play'
+    - '&7with more users.'
+    Create:
+      Name: '&6Create Party'
+      Lore:
+      - ''
+      - '&7Click to create a party.'
+  Clan:
+    Name: '&cClan'
+    Lore:
+    - ''
+    - '&4Coming soon...'
+No Console: '%prefix% &c&lSorry! &7This command can''t be executed from console :('
+No Permissions: '%prefix% &c&lSorry! &7You don''t have permissions do this :('
