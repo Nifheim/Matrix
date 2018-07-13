@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import io.github.beelzebu.matrix.MatrixAPI;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,14 +22,6 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
 
-/**
- * ItemBuilder - API Class to create a {@link org.bukkit.inventory.ItemStack}
- * with just one line of Code
- *
- * @author Acquized
- * @version 1.8
- * @contributor Kev575
- */
 public class ItemBuilder {
 
     private ItemStack item;
@@ -49,7 +45,7 @@ public class ItemBuilder {
         if (material == null) {
             material = Material.AIR;
         }
-        this.item = new ItemStack(material);
+        item = new ItemStack(material);
         this.material = material;
     }
 
@@ -64,7 +60,7 @@ public class ItemBuilder {
             amount = 1;
         }
         this.amount = amount;
-        this.item = new ItemStack(material, amount);
+        item = new ItemStack(material, amount);
         this.material = material;
     }
 
@@ -77,7 +73,7 @@ public class ItemBuilder {
             material = Material.AIR;
         }
         Validate.notNull(displayname, "The Displayname is null.");
-        this.item = new ItemStack(material, amount);
+        item = new ItemStack(material, amount);
         this.material = material;
         if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSize)) {
             amount = 1;
@@ -95,7 +91,7 @@ public class ItemBuilder {
             material = Material.AIR;
         }
         Validate.notNull(displayname, "The Displayname is null.");
-        this.item = new ItemStack(material);
+        item = new ItemStack(material);
         this.material = material;
         this.displayname = displayname;
     }
@@ -107,18 +103,18 @@ public class ItemBuilder {
         Validate.notNull(item, "The Item is null.");
         this.item = item;
         if (item.hasItemMeta()) {
-            this.meta = item.getItemMeta();
+            meta = item.getItemMeta();
         }
-        this.material = item.getType();
-        this.amount = item.getAmount();
-        this.data = item.getData();
-        this.damage = item.getDurability();
-        this.enchantments = item.getEnchantments();
+        material = item.getType();
+        amount = item.getAmount();
+        data = item.getData();
+        damage = item.getDurability();
+        enchantments = item.getEnchantments();
         if (item.hasItemMeta()) {
-            this.displayname = item.getItemMeta().getDisplayName();
+            displayname = item.getItemMeta().getDisplayName();
         }
         if (item.hasItemMeta()) {
-            this.lore = item.getItemMeta().getLore();
+            lore = item.getItemMeta().getLore();
         }
         if (item.hasItemMeta()) {
             for (ItemFlag f : item.getItemMeta().getItemFlags()) {
@@ -145,17 +141,17 @@ public class ItemBuilder {
     @Deprecated
     public ItemBuilder(ItemBuilder builder) {
         Validate.notNull(builder, "The ItemBuilder is null.");
-        this.item = builder.item;
-        this.meta = builder.meta;
-        this.material = builder.material;
-        this.amount = builder.amount;
-        this.damage = builder.damage;
-        this.data = builder.data;
-        this.damage = builder.damage;
-        this.enchantments = builder.enchantments;
-        this.displayname = builder.displayname;
-        this.lore = builder.lore;
-        this.flags = builder.flags;
+        item = builder.item;
+        meta = builder.meta;
+        material = builder.material;
+        amount = builder.amount;
+        damage = builder.damage;
+        data = builder.data;
+        damage = builder.damage;
+        enchantments = builder.enchantments;
+        displayname = builder.displayname;
+        lore = builder.lore;
+        flags = builder.flags;
     }
 
     /**
@@ -446,7 +442,7 @@ public class ItemBuilder {
      * @param allow Determinates if it should be allowed or not
      */
     public ItemBuilder unsafeStackSize(boolean allow) {
-        this.unsafeStackSize = allow;
+        unsafeStackSize = allow;
         return this;
     }
 

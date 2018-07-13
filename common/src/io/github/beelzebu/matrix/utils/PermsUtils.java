@@ -11,9 +11,6 @@ import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.caching.MetaData;
 
-
-@author Beelzebu
-
 @NoArgsConstructor(access = AccessLevel.NONE)
 public final class PermsUtils {
 

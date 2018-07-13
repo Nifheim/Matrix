@@ -15,8 +15,6 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.md_5.bungee.event.EventPriority;
 
-*/
-
 public class LoginListener implements Listener {
 
     private final Main plugin;
@@ -28,14 +26,14 @@ public class LoginListener implements Listener {
         plugin = main;
         core = MatrixAPI.getInstance();
 
-        this.activeBlacklist.put("http://www,stopforumspam,com/api?ip=", "yes");
-        this.activeBlacklist.put("http://www,shroomery,org/ythan/proxycheck,php?ip=", "Y");
+        activeBlacklist.put("http://www,stopforumspam,com/api?ip=", "yes");
+        activeBlacklist.put("http://www,shroomery,org/ythan/proxycheck,php?ip=", "Y");
         try {
             Scanner Blacklist = new Scanner(new URL("http://myip.ms/files/blacklist/csf/latest_blacklist.txt").openStream());
             System.out.println("[AJB] Downloading Blacklist...");
             while (Blacklist.hasNextLine()) {
                 String IP = Blacklist.nextLine();
-                if (IP.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}") && !this.blacklist.containsKey(IP)) {
+                if (IP.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}") && !blacklist.containsKey(IP)) {
                     blacklist.put(IP, true);
                 }
             }
@@ -87,14 +85,14 @@ public class LoginListener implements Listener {
         if ((IP.equals("127.0.0.1")) || (IP.equals("localhost")) || (IP.matches("192\\.168\\.[01]{1}\\.[0-9]{1,3}"))) {
             return true;
         }
-        for (String s : this.activeBlacklist.keySet()) {
+        for (String s : activeBlacklist.keySet()) {
             try {
                 String res = "";
                 Scanner scanner = new Scanner(new URL(s.replace(",", ".") + IP).openStream());
                 while (scanner.hasNextLine()) {
                     res = res + scanner.nextLine();
                 }
-                String[] args = ((String) this.activeBlacklist.get(s)).split(",");
+                String[] args = ((String) activeBlacklist.get(s)).split(",");
                 for (String arg : args) {
                     if (res.matches(arg)) {
                         return true;

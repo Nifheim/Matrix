@@ -41,12 +41,6 @@
             <version>2.4.2</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.5</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
@@ -69,7 +63,6 @@
                                     <include>redis.clients:jedis</include>
                                     <include>org.apache.commons:commons-pool2</include>
                                     <include>org.apache.commons:pool</include>
-                                    <include>commons-io:commons-io</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

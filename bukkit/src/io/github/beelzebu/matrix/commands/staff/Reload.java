@@ -3,9 +3,6 @@ package io.github.beelzebu.matrix.commands.staff;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import org.bukkit.command.CommandSender;
 
-
-@author Beelzebu
-
 public class Reload extends MatrixCommand {
 
     public Reload() {

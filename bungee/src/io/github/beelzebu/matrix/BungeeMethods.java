@@ -16,11 +16,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-*
-
-@author Beelzebu
-        */
-
 public class BungeeMethods implements IMethods {
 
     private final Main plugin = Main.getInstance();

@@ -15,8 +15,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 
-*/
-
 public class StatsListener implements Listener {
 
     @Getter

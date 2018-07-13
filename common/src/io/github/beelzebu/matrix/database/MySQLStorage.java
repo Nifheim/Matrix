@@ -4,9 +4,6 @@ import io.github.beelzebu.matrix.MatrixAPI;
 import io.github.beelzebu.matrix.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.Statistics;
 
-
-@author Beelzebu
-
 public class MySQLStorage {
 
     private final MatrixAPI core;

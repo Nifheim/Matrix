@@ -1,19 +1,15 @@
 package io.github.beelzebu.matrix.utils;
 
-import com.google.common.base.Charsets;
 import io.github.beelzebu.matrix.MatrixAPI;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FileUtils;
-
-
-@author Beelzebu
 
 public class FileManager {
 
@@ -64,19 +60,19 @@ public class FileManager {
 
     public void updateMessages() {
         try {
-            List<String> lines = FileUtils.readLines(messagesFile, Charsets.UTF_8);
+            List<String> lines = Files.readAllLines(messagesFile.toPath());
             int index;
             if (lines.contains("ChatControl:")) {
                 index = lines.indexOf("ChatControl:");
                 lines.set(index, "Chat:");
             }
-            FileUtils.writeLines(messagesFile, lines);
-            lines = FileUtils.readLines(messages_esFile, Charsets.UTF_8);
+            Files.write(messagesFile.toPath(), lines);
+            lines = Files.readAllLines(messages_esFile.toPath());
             if (lines.contains("ChatControl:")) {
                 index = lines.indexOf("ChatControl:");
                 lines.set(index, "Chat:");
             }
-            FileUtils.writeLines(messages_esFile, lines);
+            Files.write(messages_esFile.toPath(), lines);
         } catch (IOException ex) {
             Logger.getLogger(FileManager.class.getName()).log(Level.SEVERE, null, ex);
         }
