@@ -1,66 +1,30 @@
 package io.github.beelzebu.matrix.player;
 
-import io.github.beelzebu.matrix.player.options.PlayerOptionType;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import net.md_5.bungee.api.ProxyServer;
+import java.util.Date;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class BungeeMatrixPlayer extends MatrixPlayer {
+@RequiredArgsConstructor
+public class BungeeMatrixPlayer extends MongoMatrixPlayer {
 
-    private ProxiedPlayer player;
-
-    public BungeeMatrixPlayer(UUID uuid) {
-        super(uuid);
-    }
-
-    @Override
-    public String getName() {
-        return getPlayer().getName();
-    }
-
-    @Override
-    public boolean getOption(PlayerOptionType option) {
-        throw new UnsupportedOperationException("getOption is not finished yet.");
-    }
-
-    @Override
-    public void setOption(PlayerOptionType option, boolean status) {
-        throw new UnsupportedOperationException("setOption is not finished yet.");
-    }
-
-    @Override
-    public void setAllOptions(Map<PlayerOptionType, Boolean> options) {
-        throw new UnsupportedOperationException("setAllOptions is not finished yet.");
-    }
-
-    @Override
-    public Set<PlayerOptionType> getActiveOptions() {
-        throw new UnsupportedOperationException("getActiveOptions is not finished yet.");
-    }
-
-    @Override
-    public boolean isInLobby() {
-        return getPlayer().getServer().getInfo().getName().contains("Lobby");
-    }
-
-    @Override
-    public void setNick(String nick) {
-        throw new UnsupportedOperationException("setNick is not finished yet.");
-    }
-
-    @Override
-    public String getIP() {
-        throw new UnsupportedOperationException("getIP is not finished yet.");
-    }
+    private final ProxiedPlayer player;
 
     @Override
     public boolean hasPermission(String permission) {
-        return getPlayer().hasPermission(permission);
+        return player.hasPermission(permission);
     }
 
-    public ProxiedPlayer getPlayer() {
-        return player != null ? player : (player = ProxyServer.getInstance().getPlayer(uniqueId));
+    @Override
+    public void save() {
+        if (getUniqueId() == null) {
+            setUniqueId(player.getUniqueId());
+        }
+        setName(player.getName());
+        if (getDisplayname() == null) {
+            setDisplayname(player.getName());
+        }
+        setLastLogin(new Date());
+        setIP(player.getAddress().getAddress().getHostAddress());
+        super.save();
     }
 }

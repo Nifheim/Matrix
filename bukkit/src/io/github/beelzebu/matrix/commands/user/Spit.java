@@ -13,7 +13,7 @@ public class Spit extends MatrixCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        core.getMethods().runSync(() -> {
+        api.getPlugin().runSync(() -> {
             if (sender instanceof Player) {
                 Player p = (Player) sender;
                 p.launchProjectile(LlamaSpit.class, p.getEyeLocation().getDirection().normalize());

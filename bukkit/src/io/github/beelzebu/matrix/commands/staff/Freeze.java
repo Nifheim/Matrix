@@ -22,10 +22,10 @@ public class Freeze extends MatrixCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(core.getString("Essentials.Freeze.Usage", sender instanceof Player ? ((Player) sender).getLocale() : ""));
+            sender.sendMessage(api.getString("Essentials.Freeze.Usage", sender instanceof Player ? ((Player) sender).getLocale() : ""));
             return;
         }
-        core.getMethods().runSync(() -> {
+        api.getPlugin().runSync(() -> {
             Player target = Bukkit.getPlayer(args[0]);
             if (target != null) {
                 if (FROZEN_PLAYERS.contains(target)) {
@@ -34,8 +34,8 @@ public class Freeze extends MatrixCommand {
                     target.setFlySpeed(0.1f);
                     target.removePotionEffect(PotionEffectType.JUMP);
                     target.setViewDistance(ViewDistanceListener.getViewDistance(target));
-                    target.sendMessage(core.rep("%prefix% &fFuiste descongelado, puedes volver a jugar :)"));
-                    sender.sendMessage(core.rep("%prefix% &aUsuario descongelado."));
+                    target.sendMessage(api.rep("%prefix% &fFuiste descongelado, puedes volver a jugar :)"));
+                    sender.sendMessage(api.rep("%prefix% &aUsuario descongelado."));
                 } else {
                     FROZEN_PLAYERS.add(target);
                     target.setWalkSpeed(0);
@@ -45,19 +45,19 @@ public class Freeze extends MatrixCommand {
                     target.setViewDistance(2);
                     target.setFallDistance(0);
                     target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999999, -5, false, false));
-                    Titles.sendTitle(target, 20, 200, 30, core.rep("&6NO TE DESCONECTES"), "");
-                    target.sendMessage(core.getString("Essentials.Freeze.Target", target.getLocale()));
+                    Titles.sendTitle(target, 20, 200, 30, api.rep("&6NO TE DESCONECTES"), "");
+                    target.sendMessage(api.getString("Essentials.Freeze.Target", target.getLocale()));
                     if (args.length >= 2) {
                         StringBuilder sb = new StringBuilder();
                         for (int i = 1; i < args.length; i++) {
                             sb.append(args[i]).append(" ");
                         }
-                        sender.sendMessage(core.rep("%prefix% &6" + sb.toString()));
+                        sender.sendMessage(api.rep("%prefix% &6" + sb.toString()));
                     }
-                    sender.sendMessage(core.rep("%prefix% &aUsuario congelado."));
+                    sender.sendMessage(api.rep("%prefix% &aUsuario congelado."));
                 }
             } else {
-                sender.sendMessage(core.rep("%prefix% &cEste jugador no está conectado."));
+                sender.sendMessage(api.rep("%prefix% &cEste jugador no está conectado."));
             }
         });
     }

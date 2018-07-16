@@ -1,7 +1,8 @@
 package io.github.beelzebu.matrix.utils.placeholders;
 
 import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
 import io.github.beelzebu.matrix.utils.bungee.BungeeServerTracker;
 import java.text.DecimalFormat;
@@ -12,7 +13,7 @@ import org.bukkit.entity.Player;
 
 public class StatsPlaceholders extends EZPlaceholderHook {
 
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI api = Matrix.getAPI();
 
     public StatsPlaceholders(Main main) {
         super(main, "ncore-stats");
@@ -24,7 +25,7 @@ public class StatsPlaceholders extends EZPlaceholderHook {
             return "Player needed!";
         }
         if (stat.equals("nick")) {
-            return core.getDisplayName(p.getUniqueId(), false);
+            return api.getPlayer(p.getUniqueId()).getDisplayname();
         }
         if (stat.startsWith("online")) {
             if (stat.matches("^onlineplayers$")) {
@@ -67,14 +68,14 @@ public class StatsPlaceholders extends EZPlaceholderHook {
                 //finalstat = stat.replaceAll(server + "_top_", "");
                 //int i = Integer.parseInt(finalstat.substring(finalstat.length() - 1));
                 //finalstat = finalstat.replaceAll(finalstat.substring(finalstat.length() - 2), "");
-                //List<String> toplist = core.getMySQL().getTop(finalstat, server, 10);
+                //List<String> toplist = api.getMySQL().getTop(finalstat, server, 10);
                 return "Top de estadísticas deshabilitado temporalmente.";//toplist.get(i - 1);
             } else {
                 finalstat = stat.replaceAll(server + "_", "");
                 return "Estadísticas deshabilitadas temporalmente";
-//                if (core.getRedis().isRegistred(p.getUniqueId())) {
-//                    try (Jedis jedis = core.getRedis().getPool().getResource()) {
-//                        return String.valueOf(core.getRedis().getGson().fromJson(jedis.hget("ncore_" + server + "_data", p.getUniqueId().toString()), JsonObject.class).get(finalstat).getAsInt());
+//                if (api.getRedis().isRegistred(p.getUniqueId())) {
+//                    try (Jedis jedis = api.getRedis().getPool().getResource()) {
+//                        return String.valueOf(api.getRedis().getGson().fromJson(jedis.hget("ncore_" + server + "_data", p.getUniqueId().toString()), JsonObject.class).get(finalstat).getAsInt());
 //                    }
 //                } else {
 //                    return "UNKNOW USER";

@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.channels.Channel;
 import io.github.beelzebu.matrix.command.BasicCommands;
 import io.github.beelzebu.matrix.command.HelpOP;
@@ -10,12 +11,12 @@ import io.github.beelzebu.matrix.command.Maintenance;
 import io.github.beelzebu.matrix.command.PlayerInfo;
 import io.github.beelzebu.matrix.command.Plugins;
 import io.github.beelzebu.matrix.command.Responder;
-import io.github.beelzebu.matrix.interfaces.IConfiguration;
+import io.github.beelzebu.matrix.config.BungeeConfiguration;
 import io.github.beelzebu.matrix.listener.ChatListener;
 import io.github.beelzebu.matrix.listener.InternalListener;
 import io.github.beelzebu.matrix.listener.LoginListener;
 import io.github.beelzebu.matrix.listener.PubSubMessageListener;
-import io.github.beelzebu.matrix.utils.BungeeConfiguration;
+import java.io.File;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -35,11 +36,11 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class Main extends Plugin {
 
-    private static final MatrixAPI core = MatrixAPI.getInstance();
-    public static final BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(core.rep("&7¡Jugando en &6Vulthur&7!\n&7IP: &amc.vulthur.cl\n"));
-    public static final BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(core.rep("\n&7Tienda: &evulthur.cl/tienda &7Twitter: &e@vulthurmc\n&7Discord: &evulthur.cl/discord &7Web: &evulthur.cl"));
     private final static Set<Channel> channels = Sets.newHashSet();
     private final static Map<UUID, Channel> pchannels = Maps.newHashMap();
+    private static MatrixCommonAPIImpl api;
+    public static final BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(api.rep("&7¡Jugando en &6Vulthur&7!\n&7IP: &amc.vulthur.cl\n"));
+    public static final BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(api.rep("\n&7Tienda: &evulthur.cl/tienda &7Twitter: &e@vulthurmc\n&7Discord: &evulthur.cl/discord &7Web: &evulthur.cl"));
     private static Main instance;
     private static boolean maintenance = false;
     private final CommandSender console = ProxyServer.getInstance().getConsole();
@@ -70,10 +71,14 @@ public class Main extends Plugin {
     }
 
     @Override
+    public void onLoad() {
+        config = new BungeeConfiguration(new File(getDataFolder(), "config.yml"));
+        (api = new MatrixCommonAPIImpl()).setup(new BungeeMethods());
+    }
+
+    @Override
     public void onEnable() {
         instance = this;
-        config = new BungeeConfiguration();
-        core.setup(new BungeeMethods());
         loadManagers();
         RedisBungee.getApi().registerPubSubChannels("NifheimHelpop", "Channel", "Maintenance");
         registerListener(new ChatListener());
@@ -94,7 +99,7 @@ public class Main extends Plugin {
             channels.add(new Channel(channel, new Command(command) {
                 @Override
                 public void execute(CommandSender sender, String[] args) {
-                    core.getMethods().runAsync(() -> {
+                    api.getPlugin().runAsync(() -> {
                         if (sender.hasPermission(perm)) {
                             if (args.length == 0 && sender instanceof ProxiedPlayer) {
                                 RedisBungee.getApi().sendChannelMessage("Channel", "set ," + channel + "," + ((ProxiedPlayer) sender).getUniqueId());
@@ -103,7 +108,7 @@ public class Main extends Plugin {
                                 for (String arg : args) {
                                     msg += arg + " ";
                                 }
-                                RedisBungee.getApi().sendChannelMessage("Channel", channel + " -div- " + (sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getServer().getInfo().getName() + "," + MatrixAPI.getInstance().getDisplayName(((ProxiedPlayer) sender).getUniqueId(), true) : sender.getName()) + " -div- " + color + msg);
+                                RedisBungee.getApi().sendChannelMessage("Channel", channel + " -div- " + (sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getServer().getInfo().getName() + "," + api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayname() : sender.getName()) + " -div- " + color + msg);
                             }
                         }
                     });
@@ -112,7 +117,6 @@ public class Main extends Plugin {
         });
         ProxyServer.getInstance().getPlayers().forEach(pp -> {
             if (pp.getServer().getInfo().getName().startsWith("towny")) {
-                String serverName = pp.getServer().getInfo().getName();
                 pp.setTabHeader(TAB_HEADER, TAB_FOOTER);
             }
         });
@@ -120,11 +124,11 @@ public class Main extends Plugin {
 
     private void loadManagers() {
         if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
-            core.log("LuckPerms found, hooking into it.");
+            api.log("LuckPerms found, hooking into it.");
         }
     }
 
-    public IConfiguration getConfig() {
+    public AbstractConfig getConfig() {
         return config;
     }
 

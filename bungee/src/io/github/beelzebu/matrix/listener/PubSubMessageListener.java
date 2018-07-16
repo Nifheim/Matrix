@@ -2,7 +2,7 @@ package io.github.beelzebu.matrix.listener;
 
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.channels.Channel;
 import java.util.Iterator;
 import java.util.UUID;
@@ -20,7 +20,7 @@ public class PubSubMessageListener implements Listener {
     @EventHandler
     public void onMessage(PubSubMessageEvent e) {
         if (e.getChannel().equals("NifheimHelpop") || e.getChannel().equals("Channel") || e.getChannel().equals("Maintenance")) {
-            MatrixAPI.getInstance().getMethods().runAsync(() -> {
+            Matrix.getAPI().getPlugin().runAsync(() -> {
                 if (e.getChannel().equals("NifheimHelpop")) {
                     ProxyServer.getInstance().getPlayers().stream().filter((pp) -> (pp.hasPermission("matrix.staff.aprendiz"))).forEachOrdered((pp) -> {
                         pp.sendMessage(e.getMessage());

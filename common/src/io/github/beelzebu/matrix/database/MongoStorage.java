@@ -1,64 +1,64 @@
 package io.github.beelzebu.matrix.database;
 
-import io.github.beelzebu.matrix.MatrixAPI;
-import io.github.beelzebu.matrix.player.MatrixPlayer;
-import io.github.beelzebu.matrix.player.Statistics;
-import io.github.beelzebu.matrix.utils.ServerType;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.database.MatrixDatabase;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.database.mongo.UserDAO;
+import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.Setter;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
 
 /**
  * @author Beelzebu
  */
-public class MongoStorage {
+@Getter
+@Setter
+public class MongoStorage implements MatrixDatabase {
 
-    public MongoStorage(MatrixAPI core) {
+    private final MongoClient client;
+    private final Morphia morphia;
+    private final Datastore datastore;
+    private UserDAO userDAO;
+
+    public MongoStorage(String host, int port, String username, String database, String password, String databaselogin) {
+        client = new MongoClient(new ServerAddress(host, port), MongoCredential.createCredential(username, databaselogin, password.toCharArray()), MongoClientOptions.builder().build());
+        morphia = new Morphia();
+        morphia.map(MongoMatrixPlayer.class);
+        datastore = morphia.createDatastore(client, database);
+        datastore.ensureIndexes();
+        setUserDAO(new UserDAO(datastore));
     }
 
-    public void createPlayer(UUID uuid, String nick) {
-
-    }
-
-    public void saveStats(UUID uuid, String server, Statistics stats) {
-
-    }
-
-    public void saveStats(MatrixPlayer player, String server, ServerType serverType, Statistics stats) {
-
-    }
-
-    public void setData(UUID uuid, String property, Object value) {
-
-    }
-
-    public long getXP(UUID uuid) {
-        return 0;
-    }
-
-    public boolean isRegistred(UUID uuid) {
-        return false;
-    }
-
-    public boolean isRegistred(UUID uuid, String server) {
-        return false;
-    }
-
-    public boolean isRegistred(String name) {
-        return false;
-    }
-
-    public boolean isRegistred(String name, String server) {
-        return false;
-    }
-
-    public String getName(UUID uuid) {
+    @Override
+    public MatrixPlayer getPlayer(UUID uniqueId) {
         return null;
     }
 
-    public UUID getUUID(String name) {
-        return null;
+    @Override
+    public MatrixPlayer getPlayer(String name) {
+        return userDAO.getPlayer(name);
     }
 
-    public void publish(String channel, String message) {
+    @Override
+    public boolean isRegistered(UUID uniqueId) {
+        if (Matrix.getAPISafe().isPresent()) {
+            return Matrix.getAPI().getPlayer(uniqueId) != null;
+        }
+        return userDAO.getPlayer(uniqueId) != null;
+    }
 
+    @Override
+    public boolean isRegistered(String name) {
+        if (Matrix.getAPISafe().isPresent()) {
+            return Matrix.getAPI().getPlayer(name) != null;
+        }
+        return userDAO.getPlayer(name) != null;
     }
 }

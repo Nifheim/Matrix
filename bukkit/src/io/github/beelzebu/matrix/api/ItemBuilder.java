@@ -1,7 +1,6 @@
 package io.github.beelzebu.matrix.api;
 
 import com.google.gson.Gson;
-import io.github.beelzebu.matrix.MatrixAPI;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -636,7 +635,7 @@ public class ItemBuilder {
         }
         if (!lore.isEmpty()) {
             List<String> finalLore = new ArrayList<>();
-            lore.forEach(line -> finalLore.add(MatrixAPI.getInstance().rep(line)));
+            lore.forEach(line -> finalLore.add(Matrix.getAPI().rep(line)));
             meta.setLore(finalLore);
         }
         if (flags.size() > 0) {

@@ -1,8 +1,9 @@
 package io.github.beelzebu.matrix.listeners;
 
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.menus.OptionsGUI;
-import io.github.beelzebu.matrix.utils.ServerType;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,7 +17,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ItemListener implements Listener {
 
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI core = Matrix.getAPI();
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {

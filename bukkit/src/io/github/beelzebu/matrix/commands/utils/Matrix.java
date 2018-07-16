@@ -6,11 +6,11 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
+import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import io.github.beelzebu.matrix.listeners.LobbyListener;
 import io.github.beelzebu.matrix.menus.ProfileGUI;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
-import io.github.beelzebu.matrix.server.lobby.LobbyData;
-import io.github.beelzebu.matrix.utils.ServerType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.lang.reflect.InvocationTargetException;
@@ -47,9 +47,9 @@ public class Matrix extends MatrixCommand {
         } else if (args[0].equalsIgnoreCase("newsbook")) {
             _book(sender, args);
         } else if (args[0].equalsIgnoreCase("profile")) {
-            new ProfileGUI(((Player) sender), core.getString("Social.Profile.Name", ((Player) sender).getLocale())).open((Player) sender);
+            new ProfileGUI(((Player) sender), api.getString("Social.Profile.Name", ((Player) sender).getLocale())).open((Player) sender);
         } else if (args[0].equalsIgnoreCase("editmode")) {
-            if (sender.hasPermission("matrix.staff.admin") && sender instanceof Player && core.getPlayer(((Player) sender).getUniqueId()).isInLobby()) {
+            if (sender.hasPermission("matrix.staff.admin") && sender instanceof Player && api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                 LobbyListener.getEditMode().add((Player) sender);
             }
         }
@@ -62,13 +62,13 @@ public class Matrix extends MatrixCommand {
         }
         // (0)xp (1)set (2)player (3)int = 4
         if (args.length == 1 || args[1].equalsIgnoreCase("?")) {
-            core.getMessages(locale).getStringList("NetworkXP.Help.User").forEach((str) -> {
-                sender.sendMessage(core.rep(str));
+            api.getMessages(locale).getStringList("NetworkXP.Help.User").forEach((str) -> {
+                sender.sendMessage(api.rep(str));
             });
             return true;
         } else if (args[1].equalsIgnoreCase("admin")) {
-            core.getMessages(locale).getStringList("NetworkXP.Help.Admin").forEach((str) -> {
-                sender.sendMessage(core.rep(str));
+            api.getMessages(locale).getStringList("NetworkXP.Help.Admin").forEach((str) -> {
+                sender.sendMessage(api.rep(str));
             });
             return true;
         } else if (args[1].equalsIgnoreCase("get") && args.length <= 3) {
@@ -78,19 +78,19 @@ public class Matrix extends MatrixCommand {
                         long xp = NetworkXP.MCEXP.getXPForPlayer(sender.getName());
                         int level = NetworkXP.getLevelForXP(xp);
                         long nextxp = NetworkXP.getXPForLevel(level + 1) - xp;
-                        sender.sendMessage(core.getString("NetworkXP.Get.Self", locale).replaceAll("%player%", sender.getName()).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(nextxp)));
+                        sender.sendMessage(api.getString("NetworkXP.Get.Self", locale).replaceAll("%player%", sender.getName()).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(nextxp)));
                     } else {
-                        sender.sendMessage(core.getString("No Console", locale));
+                        sender.sendMessage(api.getString("No Console", locale));
                     }
                     break;
                 case 3:
-                    if (args[2] != null && core.getRedis().isRegistred(args[2])) {
+                    if (args[2] != null && api.getDatabase().isRegistered(args[2])) {
                         long xp = NetworkXP.MCEXP.getXPForPlayer(args[2]);
                         int level = NetworkXP.getLevelForXP(xp);
                         long nextxp = NetworkXP.getXPForLevel(level + 1) - xp;
-                        sender.sendMessage(core.getString("NetworkXP.Get.Target", locale).replaceAll("%player%", args[2]).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(nextxp)));
+                        sender.sendMessage(api.getString("NetworkXP.Get.Target", locale).replaceAll("%player%", args[2]).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(nextxp)));
                     } else {
-                        sender.sendMessage(core.getString("NetworkXP.Get.No Target", locale));
+                        sender.sendMessage(api.getString("NetworkXP.Get.No Target", locale));
                     }
                     break;
                 default:
@@ -98,21 +98,21 @@ public class Matrix extends MatrixCommand {
             }
         } else if (args.length == 4 && args[1].matches("(^give$|^add$)")) {
             if (args[2] == null || args[2].equalsIgnoreCase("?")) {
-            } else if (args[2] != null && core.getRedis().isRegistred(args[2])) {
+            } else if (args[2] != null && api.getDatabase().isRegistered(args[2])) {
                 long xp = Long.parseLong(args[3]);
                 int level;
                 long xp_final;
                 if (args[3].endsWith("L") || args[3].endsWith("l")) {
                     xp = NetworkXP.getXPForLevel(Integer.parseInt(args[3].replaceAll("L", "").replaceAll("l", "")));
                 }
-                NetworkXP.addXPForPlayer(core.getUUID(args[2]), xp);
-                level = NetworkXP.getLevelForXP(xp + NetworkXP.getXPForPlayer(core.getUUID(args[2]))) - NetworkXP.getLevelForPlayer(core.getUUID(args[2]));
+                NetworkXP.addXPForPlayer(api.getPlayer(args[2]).getUniqueId(), xp);
+                level = NetworkXP.getLevelForXP(xp + NetworkXP.getXPForPlayer(api.getPlayer(args[2]).getUniqueId())) - NetworkXP.getLevelForPlayer(api.getPlayer(args[2]).getUniqueId());
                 xp_final = NetworkXP.getXPForLevel(level) > 0 ? NetworkXP.getXPForLevel(level) - xp : xp;
-                sender.sendMessage(core.getString("NetworkXP.Add.Sender", locale).replaceAll("%player%", args[2]).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(xp_final)));
+                sender.sendMessage(api.getString("NetworkXP.Add.Sender", locale).replaceAll("%player%", args[2]).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(xp_final)));
                 Player target = Bukkit.getPlayer(args[2]);
                 if (target != null) {
-                    target.sendMessage(core.getString("NetworkXP.Add.Target", locale).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(xp_final)));
-                    if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA)) {
+                    target.sendMessage(api.getString("NetworkXP.Add.Target", locale).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(xp_final)));
+                    if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA)) {
                         level = NetworkXP.getLevelForPlayer(target.getUniqueId());
                         xp = (int) (NetworkXP.MCEXP.getXPForPlayer(target.getName()) - NetworkXP.MCEXP.getXPForLevel(level));
                         target.setLevel(0);
@@ -152,7 +152,7 @@ public class Matrix extends MatrixCommand {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             ItemStack old = p.getInventory().getItemInOffHand();
-            p.getInventory().setItemInOffHand(book("Noticias Nifheim", "Nifheim Network", (List<List<String>>) core.getConfig().getList("News Lines")));
+            p.getInventory().setItemInOffHand(book("Noticias Nifheim", "Nifheim Network", (List<List<String>>) api.getConfig().getList("News Lines")));
             try {
                 PacketContainer pc = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CUSTOM_PAYLOAD);
                 pc.getModifier().writeDefaults();

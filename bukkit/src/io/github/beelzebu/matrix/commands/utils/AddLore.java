@@ -19,18 +19,18 @@ public class AddLore extends MatrixCommand {
     public void onCommand(CommandSender sender, String[] args) {
         String locale = "";
         if (!(sender instanceof Player)) {
-            sender.sendMessage(core.getString("No Console", locale));
+            sender.sendMessage(api.getString("No Console", locale));
             return;
         }
         locale = ((Player) sender).getLocale();
         if (!sender.hasPermission("matrix.staff.admin")) {
-            sender.sendMessage(core.getString("No Permissions", locale));
+            sender.sendMessage(api.getString("No Permissions", locale));
             return;
         }
         Player p = (Player) sender;
         if (args.length > 0) {
             if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {
-                p.sendMessage(core.getString("Item Utils.No Item", locale));
+                p.sendMessage(api.getString("Item Utils.No Item", locale));
                 return;
             }
             StringBuilder stringBuilder = new StringBuilder();
@@ -52,9 +52,9 @@ public class AddLore extends MatrixCommand {
             }
             item.setItemMeta(meta);
             p.getInventory().setItemInMainHand(item);
-            p.sendMessage(core.getString("Item Utils.AddLore.Successful", locale).replaceAll("%line%", lore));
+            p.sendMessage(api.getString("Item Utils.AddLore.Successful", locale).replaceAll("%line%", lore));
             return;
         }
-        p.sendMessage(core.getString("Item Utils.AddLore.Help", locale));
+        p.sendMessage(api.getString("Item Utils.AddLore.Help", locale));
     }
 }

@@ -10,15 +10,16 @@ import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.HelixEffect;
 import de.slikey.effectlib.effect.LoveEffect;
 import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.MatrixAPI;
 import io.github.beelzebu.matrix.api.ItemBuilder;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.api.player.PlayerOptionType;
+import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.api.server.lobby.LaunchPad;
+import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import io.github.beelzebu.matrix.manager.PowerupManager;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
-import io.github.beelzebu.matrix.player.MatrixPlayer;
-import io.github.beelzebu.matrix.player.options.PlayerOptionType;
-import io.github.beelzebu.matrix.server.lobby.LaunchPad;
-import io.github.beelzebu.matrix.server.lobby.LobbyData;
-import io.github.beelzebu.matrix.utils.ServerType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,7 +67,7 @@ public class LobbyListener implements Listener {
     @Getter
     private static final Set<Player> editMode = new HashSet<>();
     private final Main plugin;
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI api = Matrix.getAPI();
     private final LobbyData data = LobbyData.getInstance();
     private final PowerupManager powerups;
     private final List<LaunchPad> launchpads;
@@ -84,7 +85,7 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockBreak(BlockBreakEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
             if (editMode.contains(e.getPlayer())) {
                 return;
             }
@@ -94,7 +95,7 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockPlace(BlockPlaceEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
             if (editMode.contains(e.getPlayer())) {
                 return;
             }
@@ -104,17 +105,17 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPvP(EntityDamageByEntityEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
             if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-                MatrixPlayer damager = core.getPlayer(e.getDamager().getUniqueId());
-                MatrixPlayer victim = core.getPlayer(e.getEntity().getUniqueId());
+                MatrixPlayer damager = api.getPlayer(e.getDamager().getUniqueId());
+                MatrixPlayer victim = api.getPlayer(e.getEntity().getUniqueId());
                 if (!canPvP(damager) || !canPvP(victim)) {
                     e.setCancelled(true);
                 } else {
-                    playerOptions.put(damager, damager.getActiveOptions());
+                    playerOptions.put(damager, damager.getOptions());
                     damager.setOption(PlayerOptionType.FLY, false);
                     damager.setOption(PlayerOptionType.SPEED, false);
-                    playerOptions.put(victim, victim.getActiveOptions());
+                    playerOptions.put(victim, victim.getOptions());
                     victim.setOption(PlayerOptionType.FLY, false);
                     victim.setOption(PlayerOptionType.SPEED, false);
                 }
@@ -124,7 +125,7 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDamage(EntityDamageEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
             if (e.getCause().equals(DamageCause.FALL)) {
                 e.setCancelled(true);
             }
@@ -133,21 +134,14 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
             e.setDeathMessage("");
             if (e.getEntity().getKiller() == null) {
                 return;
             }
             e.getDrops().clear();
             LoveEffect effect = new LoveEffect(em);
-            powerups.spawnPowerup(
-                    e.getEntity().getLocation().add(0, 0.9, 0),
-                    "§6§lREGENERACIÓN",
-                    new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1),
-                    effect,
-                    new PotionEffect(PotionEffectType.REGENERATION, 100, 5),
-                    70
-            );
+            powerups.spawnPowerup(e.getEntity().getLocation().add(0, 0.9, 0), "§6§lREGENERACIÓN", new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1), effect, new PotionEffect(PotionEffectType.REGENERATION, 100, 5), 70);
         }
     }
 
@@ -160,17 +154,14 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent e) {
-        MatrixPlayer np = core.getPlayer(e.getPlayer().getUniqueId());
+        MatrixPlayer np = api.getPlayer(e.getPlayer().getUniqueId());
         Player p = e.getPlayer();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (data.getSpawn() != null) {
                 p.teleport(data.getSpawn());
             }
         }, 2);
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                core.getRedis().saveStats(core.getPlayer(p.getUniqueId()), core.getServerInfo().getServerName(), core.getServerInfo().getServerType(), null);
-            });
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 int level = NetworkXP.getLevelForPlayer(p.getUniqueId());
                 int xp = (int) (NetworkXP.MCEXP.getXPForPlayer(p.getName()) - NetworkXP.MCEXP.getXPForLevel(level));
@@ -181,9 +172,7 @@ public class LobbyListener implements Listener {
                 p.giveExp(xp);
                 p.setExhaustion(20);
                 p.setSaturation(20);
-                p.getActivePotionEffects().forEach((pe) -> {
-                    p.removePotionEffect(pe.getType());
-                });
+                p.getActivePotionEffects().forEach(pe -> p.removePotionEffect(pe.getType()));
                 p.getInventory().setHeldItemSlot(4);
             }, 2);
             Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
@@ -198,17 +187,15 @@ public class LobbyListener implements Listener {
                 setPvP(p, false);
             }, 10);
         } else {
-            playerOptions.put(np, np.getActiveOptions());
-            np.getActiveOptions().forEach(option -> {
-                np.setOption(option, false);
-            });
+            playerOptions.put(np, np.getOptions());
+            np.getOptions().forEach(option -> np.setOption(option, false));
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player p = e.getPlayer();
-        MatrixPlayer np = core.getPlayer(p.getUniqueId());
+        MatrixPlayer np = api.getPlayer(p.getUniqueId());
         setPvP(p, false);
         if (pvpPlayers.contains(p)) {
             pvpPlayers.remove(p);
@@ -226,14 +213,14 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
             Player p = e.getPlayer();
             Location loc = e.getTo();
             if (e.getTo().getY() <= 0) {
                 p.teleport(data.getSpawn());
             }
             if (e.getFrom().distance(loc) > 0.5) {
-                if (canPvP(core.getPlayer(p.getUniqueId()))) {
+                if (canPvP(api.getPlayer(p.getUniqueId()))) {
                     setPvP(p, true);
                 } else {
                     setPvP(p, false);
@@ -295,8 +282,8 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onRespawn(PlayerRespawnEvent e) {
-        MatrixPlayer p = core.getPlayer(e.getPlayer().getUniqueId());
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
+        MatrixPlayer p = api.getPlayer(e.getPlayer().getUniqueId());
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
             if (playerOptions.containsKey(p)) {
                 playerOptions.get(p).forEach(option -> {
                     p.setOption(option, true);
@@ -304,10 +291,8 @@ public class LobbyListener implements Listener {
             }
             setPvP(e.getPlayer(), false);
         } else {
-            playerOptions.put(p, p.getActiveOptions());
-            p.getActiveOptions().forEach(option -> {
-                p.setOption(option, false);
-            });
+            playerOptions.put(p, p.getOptions());
+            p.getOptions().forEach(option -> p.setOption(option, false));
         }
     }
 
@@ -360,15 +345,15 @@ public class LobbyListener implements Listener {
         p.getInventory().setItem(EquipmentSlot.LEGS, new ItemStack(Material.AIR));
         p.getInventory().setItem(EquipmentSlot.FEET, new ItemStack(Material.AIR));
         {
-            ItemStack is = new ItemBuilder(Material.COMPASS, 1, core.getString("Lobby items.Server selector.Name", p.getLocale())).build();
+            ItemStack is = new ItemBuilder(Material.COMPASS, 1, api.getString("Lobby items.Server selector.Name", p.getLocale())).build();
             p.getInventory().setItem(0, is);
         }
         {
-            ItemStack is = new ItemBuilder(Material.REDSTONE_COMPARATOR, 1, core.getString("Lobby items.Options.Name", p.getLocale())).build();
+            ItemStack is = new ItemBuilder(Material.REDSTONE_COMPARATOR, 1, api.getString("Lobby items.Options.Name", p.getLocale())).build();
             p.getInventory().setItem(1, is);
         }
         {
-            ItemStack is = new ItemBuilder(Material.SKULL_ITEM, 1, core.getString("Lobby items.Profile.Name", p.getLocale())).durability((short) 3).build();
+            ItemStack is = new ItemBuilder(Material.SKULL_ITEM, 1, api.getString("Lobby items.Profile.Name", p.getLocale())).durability((short) 3).build();
             SkullMeta meta = (SkullMeta) is.getItemMeta();
             meta.setOwningPlayer(p);
             is.setItemMeta(meta);

@@ -5,19 +5,20 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import com.google.gson.JsonObject;
 import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.MatrixAPI;
-import io.github.beelzebu.matrix.player.MatrixPlayer;
-import io.github.beelzebu.matrix.player.options.PlayerOptionType;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.player.PlayerOptionType;
+import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.player.BukkitMatrixPlayer;
 import io.github.beelzebu.matrix.utils.ReadURL;
-import io.github.beelzebu.matrix.utils.ServerType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -30,52 +31,43 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import redis.clients.jedis.Jedis;
 
 /**
  * @author Beelzebu
  */
+@RequiredArgsConstructor
 public class PlayerJoinListener implements Listener {
 
-    private static boolean firstjoin = true;
     private final Main plugin;
-    private final MatrixAPI core = MatrixAPI.getInstance();
-
-    public PlayerJoinListener(Main main) {
-        plugin = main;
-    }
+    private final MatrixAPI api = Matrix.getAPI();
+    private boolean firstjoin = true;
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLogin(AsyncPlayerPreLoginEvent e) {
-        if (core.getUUID(e.getName(), true) != null && !core.getUUID(e.getName(), true).equals(e.getUniqueId())) {
-            e.disallow(Result.KICK_OTHER, "Tu UUID no coincide con la UUID que hay en nuestra base de datos");
+        if (api.getPlayer(e.getUniqueId()) == null) { // si el usuario aún no existe en la base de datos es porque no ha entrado por el proxy
+            e.disallow(Result.KICK_BANNED, "Alto ahí rufián, no todo es diversión, estás entrando de forma no autorizada.");
             return;
         }
-        core.getMethods().runAsync(() -> {
-            if (e.getLoginResult().equals(Result.ALLOWED)) {
-                if (!core.getRedis().isRegistred(e.getUniqueId())) {
-                    core.getRedis().createPlayer(e.getUniqueId(), e.getName());
-                }
-                core.getPlayer(e.getUniqueId());
-                core.getRedis().setData(e.getUniqueId(), "ip", e.getAddress().getHostAddress());
-            }
-        });
+        if (!api.getPlayer(e.getName()).getUniqueId().equals(e.getUniqueId())) {
+            e.disallow(Result.KICK_OTHER, "Tu UUID no coincide con la UUID que hay en nuestra base de datos\ntus datos fueron registrados por seguridad.");
+            return;
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoinEvent(PlayerJoinEvent e) {
         Player p = e.getPlayer();
-        ServerType type = core.getServerInfo().getServerType();
+        ServerType type = api.getServerInfo().getServerType();
         e.setJoinMessage(null);
         if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL))) {
             if (!p.hasPermission("matrix.staff")) {
-                if (p.hasPermission("matrix.vip")) {
-                    e.setJoinMessage(core.rep(" &8[&a+&8] &f" + core.getDisplayName(p.getUniqueId(), true) + " &ese ha unido al servidor"));
+                if (p.hasPermission("matrix.joinmessage")) {
+                    e.setJoinMessage(api.rep(" &8[&a+&8] &f" + api.getPlayer(p.getUniqueId()).getDisplayname() + " &ese ha unido al servidor"));
                 }
                 Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
             }
         }
-        MatrixPlayer np = core.getPlayer(p.getUniqueId());
+        BukkitMatrixPlayer bukkitMatrixPlayer = (BukkitMatrixPlayer) api.getPlayer(p.getUniqueId());
         // Async task
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (plugin.isVotifier()) {
@@ -85,23 +77,10 @@ public class PlayerJoinListener implements Listener {
                     Logger.getLogger(PlayerJoinListener.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
                 }
             }
-            if (type.equals(ServerType.SURVIVAL)) {
-                if (!core.getRedis().isRegistred(p.getUniqueId(), core.getServerInfo().getServerName())) {
-                    core.getRedis().saveStats(p.getUniqueId(), core.getServerInfo().getServerName(), null);
-                }
-                // Add the player to the stats maps
-                try (Jedis jedis = core.getRedis().getPool().getResource()) {
-                    JsonObject userdata_server = core.getGson().fromJson(jedis.hget("ncore_" + core.getServerInfo().getServerName() + "_stats", p.getUniqueId().toString()), JsonObject.class);
-                    if (!StatsListener.getPlaced().containsKey(p)) {
-                        StatsListener.getPlaced().put(p, userdata_server.get("placed").getAsInt());
-                    }
-                    if (!StatsListener.getBroken().containsKey(p)) {
-                        StatsListener.getBroken().put(p, userdata_server.get("broken").getAsInt());
-                    }
-                }
+            if (type.equals(ServerType.SURVIVAL)) { // TODO: save stats
             }
         });
-        core.getMethods().runSync(() -> core.getPlayer(p.getUniqueId()).getActiveOptions().forEach(opt -> core.getPlayer(p.getUniqueId()).setOption(opt, true)));
+        api.getPlugin().runSync(() -> ((BukkitMatrixPlayer) api.getPlayer(p.getUniqueId())).getOptions().forEach(opt -> api.getPlayer(p.getUniqueId()).setOption(opt, true)));
 
         // Later task
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -110,17 +89,15 @@ public class PlayerJoinListener implements Listener {
                 p.setOp(false);
             }
             if (firstjoin) {
-                plugin.getConfig().getStringList("Join cmds").forEach((cmd) -> {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
-                });
+                plugin.getConfig().getStringList("Join cmds").forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
                 firstjoin = false;
             }
             if (!p.hasPermission("matrix.staff.mod") && !p.hasPermission("matrix.vip.earl") && !p.hasPermission("matrix.vip.count")) {
-                np.setOption(PlayerOptionType.FLY, false);
+                bukkitMatrixPlayer.setOption(PlayerOptionType.FLY, false);
             }
-            if (core.getConfig().getBoolean("News")) {
+            if (api.getConfig().getBoolean("News")) { // TODO: mejor manejo de múltiples páginas y editar nombre del servidor
                 ItemStack old = p.getInventory().getItemInOffHand();
-                p.getInventory().setItemInOffHand(book("Noticias Nifheim", "Nifheim Network", (List<List<String>>) core.getConfig().getList("News Lines")));
+                p.getInventory().setItemInOffHand(book("Noticias Nifheim", "Nifheim Network", (List<List<String>>) api.getConfig().getList("News Lines")));
                 try {
                     PacketContainer pc = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CUSTOM_PAYLOAD);
                     pc.getModifier().writeDefaults();
@@ -128,9 +105,9 @@ public class PlayerJoinListener implements Listener {
                     bf.setByte(0, (byte) 1);
                     bf.writerIndex(1);
                     pc.getModifier().write(1, MinecraftReflection.getPacketDataSerializer(bf));
-                    pc.getStrings().write(0, "MC|BOpen");
+                    pc.getStrings().write(0, "MC|BOpen"); // TODO: testear en 1.13 por los cambios en canales de mensajería
                     ProtocolLibrary.getProtocolManager().sendServerPacket(p, pc);
-                } catch (FieldAccessException | InvocationTargetException ex) {
+                } catch (FieldAccessException | InvocationTargetException ignore) {
                 }
                 if (old != null) {
                     p.getInventory().setItemInOffHand(old);
@@ -146,9 +123,7 @@ public class PlayerJoinListener implements Listener {
         BookMeta meta = (BookMeta) is.getItemMeta();
         meta.setAuthor(author);
         meta.setTitle(title);
-        pages.forEach(page -> {
-            meta.addPage(page.toArray(new String[page.size()]));
-        });
+        pages.forEach(page -> meta.addPage(page.toArray(new String[0])));
         is.setItemMeta(meta);
         return is;
     }

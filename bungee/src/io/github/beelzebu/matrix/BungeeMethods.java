@@ -1,32 +1,28 @@
 package io.github.beelzebu.matrix;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
-import io.github.beelzebu.matrix.interfaces.IConfiguration;
-import io.github.beelzebu.matrix.interfaces.IMethods;
-import io.github.beelzebu.matrix.player.BungeeMatrixPlayer;
-import io.github.beelzebu.matrix.player.MatrixPlayer;
-import io.github.beelzebu.matrix.utils.MessagesManager;
+import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import java.io.File;
 import java.io.InputStream;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class BungeeMethods implements IMethods {
+public class BungeeMethods implements MatrixPlugin {
 
     private final Main plugin = Main.getInstance();
 
     @Override
-    public IConfiguration getConfig() {
+    public AbstractConfig getConfig() {
         return plugin.getConfig();
     }
 
     @Override
-    public MessagesManager getMessages(String lang) {
+    public AbstractConfig getFileAsConfig(File file) {
         throw new UnsupportedOperationException("getMessages is not finished yet.");
     }
 
@@ -119,11 +115,6 @@ public class BungeeMethods implements IMethods {
     }
 
     @Override
-    public MatrixPlayer getPlayer(UUID uuid) {
-        return new BungeeMatrixPlayer(uuid);
-    }
-
-    @Override
     public void sendMessage(String name, String message) {
         ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(message));
     }
@@ -149,10 +140,5 @@ public class BungeeMethods implements IMethods {
         } else {
             return ProxyServer.getInstance().getPlayer(uuid) != null;
         }
-    }
-
-    @Override
-    public Logger getLogger() {
-        return plugin.getLogger();
     }
 }

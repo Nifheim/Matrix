@@ -1,22 +1,20 @@
 package io.github.beelzebu.matrix.player.options;
 
-import io.github.beelzebu.matrix.MatrixAPI;
-import io.github.beelzebu.matrix.player.MatrixPlayer;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 public abstract class Option {
 
-    protected final MatrixAPI core = MatrixAPI.getInstance();
+    protected final MatrixAPI api = Matrix.getAPI();
     protected final MatrixPlayer p;
     @Getter
-    protected boolean enabled = false;
-
-    public Option(MatrixPlayer player, boolean status) {
-        p = player;
-        enabled = status;
-    }
+    protected boolean enabled;
 
     public final String getStatus() {
-        return enabled ? core.getString("Options.Status.Enabled", core.getMethods().getLocale(p.getUniqueId())) : core.getString("Options.Status.Disabled", core.getMethods().getLocale(p.getUniqueId()));
+        return enabled ? api.getString("Options.Status.Enabled", api.getPlugin().getLocale(p.getUniqueId())) : api.getString("Options.Status.Disabled", api.getPlugin().getLocale(p.getUniqueId()));
     }
 }

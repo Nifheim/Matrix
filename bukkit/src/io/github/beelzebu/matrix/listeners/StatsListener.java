@@ -1,9 +1,8 @@
 package io.github.beelzebu.matrix.listeners;
 
-import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.MatrixAPI;
-import io.github.beelzebu.matrix.player.MatrixPlayer;
-import io.github.beelzebu.matrix.player.options.PlayerOptionType;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -21,8 +20,7 @@ public class StatsListener implements Listener {
     private static final Map<Player, Integer> placed = new HashMap<>();
     @Getter
     private static final Map<Player, Integer> broken = new HashMap<>();
-    private final Main plugin = Main.getInstance();
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI api = Matrix.getAPI();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent e) {
@@ -44,7 +42,6 @@ public class StatsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFlyChange(PlayerToggleFlightEvent e) {
-        MatrixPlayer np = core.getPlayer(e.getPlayer().getUniqueId());
-        np.setOption(PlayerOptionType.FLY, e.getPlayer().getAllowFlight());
+        api.getPlayer(e.getPlayer().getUniqueId()).setOption(PlayerOptionType.FLY, e.getPlayer().getAllowFlight());
     }
 }

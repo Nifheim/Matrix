@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.utils;
 
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Matrix;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,28 +24,26 @@ public final class PermsUtils {
      * @return String representing the prefix.
      */
     public static String getPrefix(UUID player) {
-        if (MatrixAPI.getInstance().getDisplayName(player, false).contains(" ")) {
-            return MatrixAPI.getInstance().getDisplayName(player, false).split(" ")[0];
+        if (Matrix.getAPI().getPlayer(player).getDisplayname().contains(" ")) {
+            return Matrix.getAPI().getPlayer(player).getDisplayname().split(" ")[0];
         }
         try {
-            if (permsAPI != null) {
-                User user = permsAPI.getUserSafe(player).orElse(null);
-                if (user == null) {
-                    permsAPI.getStorage().loadUser(player).join();
-                }
-                if (user != null) {
-                    Contexts contexts = permsAPI.getContextForUser(user).orElse(null);
-                    if (contexts != null) {
-                        MetaData meta = user.getCachedData().getMetaData(contexts);
-                        String prefix = meta.getPrefix();
-                        if (prefix != null) {
-                            return prefix.replaceAll("&", "§");
-                        }
-                    }
-                    permsAPI.cleanupUser(user);
-                }
+            User user = permsAPI.getUserSafe(player).orElse(null);
+            if (user == null) {
+                permsAPI.getStorage().loadUser(player).join();
             }
-        } catch (Exception ex) {
+            if (user != null) {
+                Contexts contexts = permsAPI.getContextForUser(user).orElse(null);
+                if (contexts != null) {
+                    MetaData meta = user.getCachedData().getMetaData(contexts);
+                    String prefix = meta.getPrefix();
+                    if (prefix != null) {
+                        return prefix.replaceAll("&", "§");
+                    }
+                }
+                permsAPI.cleanupUser(user);
+            }
+        } catch (Exception ignore) {
         }
         return "none";
     }

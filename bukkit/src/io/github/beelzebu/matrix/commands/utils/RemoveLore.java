@@ -33,24 +33,24 @@ public class RemoveLore extends MatrixCommand {
                                 meta.setLore(loreList);
                                 item.setItemMeta(meta);
                                 p.getInventory().setItemInMainHand(item);
-                                p.sendMessage(core.getString("Item Utils.RemoveLore.Successful", locale).replaceAll("%line%", lore));
+                                p.sendMessage(api.getString("Item Utils.RemoveLore.Successful", locale).replaceAll("%line%", lore));
                             } else {
-                                p.sendMessage(core.rep("%prefix% §4Error:§c Este item no tiene ningún lore en esta linea"));
+                                p.sendMessage(api.rep("%prefix% §4Error:§c Este item no tiene ningún lore en esta linea"));
                             }
                         } else {
-                            p.sendMessage(core.rep("%prefix% §4Error:§c Este item no tiene lores"));
+                            p.sendMessage(api.rep("%prefix% §4Error:§c Este item no tiene lores"));
                         }
                     } catch (NumberFormatException e) {
-                        p.sendMessage(core.getString("Item Utils.No Number", locale).replaceAll("%arg%", args[0]));
+                        p.sendMessage(api.getString("Item Utils.No Number", locale).replaceAll("%arg%", args[0]));
                     }
                 } else {
-                    p.sendMessage(core.getString("Item Utils.No Item", locale));
+                    p.sendMessage(api.getString("Item Utils.No Item", locale));
                 }
             } else {
-                p.sendMessage(core.getString("Item Utils.RemoveLore.Help", locale));
+                p.sendMessage(api.getString("Item Utils.RemoveLore.Help", locale));
             }
         } else {
-            sender.sendMessage(core.getString("No Console", locale));
+            sender.sendMessage(api.getString("No Console", locale));
         }
     }
 }

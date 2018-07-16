@@ -1,7 +1,8 @@
 package io.github.beelzebu.matrix.listeners;
 
 import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,7 +12,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public class PlayerCommandPreprocessListener implements Listener {
 
     private final Main plugin;
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI core = Matrix.getAPI();
 
     public PlayerCommandPreprocessListener(Main main) {
         plugin = main;

@@ -7,9 +7,8 @@ import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.WarpEffect;
 import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.server.lobby.LobbyData;
-import io.github.beelzebu.matrix.server.powerup.Powerup;
-import java.util.Collections;
+import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
+import io.github.beelzebu.matrix.api.server.powerup.Powerup;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -27,15 +26,12 @@ public class PowerupManager {
 
     private static PowerupManager instance;
     private final Main plugin;
-    private final LobbyData data = LobbyData.getInstance();
     @Getter
-    private final Set<Powerup> powerups = Collections.synchronizedSet(new HashSet<>());
+    private final Set<Powerup> powerups = new HashSet<>();
 
-    public PowerupManager(Main main) {
+    private PowerupManager(Main main) {
         plugin = main;
-        data.getConfig().getStringList("Powerups").forEach(powerup -> {
-            powerups.add(Powerup.fromString(powerup, new WarpEffect(new EffectManager(plugin))));
-        });
+        LobbyData.getInstance().getConfig().getStringList("Powerups").forEach(powerup -> powerups.add(Powerup.fromString(powerup, new WarpEffect(new EffectManager(plugin)))));
     }
 
     public static PowerupManager getInstance() {
@@ -77,8 +73,6 @@ public class PowerupManager {
             holo.delete();
             powerups.add(powerup);
         });
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-            powerups.remove(powerup);
-        }, 60);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> powerups.remove(powerup), 60);
     }
 }

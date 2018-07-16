@@ -16,14 +16,14 @@ public class Rename extends MatrixCommand {
     public void onCommand(CommandSender sender, String[] args) {
         String locale = "";
         if (!(sender instanceof Player)) {
-            sender.sendMessage(core.getString("No Console", locale));
+            sender.sendMessage(api.getString("No Console", locale));
             return;
         }
         locale = ((Player) sender).getLocale();
         Player p = (Player) sender;
         if (args.length > 0) {
             if (p.getInventory().getItemInMainHand() == null) {
-                p.sendMessage(core.getString("Item Utils.No Item", locale));
+                p.sendMessage(api.getString("Item Utils.No Item", locale));
                 return;
             }
             String name = "";
@@ -37,9 +37,9 @@ public class Rename extends MatrixCommand {
             meta.setDisplayName(name);
             item.setItemMeta(meta);
             p.setItemInHand(item);
-            p.sendMessage(core.getString("Item Utils.Rename.Successful", locale).replaceAll("%name%", name));
+            p.sendMessage(api.getString("Item Utils.Rename.Successful", locale).replaceAll("%name%", name));
             return;
         }
-        p.sendMessage(core.getString("Item Utils.Rename.Help", locale));
+        p.sendMessage(api.getString("Item Utils.Rename.Help", locale));
     }
 }

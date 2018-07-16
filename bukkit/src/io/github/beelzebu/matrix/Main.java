@@ -3,6 +3,8 @@ package io.github.beelzebu.matrix;
 import de.slikey.effectlib.EffectManager;
 import io.github.beelzebu.matrix.api.commands.CommandAPI;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
+import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
 import io.github.beelzebu.matrix.commands.staff.Freeze;
 import io.github.beelzebu.matrix.commands.staff.LaunchPads;
 import io.github.beelzebu.matrix.commands.staff.Powerups;
@@ -13,6 +15,7 @@ import io.github.beelzebu.matrix.commands.utils.AddLore;
 import io.github.beelzebu.matrix.commands.utils.Matrix;
 import io.github.beelzebu.matrix.commands.utils.RemoveLore;
 import io.github.beelzebu.matrix.commands.utils.Rename;
+import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.listeners.DupepatchListener;
 import io.github.beelzebu.matrix.listeners.GUIListener;
 import io.github.beelzebu.matrix.listeners.InternalListener;
@@ -25,28 +28,24 @@ import io.github.beelzebu.matrix.listeners.PlayerQuitListener;
 import io.github.beelzebu.matrix.listeners.StatsListener;
 import io.github.beelzebu.matrix.listeners.ViewDistanceListener;
 import io.github.beelzebu.matrix.listeners.VotifierListener;
-import io.github.beelzebu.matrix.player.Statistics;
-import io.github.beelzebu.matrix.server.powerup.tasks.PowerupSpawnTask;
-import io.github.beelzebu.matrix.utils.BukkitConfiguration;
 import io.github.beelzebu.matrix.utils.ReadURL;
-import io.github.beelzebu.matrix.utils.ServerType;
 import io.github.beelzebu.matrix.utils.bungee.BungeeCleanupTask;
 import io.github.beelzebu.matrix.utils.bungee.BungeeServerTracker;
 import io.github.beelzebu.matrix.utils.placeholders.StatsPlaceholders;
+import java.io.File;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
-import org.bukkit.Statistic;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
     private static Main plugin;
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private MatrixCommonAPIImpl api;
     @Getter
     @Setter
     private boolean chatMuted = false;
@@ -62,17 +61,22 @@ public class Main extends JavaPlugin {
     }
 
     @Override
-    public void onEnable() {
+    public void onLoad() {
         plugin = this;
-        configuration = new BukkitConfiguration(this);
-        core.setup(new BukkitMethods());
+        api = new MatrixCommonAPIImpl();
+        configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
+        api.setup(new BukkitMethods());
+    }
+
+    @Override
+    public void onEnable() {
         // Load things
         loadManagers();
 
         // Register events
         registerEvents(new GUIListener());
         registerEvents(new InternalListener());
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA)) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA)) {
             registerEvents(new ItemListener());
             registerEvents(new LobbyListener(this));
         }
@@ -80,7 +84,7 @@ public class Main extends JavaPlugin {
         registerEvents(new PlayerDeathListener(this));
         registerEvents(new PlayerJoinListener(this));
         registerEvents(new PlayerQuitListener(this));
-        if (core.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
+        if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
             registerEvents(new StatsListener());
             registerEvents(new ViewDistanceListener(this));
@@ -107,22 +111,22 @@ public class Main extends JavaPlugin {
                 } catch (Exception ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
                 }
-                if (!core.getRedis().isRegistred(p.getUniqueId())) {
-                    core.getRedis().saveStats(core.getPlayer(p.getUniqueId()), core.getServerInfo().getServerName(), core.getServerInfo().getServerType(), null);
+                if (!api.getDatabase().isRegistered(p.getUniqueId())) { // TODO: stats
+                    //core.getRedis().saveStats(core.getPlayer(p.getUniqueId()), core.getServerInfo().getServerName(), core.getServerInfo().getServerType(), null);
                 }
             });
         });
         BungeeServerTracker.startTask(5);
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new BungeeCleanupTask(), 600, 600);
-        if (!core.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
+        if (!api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             Bukkit.getScheduler().runTaskTimer(plugin, new PowerupSpawnTask(), 0, 1200);
         }
     }
 
     @Override
     public void onDisable() {
-        Bukkit.getOnlinePlayers().forEach((p) -> {
-            core.getRedis().saveStats(
+        Bukkit.getOnlinePlayers().forEach((p) -> { // TODO: stats
+            /*core.getRedis().saveStats(
                     core.getPlayer(p.getUniqueId()),
                     core.getServerInfo().getServerName(),
                     core.getServerInfo().getServerType(),
@@ -134,24 +138,25 @@ public class Main extends JavaPlugin {
                             StatsListener.getPlaced().get(p) == null ? 0 : StatsListener.getPlaced().get(p),
                             System.currentTimeMillis()
                     ));
+                    */
             UUID inv = GUIManager.getOpenInventories().get(p.getUniqueId());
             if (inv != null) {
                 p.closeInventory();
             }
         });
-        MatrixAPI.getInstance().shutdown();
+        api.shutdown();
     }
 
     private void loadManagers() {
         if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
             if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
-                core.log("LuckPerms found, hooking into it.");
+                api.log("LuckPerms found, hooking into it.");
             } else {
                 Bukkit.shutdown();
             }
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            core.log("PlaceholderAPI found, hooking into it.");
+            api.log("PlaceholderAPI found, hooking into it.");
             statsPlaceholders = new StatsPlaceholders(this);
             statsPlaceholders.hook();
         }

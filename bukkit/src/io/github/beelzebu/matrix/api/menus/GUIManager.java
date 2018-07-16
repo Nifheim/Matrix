@@ -1,8 +1,9 @@
 package io.github.beelzebu.matrix.api.menus;
 
-import io.github.beelzebu.matrix.MatrixAPI;
 import io.github.beelzebu.matrix.api.ItemBuilder;
-import io.github.beelzebu.matrix.interfaces.IConfiguration;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ public abstract class GUIManager {
     private static final Map<UUID, GUIManager> inventoriesByUUID = new HashMap<>();
     @Getter
     private static final Map<UUID, UUID> openInventories = Collections.synchronizedMap(new HashMap<>());
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI api = Matrix.getAPI();
     @Getter
     private final Inventory inv;
     @Getter
@@ -55,9 +56,9 @@ public abstract class GUIManager {
             }
         }
         if (type != null && !type.equals(InventoryType.CHEST)) {
-            inv = Bukkit.createInventory(null, type, core.rep(name));
+            inv = Bukkit.createInventory(null, type, api.rep(name));
         } else {
-            inv = Bukkit.createInventory(null, size, core.rep(name));
+            inv = Bukkit.createInventory(null, size, api.rep(name));
         }
         actions = new HashMap<>();
         uniqueId = UUID.randomUUID();
@@ -91,7 +92,7 @@ public abstract class GUIManager {
         inventoriesByUUID.remove(getUniqueId());
     }
 
-    public Item getItem(IConfiguration config, String path) {
+    public Item getItem(AbstractConfig config, String path) {
         Material material = Material.STONE;
         String materialPath = config.getString(path + ".Material").toUpperCase();
         if (Material.getMaterial(materialPath.split(":")[0]) != null) {
@@ -103,7 +104,7 @@ public abstract class GUIManager {
         List<String> lore = config.getStringList(path + ".Lore");
         String soundPath = config.getString(path + ".Sound");
         String command = config.getString(path + ".Command");
-        return new Item(new ItemBuilder(material, amount, core.rep(name)).damage(damage).lore(lore).build(), config.getInt(path + ".Slot"), player -> {
+        return new Item(new ItemBuilder(material, amount, api.rep(name)).damage(damage).lore(lore).build(), config.getInt(path + ".Slot"), player -> {
             if (command != null) {
                 player.performCommand(command);
             }

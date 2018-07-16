@@ -1,10 +1,11 @@
 package io.github.beelzebu.matrix.menus;
 
-import io.github.beelzebu.matrix.MatrixAPI;
 import io.github.beelzebu.matrix.api.ItemBuilder;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.SkullURL;
+import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
-import io.github.beelzebu.matrix.interfaces.IConfiguration;
 import io.github.beelzebu.matrix.utils.placeholders.Placeholders;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta;
  */
 public class ProfileGUI extends GUIManager {
 
-    private static final MatrixAPI core = MatrixAPI.getInstance();
+    private static final MatrixAPI core = Matrix.getAPI();
     private final Player player;
     private final Set<Item> items = new HashSet<>();
 
@@ -51,9 +52,7 @@ public class ProfileGUI extends GUIManager {
             ItemMeta meta = amigos.getItemMeta();
             meta.setDisplayName(core.getString("Social.Friends.Name", user.getLocale()));
             List<String> lore = new ArrayList<>();
-            core.getMessages(user.getLocale()).getStringList("Social.Friends.Lore").forEach(line -> {
-                lore.add(Placeholders.rep(user, line));
-            });
+            core.getMessages(user.getLocale()).getStringList("Social.Friends.Lore").forEach(line -> lore.add(Placeholders.rep(user, line)));
             meta.setLore(lore);
             amigos.setItemMeta(meta);
             inv.setItem(3, amigos);
@@ -75,9 +74,7 @@ public class ProfileGUI extends GUIManager {
             ItemMeta meta = clan.getItemMeta();
             meta.setDisplayName(core.getString("Social.Clan.Name", user.getLocale()));
             List<String> lore = new ArrayList<>();
-            core.getMessages(user.getLocale()).getStringList("Social.Clan.Lore").forEach(line -> {
-                lore.add(Placeholders.rep(user, line));
-            });
+            core.getMessages(user.getLocale()).getStringList("Social.Clan.Lore").forEach(line -> lore.add(Placeholders.rep(user, line)));
             meta.setLore(lore);
             clan.setItemMeta(meta);
             inv.setItem(5, clan);
@@ -88,10 +85,8 @@ public class ProfileGUI extends GUIManager {
     }
 
     private void setItems() {
-        IConfiguration messages = core.getMessages(player.getLocale());
-        messages.getKeys("Social.Profile.Items").forEach(itemPath -> {
-            items.add(getItem(messages, "Social.Profile.Items." + itemPath));
-        });
+        AbstractConfig messages = core.getMessages(player.getLocale());
+        messages.getKeys("Social.Profile.Items").forEach(itemPath -> items.add(getItem(messages, "Social.Profile.Items." + itemPath)));
         socialItems(getInv(), player, 10);
         items.forEach(item -> {
             setItem(item.getSlot(), item.getItemStack(), item.getGuiAction());

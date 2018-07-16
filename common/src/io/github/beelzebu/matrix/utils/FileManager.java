@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.utils;
 
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.MatrixCommonAPIImpl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 
 public class FileManager {
 
-    private final MatrixAPI core;
+    private final MatrixCommonAPIImpl core;
     private final File messagesFile;
     private final File messages_esFile;
     private final File configFile;
     private final File dataFile;
 
-    public FileManager(MatrixAPI u) {
+    public FileManager(MatrixCommonAPIImpl u) {
         core = u;
         messagesFile = new File(core.getDataFolder(), "messages.yml");
         messages_esFile = new File(core.getDataFolder(), "messages_es.yml");
@@ -45,16 +45,16 @@ public class FileManager {
     public void generateFiles() {
         core.getDataFolder().mkdirs();
         if (!messagesFile.exists()) {
-            copy(core.getMethods().getResource("messages.yml"), messagesFile);
+            copy(core.getPlugin().getResource("messages.yml"), messagesFile);
         }
         if (!messages_esFile.exists()) {
-            copy(core.getMethods().getResource("messages_es.yml"), messages_esFile);
+            copy(core.getPlugin().getResource("messages_es.yml"), messages_esFile);
         }
         if (!configFile.exists()) {
-            copy(core.getMethods().getResource("config.yml"), configFile);
+            copy(core.getPlugin().getResource("config.yml"), configFile);
         }
         if (!dataFile.exists()) {
-            copy(core.getMethods().getResource("data.yml"), dataFile);
+            copy(core.getPlugin().getResource("data.yml"), dataFile);
         }
     }
 

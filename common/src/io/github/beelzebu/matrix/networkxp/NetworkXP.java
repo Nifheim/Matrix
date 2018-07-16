@@ -1,15 +1,16 @@
 package io.github.beelzebu.matrix.networkxp;
 
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import java.util.UUID;
 
 public class NetworkXP {
 
-    private static final MatrixAPI core = MatrixAPI.getInstance();
+    private static final MatrixAPI api = Matrix.getAPI();
 
     public static long getXPForPlayer(UUID uuid) {
-        if (core.getRedis().isRegistred(uuid)) {
-            return core.getRedis().getXP(uuid);
+        if (api.getDatabase().isRegistered(uuid)) {
+            return api.getPlayer(uuid).getExp();
         }
         return 0;
     }
@@ -23,11 +24,11 @@ public class NetworkXP {
     }
 
     public static void setXPForPlayer(UUID uuid, long exp) {
-        if (core.getRedis().isRegistred(uuid)) {
+        if (api.getDatabase().isRegistered(uuid)) {
+            api.getPlayer(uuid).setExp(exp);
             long oldxp = getXPForPlayer(uuid);
-            core.getRedis().setData(uuid, "exp", exp);
             if (getLevelForXP(exp) > getLevelForXP(oldxp)) {
-                core.getMethods().callLevelUPEvent(uuid, exp, oldxp);
+                api.getPlugin().callLevelUPEvent(uuid, exp, oldxp);
             }
         }
     }
@@ -58,8 +59,8 @@ public class NetworkXP {
     public static class MCEXP {
 
         public static long getXPForPlayer(String name) {
-            if (core.getRedis().isRegistred(name)) {
-                return core.getRedis().getXP(core.getUUID(name)) / 30;
+            if (api.getDatabase().isRegistered(api.getPlugin().getUUID(name))) {
+                return api.getPlayer(name).getExp() / 30;
             }
             return 0;
         }

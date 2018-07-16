@@ -1,8 +1,9 @@
 package io.github.beelzebu.matrix.listeners;
 
 import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.MatrixAPI;
 import io.github.beelzebu.matrix.api.CentredMessage;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.commands.staff.Freeze;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
 import org.bukkit.Bukkit;
@@ -15,7 +16,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class InternalListener implements Listener {
 
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI core = Matrix.getAPI();
 
     @EventHandler
     public void onLevelUP(LevelUPEvent e) {

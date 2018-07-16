@@ -1,7 +1,7 @@
 package io.github.beelzebu.matrix.api.menus;
 
-import io.github.beelzebu.matrix.MatrixAPI;
-import io.github.beelzebu.matrix.api.menus.GUIManager;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,7 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class ConfirmGUI extends GUIManager {
 
-    private final MatrixAPI core = MatrixAPI.getInstance();
+    private final MatrixAPI core = Matrix.getAPI();
     private final Player player;
     private final ItemStack item;
     private final String name;

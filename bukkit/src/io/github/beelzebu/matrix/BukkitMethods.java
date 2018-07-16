@@ -1,17 +1,13 @@
 package io.github.beelzebu.matrix;
 
-import io.github.beelzebu.matrix.MatrixAPI;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
-import io.github.beelzebu.matrix.interfaces.IConfiguration;
-import io.github.beelzebu.matrix.interfaces.IMethods;
-import io.github.beelzebu.matrix.player.BukkitMatrixPlayer;
-import io.github.beelzebu.matrix.player.MatrixPlayer;
-import io.github.beelzebu.matrix.utils.BukkitMessages;
-import io.github.beelzebu.matrix.utils.MessagesManager;
 import java.io.File;
 import java.io.InputStream;
 import java.util.UUID;
-import java.util.logging.Logger;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -20,19 +16,19 @@ import org.bukkit.command.CommandSender;
 /**
  * @author Beelzebu
  */
-public class BukkitMethods implements IMethods {
+public class BukkitMethods implements MatrixPlugin {
 
     private final Main plugin = Main.getInstance();
     private final CommandSender console = Bukkit.getConsoleSender();
 
     @Override
-    public IConfiguration getConfig() {
+    public AbstractConfig getConfig() {
         return plugin.getConfiguration();
     }
 
     @Override
-    public MessagesManager getMessages(String lang) {
-        return new BukkitMessages(lang);
+    public AbstractConfig getFileAsConfig(File file) {
+        return new BukkitConfiguration(file);
     }
 
     @Override
@@ -57,7 +53,7 @@ public class BukkitMethods implements IMethods {
 
     @Override
     public void log(Object log) {
-        console.sendMessage(MatrixAPI.getInstance().rep("&8[&cMatrix&8] &7" + log));
+        console.sendMessage(Matrix.getAPI().rep("&8[&cMatrix&8] &7" + log));
     }
 
     @Override
@@ -124,11 +120,6 @@ public class BukkitMethods implements IMethods {
     }
 
     @Override
-    public MatrixPlayer getPlayer(UUID uuid) {
-        return new BukkitMatrixPlayer(uuid);
-    }
-
-    @Override
     public void sendMessage(String name, String message) {
         Bukkit.getPlayer(name).sendMessage(message);
     }
@@ -146,10 +137,5 @@ public class BukkitMethods implements IMethods {
     @Override
     public boolean isOnline(UUID uuid, boolean here) {
         return Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline();
-    }
-
-    @Override
-    public Logger getLogger() {
-        return plugin.getLogger();
     }
 }

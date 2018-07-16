@@ -11,7 +11,7 @@ public class Reload extends MatrixCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        core.getConfig().reload();
-        core.getMessagesMap().entrySet().forEach(ent -> ent.getValue().reload());
+        api.getConfig().reload();
+        api.getMessagesMap().entrySet().forEach(ent -> ent.getValue().reload());
     }
 }
