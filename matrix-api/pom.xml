@@ -7,7 +7,14 @@
         <artifactId>matrix-parent</artifactId>
         <groupId>io.github.beelzebu</groupId>
         <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>matrix-api</artifactId>
+    <name>Matrix API</name>
+
+    <build>
+        <sourceDirectory>src</sourceDirectory>
+        <finalName>Matrix-API</finalName>
+    </build>
 </project>
