@@ -6,6 +6,7 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
 import io.github.beelzebu.matrix.utils.PermsUtils;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import me.leoko.advancedban.manager.PunishmentManager;
 import me.leoko.advancedban.manager.UUIDManager;
 import me.leoko.advancedban.utils.Punishment;
@@ -45,7 +46,8 @@ public class PlayerInfo extends Command {
                                         + " &cÚltimo login &8• &7" + new SimpleDateFormat("HH:mm dd/MM/yyyy").format(player.getLastLogin().getTime()) + "&r\n"
                                         + " &cBaneado &8• &7" + (ban != null ? "si" : "no") + "&r\n"
                                         + (ban != null ? "   &cRazón &8• &7" + ban.getReason() + "&r\n" : "")
-                                        + " &cIP &8• &7" + (player.getIP() != null ? player.getIP() : "no registrada") + "&r\n"
+                                        + " &cIP &8• &7" + (player.getIP() != null ? player.getIP() : (player.getIpHistory().stream().findFirst().isPresent() ? player.getIpHistory().stream().findFirst().get() : "no registrada")) + "&r\n"
+                                        + " &cHistorial de IP(s) &8• &r\n" + createList(player.getIpHistory())
                         ));
                         sender.sendMessage(msg);
                     } else {
@@ -54,5 +56,11 @@ public class PlayerInfo extends Command {
                 }
             }
         });
+    }
+
+    private String createList(Collection<String> collection) {
+        StringBuilder list = new StringBuilder();
+        collection.forEach(entry -> list.append(api.rep("  &f- &7" + entry + "\n")));
+        return list.toString();
     }
 }

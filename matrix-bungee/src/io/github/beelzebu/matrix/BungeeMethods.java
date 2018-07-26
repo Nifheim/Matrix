@@ -7,14 +7,17 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
+@RequiredArgsConstructor
 public class BungeeMethods implements MatrixPlugin {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
 
     @Override
     public AbstractConfig getConfig() {
@@ -43,12 +46,12 @@ public class BungeeMethods implements MatrixPlugin {
 
     @Override
     public void executeCommand(String cmd) {
-        ProxyServer.getInstance().getPluginManager().dispatchCommand(plugin.getConsole(), cmd);
+        ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), cmd);
     }
 
     @Override
-    public void log(Object log) {
-        plugin.getConsole().sendMessage("§8[§cMatrix§8] §7" + log.toString());
+    public void log(String message) {
+        ProxyServer.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8[&cMatrix&8] &7" + message)));
     }
 
     @Override
@@ -63,7 +66,7 @@ public class BungeeMethods implements MatrixPlugin {
 
     @Override
     public Object getConsole() {
-        return plugin.getConsole();
+        return ProxyServer.getInstance().getConsole();
     }
 
     @Override
@@ -84,16 +87,6 @@ public class BungeeMethods implements MatrixPlugin {
     @Override
     public String getVersion() {
         return plugin.getDescription().getVersion();
-    }
-
-    @Override
-    public boolean isOnline(String name) {
-        return isOnline(name, false);
-    }
-
-    @Override
-    public boolean isOnline(UUID uuid) {
-        return isOnline(uuid, false);
     }
 
     @Override

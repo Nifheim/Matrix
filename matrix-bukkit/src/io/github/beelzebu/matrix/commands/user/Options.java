@@ -14,7 +14,7 @@ public class Options extends MatrixCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
-            new OptionsGUI((Player) sender, api.getString("Options.Title", ((Player) sender).spigot().getLocale())).open((Player) sender);
+            new OptionsGUI((Player) sender, api.getString("Options.Title", ((Player) sender).getLocale())).open((Player) sender);
         }
     }
 }

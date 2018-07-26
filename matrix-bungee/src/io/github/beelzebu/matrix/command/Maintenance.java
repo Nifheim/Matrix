@@ -8,10 +8,11 @@ import net.md_5.bungee.api.plugin.Command;
 
 public class Maintenance extends Command {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
 
-    public Maintenance() {
+    public Maintenance(Main plugin) {
         super("maintenance", "matrix.staff.admin");
+        this.plugin = plugin;
     }
 
     @Override

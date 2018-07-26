@@ -7,6 +7,7 @@ import io.github.beelzebu.matrix.channels.Channel;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -15,7 +16,10 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+@RequiredArgsConstructor
 public class PubSubMessageListener implements Listener {
+
+    private final Main plugin;
 
     @EventHandler
     public void onMessage(PubSubMessageEvent e) {
@@ -49,9 +53,9 @@ public class PubSubMessageListener implements Listener {
                     }
                 } else if (e.getChannel().equalsIgnoreCase("Maintenance")) {
                     if (e.getMessage().equals("switch")) {
-                        Main.getInstance().setMaintenance(!Main.getInstance().isMaintenance());
-                        if (Main.getInstance().isMaintenance()) {
-                            ProxyServer.getInstance().getScheduler().schedule(Main.getInstance(), () -> {
+                        plugin.setMaintenance(!plugin.isMaintenance());
+                        if (plugin.isMaintenance()) {
+                            ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
                                 Iterator<ProxiedPlayer> players = ProxyServer.getInstance().getPlayers().iterator();
                                 while (players.hasNext()) {
                                     players.next().disconnect("");

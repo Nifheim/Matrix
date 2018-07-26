@@ -33,9 +33,9 @@ public class PlayerDeathListener implements Listener {
         Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
             if (!plugin.getConfig().getString("Death Titles.Mode", "Disabled").equalsIgnoreCase("disabled")) {
                 if (plugin.getConfig().getString("Death Titles.Mode").equalsIgnoreCase("pvp") && p.getKiller() != null) {
-                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.spigot().getLocale()), core.getString("Death Titles.Subtitle", p.spigot().getLocale()));
+                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.getLocale()), core.getString("Death Titles.Subtitle", p.getLocale()));
                 } else {
-                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.spigot().getLocale()), core.getString("Death Titles.Subtitle", p.spigot().getLocale()));
+                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.getLocale()), core.getString("Death Titles.Subtitle", p.getLocale()));
                 }
             }
         }, 10L);

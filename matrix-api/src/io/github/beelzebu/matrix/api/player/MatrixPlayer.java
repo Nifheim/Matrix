@@ -21,6 +21,8 @@ public interface MatrixPlayer {
 
     String getIP();
 
+    Set<String> getIpHistory();
+
     ChatColor getChatColor();
 
     void setChatColor(ChatColor color);
@@ -35,7 +37,9 @@ public interface MatrixPlayer {
 
     void setOption(PlayerOptionType option, boolean status);
 
-    boolean hasPermission(String permission);
+    default boolean hasPermission(String permission) {
+        return false;
+    }
 
     boolean isAuthed();
 

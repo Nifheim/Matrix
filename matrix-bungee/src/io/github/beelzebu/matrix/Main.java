@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.channels.Channel;
 import io.github.beelzebu.matrix.command.BasicCommands;
@@ -16,8 +17,10 @@ import io.github.beelzebu.matrix.listener.ChatListener;
 import io.github.beelzebu.matrix.listener.InternalListener;
 import io.github.beelzebu.matrix.listener.LoginListener;
 import io.github.beelzebu.matrix.listener.PubSubMessageListener;
+import io.github.beelzebu.matrix.player.BungeeMatrixPlayer;
 import java.io.File;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
@@ -36,19 +39,14 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class Main extends Plugin {
 
+    public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Vulthur&7!\n&7IP: &amc.vulthur.cl\n"));
+    public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &evulthur.cl/tienda &7Twitter: &e@vulthurmc\n&7Discord: &evulthur.cl/discord &7Web: &evulthur.cl"));
     private final static Set<Channel> channels = Sets.newHashSet();
     private final static Map<UUID, Channel> pchannels = Maps.newHashMap();
-    private static MatrixCommonAPIImpl api;
-    public static final BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(api.rep("&7¡Jugando en &6Vulthur&7!\n&7IP: &amc.vulthur.cl\n"));
-    public static final BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(api.rep("\n&7Tienda: &evulthur.cl/tienda &7Twitter: &e@vulthurmc\n&7Discord: &evulthur.cl/discord &7Web: &evulthur.cl"));
+    private static MatrixCommonAPI api;
     private static Main instance;
     private static boolean maintenance = false;
-    private final CommandSender console = ProxyServer.getInstance().getConsole();
     private BungeeConfiguration config;
-
-    public static Main getInstance() {
-        return instance;
-    }
 
     public static Set<Channel> getChannels() {
         return channels;
@@ -73,7 +71,8 @@ public class Main extends Plugin {
     @Override
     public void onLoad() {
         config = new BungeeConfiguration(new File(getDataFolder(), "config.yml"));
-        (api = new MatrixCommonAPIImpl()).setup(new BungeeMethods());
+        (api = new MatrixCommonAPI(new BungeeMethods(this))).setup();
+        Matrix.setAPI(api);
     }
 
     @Override
@@ -84,10 +83,10 @@ public class Main extends Plugin {
         registerListener(new ChatListener());
         registerListener(new InternalListener());
         registerListener(new LoginListener(this));
-        registerListener(new PubSubMessageListener());
+        registerListener(new PubSubMessageListener(this));
         registerCommand(new HelpOP());
         registerCommand(new PlayerInfo("pinfo"));
-        registerCommand(new Maintenance());
+        registerCommand(new Maintenance(this));
         registerCommand(new Plugins());
         registerCommand(new Responder());
         new BasicCommands(this);
@@ -113,9 +112,10 @@ public class Main extends Plugin {
                         }
                     });
                 }
-            }, perm, color));
+            }, perm, color).register());
         });
         ProxyServer.getInstance().getPlayers().forEach(pp -> {
+            api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new BungeeMatrixPlayer(pp)).save());
             if (pp.getServer().getInfo().getName().startsWith("towny")) {
                 pp.setTabHeader(TAB_HEADER, TAB_FOOTER);
             }
@@ -128,12 +128,8 @@ public class Main extends Plugin {
         }
     }
 
-    public AbstractConfig getConfig() {
+    AbstractConfig getConfig() {
         return config;
-    }
-
-    public CommandSender getConsole() {
-        return console;
     }
 
     private void registerListener(Listener listener) {

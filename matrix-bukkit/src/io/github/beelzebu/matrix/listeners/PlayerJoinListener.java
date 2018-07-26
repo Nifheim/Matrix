@@ -8,9 +8,9 @@ import com.comphenix.protocol.utility.MinecraftReflection;
 import io.github.beelzebu.matrix.Main;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.server.ServerType;
-import io.github.beelzebu.matrix.player.BukkitMatrixPlayer;
 import io.github.beelzebu.matrix.utils.ReadURL;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -67,7 +67,7 @@ public class PlayerJoinListener implements Listener {
                 Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
             }
         }
-        BukkitMatrixPlayer bukkitMatrixPlayer = (BukkitMatrixPlayer) api.getPlayer(p.getUniqueId());
+        MatrixPlayer matrixPlayer = api.getPlayer(p.getUniqueId());
         // Async task
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (plugin.isVotifier()) {
@@ -77,10 +77,8 @@ public class PlayerJoinListener implements Listener {
                     Logger.getLogger(PlayerJoinListener.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
                 }
             }
-            if (type.equals(ServerType.SURVIVAL)) { // TODO: save stats
-            }
         });
-        api.getPlugin().runSync(() -> ((BukkitMatrixPlayer) api.getPlayer(p.getUniqueId())).getOptions().forEach(opt -> api.getPlayer(p.getUniqueId()).setOption(opt, true)));
+        api.getPlugin().runSync(() -> api.getPlayer(p.getUniqueId()).getOptions().forEach(opt -> api.getPlayer(p.getUniqueId()).setOption(opt, true)));
 
         // Later task
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
@@ -93,7 +91,7 @@ public class PlayerJoinListener implements Listener {
                 firstjoin = false;
             }
             if (!p.hasPermission("matrix.staff.mod") && !p.hasPermission("matrix.vip.earl") && !p.hasPermission("matrix.vip.count")) {
-                bukkitMatrixPlayer.setOption(PlayerOptionType.FLY, false);
+                matrixPlayer.setOption(PlayerOptionType.FLY, false);
             }
             if (api.getConfig().getBoolean("News")) { // TODO: mejor manejo de múltiples páginas y editar nombre del servidor
                 ItemStack old = p.getInventory().getItemInOffHand();

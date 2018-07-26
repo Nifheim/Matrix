@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.api.database;
 
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.api.report.ReportManager;
 import java.util.UUID;
 
 /**
@@ -15,4 +16,6 @@ public interface MatrixDatabase {
     boolean isRegistered(UUID uniqueId);
 
     boolean isRegistered(String name);
+
+    ReportManager getReportManager();
 }

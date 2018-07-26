@@ -7,10 +7,13 @@ import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.database.MongoStorage;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
@@ -18,26 +21,21 @@ import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Indexed;
 import org.mongodb.morphia.annotations.Property;
-import org.mongodb.morphia.annotations.Reference;
 
 /**
  * @author Beelzebu
  */
 @Getter
-@NoArgsConstructor
+@Setter(AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(value = "players", noClassnameStored = true)
-public abstract class MongoMatrixPlayer implements MatrixPlayer {
+public class MongoMatrixPlayer implements MatrixPlayer {
 
-    private final Set<PlayerOptionType> options = new HashSet<>();
-    @Property("iphistory")
-    private final Set<String> ipHistory = new HashSet<>();
-    @Reference(lazy = true, idOnly = true)
-    private final Set<IStatistics> statistics = new HashSet<>();
     @Id
-    private ObjectId id;
+    protected ObjectId id;
     @Property("uuid")
     @Indexed(options = @IndexOptions(unique = true))
-    private UUID uniqueId;
+    protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
     private String name;
     private String displayname;
@@ -49,16 +47,25 @@ public abstract class MongoMatrixPlayer implements MatrixPlayer {
     private long exp;
     @Property("lastlogin")
     private Date lastLogin;
+    private Set<PlayerOptionType> options = new HashSet<>();
+    @Property("iphistory")
+    private Set<String> ipHistory = new LinkedHashSet<>();
     private transient String IP;
+    private transient Set<IStatistics> statistics = new HashSet<>();
 
     protected void setUniqueId(UUID uniqueId) {
         this.uniqueId = uniqueId;
         updateCache();
     }
 
-    protected void setName(String name) {
+    public void setName(String name) {
         this.name = name;
         updateCache();
+    }
+
+    @Override
+    public String getDisplayname() {
+        return displayname != null ? displayname : getName();
     }
 
     @Override
@@ -144,6 +151,10 @@ public abstract class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void updateCache() {
-        Matrix.getAPI().getRedis().setex("user:" + uniqueId, 1800, Matrix.getAPI().getGson().toJson(this));
+        Matrix.getAPI().getRedis().setex("user:" + uniqueId, 1800, toJson());
+    }
+
+    private String toJson() {
+        return Matrix.getAPI().getGson().toJson(this, MongoMatrixPlayer.class);
     }
 }

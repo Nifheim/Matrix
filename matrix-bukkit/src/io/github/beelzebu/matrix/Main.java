@@ -28,6 +28,7 @@ import io.github.beelzebu.matrix.listeners.PlayerQuitListener;
 import io.github.beelzebu.matrix.listeners.StatsListener;
 import io.github.beelzebu.matrix.listeners.ViewDistanceListener;
 import io.github.beelzebu.matrix.listeners.VotifierListener;
+import io.github.beelzebu.matrix.player.Statistics;
 import io.github.beelzebu.matrix.utils.ReadURL;
 import io.github.beelzebu.matrix.utils.bungee.BungeeCleanupTask;
 import io.github.beelzebu.matrix.utils.bungee.BungeeServerTracker;
@@ -38,19 +39,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
+import org.bukkit.Statistic;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
     private static Main plugin;
-    private MatrixCommonAPIImpl api;
+    private MatrixCommonAPI api;
     @Getter
     @Setter
     private boolean chatMuted = false;
-    // Utils
-    private StatsPlaceholders statsPlaceholders;
     @Getter
     private EffectManager effectManager;
     @Getter
@@ -63,13 +64,13 @@ public class Main extends JavaPlugin {
     @Override
     public void onLoad() {
         plugin = this;
-        api = new MatrixCommonAPIImpl();
         configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
-        api.setup(new BukkitMethods());
     }
 
     @Override
     public void onEnable() {
+        io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixCommonAPI(new BukkitMethods()));
+        api.setup();
         // Load things
         loadManagers();
 
@@ -104,18 +105,13 @@ public class Main extends JavaPlugin {
         CommandAPI.registerCommand(this, new Matrix());
         CommandAPI.registerCommand(this, new Spit());
 
-        Bukkit.getOnlinePlayers().forEach((p) -> {
-            Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-                try {
-                    ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + plugin.getConfig().getString("clave"));
-                } catch (Exception ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
-                }
-                if (!api.getDatabase().isRegistered(p.getUniqueId())) { // TODO: stats
-                    //core.getRedis().saveStats(core.getPlayer(p.getUniqueId()), core.getServerInfo().getServerName(), core.getServerInfo().getServerType(), null);
-                }
-            });
-        });
+        Bukkit.getOnlinePlayers().forEach((p) -> Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            try {
+                ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + plugin.getConfig().getString("clave"));
+            } catch (Exception ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
+            }
+        }));
         BungeeServerTracker.startTask(5);
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new BungeeCleanupTask(), 600, 600);
         if (!api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
@@ -125,20 +121,8 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        Bukkit.getOnlinePlayers().forEach((p) -> { // TODO: stats
-            /*core.getRedis().saveStats(
-                    core.getPlayer(p.getUniqueId()),
-                    core.getServerInfo().getServerName(),
-                    core.getServerInfo().getServerType(),
-                    new Statistics(
-                            p.getStatistic(Statistic.PLAYER_KILLS),
-                            p.getStatistic(Statistic.MOB_KILLS),
-                            p.getStatistic(Statistic.DEATHS),
-                            StatsListener.getBroken().get(p) == null ? 0 : StatsListener.getBroken().get(p),
-                            StatsListener.getPlaced().get(p) == null ? 0 : StatsListener.getPlaced().get(p),
-                            System.currentTimeMillis()
-                    ));
-                    */
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            api.getPlayer(p.getUniqueId()).setStatistics(api.getPlayer(p.getUniqueId()).getStatistics(api.getServerInfo().getServerName()).orElseGet(() -> new Statistics(new ObjectId(), api.getServerInfo().getServerName(), p.getStatistic(Statistic.PLAYER_KILLS), p.getStatistic(Statistic.MOB_KILLS), p.getStatistic(Statistic.DEATHS), StatsListener.getBroken().getOrDefault(p.getUniqueId(), 0), StatsListener.getPlaced().getOrDefault(p.getUniqueId(), 0))));
             UUID inv = GUIManager.getOpenInventories().get(p.getUniqueId());
             if (inv != null) {
                 p.closeInventory();
@@ -157,7 +141,8 @@ public class Main extends JavaPlugin {
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             api.log("PlaceholderAPI found, hooking into it.");
-            statsPlaceholders = new StatsPlaceholders(this);
+            // Utils
+            StatsPlaceholders statsPlaceholders = new StatsPlaceholders(this);
             statsPlaceholders.hook();
         }
         effectManager = new EffectManager(this);

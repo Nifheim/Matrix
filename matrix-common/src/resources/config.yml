@@ -10,6 +10,10 @@ version: 10
 # The prefix that will be used in the messages with the %prefix% placeholder.
 Prefix: '&a&lNifheim &8&l>&7'
 
+Database:
+  Host: localhost
+  Password: S3CUR3P4SSW0RD
+
 Redis:
   Host: localhost
   Port: 6379

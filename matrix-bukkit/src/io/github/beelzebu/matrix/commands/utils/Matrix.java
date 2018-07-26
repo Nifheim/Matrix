@@ -33,7 +33,7 @@ public class Matrix extends MatrixCommand {
     private final LobbyData data = LobbyData.getInstance();
 
     public Matrix() {
-        super("nifheim", "matrix.staff.mod");
+        super("matrix", "matrix.staff.mod");
     }
 
     @Override
@@ -98,7 +98,7 @@ public class Matrix extends MatrixCommand {
             }
         } else if (args.length == 4 && args[1].matches("(^give$|^add$)")) {
             if (args[2] == null || args[2].equalsIgnoreCase("?")) {
-            } else if (args[2] != null && api.getDatabase().isRegistered(args[2])) {
+            } else if (api.getDatabase().isRegistered(args[2])) {
                 long xp = Long.parseLong(args[3]);
                 int level;
                 long xp_final;
@@ -128,7 +128,7 @@ public class Matrix extends MatrixCommand {
 
     private boolean _sound(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
-            if (Sound.valueOf(args[1]) != null && args[2] != null && args[3] != null) {
+            if (args[2] != null && args[3] != null) {
                 if (args[1].contains(".")) {
                     args[1] = args[1].replaceAll("\\.", "_");
                 }
@@ -141,9 +141,7 @@ public class Matrix extends MatrixCommand {
     private boolean _setspawn(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Location loc = ((Entity) sender).getLocation();
-            data.getConfig().set("Spawn.World", loc.getWorld().getName());
-            data.getConfig().set("Spawn.Location", loc.getX() + "," + loc.getY() + "," + loc.getZ() + "," + loc.getYaw() + "," + loc.getPitch());
-            data.saveConfig();
+            loc.getWorld().setSpawnLocation(((Player) sender).getLocation());
         }
         return true;
     }
@@ -152,7 +150,7 @@ public class Matrix extends MatrixCommand {
         if (sender instanceof Player) {
             Player p = (Player) sender;
             ItemStack old = p.getInventory().getItemInOffHand();
-            p.getInventory().setItemInOffHand(book("Noticias Nifheim", "Nifheim Network", (List<List<String>>) api.getConfig().getList("News Lines")));
+            p.getInventory().setItemInOffHand(book("Noticias", "Network", (List<List<String>>) api.getConfig().getList("News Lines")));
             try {
                 PacketContainer pc = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CUSTOM_PAYLOAD);
                 pc.getModifier().writeDefaults();
@@ -178,9 +176,7 @@ public class Matrix extends MatrixCommand {
         BookMeta meta = (BookMeta) is.getItemMeta();
         meta.setAuthor(author);
         meta.setTitle(title);
-        pages.forEach(page -> {
-            meta.addPage(page.toArray(new String[page.size()]));
-        });
+        pages.forEach(page -> meta.addPage(page.toArray(new String[0])));
         is.setItemMeta(meta);
         return is;
     }

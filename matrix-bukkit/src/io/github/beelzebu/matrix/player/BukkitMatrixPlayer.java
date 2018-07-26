@@ -14,8 +14,7 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class BukkitMatrixPlayer extends MongoMatrixPlayer {
 
-    private final UUID uniqueId;
-    private Player player;
+    private transient Player player;
 
     public BukkitMatrixPlayer(UUID uniqueId) {
         this.uniqueId = uniqueId;

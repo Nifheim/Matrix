@@ -68,7 +68,6 @@ public class LobbyListener implements Listener {
     private static final Set<Player> editMode = new HashSet<>();
     private final Main plugin;
     private final MatrixAPI api = Matrix.getAPI();
-    private final LobbyData data = LobbyData.getInstance();
     private final PowerupManager powerups;
     private final List<LaunchPad> launchpads;
     private final EffectManager em;
@@ -79,7 +78,7 @@ public class LobbyListener implements Listener {
     public LobbyListener(Main main) {
         plugin = main;
         powerups = PowerupManager.getInstance();
-        launchpads = data.getLaunchpads();
+        launchpads = LobbyData.getInstance().getLaunchpads();
         em = plugin.getEffectManager();
     }
 
@@ -156,11 +155,7 @@ public class LobbyListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         MatrixPlayer np = api.getPlayer(e.getPlayer().getUniqueId());
         Player p = e.getPlayer();
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (data.getSpawn() != null) {
-                p.teleport(data.getSpawn());
-            }
-        }, 2);
+        Bukkit.getScheduler().runTaskLater(plugin, () -> p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation()), 2);
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 int level = NetworkXP.getLevelForPlayer(p.getUniqueId());
@@ -197,18 +192,12 @@ public class LobbyListener implements Listener {
         Player p = e.getPlayer();
         MatrixPlayer np = api.getPlayer(p.getUniqueId());
         setPvP(p, false);
-        if (pvpPlayers.contains(p)) {
-            pvpPlayers.remove(p);
-        }
+        pvpPlayers.remove(p);
         if (playerOptions.containsKey(np)) {
-            playerOptions.get(np).forEach(option -> {
-                np.setOption(option, true);
-            });
+            playerOptions.get(np).forEach(option -> np.setOption(option, true));
             playerOptions.remove(np);
         }
-        if (editMode.contains(p)) {
-            editMode.remove(p);
-        }
+        editMode.remove(p);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -217,7 +206,7 @@ public class LobbyListener implements Listener {
             Player p = e.getPlayer();
             Location loc = e.getTo();
             if (e.getTo().getY() <= 0) {
-                p.teleport(data.getSpawn());
+                p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             }
             if (e.getFrom().distance(loc) > 0.5) {
                 if (canPvP(api.getPlayer(p.getUniqueId()))) {
@@ -246,15 +235,13 @@ public class LobbyListener implements Listener {
                                 Sound.ENTITY_FIREWORK_LAUNCH,
                                 Sound.ENTITY_FIREWORK_LAUNCH
                         );
-                        sounds.forEach((sound) -> {
-                            Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-                                int pitch = 0;
-                                p.playSound(loc, sound, 10, pitch);
-                                if (sound.equals(Sound.ENTITY_FIREWORK_LAUNCH)) {
-                                    pitch++;
-                                }
-                            }, 6);
-                        });
+                        sounds.forEach(sound -> Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+                            int pitch = 0;
+                            p.playSound(loc, sound, 10, pitch);
+                            if (sound.equals(Sound.ENTITY_FIREWORK_LAUNCH)) {
+                                pitch++;
+                            }
+                        }, 6));
                         if (lp.isEffect()) {
                             HelixEffect effect = new HelixEffect(em);
                             effect.setLocation(loc.getBlock().getLocation().add(0.5, 0.5, 0.5));
@@ -285,9 +272,7 @@ public class LobbyListener implements Listener {
         MatrixPlayer p = api.getPlayer(e.getPlayer().getUniqueId());
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
             if (playerOptions.containsKey(p)) {
-                playerOptions.get(p).forEach(option -> {
-                    p.setOption(option, true);
-                });
+                playerOptions.get(p).forEach(option -> p.setOption(option, true));
             }
             setPvP(e.getPlayer(), false);
         } else {
@@ -320,9 +305,7 @@ public class LobbyListener implements Listener {
             pvpPlayers.add(p);
             normalPlayers.remove(p);
         } else if (!pvp) {
-            if (pvpPlayers.contains(p)) {
-                pvpPlayers.remove(p);
-            }
+            pvpPlayers.remove(p);
             if (!normalPlayers.contains(p)) {
                 normalPlayers.add(p);
                 setNormalItems(p);

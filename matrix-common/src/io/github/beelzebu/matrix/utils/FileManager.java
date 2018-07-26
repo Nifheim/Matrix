@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.utils;
 
-import io.github.beelzebu.matrix.MatrixCommonAPIImpl;
+import io.github.beelzebu.matrix.MatrixCommonAPI;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,13 +13,13 @@ import java.util.logging.Logger;
 
 public class FileManager {
 
-    private final MatrixCommonAPIImpl core;
+    private final MatrixCommonAPI core;
     private final File messagesFile;
     private final File messages_esFile;
     private final File configFile;
     private final File dataFile;
 
-    public FileManager(MatrixCommonAPIImpl u) {
+    public FileManager(MatrixCommonAPI u) {
         core = u;
         messagesFile = new File(core.getDataFolder(), "messages.yml");
         messages_esFile = new File(core.getDataFolder(), "messages_es.yml");

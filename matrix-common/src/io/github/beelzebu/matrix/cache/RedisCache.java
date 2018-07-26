@@ -51,7 +51,8 @@ public class RedisCache implements CacheProvider {
     @Override
     public Optional<MatrixPlayer> getPlayer(String name) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            return Optional.ofNullable(getUniqueId(name).isPresent() ? Matrix.getAPI().getGson().fromJson(jedis.get("user:" + getUniqueId(name).get()), MongoMatrixPlayer.class) : null);
+            Optional<UUID> uuid = getUniqueId(name);
+            return Optional.ofNullable(uuid.map(uuid1 -> Matrix.getAPI().getGson().fromJson(jedis.get("user:" + uuid1), MongoMatrixPlayer.class)).orElse(null));
         } catch (JedisException | JsonParseException ex) {
             Matrix.getAPI().debug(ex);
         }
@@ -62,7 +63,7 @@ public class RedisCache implements CacheProvider {
     public Set<MatrixPlayer> getPlayers() {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Set<String> cached = jedis.keys("user:*");
-            return cached.stream().map(cachedu -> getPlayer(UUID.fromString(cachedu.split(":")[1])).get()).collect(Collectors.toSet());
+            return cached.stream().map(cachedu -> getPlayer(UUID.fromString(cachedu.split(":")[1])).orElse(null)).collect(Collectors.toSet());
         } catch (JedisException ex) {
             Matrix.getAPI().debug(ex);
         }

@@ -7,6 +7,8 @@ import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
 import java.io.File;
 import java.io.InputStream;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.BanList;
@@ -20,6 +22,7 @@ public class BukkitMethods implements MatrixPlugin {
 
     private final Main plugin = Main.getInstance();
     private final CommandSender console = Bukkit.getConsoleSender();
+    private final Set<Runnable> schedulerQueue = new HashSet<>();
 
     @Override
     public AbstractConfig getConfig() {
@@ -52,8 +55,8 @@ public class BukkitMethods implements MatrixPlugin {
     }
 
     @Override
-    public void log(Object log) {
-        console.sendMessage(Matrix.getAPI().rep("&8[&cMatrix&8] &7" + log));
+    public void log(String message) {
+        console.sendMessage(Matrix.getAPI().rep("&8[&cMatrix&8] &7" + message));
     }
 
     @Override
@@ -92,23 +95,13 @@ public class BukkitMethods implements MatrixPlugin {
     }
 
     @Override
-    public boolean isOnline(String name) {
-        return isOnline(name, true);
-    }
-
-    @Override
-    public boolean isOnline(UUID uuid) {
-        return isOnline(uuid, true);
-    }
-
-    @Override
     public void callLevelUPEvent(UUID uuid, long newexp, long oldexp) {
         Bukkit.getPluginManager().callEvent(new LevelUPEvent(uuid, newexp, oldexp));
     }
 
     @Override
     public String getLocale(UUID uuid) {
-        if (isOnline(uuid)) {
+        if (isOnline(uuid, true)) {
             return Bukkit.getPlayer(uuid).getLocale();
         }
         return "";

@@ -7,7 +7,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 @RequiredArgsConstructor
 public class BungeeMatrixPlayer extends MongoMatrixPlayer {
 
-    private final ProxiedPlayer player;
+    private transient final ProxiedPlayer player;
 
     @Override
     public boolean hasPermission(String permission) {

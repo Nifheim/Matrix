@@ -1,7 +1,6 @@
 package io.github.beelzebu.matrix.api.messaging;
 
 import com.google.gson.JsonObject;
-import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import java.util.UUID;
 import lombok.Getter;
@@ -16,13 +15,14 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 public class RedisMessaging {
 
-    private final MatrixAPI api = Matrix.getAPI();
+    private final MatrixAPI api;
     @Getter
     private final JedisPool pool;
     @Getter
     private final PubSubListener pubSubListener;
 
-    public RedisMessaging() {
+    public RedisMessaging(MatrixAPI api) {
+        this.api = api;
         pool = new JedisPool(new JedisPoolConfig(), api.getConfig().getString("Redis.Host"), api.getConfig().getInt("Redis.Port"), 0, api.getConfig().getString("Redis.Password"));
         api.getPlugin().runAsync(pubSubListener = new PubSubListener());
     }

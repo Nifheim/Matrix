@@ -50,9 +50,9 @@ public interface MatrixPlugin {
     /**
      * Envía un mensaje a la consola con el prefijo del log.
      *
-     * @param log objeto para convertir a string.
+     * @param message mensaje para enviar.
      */
-    void log(Object log);
+    void log(String message);
 
     /**
      * Obtiene el nombre de un usuario online en base a su UUID.
@@ -127,36 +127,12 @@ public interface MatrixPlugin {
      * Obtiene si un usuario está conectado en base a su nombre.
      *
      * @param name usuario para revisar.
-     * @return <i>true</i> en caso de que esté conectado, <i>false</i> de otra
-     * forma.
-     * @see #isOnline(java.lang.String, boolean)
-     * @deprecated -
-     */
-    @Deprecated
-    boolean isOnline(String name);
-
-    /**
-     * Obtiene si un usuario está conectado en base a su nombre.
-     *
-     * @param name usuario para revisar.
      * @param here si se debe revisar solamente en este servidor o en la network
      *             entera.
      * @return <i>true</i> en caso de que esté conectado, <i>false</i> de otra
      * forma.
      */
     boolean isOnline(String name, boolean here);
-
-    /**
-     * Obtiene si un usuario está conectado en base a su UUID.
-     *
-     * @param uuid usuario para revisar.
-     * @return <i>true</i> en caso de que esté conectado, <i>false</i> de otra
-     * forma.
-     * @see #isOnline(java.util.UUID, boolean)
-     * @deprecated -
-     */
-    @Deprecated
-    boolean isOnline(UUID uuid);
 
     /**
      * Obtiene si un usuario está conectado en base a su UUID.

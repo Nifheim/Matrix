@@ -14,30 +14,27 @@ public class Rename extends MatrixCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        String locale = "";
         if (!(sender instanceof Player)) {
-            sender.sendMessage(api.getString("No Console", locale));
+            sender.sendMessage(api.getString("No Console", ""));
             return;
         }
-        locale = ((Player) sender).getLocale();
+        String locale = ((Player) sender).getLocale();
         Player p = (Player) sender;
         if (args.length > 0) {
             if (p.getInventory().getItemInMainHand() == null) {
                 p.sendMessage(api.getString("Item Utils.No Item", locale));
                 return;
             }
-            String name = "";
+            StringBuilder name = new StringBuilder();
             for (String arg : args) {
-                name = name + arg + " ";
+                name.append(arg).append(" ");
             }
-            name = name.replaceAll("&", "§") + "strtdlµ";
-            name = name.replace(" strtdlµ", "");
-            ItemStack item = p.getItemInHand();
-            ItemMeta meta = p.getItemInHand().getItemMeta();
-            meta.setDisplayName(name);
+            ItemStack item = p.getInventory().getItemInMainHand();
+            ItemMeta meta = item.getItemMeta();
+            meta.setDisplayName(api.rep(name.substring(0, name.length() - 1)));
             item.setItemMeta(meta);
-            p.setItemInHand(item);
-            p.sendMessage(api.getString("Item Utils.Rename.Successful", locale).replaceAll("%name%", name));
+            p.getInventory().setItemInMainHand(item);
+            p.sendMessage(api.getString("Item Utils.Rename.Successful", locale).replaceAll("%name%", name.toString()));
             return;
         }
         p.sendMessage(api.getString("Item Utils.Rename.Help", locale));
