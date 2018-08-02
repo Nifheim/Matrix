@@ -25,18 +25,15 @@ import org.mongodb.morphia.converters.UUIDConverter;
 @Getter
 public class MongoStorage implements MatrixDatabase {
 
-    private final MongoClient client;
-    private final Morphia morphia;
-    private final Datastore datastore;
     private final UserDAO userDAO;
     private final ReportDAO reportDAO;
 
     public MongoStorage(String host, int port, String username, String database, String password, String databaselogin) {
-        client = new MongoClient(new ServerAddress(host, port), MongoCredential.createCredential(username, databaselogin, password.toCharArray()), MongoClientOptions.builder().build());
-        morphia = new Morphia();
+        MongoClient client = new MongoClient(new ServerAddress(host, port), MongoCredential.createCredential(username, databaselogin, password.toCharArray()), MongoClientOptions.builder().build());
+        Morphia morphia = new Morphia();
         morphia.map(MongoMatrixPlayer.class, Statistics.class, MongoReport.class);
         morphia.getMapper().getConverters().addConverter(new UUIDConverter());
-        datastore = morphia.createDatastore(client, database);
+        Datastore datastore = morphia.createDatastore(client, database);
         datastore.ensureIndexes();
         userDAO = new UserDAO(datastore);
         reportDAO = new ReportDAO(datastore);

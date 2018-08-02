@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix.player;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.utils.PermsUtils;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -52,6 +53,12 @@ public class BukkitMatrixPlayer extends MongoMatrixPlayer {
             }
         }
         super.setOption(option, status);
+    }
+
+    @Override
+    public void setDisplayname(String displayname) {
+        super.setDisplayname(displayname);
+        getPlayer().setDisplayName(PermsUtils.getPrefix(uniqueId) + getDisplayname());
     }
 
     @Override
