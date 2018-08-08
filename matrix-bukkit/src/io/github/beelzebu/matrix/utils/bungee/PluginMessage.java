@@ -23,7 +23,7 @@ public class PluginMessage implements PluginMessageListener {
 
     public static PluginMessage get() {
         if (instance == null) {
-            instance = new PluginMessage(Main.getInstance());
+            instance = new PluginMessage(Main.getPlugin(Main.class));
         }
         return instance;
     }
@@ -45,13 +45,12 @@ public class PluginMessage implements PluginMessageListener {
 
     public void askPlayerCount(String server) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        ;
         out.writeUTF("PlayerCount");
         out.writeUTF(server);
 
         Collection<? extends Player> players = Bukkit.getOnlinePlayers();
         if (players.size() > 0) {
-            players.iterator().next().sendPluginMessage(Main.getInstance(), "RedisBungee", out.toByteArray());
+            players.iterator().next().sendPluginMessage(Main.getPlugin(Main.class), "RedisBungee", out.toByteArray());
         }
     }
 }

@@ -1,8 +1,6 @@
 package io.github.beelzebu.matrix.api.server.powerup;
 
 import de.slikey.effectlib.Effect;
-import de.slikey.effectlib.EffectManager;
-import io.github.beelzebu.matrix.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,7 +10,6 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Powerup {
 
-    private final EffectManager em = Main.getInstance().getEffectManager();
     private final Location l;
     private final String t;
     private final ItemStack i;

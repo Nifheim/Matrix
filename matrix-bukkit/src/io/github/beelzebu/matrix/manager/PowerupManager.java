@@ -35,7 +35,7 @@ public class PowerupManager {
     }
 
     public static PowerupManager getInstance() {
-        return instance == null ? instance = new PowerupManager(Main.getInstance()) : instance;
+        return instance == null ? instance = new PowerupManager(Main.getPlugin(Main.class)) : instance;
     }
 
     public void spawnPowerup(Location loc, String title, ItemStack item, Effect effect, PotionEffect potionEffect, int chance) {

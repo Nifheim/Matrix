@@ -44,7 +44,6 @@ public class Main extends Plugin {
     private final static Set<Channel> channels = Sets.newHashSet();
     private final static Map<UUID, Channel> pchannels = Maps.newHashMap();
     private static MatrixCommonAPI api;
-    private static Main instance;
     private static boolean maintenance = false;
     private BungeeConfiguration config;
 
@@ -71,13 +70,12 @@ public class Main extends Plugin {
     @Override
     public void onLoad() {
         config = new BungeeConfiguration(new File(getDataFolder(), "config.yml"));
-        (api = new MatrixCommonAPI(new BungeeMethods(this))).setup();
+        (api = new MatrixBungeeAPI(new BungeeMethods(this))).setup();
         Matrix.setAPI(api);
     }
 
     @Override
     public void onEnable() {
-        instance = this;
         loadManagers();
         RedisBungee.getApi().registerPubSubChannels("NifheimHelpop", "Channel", "Maintenance");
         registerListener(new ChatListener());
@@ -95,7 +93,7 @@ public class Main extends Plugin {
             String command = config.getString("Channels." + channel + ".Command");
             String perm = config.getString("Channels." + channel + ".Permission");
             String color = "§" + (config.getString("Channels." + channel + ".Color") != null ? config.getString("Channels." + channel + ".Color") : "f");
-            channels.add(new Channel(channel, new Command(command) {
+            channels.add(new Channel(channel, new Command(command) { // TODO: eliminar dependencia en redisbungee para esto y usar json
                 @Override
                 public void execute(CommandSender sender, String[] args) {
                     api.getPlugin().runAsync(() -> {
@@ -103,11 +101,11 @@ public class Main extends Plugin {
                             if (args.length == 0 && sender instanceof ProxiedPlayer) {
                                 RedisBungee.getApi().sendChannelMessage("Channel", "set ," + channel + "," + ((ProxiedPlayer) sender).getUniqueId());
                             } else {
-                                String msg = "";
+                                StringBuilder msg = new StringBuilder();
                                 for (String arg : args) {
-                                    msg += arg + " ";
+                                    msg.append(arg).append(" ");
                                 }
-                                RedisBungee.getApi().sendChannelMessage("Channel", channel + " -div- " + (sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getServer().getInfo().getName() + "," + api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayname() : sender.getName()) + " -div- " + color + msg);
+                                RedisBungee.getApi().sendChannelMessage("Channel", channel + " -div- " + (sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getServer().getInfo().getName() + "," + api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayname() : sender.getName()) + " -div- " + color + msg.substring(0, msg.length() - 1));
                             }
                         }
                     });
@@ -115,7 +113,7 @@ public class Main extends Plugin {
             }, perm, color).register());
         });
         ProxyServer.getInstance().getPlayers().forEach(pp -> {
-            api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new BungeeMatrixPlayer(pp)).save());
+            api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new BungeeMatrixPlayer(pp.getUniqueId())).save());
             if (pp.getServer().getInfo().getName().startsWith("towny")) {
                 pp.setTabHeader(TAB_HEADER, TAB_FOOTER);
             }
@@ -128,7 +126,7 @@ public class Main extends Plugin {
         }
     }
 
-    AbstractConfig getConfig() {
+    public AbstractConfig getConfig() {
         return config;
     }
 

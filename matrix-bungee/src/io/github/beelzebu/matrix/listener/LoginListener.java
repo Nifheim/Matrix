@@ -47,7 +47,7 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerSwitch(ServerSwitchEvent e) {
-        if (e.getPlayer().isConnected()) {
+        if (e.getPlayer().isConnected() && e.getPlayer().getServer().getInfo().getName().equalsIgnoreCase("towny")) {
             e.getPlayer().setTabHeader(Main.TAB_HEADER, Main.TAB_FOOTER);
         }
     }
@@ -56,17 +56,22 @@ public class LoginListener implements Listener {
     public void onProxyPing(ProxyPingEvent e) {
         if (plugin.isMaintenance()) {
             e.getResponse().getVersion().setProtocol(666);
-            e.getResponse().getVersion().setName("§4§lEn Mantenimiento");
+            e.getResponse().getVersion().setName("§cEn mantenimiento");
+        }
+        // banear los proxy en el momento en que hacen ping en la lista de servidores
+        e.registerIntent(plugin);
+        api.getPlugin().runAsync(() -> {
             if (isProxy(e.getConnection().getAddress().getAddress().getHostAddress())) {
                 api.getPlugin().ban(e.getConnection().getAddress().getAddress().getHostAddress());
             }
-        }
+            e.completeIntent(plugin);
+        });
     }
 
     @EventHandler(priority = -100)
     public void onPreLogin(PreLoginEvent e) {
+        e.registerIntent(plugin);
         api.getPlugin().runAsync(() -> {
-            e.registerIntent(plugin);
             if (isProxy(e.getConnection().getAddress().getAddress().getHostAddress())) {
                 api.getPlugin().ban(e.getConnection().getAddress().getAddress().getHostAddress());
                 e.completeIntent(plugin);
@@ -90,11 +95,13 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = -128)
     public void onJoin(PostLoginEvent e) {
-        api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(e.getPlayer().getUniqueId())).orElse(new BungeeMatrixPlayer(e.getPlayer())).save());
+        // obtener el usuario desde la api, que revisará el cache o la base de datos, en caso de que sea nulo debemos
+        // crearlo ya que es un usurio nuevo
+        api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(e.getPlayer().getUniqueId())).orElse(new BungeeMatrixPlayer(e.getPlayer().getUniqueId())).save());
     }
 
-    private Boolean isProxy(String IP) {
-        if ((IP.equals("127.0.0.1")) || (IP.equals("localhost")) || (IP.matches("192\\.168\\.[01]{1}\\.[0-9]{1,3}"))) {
+    private boolean isProxy(String IP) {
+        if ((IP.equals("127.0.0.1")) || (IP.equals("localhost")) || (IP.matches("192\\.168\\.[01]{1}\\.[0-9]{1,3}"))) { // está enviando información falsa
             return true;
         }
         for (String s : activeBlacklist.keySet()) {

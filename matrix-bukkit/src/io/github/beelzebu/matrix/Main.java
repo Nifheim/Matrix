@@ -47,7 +47,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
 
-    private static Main plugin;
     private MatrixCommonAPI api;
     @Getter
     @Setter
@@ -57,19 +56,14 @@ public class Main extends JavaPlugin {
     @Getter
     private BukkitConfiguration configuration;
 
-    public static Main getInstance() {
-        return plugin;
-    }
-
     @Override
     public void onLoad() {
-        plugin = this;
         configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
     }
 
     @Override
     public void onEnable() {
-        io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixCommonAPI(new BukkitMethods()));
+        io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixBukkitAPI(new BukkitMethods(this)));
         api.setup();
         // Load things
         loadManagers();
@@ -107,15 +101,15 @@ public class Main extends JavaPlugin {
 
         Bukkit.getOnlinePlayers().forEach((p) -> Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
-                ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + plugin.getConfig().getString("clave"));
+                ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + getConfig().getString("clave"));
             } catch (Exception ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
             }
         }));
         BungeeServerTracker.startTask(5);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, new BungeeCleanupTask(), 600, 600);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BungeeCleanupTask(), 600, 600);
         if (!api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
-            Bukkit.getScheduler().runTaskTimer(plugin, new PowerupSpawnTask(), 0, 1200);
+            Bukkit.getScheduler().runTaskTimer(this, new PowerupSpawnTask(), 0, 1200);
         }
     }
 

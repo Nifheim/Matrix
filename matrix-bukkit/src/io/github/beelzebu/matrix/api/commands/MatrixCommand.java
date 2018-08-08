@@ -2,10 +2,12 @@ package io.github.beelzebu.matrix.api.commands;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.Messages;
 import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public abstract class MatrixCommand extends Command {
 
@@ -28,8 +30,11 @@ public abstract class MatrixCommand extends Command {
                 onCommand(sender, args);
             }
         } else {
-            sender.sendMessage(api.rep("&c&lHey!&7 Debes ser rango &c" + perm.split("\\.")[perm.split(".").length - 1] + "&7 o superior para usar este comando."));
+            sender.sendMessage(api.getString(Messages.GENERAL_NO_PERMS, sender instanceof Player ? ((Player) sender).getLocale() : ""));
+            //else {
         }
+        //  sender.sendMessage(api.rep("&c&lHey!&7 Debes ser rango &c" + perm.split("\\.")[perm.split(".").length - 1] + "&7 o superior para usar este comando."));
+        //}
         return true;
     }
 

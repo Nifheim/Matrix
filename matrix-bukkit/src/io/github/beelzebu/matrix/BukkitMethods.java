@@ -7,9 +7,8 @@ import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
 import java.io.File;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -18,11 +17,11 @@ import org.bukkit.command.CommandSender;
 /**
  * @author Beelzebu
  */
+@RequiredArgsConstructor
 public class BukkitMethods implements MatrixPlugin {
 
-    private final Main plugin = Main.getInstance();
+    private final Main plugin;
     private final CommandSender console = Bukkit.getConsoleSender();
-    private final Set<Runnable> schedulerQueue = new HashSet<>();
 
     @Override
     public AbstractConfig getConfig() {

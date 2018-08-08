@@ -22,7 +22,7 @@ public class InternalListener implements Listener {
     public void onLevelUP(LevelUPEvent e) {
         Player p = e.getPlayer();
         p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 2);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getInstance(), () -> core.getMessages(p.getLocale()).getStringList("NetworkXP.LevelUP").forEach(line -> p.sendMessage(CentredMessage.generate(line.replaceAll("%player%", p.getName()).replaceAll("%level%", String.valueOf(e.getNewLvl())).replaceAll("%next%", String.valueOf(e.getXPForNextLvl()))))), 10);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(Main.class), () -> core.getMessages(p.getLocale()).getStringList("NetworkXP.LevelUP").forEach(line -> p.sendMessage(CentredMessage.generate(line.replaceAll("%player%", p.getName()).replaceAll("%level%", String.valueOf(e.getNewLvl())).replaceAll("%next%", String.valueOf(e.getXPForNextLvl()))))), 10);
     }
 
     @EventHandler

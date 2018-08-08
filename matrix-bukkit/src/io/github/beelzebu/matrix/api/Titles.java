@@ -155,7 +155,7 @@ public class Titles {
         }
     }
 
-    public static void sendActionBar(final Player player, final String message, int duration) {
+    public static void sendActionBar(Player player, String message, int duration) {
         sendActionBar(player, message);
 
         // Re-sends the messages every 3 seconds so it doesn't go away from the player's screen.
@@ -167,7 +167,7 @@ public class Titles {
                 public void run() {
                     sendActionBar(player, message);
                 }
-            }.runTaskLater(Main.getInstance(), sched);
+            }.runTaskLater(Main.getPlugin(Main.class), sched);
         }
     }
 

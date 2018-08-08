@@ -57,7 +57,7 @@ public abstract class MatrixAPI {
      * @return message with colors and replaced placeholders.
      */
     public final String rep(String message) {
-        return message.replaceAll("%prefix%", "&a&lMatrix &8&l>&7").replaceAll("&", "§");
+        return ChatColor.translateAlternateColorCodes('&', message.replace("%prefix%", "&a&lMatrix &8&l>&7"));
     }
 
     /**
@@ -86,11 +86,11 @@ public abstract class MatrixAPI {
         }
     }
 
-    public final MatrixPlayer getPlayer(UUID uniqueId) {
+    public MatrixPlayer getPlayer(UUID uniqueId) {
         return getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId));
     }
 
-    public final MatrixPlayer getPlayer(String name) {
+    public MatrixPlayer getPlayer(String name) {
         return getCache().getPlayer(name).orElse(getDatabase().getPlayer(name));
     }
 
@@ -107,7 +107,7 @@ public abstract class MatrixAPI {
      */
     public final AbstractConfig getMessages(String lang) {
         if (!messagesMap.containsKey(lang.split("_")[0])) {
-            messagesMap.put(lang.split("_")[0], getPlugin().getFileAsConfig(new File(getPlugin().getDataFolder(), "messages_" + lang.split("_")[0])));
+            messagesMap.put(lang.split("_")[0], getPlugin().getFileAsConfig(new File(getPlugin().getDataFolder(), "messages_" + lang.split("_")[0] + ".yml")));
         }
         return messagesMap.get(lang.split("_")[0]);
     }

@@ -37,21 +37,21 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     @Indexed(options = @IndexOptions(unique = true))
     protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
-    private String name;
-    private String displayname;
+    protected String name;
+    protected String displayname;
     @Property("chatcolor")
-    private ChatColor chatColor;
-    private boolean watcher;
-    private boolean authed;
-    private double coins;
-    private long exp;
+    protected ChatColor chatColor;
+    protected boolean watcher;
+    protected boolean authed;
+    protected double coins;
+    protected long exp;
     @Property("lastlogin")
-    private Date lastLogin;
-    private Set<PlayerOptionType> options = new HashSet<>();
+    protected Date lastLogin;
+    protected Set<PlayerOptionType> options = new HashSet<>();
     @Property("iphistory")
-    private Set<String> ipHistory = new LinkedHashSet<>();
-    private transient String IP;
-    private transient Set<IStatistics> statistics = new HashSet<>();
+    protected Set<String> ipHistory = new LinkedHashSet<>();
+    protected transient String IP;
+    protected transient Set<IStatistics> statistics = new HashSet<>();
 
     protected void setUniqueId(UUID uniqueId) {
         this.uniqueId = uniqueId;

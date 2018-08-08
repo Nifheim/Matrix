@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 
 public class BungeeServerTracker {
 
-    private static final Map<String, BungeeServerInfo> trackedServers = new ConcurrentHashMap<String, BungeeServerInfo>();
+    private static final Map<String, BungeeServerInfo> trackedServers = new ConcurrentHashMap<>();
     private static int taskID = -1;
 
     public static void resetTrackedServers() {
@@ -54,7 +54,7 @@ public class BungeeServerTracker {
         if (taskID != -1) {
             Bukkit.getScheduler().cancelTask(taskID);
         }
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), () -> {
+        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getPlugin(Main.class), () -> {
             for (String server : trackedServers.keySet()) {
                 PluginMessage.get().askPlayerCount(server);
             }

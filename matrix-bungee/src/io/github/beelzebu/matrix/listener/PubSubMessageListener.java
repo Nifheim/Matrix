@@ -4,7 +4,6 @@ import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
 import io.github.beelzebu.matrix.Main;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.channels.Channel;
-import java.util.Iterator;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +25,7 @@ public class PubSubMessageListener implements Listener {
         if (e.getChannel().equals("NifheimHelpop") || e.getChannel().equals("Channel") || e.getChannel().equals("Maintenance")) {
             Matrix.getAPI().getPlugin().runAsync(() -> {
                 if (e.getChannel().equals("NifheimHelpop")) {
-                    ProxyServer.getInstance().getPlayers().stream().filter((pp) -> (pp.hasPermission("matrix.staff.aprendiz"))).forEachOrdered((pp) -> {
-                        pp.sendMessage(e.getMessage());
-                    });
+                    ProxyServer.getInstance().getPlayers().stream().filter((pp) -> (pp.hasPermission("matrix.staff.aprendiz"))).forEachOrdered((pp) -> pp.sendMessage(e.getMessage()));
                     ProxyServer.getInstance().getConsole().sendMessage(e.getMessage());
                 } else if (e.getChannel().equals("Channel")) {
                     String[] args = e.getMessage().split(" -div- ");
@@ -55,12 +52,7 @@ public class PubSubMessageListener implements Listener {
                     if (e.getMessage().equals("switch")) {
                         plugin.setMaintenance(!plugin.isMaintenance());
                         if (plugin.isMaintenance()) {
-                            ProxyServer.getInstance().getScheduler().schedule(plugin, () -> {
-                                Iterator<ProxiedPlayer> players = ProxyServer.getInstance().getPlayers().iterator();
-                                while (players.hasNext()) {
-                                    players.next().disconnect("");
-                                }
-                            }, 500, TimeUnit.MILLISECONDS);
+                            ProxyServer.getInstance().getScheduler().schedule(plugin, () -> ProxyServer.getInstance().getPlayers().forEach(proxiedPlayer -> proxiedPlayer.disconnect("")), 500, TimeUnit.MILLISECONDS);
                         }
                     }
                 }

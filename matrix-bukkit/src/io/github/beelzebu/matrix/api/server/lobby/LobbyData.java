@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 public class LobbyData {
 
     private static LobbyData instance;
-    private final Main plugin = Main.getInstance();
+    private final Main plugin = Main.getPlugin(Main.class);
     @Getter
     private final FileConfiguration config;
     @Getter
