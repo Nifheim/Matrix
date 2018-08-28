@@ -1,9 +1,9 @@
 package io.github.beelzebu.matrix.player;
 
 import io.github.beelzebu.matrix.api.Matrix;
-import io.github.beelzebu.matrix.api.player.IStatistics;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
+import io.github.beelzebu.matrix.api.player.Statistics;
 import io.github.beelzebu.matrix.database.MongoStorage;
 import java.util.Date;
 import java.util.HashSet;
@@ -38,9 +38,10 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
     protected String name;
+    protected boolean premium;
     protected String displayname;
     @Property("chatcolor")
-    protected ChatColor chatColor;
+    protected ChatColor chatColor = ChatColor.RESET;
     protected boolean watcher;
     protected boolean authed;
     protected double coins;
@@ -51,15 +52,23 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     @Property("iphistory")
     protected Set<String> ipHistory = new LinkedHashSet<>();
     protected transient String IP;
-    protected transient Set<IStatistics> statistics = new HashSet<>();
+    protected transient Set<Statistics> statistics = new HashSet<>();
 
-    protected void setUniqueId(UUID uniqueId) {
+    @Override
+    public void setUniqueId(UUID uniqueId) {
         this.uniqueId = uniqueId;
         updateCache();
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
+        updateCache();
+    }
+
+    @Override
+    public void setPremium(boolean premium) {
+        this.premium = premium;
         updateCache();
     }
 
@@ -129,14 +138,15 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
-    protected void setIP(String IP) {
+    @Override
+    public void setIP(String IP) {
         this.IP = IP;
         ipHistory.add(IP);
         updateCache();
     }
 
     @Override
-    public void setStatistics(IStatistics statistics) {
+    public void setStatistics(Statistics statistics) {
         if (getStatistics(statistics.getServer()).isPresent()) {
             this.statistics.remove(getStatistics(statistics.getServer()).get());
             this.statistics.add(statistics);

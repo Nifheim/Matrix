@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix;
 import de.slikey.effectlib.EffectManager;
 import io.github.beelzebu.matrix.api.commands.CommandAPI;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
+import io.github.beelzebu.matrix.api.player.Statistics;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
 import io.github.beelzebu.matrix.commands.staff.Freeze;
@@ -28,7 +29,6 @@ import io.github.beelzebu.matrix.listeners.PlayerQuitListener;
 import io.github.beelzebu.matrix.listeners.StatsListener;
 import io.github.beelzebu.matrix.listeners.ViewDistanceListener;
 import io.github.beelzebu.matrix.listeners.VotifierListener;
-import io.github.beelzebu.matrix.player.Statistics;
 import io.github.beelzebu.matrix.utils.ReadURL;
 import io.github.beelzebu.matrix.utils.bungee.BungeeCleanupTask;
 import io.github.beelzebu.matrix.utils.bungee.BungeeServerTracker;
@@ -39,7 +39,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.event.Listener;
@@ -116,7 +115,7 @@ public class Main extends JavaPlugin {
     @Override
     public void onDisable() {
         Bukkit.getOnlinePlayers().forEach(p -> {
-            api.getPlayer(p.getUniqueId()).setStatistics(api.getPlayer(p.getUniqueId()).getStatistics(api.getServerInfo().getServerName()).orElseGet(() -> new Statistics(new ObjectId(), api.getServerInfo().getServerName(), p.getStatistic(Statistic.PLAYER_KILLS), p.getStatistic(Statistic.MOB_KILLS), p.getStatistic(Statistic.DEATHS), StatsListener.getBroken().getOrDefault(p.getUniqueId(), 0), StatsListener.getPlaced().getOrDefault(p.getUniqueId(), 0))));
+            api.getPlayer(p.getUniqueId()).setStatistics(api.getPlayer(p.getUniqueId()).getStatistics(api.getServerInfo().getServerName()).orElseGet(() -> new Statistics(api.getServerInfo().getServerName(), p.getStatistic(Statistic.PLAYER_KILLS), p.getStatistic(Statistic.MOB_KILLS), p.getStatistic(Statistic.DEATHS), StatsListener.getBroken().getOrDefault(p.getUniqueId(), 0), StatsListener.getPlaced().getOrDefault(p.getUniqueId(), 0))));
             UUID inv = GUIManager.getOpenInventories().get(p.getUniqueId());
             if (inv != null) {
                 p.closeInventory();

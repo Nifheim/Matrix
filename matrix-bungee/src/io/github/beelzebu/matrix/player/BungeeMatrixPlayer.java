@@ -13,6 +13,12 @@ public class BungeeMatrixPlayer extends MongoMatrixPlayer {
         this.uniqueId = uniqueId;
     }
 
+    @Override
+    public void setPremium(boolean premium) {
+        super.setPremium(premium);
+        setUniqueId(player.getUniqueId());
+    }
+
     public ProxiedPlayer getPlayer() {
         return player == null ? player = ProxyServer.getInstance().getPlayer(uniqueId) : player;
     }

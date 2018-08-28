@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Matrix.iml" filepath="$PROJECT_DIR$/Matrix.iml" />
+      <module fileurl="file://$PROJECT_DIR$/matrix-api/matrix-api.iml" filepath="$PROJECT_DIR$/matrix-api/matrix-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/matrix-bukkit/matrix-bukkit.iml" filepath="$PROJECT_DIR$/matrix-bukkit/matrix-bukkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/matrix-bungee/matrix-bungee.iml" filepath="$PROJECT_DIR$/matrix-bungee/matrix-bungee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/matrix-common/matrix-common.iml" filepath="$PROJECT_DIR$/matrix-common/matrix-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/matrix-external/matrix-external.iml" filepath="$PROJECT_DIR$/matrix-external/matrix-external.iml" />
+    </modules>
+  </component>
+</project>

@@ -55,22 +55,6 @@ public interface MatrixPlugin {
     void log(String message);
 
     /**
-     * Obtiene el nombre de un usuario online en base a su UUID.
-     *
-     * @param uuid usuario para obtener el nombre.
-     * @return nombre del usuario o null si no está conectado.
-     */
-    String getNick(UUID uuid);
-
-    /**
-     * Obtiene la UUID de un usuario online en base a su nick.
-     *
-     * @param player usuario para obtener el UUID.
-     * @return UUID del usuario o null si no está conectado.
-     */
-    UUID getUUID(String player);
-
-    /**
      * Obtiene la consola del servidor.
      *
      * @return -

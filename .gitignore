@@ -7,5 +7,6 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
-.idea/
-*.iml
+.idea/libraries/
+workspace.xml
+uiDesigner.xml

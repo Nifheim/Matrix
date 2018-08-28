@@ -13,13 +13,23 @@ public interface MatrixPlayer {
 
     UUID getUniqueId();
 
+    void setUniqueId(UUID uniqueId);
+
     String getName();
+
+    void setName(String name);
+
+    boolean isPremium();
+
+    void setPremium(boolean premium);
 
     String getDisplayname();
 
     void setDisplayname(String displayname);
 
     String getIP();
+
+    void setIP(String IP);
 
     Set<String> getIpHistory();
 
@@ -57,12 +67,12 @@ public interface MatrixPlayer {
 
     void setLastLogin(Date lastLogin);
 
-    Set<IStatistics> getStatistics();
+    Set<Statistics> getStatistics();
 
-    void setStatistics(IStatistics statistics);
+    void setStatistics(Statistics statistics);
 
-    default Optional<IStatistics> getStatistics(String server) {
-        return getStatistics().stream().filter(iStatistics -> server.equals(iStatistics.getServer())).findFirst();
+    default Optional<Statistics> getStatistics(String server) {
+        return getStatistics().stream().filter(statistics -> server.equals(statistics.getServer())).findFirst();
     }
 
     void save();

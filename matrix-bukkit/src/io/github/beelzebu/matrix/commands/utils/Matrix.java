@@ -75,7 +75,7 @@ public class Matrix extends MatrixCommand {
             switch (args.length) {
                 case 2:
                     if (sender instanceof Player) {
-                        long xp = NetworkXP.MCEXP.getXPForPlayer(sender.getName());
+                        long xp = NetworkXP.MCEXP.getXPForPlayer(((Player) sender).getUniqueId());
                         int level = NetworkXP.getLevelForXP(xp);
                         long nextxp = NetworkXP.getXPForLevel(level + 1) - xp;
                         sender.sendMessage(api.getString("NetworkXP.Get.Self", locale).replaceAll("%player%", sender.getName()).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(nextxp)));
@@ -85,7 +85,7 @@ public class Matrix extends MatrixCommand {
                     break;
                 case 3:
                     if (args[2] != null && api.getDatabase().isRegistered(args[2])) {
-                        long xp = NetworkXP.MCEXP.getXPForPlayer(args[2]);
+                        long xp = NetworkXP.MCEXP.getXPForPlayer(api.getPlayer(args[2]).getUniqueId());
                         int level = NetworkXP.getLevelForXP(xp);
                         long nextxp = NetworkXP.getXPForLevel(level + 1) - xp;
                         sender.sendMessage(api.getString("NetworkXP.Get.Target", locale).replaceAll("%player%", args[2]).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(nextxp)));
@@ -114,7 +114,7 @@ public class Matrix extends MatrixCommand {
                     target.sendMessage(api.getString("NetworkXP.Add.Target", locale).replaceAll("%level%", String.valueOf(level)).replaceAll("%xp%", String.valueOf(xp_final)));
                     if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA)) {
                         level = NetworkXP.getLevelForPlayer(target.getUniqueId());
-                        xp = (int) (NetworkXP.MCEXP.getXPForPlayer(target.getName()) - NetworkXP.MCEXP.getXPForLevel(level));
+                        xp = (int) (NetworkXP.MCEXP.getXPForPlayer(target.getUniqueId()) - NetworkXP.MCEXP.getXPForLevel(level));
                         target.setLevel(0);
                         target.setExp(0);
                         target.setLevel(level);

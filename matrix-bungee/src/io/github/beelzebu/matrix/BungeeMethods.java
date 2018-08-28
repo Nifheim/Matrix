@@ -55,16 +55,6 @@ public class BungeeMethods implements MatrixPlugin {
     }
 
     @Override
-    public String getNick(UUID uuid) {
-        return RedisBungee.getApi().getNameFromUuid(uuid);
-    }
-
-    @Override
-    public UUID getUUID(String player) {
-        return RedisBungee.getApi().getUuidFromName(player);
-    }
-
-    @Override
     public Object getConsole() {
         return ProxyServer.getInstance().getConsole();
     }

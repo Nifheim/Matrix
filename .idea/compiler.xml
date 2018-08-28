@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="matrix-api" />
+        <module name="matrix-bukkit" />
+        <module name="matrix-bungee" />
+        <module name="matrix-common" />
+        <module name="matrix-external" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Matrix" target="1.8" />
+      <module name="matrix-api" target="1.8" />
+      <module name="matrix-bukkit" target="1.8" />
+      <module name="matrix-bungee" target="1.8" />
+      <module name="matrix-common" target="1.8" />
+      <module name="matrix-external" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

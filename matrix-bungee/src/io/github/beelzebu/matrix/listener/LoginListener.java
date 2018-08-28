@@ -10,11 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -55,7 +57,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onProxyPing(ProxyPingEvent e) {
         if (plugin.isMaintenance()) {
-            e.getResponse().getVersion().setProtocol(666);
+            e.getResponse().getVersion().setProtocol(-1);
             e.getResponse().getVersion().setName("§cEn mantenimiento");
         }
         // banear los proxy en el momento en que hacen ping en la lista de servidores
@@ -77,7 +79,8 @@ public class LoginListener implements Listener {
                 e.completeIntent(plugin);
                 return;
             }
-            if (api.getPlayer(e.getConnection().getUniqueId()) != null && !api.getPlayer(e.getConnection().getUniqueId()).getUniqueId().equals(e.getConnection().getUniqueId())) {
+            if (api.getPlayer(e.getConnection().getName()) != null && !api.getPlayer(e.getConnection().getName()).getUniqueId().equals(e.getConnection().getUniqueId())) {
+                e.getConnection().setUniqueId(api.getPlayer(e.getConnection().getName()).getUniqueId());
                 e.setCancelReason(TextComponent.fromLegacyText("Tu UUID no coincide con la UUID que hay en nuestra base de datos\ntus datos fueron registrados por seguridad."));
                 e.setCancelled(true);
             }
@@ -98,6 +101,13 @@ public class LoginListener implements Listener {
         // obtener el usuario desde la api, que revisará el cache o la base de datos, en caso de que sea nulo debemos
         // crearlo ya que es un usurio nuevo
         api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(e.getPlayer().getUniqueId())).orElse(new BungeeMatrixPlayer(e.getPlayer().getUniqueId())).save());
+    }
+
+    @EventHandler(priority = -128)
+    public void onConnect(ServerConnectEvent e) {
+        if (e.getReason() == ServerConnectEvent.Reason.JOIN_PROXY && e.getPlayer().getPendingConnection().isOnlineMode() && false) {
+            e.setTarget(ProxyServer.getInstance().getServerInfo("lobby#1"));
+        }
     }
 
     private boolean isProxy(String IP) {

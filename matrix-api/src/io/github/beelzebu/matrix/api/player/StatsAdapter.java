@@ -8,10 +8,10 @@ import java.io.IOException;
 /**
  * @author Beelzebu
  */
-public class StatsAdapter extends TypeAdapter<IStatistics> {
+public class StatsAdapter extends TypeAdapter<Statistics> {
 
     @Override
-    public void write(JsonWriter out, IStatistics value) throws IOException {
+    public void write(JsonWriter out, Statistics value) throws IOException {
         out.beginObject().
                 name("server").value(value.getServer()).
                 name("pkills").value(value.getPlayerKills()).
@@ -23,41 +23,15 @@ public class StatsAdapter extends TypeAdapter<IStatistics> {
     }
 
     @Override
-    public IStatistics read(JsonReader in) throws IOException {
+    public Statistics read(JsonReader in) throws IOException {
         in.beginObject();
         String server = in.nextString();
-        int pkills = in.nextInt(), mobkills = in.nextInt(), deaths = in.nextInt(), broken = in.nextInt(), placed = in.nextInt();
+        int pkills = in.nextInt(),
+                mobkills = in.nextInt(),
+                deaths = in.nextInt(),
+                broken = in.nextInt(),
+                placed = in.nextInt();
         in.endObject();
-        return new IStatistics() {
-            @Override
-            public String getServer() {
-                return server;
-            }
-
-            @Override
-            public int getPlayerKills() {
-                return pkills;
-            }
-
-            @Override
-            public int getMobKills() {
-                return mobkills;
-            }
-
-            @Override
-            public int getDeaths() {
-                return deaths;
-            }
-
-            @Override
-            public int getBlocksBroken() {
-                return broken;
-            }
-
-            @Override
-            public int getBlocksPlaced() {
-                return placed;
-            }
-        };
+        return new Statistics(server, pkills, mobkills, deaths, broken, placed);
     }
 }

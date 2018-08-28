@@ -11,7 +11,6 @@ import io.github.beelzebu.matrix.api.report.ReportManager;
 import io.github.beelzebu.matrix.database.mongo.ReportDAO;
 import io.github.beelzebu.matrix.database.mongo.UserDAO;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import io.github.beelzebu.matrix.player.Statistics;
 import io.github.beelzebu.matrix.report.MongoReport;
 import java.util.UUID;
 import lombok.Getter;
@@ -31,7 +30,7 @@ public class MongoStorage implements MatrixDatabase {
     public MongoStorage(String host, int port, String username, String database, String password, String databaselogin) {
         MongoClient client = new MongoClient(new ServerAddress(host, port), MongoCredential.createCredential(username, databaselogin, password.toCharArray()), MongoClientOptions.builder().build());
         Morphia morphia = new Morphia();
-        morphia.map(MongoMatrixPlayer.class, Statistics.class, MongoReport.class);
+        morphia.map(MongoMatrixPlayer.class, MongoReport.class);
         morphia.getMapper().getConverters().addConverter(new UUIDConverter());
         Datastore datastore = morphia.createDatastore(client, database);
         datastore.ensureIndexes();

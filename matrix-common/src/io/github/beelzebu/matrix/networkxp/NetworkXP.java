@@ -58,9 +58,9 @@ public class NetworkXP {
 
     public static class MCEXP {
 
-        public static long getXPForPlayer(String name) {
-            if (api.getDatabase().isRegistered(api.getPlugin().getUUID(name))) {
-                return api.getPlayer(name).getExp() / 30;
+        public static long getXPForPlayer(UUID uuid) {
+            if (api.getDatabase().isRegistered(uuid)) {
+                return api.getPlayer(uuid).getExp() / 30;
             }
             return 0;
         }
@@ -68,12 +68,11 @@ public class NetworkXP {
         public static long getXPForLevel(int lvl) {
             if (lvl <= 16) {
                 return (long) (Math.pow(lvl, 2) + 6 * lvl);
-            } else if (lvl >= 16 && lvl <= 31) {
+            } else if (lvl <= 31) {
                 return (long) (2.5 * Math.pow(lvl, 2) - 40.5 * lvl + 360);
-            } else if (lvl >= 31) {
+            } else {
                 return (long) (4.5 * Math.pow(lvl, 2) - 162.5 * lvl + 2220);
             }
-            return 0;
         }
     }
 }

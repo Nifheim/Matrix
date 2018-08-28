@@ -10,9 +10,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>matrix-common</artifactId>
+    <artifactId>matrix-external</artifactId>
     <packaging>jar</packaging>
-    <name>Matrix Common</name>
+    <name>Matrix External</name>
 
     <repositories>
         <repository>
@@ -29,35 +29,56 @@
             <type>jar</type>
         </dependency>
         <dependency>
+            <groupId>io.github.beelzebu</groupId>
+            <artifactId>matrix-common</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
             <version>2.4.2</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
+            <scope>compile</scope>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>3.7.0</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
             <artifactId>morphia</artifactId>
             <version>1.3.2</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.2</version>
+            <scope>compile</scope>
             <type>jar</type>
         </dependency>
     </dependencies>
     <build>
         <sourceDirectory>src</sourceDirectory>
-        <finalName>Matrix-Common</finalName>
+        <finalName>Matrix-External</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -71,15 +92,5 @@
                 </executions>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>src/resources/</directory>
-                <includes>
-                    <include>*.yml</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
 </project>

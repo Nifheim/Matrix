@@ -59,16 +59,6 @@ public class BukkitMethods implements MatrixPlugin {
     }
 
     @Override
-    public String getNick(UUID uuid) {
-        return Bukkit.getPlayer(uuid).getName();
-    }
-
-    @Override
-    public UUID getUUID(String player) {
-        return Bukkit.getServer().getPlayer(player).getUniqueId();
-    }
-
-    @Override
     public Object getConsole() {
         return Bukkit.getConsoleSender();
     }

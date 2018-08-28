@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -159,7 +160,7 @@ public class LobbyListener implements Listener {
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 int level = NetworkXP.getLevelForPlayer(p.getUniqueId());
-                int xp = (int) (NetworkXP.MCEXP.getXPForPlayer(p.getName()) - NetworkXP.MCEXP.getXPForLevel(level));
+                int xp = (int) (NetworkXP.MCEXP.getXPForPlayer(p.getUniqueId()) - NetworkXP.MCEXP.getXPForLevel(level));
                 // Set the level and xp to 0 for security reasons
                 p.setLevel(0);
                 p.setExp(0);
@@ -235,11 +236,11 @@ public class LobbyListener implements Listener {
                                 Sound.ENTITY_FIREWORK_LAUNCH,
                                 Sound.ENTITY_FIREWORK_LAUNCH
                         );
+                        AtomicInteger pitch = new AtomicInteger(0);
                         sounds.forEach(sound -> Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-                            int pitch = 0;
-                            p.playSound(loc, sound, 10, pitch);
+                            p.playSound(loc, sound, 10, pitch.get());
                             if (sound.equals(Sound.ENTITY_FIREWORK_LAUNCH)) {
-                                pitch++;
+                                pitch.addAndGet(1);
                             }
                         }, 6));
                         if (lp.isEffect()) {

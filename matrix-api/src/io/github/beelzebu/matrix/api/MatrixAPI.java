@@ -7,8 +7,8 @@ import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.database.MatrixDatabase;
 import io.github.beelzebu.matrix.api.messaging.RedisMessageEvent;
 import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
-import io.github.beelzebu.matrix.api.player.IStatistics;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.api.player.Statistics;
 import io.github.beelzebu.matrix.api.player.StatsAdapter;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
@@ -32,7 +32,7 @@ import redis.clients.jedis.exceptions.JedisException;
 @Getter
 public abstract class MatrixAPI {
 
-    private final Gson gson = new GsonBuilder().registerTypeAdapter(IStatistics.class, new StatsAdapter()).create();
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(Statistics.class, new StatsAdapter()).create();
     private final Set<RedisMessageEvent> redisListeners = new HashSet<>();
     private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
 

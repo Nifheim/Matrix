@@ -53,5 +53,6 @@
         <module>matrix-common</module>
         <module>matrix-bungee</module>
         <module>matrix-bukkit</module>
+        <!--<module>matrix-external</module>-->
     </modules>
 </project>
