@@ -8,7 +8,7 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
  */
 public interface Report {
 
-    int getId();
+    long getId();
 
     MatrixPlayer getReporter();
 
