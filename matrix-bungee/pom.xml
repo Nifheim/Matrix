@@ -23,14 +23,6 @@
             <id>md_5-snapshots</id>
             <url>http://repo.md-5.net/content/repositories/snapshots/</url>
         </repository>
-        <repository>
-            <id>nifheim-repo</id>
-            <url>https://ci.nifheim.net/plugin/repository/everything/</url>
-        </repository>
-        <repository>
-            <id>luck-repo</id>
-            <url>https://repo.lucko.me/</url>
-        </repository>
     </repositories>
 
     <dependencies>

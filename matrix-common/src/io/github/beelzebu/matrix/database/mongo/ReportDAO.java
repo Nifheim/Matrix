@@ -11,7 +11,7 @@ import org.mongodb.morphia.query.Sort;
 /**
  * @author Beelzebu
  */
-public class ReportDAO extends BasicDAO<MongoReport, Integer> implements ReportManager {
+public class ReportDAO extends BasicDAO<MongoReport, Long> implements ReportManager {
 
     public ReportDAO(Datastore ds) {
         super(MongoReport.class, ds);
