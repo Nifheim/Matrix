@@ -47,6 +47,10 @@
             <id>parallelblock-public</id>
             <url>https://repo.parallelblock.com/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>effectlib-repo</id>
+            <url>http://maven.elmakers.com/repository/</url>
+        </repository>
     </repositories>
 
     <dependencies>
