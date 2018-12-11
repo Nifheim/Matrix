@@ -12,6 +12,9 @@
 
     <artifactId>matrix-api</artifactId>
     <name>Matrix API</name>
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+    </properties>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
