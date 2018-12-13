@@ -32,6 +32,7 @@ public class LoginTask implements Runnable {
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getMessage()));
             event.setCancelled(true);
+            e.printStackTrace();
         } finally {
             event.completeIntent(plugin);
         }

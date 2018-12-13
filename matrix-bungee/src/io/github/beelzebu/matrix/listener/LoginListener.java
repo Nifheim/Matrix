@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix.listener;
 import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.tasks.LoginTask;
 import io.github.beelzebu.matrix.tasks.PreLoginTask;
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Scanner;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -87,6 +89,14 @@ public class LoginListener implements Listener {
     public void onConnect(ServerConnectEvent e) {
         if (e.getReason() == ServerConnectEvent.Reason.JOIN_PROXY && e.getPlayer().getPendingConnection().isOnlineMode()) {
             e.setTarget(ProxyServer.getInstance().getServerInfo("lobby#1"));
+        }
+    }
+
+    @EventHandler(priority = 127)
+    public void onDisconnect(PlayerDisconnectEvent e) {
+        MatrixPlayer player = api.getPlayer(e.getPlayer().getUniqueId());
+        if (player != null) {
+            player.save();
         }
     }
 
