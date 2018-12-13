@@ -37,7 +37,7 @@ public class PreLoginTask implements Runnable {
                 return;
             }
             if (player != null) {
-                if (!Objects.equals(Matrix.getAPI().getPlayer(event.getConnection().getName()).getUniqueId(), event.getConnection().getUniqueId()) || !Objects.equals(player.getUniqueId(), event.getConnection().getUniqueId())) {
+                if (!Objects.equals(Matrix.getAPI().getPlayer(event.getConnection().getName()).getUniqueId(), event.getConnection().getUniqueId())) {
                     event.setCancelReason(new TextComponent("\n" +
                             "Your UUID doesn't match with the UUID associated to your name in our database.\n" +
                             "This login attempt was recorded for security reasons."));
