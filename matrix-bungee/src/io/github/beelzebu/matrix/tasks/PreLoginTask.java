@@ -24,7 +24,7 @@ public class PreLoginTask implements Runnable {
     @Override
     public void run() {
         try {
-            if (!e.getConnection().getName().matches("^\\w")) {
+            if (!e.getConnection().getName().matches("^\\w$")) {
                 e.setCancelReason(new TextComponent("\n" +
                         "Your username is invalid, it must be alphanumeric and can't contain spaces.\n" +
                         "Try using: " + e.getConnection().getName().replaceAll("[^\\w]", "") + "\n" +
