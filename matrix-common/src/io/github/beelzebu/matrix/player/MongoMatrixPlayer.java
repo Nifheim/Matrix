@@ -33,7 +33,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
 
     @Id
     protected ObjectId id;
-    @Property("uuid")
     @Indexed(options = @IndexOptions(unique = true))
     protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))

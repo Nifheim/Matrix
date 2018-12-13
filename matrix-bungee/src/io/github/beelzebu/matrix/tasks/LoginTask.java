@@ -4,27 +4,26 @@ import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.Message;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import lombok.RequiredArgsConstructor;
+import io.github.beelzebu.matrix.player.BungeeMatrixPlayer;
+import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
 
 /**
  * @author Beelzebu
  */
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class LoginTask implements Runnable {
 
     private final MatrixBungee plugin;
-    private final MatrixPlayer player;
     private final LoginEvent event;
+    private MatrixPlayer player;
 
     @Override
     public void run() {
         try {
             if (player == null) {
-                event.setCancelReason(new TextComponent());
-                event.setCancelled(true);
-                return;
+                player = new BungeeMatrixPlayer(event.getConnection().getUniqueId()).save();
             }
             if (plugin.isMaintenance()) {
                 event.setCancelled(true);

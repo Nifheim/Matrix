@@ -16,7 +16,7 @@ public class UserDAO extends BasicDAO<MongoMatrixPlayer, ObjectId> {
     }
 
     public MongoMatrixPlayer getPlayer(UUID uniqueId) {
-        return findOne("uuid", uniqueId);
+        return findOne("uniqueId", uniqueId);
     }
 
     public MongoMatrixPlayer getPlayer(String name) {

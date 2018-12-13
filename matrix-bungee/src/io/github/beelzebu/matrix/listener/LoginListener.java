@@ -80,7 +80,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = -128)
     public void onLogin(LoginEvent e) {
         e.registerIntent(plugin);
-        api.getPlugin().runAsync(new LoginTask(plugin, api.getPlayer(e.getConnection().getName()), e));
+        api.getPlugin().runAsync(new LoginTask(plugin, e, api.getPlayer(e.getConnection().getName())));
     }
 
     @EventHandler(priority = -128)
