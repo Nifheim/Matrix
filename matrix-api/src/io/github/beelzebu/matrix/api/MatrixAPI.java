@@ -123,7 +123,7 @@ public abstract class MatrixAPI {
         return rep(path);
     }
 
-    public final String getString(Messages message, String lang, String... parameters) {
+    public final String getString(Message message, String lang, String... parameters) {
         return rep(getMessages(lang).getString(message.getPath(), message.getDefaults()));
     }
 

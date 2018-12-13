@@ -44,7 +44,7 @@ import org.bukkit.Statistic;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin {
+public class MatrixBukkit extends JavaPlugin {
 
     private MatrixCommonAPI api;
     @Getter
@@ -102,7 +102,7 @@ public class Main extends JavaPlugin {
             try {
                 ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + getConfig().getString("clave"));
             } catch (Exception ex) {
-                Logger.getLogger(Main.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
+                Logger.getLogger(MatrixBukkit.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
             }
         }));
         BungeeServerTracker.startTask(5);

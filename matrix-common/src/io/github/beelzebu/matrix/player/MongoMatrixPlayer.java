@@ -42,6 +42,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected String displayname;
     @Property("chatcolor")
     protected ChatColor chatColor = ChatColor.RESET;
+    protected String lastLocale;
     protected boolean watcher;
     protected boolean authed;
     protected double coins;
@@ -86,6 +87,12 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     @Override
     public void setChatColor(ChatColor chatColor) {
         this.chatColor = chatColor;
+        updateCache();
+    }
+
+    @Override
+    public void setLastLocale(String locale) {
+        lastLocale = locale;
         updateCache();
     }
 
@@ -154,9 +161,10 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void save() {
+    public MatrixPlayer save() {
         ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save(this);
         updateCache();
+        return this;
     }
 
     @Override

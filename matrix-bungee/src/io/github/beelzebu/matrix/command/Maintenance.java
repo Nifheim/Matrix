@@ -1,16 +1,16 @@
 package io.github.beelzebu.matrix.command;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
-import io.github.beelzebu.matrix.Main;
+import io.github.beelzebu.matrix.MatrixBungee;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
 public class Maintenance extends Command {
 
-    private final Main plugin;
+    private final MatrixBungee plugin;
 
-    public Maintenance(Main plugin) {
+    public Maintenance(MatrixBungee plugin) {
         super("maintenance", "matrix.staff.admin");
         this.plugin = plugin;
     }

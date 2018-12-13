@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.api.server.lobby;
 
-import io.github.beelzebu.matrix.Main;
+import io.github.beelzebu.matrix.MatrixBukkit;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import org.bukkit.util.Vector;
 public class LobbyData {
 
     private static LobbyData instance;
-    private final Main plugin = Main.getPlugin(Main.class);
+    private final MatrixBukkit plugin = MatrixBukkit.getPlugin(MatrixBukkit.class);
     @Getter
     private final FileConfiguration config;
     @Getter

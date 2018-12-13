@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.command;
 
-import io.github.beelzebu.matrix.Main;
+import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.CentredMessage;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
@@ -15,7 +15,7 @@ public class BasicCommands {
     private final MatrixAPI api = Matrix.getAPI();
     private final Set<Command> commands = new HashSet<>();
 
-    public BasicCommands(Main plugin) {
+    public BasicCommands(MatrixBungee plugin) {
         createCommands();
         commands.forEach(cmd -> ProxyServer.getInstance().getPluginManager().registerCommand(plugin, cmd));
     }

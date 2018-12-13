@@ -1,5 +1,5 @@
 name: Matrix-Bukkit
-main: io.github.beelzebu.matrix.Main
+main: io.github.beelzebu.matrix.MatrixBukkit
 version: ${project.version}
 author: Beelzebu
 softdepend: [PlaceholderAPI, Votifier, Essentials, LuckPerms, WorldGuard, NametagEdit]

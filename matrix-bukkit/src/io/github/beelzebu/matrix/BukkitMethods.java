@@ -20,7 +20,7 @@ import org.bukkit.command.CommandSender;
 @RequiredArgsConstructor
 public class BukkitMethods implements MatrixPlugin {
 
-    private final Main plugin;
+    private final MatrixBukkit plugin;
     private final CommandSender console = Bukkit.getConsoleSender();
 
     @Override

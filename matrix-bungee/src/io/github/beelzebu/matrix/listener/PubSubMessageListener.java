@@ -1,7 +1,7 @@
 package io.github.beelzebu.matrix.listener;
 
 import com.imaginarycode.minecraft.redisbungee.events.PubSubMessageEvent;
-import io.github.beelzebu.matrix.Main;
+import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.channels.Channel;
 import java.util.UUID;
@@ -18,7 +18,7 @@ import net.md_5.bungee.event.EventHandler;
 @RequiredArgsConstructor
 public class PubSubMessageListener implements Listener {
 
-    private final Main plugin;
+    private final MatrixBungee plugin;
 
     @EventHandler
     public void onMessage(PubSubMessageEvent e) {
@@ -29,12 +29,12 @@ public class PubSubMessageListener implements Listener {
                     ProxyServer.getInstance().getConsole().sendMessage(e.getMessage());
                 } else if (e.getChannel().equals("Channel")) {
                     String[] args = e.getMessage().split(" -div- ");
-                    for (Channel channel : Main.getChannels()) {
+                    for (Channel channel : MatrixBungee.getChannels()) {
                         if (e.getMessage().startsWith("set ") && channel.getName().equals(e.getMessage().split(",")[1])) {
                             ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(UUID.fromString(e.getMessage().split(",")[2]));
-                            Main.setChannelFor(UUID.fromString(e.getMessage().split(",")[2]), channel);
+                            MatrixBungee.setChannelFor(UUID.fromString(e.getMessage().split(",")[2]), channel);
                             if (pp != null) {
-                                if (Main.getChannelFor(pp.getUniqueId()) != null && Main.getChannelFor(pp.getUniqueId()).equals(channel)) {
+                                if (MatrixBungee.getChannelFor(pp.getUniqueId()) != null && MatrixBungee.getChannelFor(pp.getUniqueId()).equals(channel)) {
                                     pp.sendMessage(new ComponentBuilder("Ahora todos tus mensajes serán enviados al canal: ").color(ChatColor.YELLOW).append(channel.getName()).color(ChatColor.RED).create());
                                 }
                             }

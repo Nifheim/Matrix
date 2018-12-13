@@ -37,6 +37,10 @@ public interface MatrixPlayer {
 
     void setChatColor(ChatColor color);
 
+    String getLastLocale();
+
+    void setLastLocale(String locale);
+
     boolean isWatcher();
 
     void setWatcher(boolean watcher);
@@ -75,7 +79,7 @@ public interface MatrixPlayer {
         return getStatistics().stream().filter(statistics -> server.equals(statistics.getServer())).findFirst();
     }
 
-    void save();
+    MatrixPlayer save();
 
     void updateCache();
 }

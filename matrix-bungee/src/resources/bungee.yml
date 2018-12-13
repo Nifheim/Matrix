@@ -1,5 +1,5 @@
 name: Matrix
-main: io.github.beelzebu.matrix.Main
+main: io.github.beelzebu.matrix.MatrixBungee
 version: ${project.version}
 author: Beelzebu
 softDepends: [RedisBungee, LuckPerms, ServerListPlus]

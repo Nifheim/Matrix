@@ -2,7 +2,7 @@ package io.github.beelzebu.matrix.api.commands;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
-import io.github.beelzebu.matrix.api.Messages;
+import io.github.beelzebu.matrix.api.Message;
 import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -30,7 +30,7 @@ public abstract class MatrixCommand extends Command {
                 onCommand(sender, args);
             }
         } else {
-            sender.sendMessage(api.getString(Messages.GENERAL_NO_PERMS, sender instanceof Player ? ((Player) sender).getLocale() : ""));
+            sender.sendMessage(api.getString(Message.GENERAL_NO_PERMS, sender instanceof Player ? ((Player) sender).getLocale() : ""));
             //else {
         }
         //  sender.sendMessage(api.rep("&c&lHey!&7 Debes ser rango &c" + perm.split("\\.")[perm.split(".").length - 1] + "&7 o superior para usar este comando."));

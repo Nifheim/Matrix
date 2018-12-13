@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.utils.placeholders;
 
-import io.github.beelzebu.matrix.Main;
+import io.github.beelzebu.matrix.MatrixBukkit;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
@@ -15,8 +15,8 @@ public class StatsPlaceholders extends EZPlaceholderHook {
 
     private final MatrixAPI api = Matrix.getAPI();
 
-    public StatsPlaceholders(Main main) {
-        super(main, "ncore-stats");
+    public StatsPlaceholders(MatrixBukkit matrixBukkit) {
+        super(matrixBukkit, "ncore-stats");
     }
 
     @Override

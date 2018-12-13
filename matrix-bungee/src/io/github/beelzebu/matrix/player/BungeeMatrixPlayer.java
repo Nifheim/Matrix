@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.player;
 
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.util.Date;
 import java.util.UUID;
 import net.md_5.bungee.api.ProxyServer;
@@ -29,7 +30,7 @@ public class BungeeMatrixPlayer extends MongoMatrixPlayer {
     }
 
     @Override
-    public void save() {
+    public MatrixPlayer save() {
         if (getPlayer() != null) {
             if (getUniqueId() == null) {
                 setUniqueId(getPlayer().getUniqueId());
@@ -39,8 +40,9 @@ public class BungeeMatrixPlayer extends MongoMatrixPlayer {
                 setDisplayname(getPlayer().getName());
             }
             setIP(getPlayer().getAddress().getAddress().getHostAddress());
+            setLastLocale(getPlayer().getLocale().toLanguageTag());
         }
         setLastLogin(new Date());
-        super.save();
+        return super.save();
     }
 }

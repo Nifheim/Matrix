@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum Messages {
+public enum Message {
 
     CHAT_GLOBALMUTE_MUTE("Chat.GlobalMute.Mute", "%prefix% &eThe chat is now muted!"),
     CHAT_GLOBALMUTE_UNMUTE("Chat.GlobalMute.Unmute", "%prefix% &eYou can speak again."),
@@ -36,12 +36,13 @@ public enum Messages {
     NETWORKXP_LEVELUP("", ""),
     NETWORKXP_GET_SELF("NetworkXP.Get.Self", "%prefix% You have &a%level% &7xp levels and need &a%xp% &7points for reach the next level."),
     NETWORKXP_GET_OTHER("NetworkXP.Get.Target", "%prefix% &a%player% &7has &a%level% &7xp levels and need &a%xp% &7points for reach the next level."),
-    NETWORKXP_GET_NO_TARGET("NetworkXP.Get.No Target", "%prefix% &a%player% &7isn''t online."),
+    NETWORKXP_GET_NO_TARGET("NetworkXP.Get.No Target", "%prefix% &a%player% &7isn't online."),
     DEATH_TITLES_TITLE("Death Titles.Title", "cYou''re dead! :("),
     DEATH_TITLES_SUBTITLE("Death Titles.Subtitle", ""),
     GENERAL_NO_CONSOLE("General.No Console", "%prefix%&c This command can't be executed from the console."),
     GENERAL_NO_TARGET("General.No Target", "%prefix% &a%player%&7 can't be found."),
-    GENERAL_NO_PERMS("General.No Perms", "%prefix%&7 You don't have permissions to do that, you must be &c%rank%&7 or higher.");
+    GENERAL_NO_PERMS("General.No Perms", "%prefix%&7 You don't have permissions to do that, you must be &c%rank%&7 or higher."),
+    MAINTENANCE("Error.Maintenance", "&cCurrently the server is in maintenance, we'll be back soon!");
 
     private final String path, defaults;
 }

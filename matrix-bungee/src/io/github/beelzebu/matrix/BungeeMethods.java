@@ -17,7 +17,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 @RequiredArgsConstructor
 public class BungeeMethods implements MatrixPlugin {
 
-    private final Main plugin;
+    private final MatrixBungee plugin;
 
     @Override
     public AbstractConfig getConfig() {
@@ -66,7 +66,7 @@ public class BungeeMethods implements MatrixPlugin {
 
     @Override
     public File getDataFolder() {
-        return ProxyServer.getInstance().getPluginManager().getPlugin("Matrix").getDataFolder();
+        return plugin.getDataFolder();
     }
 
     @Override

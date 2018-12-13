@@ -9,7 +9,7 @@ import com.sk89q.worldguard.protection.flags.StateFlag;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.HelixEffect;
 import de.slikey.effectlib.effect.LoveEffect;
-import io.github.beelzebu.matrix.Main;
+import io.github.beelzebu.matrix.MatrixBukkit;
 import io.github.beelzebu.matrix.api.ItemBuilder;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
@@ -67,7 +67,7 @@ public class LobbyListener implements Listener {
 
     @Getter
     private static final Set<Player> editMode = new HashSet<>();
-    private final Main plugin;
+    private final MatrixBukkit plugin;
     private final MatrixAPI api = Matrix.getAPI();
     private final PowerupManager powerups;
     private final List<LaunchPad> launchpads;
@@ -76,8 +76,8 @@ public class LobbyListener implements Listener {
     private final Set<Player> normalPlayers = new HashSet<>();
     private final Map<MatrixPlayer, Set<PlayerOptionType>> playerOptions = new HashMap<>();
 
-    public LobbyListener(Main main) {
-        plugin = main;
+    public LobbyListener(MatrixBukkit matrixBukkit) {
+        plugin = matrixBukkit;
         powerups = PowerupManager.getInstance();
         launchpads = LobbyData.getInstance().getLaunchpads();
         em = plugin.getEffectManager();
