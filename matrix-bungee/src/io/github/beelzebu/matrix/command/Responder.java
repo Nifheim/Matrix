@@ -1,9 +1,8 @@
 package io.github.beelzebu.matrix.command;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -24,14 +23,8 @@ public class Responder extends Command {
                 sb.append(args[i]).append(" ");
             }
             sb.append(args[args.length - 1]);
-            String json = "{\"user\":\"" + api.getPlayer(args[0]).getUniqueId() + "\",\"bungee\":true,\"message\":\"&c" + (sender instanceof ProxiedPlayer ? api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayname() : "Consola") + "&f: " + sb.toString() + "\"}";
-            try {
-                JsonObject test = api.getGson().fromJson(json, JsonObject.class);
-                test.get("user").getAsString();
-                System.out.print(test.toString());
-            } catch (JsonParseException ex) {
-            }
-            api.getRedis().sendMessage("api-message", json);
+            TargetedMessage targetedMessage = new TargetedMessage(api.getPlayer(args[0]).getUniqueId(), (sender instanceof ProxiedPlayer ? api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayName() : "Consola") + "&f: " + sb.toString());
+            api.getRedis().sendMessage(targetedMessage.getChannel(), api.getGson().toJson(targetedMessage));
             sender.sendMessage(api.rep("&6Haz enviado el siguiente mensaje a &7" + args[0]));
             sender.sendMessage(sb.toString());
         }

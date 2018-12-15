@@ -102,6 +102,11 @@ public class BukkitMethods implements MatrixPlugin {
     }
 
     @Override
+    public UUID getUniqueId(String name) {
+        return isOnline(name, true) ? Bukkit.getPlayer(name).getUniqueId() : null;
+    }
+
+    @Override
     public void sendMessage(String name, String message) {
         Bukkit.getPlayer(name).sendMessage(message);
     }

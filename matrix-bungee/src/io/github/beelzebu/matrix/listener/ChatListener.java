@@ -1,6 +1,5 @@
 package io.github.beelzebu.matrix.listener;
 
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
@@ -19,9 +18,9 @@ public class ChatListener implements Listener {
     public void onChatEvent(ChatEvent e) {
         Connection sender = e.getSender();
         if (sender instanceof ProxiedPlayer) {
-            Channel channel = MatrixBungee.getChannelFor(((ProxiedPlayer) sender).getUniqueId());
+            Channel channel = MatrixBungee.getChannelFor(Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId()));
             if (channel != null && !e.isCommand()) {
-                RedisBungee.getApi().sendChannelMessage("Channel", channel.getName() + " -div- " + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "," + api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayname() + " -div- §" + channel.getColor() + e.getMessage());
+                ((ProxiedPlayer) sender).chat("/" + channel.getName() + " " + e.getMessage());
                 e.setCancelled(true);
             }
         }

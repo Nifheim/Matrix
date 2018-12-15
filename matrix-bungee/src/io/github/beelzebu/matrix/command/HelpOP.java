@@ -30,9 +30,9 @@ public class HelpOP extends Command {
             if (sender instanceof ProxiedPlayer) {
                 if (args.length >= 1 && args[0].length() >= 2) {
                     if (!timer.containsKey(((ProxiedPlayer) sender).getUniqueId()) || timer.get(((ProxiedPlayer) sender).getUniqueId()) <= System.currentTimeMillis()) {
-                        RedisBungee.getApi().sendChannelMessage("NifheimHelpop", "§4§l[Ayuda] §8[§a§o" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "§8] §c" + api.getPlayer(sender.getName()).getDisplayname() + "§f: §e" + stringBuilder.toString());
+                        RedisBungee.getApi().sendChannelMessage("NifheimHelpop", "§4§l[Ayuda] §8[§a§o" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "§8] §c" + api.getPlayer(sender.getName()).getDisplayName() + "§f: §e" + stringBuilder.toString());
                         sender.sendMessage(TextComponent.fromLegacyText("§a§lNifheim §8§l> §7El siguiente mensaje fue enviado a todos los staff online, si alguno está disponible serás ayudado en la inmediatez, por favor no hagas spam del comando o podrás ser sancionad@."));
-                        sender.sendMessage("§4§l[Ayuda] §8[§a§o" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "§8] §c" + api.getPlayer(sender.getName()).getDisplayname() + "§f: §e" + stringBuilder.toString());
+                        sender.sendMessage("§4§l[Ayuda] §8[§a§o" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "§8] §c" + api.getPlayer(sender.getName()).getDisplayName() + "§f: §e" + stringBuilder.toString());
                         if (!sender.hasPermission("matrix.staff")) {
                             timer.put(((ProxiedPlayer) sender).getUniqueId(), System.currentTimeMillis() + 30000);
                         }

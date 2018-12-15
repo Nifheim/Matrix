@@ -25,7 +25,7 @@ public class StatsPlaceholders extends EZPlaceholderHook {
             return "Player needed!";
         }
         if (stat.equals("nick")) {
-            return api.getPlayer(p.getUniqueId()).getDisplayname();
+            return api.getPlayer(p.getUniqueId()).getDisplayName();
         }
         if (stat.startsWith("online")) {
             if (stat.matches("^onlineplayers$")) {

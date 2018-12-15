@@ -39,7 +39,7 @@ public class PlayerInfo extends Command {
                                 "%prefix% Información de &c" + player.getName() + "&r\n"
                                         + " \n"
                                         + " &cUUID &8• &7" + player.getUniqueId() + "&r\n"
-                                        + " &cDisplayname &8• &7" + player.getDisplayname() + "&r\n"
+                                        + " &cDisplayname &8• &7" + player.getDisplayName() + "&r\n"
                                         + " &cNivel &8• &7" + NetworkXP.getLevelForXP(player.getExp()) + "&r\n"
                                         + " &cExperiencia &8• &7" + player.getExp() + "&r\n"
                                         + " &cRango &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "Usuario" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"

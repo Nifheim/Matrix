@@ -98,6 +98,11 @@ public class BungeeMethods implements MatrixPlugin {
     }
 
     @Override
+    public UUID getUniqueId(String name) {
+        return isOnline(name, false) ? RedisBungee.getApi().getUuidFromName(name) : null;
+    }
+
+    @Override
     public void sendMessage(String name, String message) {
         ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(message));
     }

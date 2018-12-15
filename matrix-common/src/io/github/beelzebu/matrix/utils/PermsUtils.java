@@ -24,8 +24,8 @@ public final class PermsUtils {
      * @return String representing the prefix.
      */
     public static String getPrefix(UUID player) {
-        if (Matrix.getAPI().getPlayer(player).getDisplayname().contains(" ")) {
-            return Matrix.getAPI().getPlayer(player).getDisplayname().split(" ")[0];
+        if (Matrix.getAPI().getPlayer(player).getDisplayName().contains(" ")) {
+            return Matrix.getAPI().getPlayer(player).getDisplayName().split(" ")[0];
         }
         try {
             User user = permsAPI.getUserSafe(player).orElse(null);
