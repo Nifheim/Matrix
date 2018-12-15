@@ -152,4 +152,12 @@ public interface MatrixPlugin {
      * @param name
      */
     void ban(String name);
+
+    /**
+     * Get the uuid for a online player.
+     *
+     * @param name Player name to lookup.
+     * @return UUID for the player if was found, null otherwise.
+     */
+    UUID getUniqueId(String name);
 }

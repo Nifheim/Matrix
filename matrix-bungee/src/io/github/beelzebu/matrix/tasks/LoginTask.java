@@ -4,7 +4,7 @@ import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.Message;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import io.github.beelzebu.matrix.player.BungeeMatrixPlayer;
+import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -23,11 +23,15 @@ public class LoginTask implements Runnable {
     public void run() {
         try {
             if (player == null) {
-                player = new BungeeMatrixPlayer(event.getConnection().getUniqueId()).save();
+                player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
             }
-            if (plugin.isMaintenance()) {
+            if (plugin.isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
                 event.setCancelReason(TextComponent.fromLegacyText(Matrix.getAPI().getString(Message.MAINTENANCE, player.getLastLocale())));
+                return;
+            }
+            if (!Matrix.getAPI().getCache().getUniqueId(player.getName()).isPresent()) {
+                Matrix.getAPI().getCache().update(player.getName(), player.getUniqueId());
             }
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getMessage()));

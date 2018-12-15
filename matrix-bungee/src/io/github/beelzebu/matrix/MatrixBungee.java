@@ -1,10 +1,9 @@
 package io.github.beelzebu.matrix;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.channels.Channel;
 import io.github.beelzebu.matrix.command.BasicCommands;
 import io.github.beelzebu.matrix.command.HelpOP;
@@ -17,19 +16,15 @@ import io.github.beelzebu.matrix.listener.ChatListener;
 import io.github.beelzebu.matrix.listener.InternalListener;
 import io.github.beelzebu.matrix.listener.LoginListener;
 import io.github.beelzebu.matrix.listener.PubSubMessageListener;
-import io.github.beelzebu.matrix.player.BungeeMatrixPlayer;
+import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -41,30 +36,13 @@ public class MatrixBungee extends Plugin {
 
     public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Vulthur&7!\n&7IP: &amc.vulthur.cl\n"));
     public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &evulthur.cl/tienda &7Twitter: &e@vulthurmc\n&7Discord: &evulthur.cl/discord &7Web: &evulthur.cl"));
-    private final static Set<Channel> channels = Sets.newHashSet();
-    private final static Map<UUID, Channel> pchannels = Maps.newHashMap();
+    private static final Map<String, Channel> CHANNELS = new HashMap<>();
     private static MatrixCommonAPI api;
-    private static boolean maintenance = false;
+    private boolean maintenance = false;
     private BungeeConfiguration config;
 
-    public static Set<Channel> getChannels() {
-        return channels;
-    }
-
-    public static Channel getChannelFor(UUID player) {
-        return pchannels.get(player);
-    }
-
-    public static void setChannelFor(UUID player, Channel channel) {
-        if (pchannels.containsKey(player) && pchannels.get(player).equals(channel)) {
-            pchannels.remove(player);
-            ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(player);
-            if (pp != null) {
-                pp.sendMessage(new ComponentBuilder("Tu chat vuelve a la normalidad. ").color(ChatColor.YELLOW).create());
-            }
-        } else {
-            pchannels.put(player, channel);
-        }
+    public static Channel getChannelFor(MatrixPlayer player) {
+        return CHANNELS.get(player.getStaffChannel());
     }
 
     @Override
@@ -90,34 +68,10 @@ public class MatrixBungee extends Plugin {
         new BasicCommands(this);
 
         config.getKeys("Channels").forEach((channel) -> {
-            String command = config.getString("Channels." + channel + ".Command");
             String perm = config.getString("Channels." + channel + ".Permission");
-            String color = "§" + (config.getString("Channels." + channel + ".Color") != null ? config.getString("Channels." + channel + ".Color") : "f");
-            channels.add(new Channel(channel, new Command(command) { // TODO: eliminar dependencia en redisbungee para esto y usar json
-                @Override
-                public void execute(CommandSender sender, String[] args) {
-                    api.getPlugin().runAsync(() -> {
-                        if (sender.hasPermission(perm)) {
-                            if (args.length == 0 && sender instanceof ProxiedPlayer) {
-                                RedisBungee.getApi().sendChannelMessage("Channel", "set ," + channel + "," + ((ProxiedPlayer) sender).getUniqueId());
-                            } else {
-                                StringBuilder msg = new StringBuilder();
-                                for (String arg : args) {
-                                    msg.append(arg).append(" ");
-                                }
-                                RedisBungee.getApi().sendChannelMessage("Channel", channel + " -div- " + (sender instanceof ProxiedPlayer ? ((ProxiedPlayer) sender).getServer().getInfo().getName() + "," + api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayname() : sender.getName()) + " -div- " + color + msg.substring(0, msg.length() - 1));
-                            }
-                        }
-                    });
-                }
-            }, perm, color).register());
+            CHANNELS.put(channel, new Channel(channel, perm, ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register());
         });
-        ProxyServer.getInstance().getPlayers().forEach(pp -> {
-            api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new BungeeMatrixPlayer(pp.getUniqueId())).save());
-            if (pp.getServer().getInfo().getName().startsWith("towny")) {
-                pp.setTabHeader(TAB_HEADER, TAB_FOOTER);
-            }
-        });
+        ProxyServer.getInstance().getPlayers().stream().peek(pp -> pp.setTabHeader(TAB_HEADER, TAB_FOOTER)).forEach(pp -> api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new MongoMatrixPlayer(pp.getUniqueId(), pp.getName())).save()));
     }
 
     private void loadManagers() {

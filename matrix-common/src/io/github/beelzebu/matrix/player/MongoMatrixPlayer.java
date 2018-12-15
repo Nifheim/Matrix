@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.player;
 
 import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.messaging.message.AuthMessage;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.player.Statistics;
@@ -20,7 +21,6 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Indexed;
-import org.mongodb.morphia.annotations.Property;
 
 /**
  * @author Beelzebu
@@ -29,7 +29,7 @@ import org.mongodb.morphia.annotations.Property;
 @Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(value = "players", noClassnameStored = true)
-public class MongoMatrixPlayer implements MatrixPlayer {
+public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Id
     protected ObjectId id;
@@ -37,49 +37,70 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
     protected String name;
+    protected String displayName;
     protected boolean premium;
-    protected String displayname;
-    @Property("chatcolor")
+    protected boolean admin;
+    protected String secret;
     protected ChatColor chatColor = ChatColor.RESET;
     protected String lastLocale;
+    protected String staffChannel;
     protected boolean watcher;
     protected boolean authed;
     protected double coins;
     protected long exp;
-    @Property("lastlogin")
     protected Date lastLogin;
     protected Set<PlayerOptionType> options = new HashSet<>();
-    @Property("iphistory")
     protected Set<String> ipHistory = new LinkedHashSet<>();
     protected transient String IP;
     protected transient Set<Statistics> statistics = new HashSet<>();
 
+    public MongoMatrixPlayer(UUID uniqueId, String name) {
+        this.uniqueId = uniqueId;
+        this.name = name;
+        Matrix.getAPI().getCache().update(name, uniqueId);
+    }
+
     @Override
     public void setUniqueId(UUID uniqueId) {
         this.uniqueId = uniqueId;
+        Matrix.getAPI().getCache().update(name, uniqueId);
         updateCache();
     }
 
     @Override
     public void setName(String name) {
         this.name = name;
+        Matrix.getAPI().getCache().update(name, uniqueId);
         updateCache();
     }
 
     @Override
     public void setPremium(boolean premium) {
         this.premium = premium;
+        setUniqueId(Matrix.getAPI().getPlugin().getUniqueId(name));
         updateCache();
     }
 
     @Override
-    public String getDisplayname() {
-        return displayname != null ? displayname : getName();
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
+        updateCache();
     }
 
     @Override
-    public void setDisplayname(String displayname) {
-        this.displayname = displayname;
+    public void setSecret(String secret) {
+        this.secret = secret;
+        updateCache();
+    }
+
+    @Override
+    public String getDisplayName() {
+        return displayName != null ? displayName : getName();
+    }
+
+    @Override
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
         updateCache();
     }
 
@@ -90,8 +111,14 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLastLocale(String locale) {
-        lastLocale = locale;
+    public void setLastLocale(String lastLocale) {
+        this.lastLocale = lastLocale;
+        updateCache();
+    }
+
+    @Override
+    public void setStaffChannel(String staffChannel) {
+        this.staffChannel = staffChannel;
         updateCache();
     }
 
@@ -105,6 +132,8 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     @Override
     public void setAuthed(boolean authed) {
         this.authed = authed;
+        AuthMessage authMessage = new AuthMessage(getUniqueId(), authed);
+        Matrix.getAPI().getRedis().sendMessage(authMessage.getChannel(), Matrix.getAPI().getGson().toJson(authMessage));
         updateCache();
     }
 
@@ -161,14 +190,18 @@ public class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public MatrixPlayer save() {
-        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save(this);
+        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save((MongoMatrixPlayer) Matrix.getAPI().getCache().getPlayer(uniqueId).orElse(this));
+        setLastLogin(new Date());
+        if (getDisplayName() == null) {
+            setDisplayName(getName());
+        }
         updateCache();
         return this;
     }
 
     @Override
     public void updateCache() {
-        Matrix.getAPI().getRedis().setex("user:" + uniqueId, 1800, toJson());
+        Matrix.getAPI().getRedis().set("user:" + uniqueId, toJson());
     }
 
     private String toJson() {

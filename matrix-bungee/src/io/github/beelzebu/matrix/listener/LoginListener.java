@@ -4,7 +4,9 @@ import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.tasks.DisconnectTask;
 import io.github.beelzebu.matrix.tasks.LoginTask;
+import io.github.beelzebu.matrix.tasks.PostLoginTask;
 import io.github.beelzebu.matrix.tasks.PreLoginTask;
 import java.io.IOException;
 import java.net.URL;
@@ -14,6 +16,7 @@ import java.util.Scanner;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -49,7 +52,7 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerSwitch(ServerSwitchEvent e) {
-        if (e.getPlayer().isConnected() && e.getPlayer().getServer().getInfo().getName().equalsIgnoreCase("towny")) {
+        if (e.getPlayer().isConnected()) {
             e.getPlayer().setTabHeader(MatrixBungee.TAB_HEADER, MatrixBungee.TAB_FOOTER);
         }
     }
@@ -86,6 +89,11 @@ public class LoginListener implements Listener {
     }
 
     @EventHandler(priority = -128)
+    public void onLogin(PostLoginEvent e) {
+        api.getPlugin().runAsync(new PostLoginTask(e, api.getPlayer(e.getPlayer().getUniqueId())));
+    }
+
+    @EventHandler(priority = -128)
     public void onConnect(ServerConnectEvent e) {
         if (e.getReason() == ServerConnectEvent.Reason.JOIN_PROXY && e.getPlayer().getPendingConnection().isOnlineMode()) {
             e.setTarget(ProxyServer.getInstance().getServerInfo("lobby#1"));
@@ -95,9 +103,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = 127)
     public void onDisconnect(PlayerDisconnectEvent e) {
         MatrixPlayer player = api.getPlayer(e.getPlayer().getUniqueId());
-        if (player != null) {
-            player.save();
-        }
+        api.getPlugin().runAsync(new DisconnectTask(e, player));
     }
 
     public static boolean isProxy(String IP) {

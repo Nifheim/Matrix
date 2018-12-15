@@ -14,9 +14,13 @@ public interface CacheProvider {
 
     Optional<String> getName(UUID uniqueId);
 
+    void update(String name, UUID uniqueId);
+
     Optional<MatrixPlayer> getPlayer(UUID uniqueId);
 
     Optional<MatrixPlayer> getPlayer(String name);
 
     Set<MatrixPlayer> getPlayers();
+
+    void removePlayer(MatrixPlayer player);
 }

@@ -20,6 +20,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -35,6 +36,7 @@ public abstract class MatrixAPI {
     private final Gson gson = new GsonBuilder().registerTypeAdapter(Statistics.class, new StatsAdapter()).create();
     private final Set<RedisMessageEvent> redisListeners = new HashSet<>();
     private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
+    private final Set<MatrixPlayer> players = new HashSet<>();
 
     public abstract RedisMessaging getRedis();
 
@@ -87,15 +89,11 @@ public abstract class MatrixAPI {
     }
 
     public MatrixPlayer getPlayer(UUID uniqueId) {
-        return getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId));
+        return players.stream().filter(p -> Objects.equals(p.getUniqueId(), uniqueId)).findFirst().orElse(getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId)));
     }
 
     public MatrixPlayer getPlayer(String name) {
-        return getCache().getPlayer(name).orElse(getDatabase().getPlayer(name));
-    }
-
-    public final Set<MatrixPlayer> getPlayers() {
-        return getCache().getPlayers();
+        return players.stream().filter(p -> Objects.equals(p.getName(), name)).findFirst().orElse(getCache().getPlayer(name).orElse(getDatabase().getPlayer(name)));
     }
 
     /**
@@ -166,4 +164,6 @@ public abstract class MatrixAPI {
         }
         return "Error getting the stacktrace";
     }
+
+    public abstract boolean hasPermission(MatrixPlayer player, String permission);
 }

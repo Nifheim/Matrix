@@ -4,10 +4,14 @@ import io.github.beelzebu.matrix.MatrixBungee;
 import io.github.beelzebu.matrix.api.CentredMessage;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class BasicCommands {
@@ -57,19 +61,18 @@ public class BasicCommands {
                 sender.sendMessage(api.rep(CentredMessage.generate("&8&m----------------------------------------")));
             }
         });
-        /*
         commands.add(new Command("pauth") {
             @Override
             public void execute(CommandSender sender, String[] args) {
                 if (sender instanceof ProxiedPlayer && args.length == 1) {
                     ProxiedPlayer pp = (ProxiedPlayer) sender;
-                    if (!LoginListener.getAuthed().contains(pp.getUniqueId()) && args[0].equals(api.getConfig().getString(pp.getName() + ".Password"))) {
-                        LoginListener.getAuthed().add(pp.getUniqueId());
-                        api.getRedis().publish("api-auth", "connect:" + pp.getUniqueId());
-                        pp.sendMessage(api.rep("&6Autentificado correctamente"));
+                    MatrixPlayer player = api.getPlayer(((ProxiedPlayer) sender).getUniqueId());
+                    if (!player.isAuthed() && Objects.equals(args[0], player.getSecret())) {
+                        player.setAuthed(true);
+                        pp.sendMessage(new TextComponent("Logged in."));
                     }
                 }
             }
-            });*/
+        });
     }
 }

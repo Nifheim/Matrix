@@ -19,13 +19,21 @@ public interface MatrixPlayer {
 
     void setName(String name);
 
+    String getDisplayName();
+
+    void setDisplayName(String displayName);
+
     boolean isPremium();
 
     void setPremium(boolean premium);
 
-    String getDisplayname();
+    boolean isAdmin();
 
-    void setDisplayname(String displayname);
+    void setAdmin(boolean admin);
+
+    String getSecret();
+
+    void setSecret(String secret);
 
     String getIP();
 
@@ -39,7 +47,11 @@ public interface MatrixPlayer {
 
     String getLastLocale();
 
-    void setLastLocale(String locale);
+    void setLastLocale(String lastLocale);
+
+    String getStaffChannel();
+
+    void setStaffChannel(String staffChannel);
 
     boolean isWatcher();
 
@@ -50,10 +62,6 @@ public interface MatrixPlayer {
     boolean getOption(PlayerOptionType option);
 
     void setOption(PlayerOptionType option, boolean status);
-
-    default boolean hasPermission(String permission) {
-        return false;
-    }
 
     boolean isAuthed();
 

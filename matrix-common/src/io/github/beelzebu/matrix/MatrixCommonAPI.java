@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix;
 
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
 import io.github.beelzebu.matrix.api.server.ServerType;
@@ -82,5 +83,10 @@ public class MatrixCommonAPI extends MatrixAPI {
 
     public UUID getUniqueId(String name) {
         return getPlayer(name).getUniqueId();
+    }
+
+    @Override
+    public boolean hasPermission(MatrixPlayer player, String permission) {
+        return false;
     }
 }
