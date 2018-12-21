@@ -227,7 +227,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     @Override
     public void updateCached(String field) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            jedis.hset(getKey(), field, Matrix.getAPI().getGson().toJson(FIELDS.get(field).get(this)));
+            Object object = FIELDS.get(field).get(this);
+            if (object != null) {
+                jedis.hset(getKey(), field, Matrix.getAPI().getGson().toJson(FIELDS.get(field).get(this)));
+            } else {
+                jedis.hdel(getKey(), field);
+            }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
