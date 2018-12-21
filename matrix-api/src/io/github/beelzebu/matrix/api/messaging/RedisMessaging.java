@@ -37,14 +37,6 @@ public class RedisMessaging {
         }
     }
 
-    public void set(String key, String value) {
-        try (Jedis jedis = pool.getResource()) {
-            jedis.set(key, value);
-        } catch (JedisException ex) {
-            api.debug(ex);
-        }
-    }
-
     public class PubSubListener implements Runnable {
 
         private JedisPubSubHandler jpsh;

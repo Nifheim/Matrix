@@ -1,8 +1,3 @@
-# This is the message file of Nifheim Core, if you
-# want to disable a message, leave it empty.
-# Example: No Permissions: ''
-
-# The version of this file, don't edit!
 version: 10
 
 Chat:
@@ -115,12 +110,6 @@ Options:
     - ''
     - '&7Click to change your'
     - '&7hide players settings'
-  Hide:
-    Name: '&8Hide players'
-    Lore:
-    - ''
-    - '&7Click to change your'
-    - '&7hide players settings.'
 Social:
   Profile:
     Name: '&cMy Profile'

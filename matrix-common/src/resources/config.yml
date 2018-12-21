@@ -1,7 +1,3 @@
-# Nifheim Core plugin By: Beelzebu
-# This is the official Core of Nifheim.
-# If you need help, visit: https://matrix.net/foro/descargas/3/discussion/
-
 # Version of this file, don't edit!
 version: 10
 
@@ -30,12 +26,6 @@ Server Table: Lobby
 # World used as Lobby in MINIGAME_MULTIARENA
 Lobby World: Lobby
 
-# Here you can disable commands from THIS plugin to not be loaded.
-Disabled Commands:
-- helpop
-- nick
-- launchpads
-
 # Enabling this means that the plugin will send debug messages to the console.
 Debug: false
 
@@ -45,12 +35,10 @@ ChatControl:
   Caps:
     # Set the caps to lowercase.
     Convert: true
-    # This is the max caps allowed per message
-    # Isn't recomended set this in 0 or below
+    # This is the max caps allowed per message.
     # Default: 10
     Max Caps: 10
-    # This is the min percentage of caps in a
-    # message before convert the caps.
+    # This is the min percentage of caps in a message before convert the caps.
     # Default: 90
     Min Percentage: 90
 
@@ -65,13 +53,6 @@ Join cmds:
 - 'lagg clear'
 - 'lagg gc'
 
-# Here you can enable or disable the dependency of this plugin in others.
-Hooks:
-  # Used to vanish staffs and the /nick command.
-  Essentials: true
-  # Used for the protection in the lobby.
-  WorldGuard: true
-
 # Death titles, this sends a title, subtitle and/or actionbar message when the player death
 # Possible modes: Always, PvP. Disabled.
 # In mode Always, the titles are send every time that a olayer dies, PvP is only for PvP and
@@ -79,36 +60,29 @@ Hooks:
 Death Titles:
   Mode: Always
   Stay: 60
-  
+
 # ========== BungeeCord/Waterfall ==========
 
 Channels:
-  Helper:
-    Command: 'h'
+  h:
     Permission: 'matrix.staff.aprendiz'
-    Color: 'a'
-  Mod:
-    Command: 'm'
+    Color: 'GREEN'
+  m:
     Permission: 'matrix.staff.mod'
-    Color: 'd'
-  Builder:
-    Command: 'c'
+    Color: 'LIGHT_PURPLE'
+  b:
     Permission: 'matrix.staff.builder'
-    Color: '3'
-  Admin:
-    Command: 'ac'
+    Color: 'AQUA'
+  ac:
     Permission: 'matrix.staff.admin'
-    Color: 'c'
-  Owner:
-    Command: 'o'
+    Color: 'RED'
+  o:
     Permission: 'matrix.staff.owner'
-    Color: '4'
+    Color: 'DARK_RED'
 
 # Server aliases for tablist
-Lobby1: Lobby
-Lobby2: Lobby
-Survival: Towny
-Tests: Tests Server
+lobby#1: Lobby
+lobby#2: Lobby
 
 # List of youtubers for the /yt command
 Youtubers:

@@ -11,14 +11,39 @@ import net.md_5.bungee.api.ChatColor;
  */
 public interface MatrixPlayer {
 
+    /**
+     * Get the UUID of this user.
+     *
+     * @return Saved UUID of this user.
+     */
     UUID getUniqueId();
 
+    /**
+     * Change the UUID of this user, it will also update the redis hashes to map uuid->name and vice versa.
+     *
+     * @param uniqueId New UUID to set.
+     */
     void setUniqueId(UUID uniqueId);
 
+    /**
+     * Get the real name of this user.
+     *
+     * @return Saved Name of this user.
+     */
     String getName();
 
+    /**
+     * Change the real name of this user, it will also update the redis hashes to map uuid->name and vice versa.
+     *
+     * @param name New UUID to set.
+     */
     void setName(String name);
 
+    /**
+     * Get the displayed name of this user, this name is used in messages and chat.
+     *
+     * @return Saved display name of this user.
+     */
     String getDisplayName();
 
     void setDisplayName(String displayName);
@@ -89,5 +114,9 @@ public interface MatrixPlayer {
 
     MatrixPlayer save();
 
-    void updateCache();
+    void updateCached(String field);
+
+    default String getKey() {
+        return "user:" + getUniqueId();
+    }
 }
