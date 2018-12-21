@@ -238,7 +238,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
-    private void saveToRedis() {
+    public void saveToRedis() {
         loadFields();
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
             FIELDS.forEach((id, field) -> {

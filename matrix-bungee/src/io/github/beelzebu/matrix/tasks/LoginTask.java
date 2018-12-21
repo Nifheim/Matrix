@@ -33,6 +33,7 @@ public class LoginTask implements Runnable {
             if (!Matrix.getAPI().getCache().getUniqueId(player.getName()).isPresent()) {
                 Matrix.getAPI().getCache().update(player.getName(), player.getUniqueId());
             }
+            ((MongoMatrixPlayer) player).saveToRedis();
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getMessage()));
