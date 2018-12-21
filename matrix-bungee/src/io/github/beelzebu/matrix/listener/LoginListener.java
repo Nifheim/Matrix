@@ -79,13 +79,13 @@ public class LoginListener implements Listener {
             return;
         }
         e.registerIntent(plugin);
-        api.getPlugin().runAsync(new PreLoginTask(plugin, e, api.getPlayer(e.getConnection().getUniqueId())));
+        api.getPlugin().runAsync(new PreLoginTask(plugin, e, api.getCache().getPlayer(e.getConnection().getUniqueId()).orElse(api.getDatabase().getPlayer(e.getConnection().getUniqueId()))));
     }
 
     @EventHandler(priority = -128)
     public void onLogin(LoginEvent e) {
         e.registerIntent(plugin);
-        api.getPlugin().runAsync(new LoginTask(plugin, e, api.getPlayer(e.getConnection().getUniqueId())));
+        api.getPlugin().runAsync(new LoginTask(plugin, e, api.getCache().getPlayer(e.getConnection().getUniqueId()).orElse(api.getDatabase().getPlayer(e.getConnection().getUniqueId()))));
     }
 
     @EventHandler(priority = -128)

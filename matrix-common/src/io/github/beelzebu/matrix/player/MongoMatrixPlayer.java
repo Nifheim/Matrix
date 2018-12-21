@@ -215,7 +215,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public MatrixPlayer save() {
-        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save((MongoMatrixPlayer) Matrix.getAPI().getCache().getPlayer(uniqueId).orElse(this));
+        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save(this);
         setLastLogin(new Date());
         if (getDisplayName() == null) {
             setDisplayName(getName());
