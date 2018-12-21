@@ -226,6 +226,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void updateCached(String field) {
+        loadFields();
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Object object = FIELDS.get(field).get(this);
             if (object != null) {
