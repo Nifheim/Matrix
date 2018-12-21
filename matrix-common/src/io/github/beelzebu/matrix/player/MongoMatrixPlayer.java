@@ -38,7 +38,7 @@ import redis.clients.jedis.Pipeline;
 @Entity(value = "players", noClassnameStored = true)
 public final class MongoMatrixPlayer implements MatrixPlayer {
 
-    private static final Map<String, Field> FIELDS = new HashMap<>();
+    private static final transient Map<String, Field> FIELDS = new HashMap<>();
     @Id
     protected ObjectId id;
     @Indexed(options = @IndexOptions(unique = true))
@@ -243,6 +243,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
             FIELDS.forEach((id, field) -> {
                 try {
+                    if (field.get(this) != null) {
+                        return;
+                    }
                     pipeline.hset(getKey(), id, Matrix.getAPI().getGson().toJson(field.get(this)));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
