@@ -74,7 +74,10 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         loadFields();
         FIELDS.forEach((id, field) -> {
             try {
-                field.set(mongoMatrixPlayer, Matrix.getAPI().getGson().fromJson(hash.get(id), field.getType()));
+                Object value = Matrix.getAPI().getGson().fromJson(hash.get(id), field.getType());
+                if (value != null) {
+                    field.set(mongoMatrixPlayer, value);
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
