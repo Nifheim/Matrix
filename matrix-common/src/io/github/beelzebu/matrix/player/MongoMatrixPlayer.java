@@ -95,14 +95,14 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setUniqueId(UUID uniqueId) {
+    public void setUniqueId(@NonNull UUID uniqueId) {
         this.uniqueId = uniqueId;
         Matrix.getAPI().getCache().update(name, uniqueId);
         updateCached("uniqueId");
     }
 
     @Override
-    public void setName(String name) {
+    public void setName(@NonNull String name) {
         this.name = name;
         knownNames.add(name);
         Matrix.getAPI().getCache().update(name, uniqueId);
@@ -232,7 +232,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     public void updateCached(String field) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Object object = FIELDS.get(field).get(this);
-            Matrix.getAPI().debug("Updating " + getName() + " field: " + field + Matrix.GSON.toJson(FIELDS.get(field).get(this)));
+            Matrix.getAPI().debug("Updating " + getName() + " field: " + field + " " + Matrix.GSON.toJson(FIELDS.get(field).get(this)));
             if (object != null) {
                 jedis.hset(getKey(), field, Matrix.GSON.toJson(FIELDS.get(field).get(this)));
             } else {
