@@ -83,6 +83,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void removePlayer(MatrixPlayer player) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
+            getPlayer(player.getUniqueId()).orElse(player).save();
             jedis.del("user:" + player.getUniqueId());
         } catch (JedisException | JsonParseException ex) {
             Matrix.getAPI().debug(ex);

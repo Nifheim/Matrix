@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,12 +72,12 @@ public class MatrixBungee extends Plugin {
         registerCommand(new Plugins());
         registerCommand(new Responder());
         new BasicCommands(this);
-
         config.getKeys("Channels").forEach((channel) -> {
             String perm = config.getString("Channels." + channel + ".Permission");
             CHANNELS.put(channel, new Channel(channel, perm, ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register());
         });
         ProxyServer.getInstance().getPlayers().stream().peek(pp -> pp.setTabHeader(TAB_HEADER, TAB_FOOTER)).forEach(pp -> api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new MongoMatrixPlayer(pp.getUniqueId(), pp.getName()).save()).save()));
+        ProxyServer.getInstance().getScheduler().schedule(this, () -> api.getCache().getPlayers().stream().filter(matrixPlayer -> api.getPlugin().isOnline(matrixPlayer.getUniqueId(), false)).forEach(matrixPlayer -> api.getCache().removePlayer(matrixPlayer)), 0, 1, TimeUnit.HOURS);
     }
 
     private void loadManagers() {
