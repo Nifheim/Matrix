@@ -36,8 +36,9 @@ public class PreLoginTask implements Runnable {
                 Matrix.getAPI().getPlugin().ban(event.getConnection().getAddress().getAddress().getHostAddress());
                 return;
             }
-            if (player != null) {
-                if (!Objects.equals(Matrix.getAPI().getPlayer(event.getConnection().getName()).getUniqueId(), event.getConnection().getUniqueId())) {
+            MatrixPlayer playerByName = Matrix.getAPI().getPlayer(event.getConnection().getName());
+            if (player != null && playerByName != null) {
+                if (!Objects.equals(playerByName.getUniqueId(), event.getConnection().getUniqueId())) {
                     event.setCancelReason(new TextComponent("\n" +
                             "Your UUID doesn't match with the UUID associated to your name in our database.\n" +
                             "This login attempt was recorded for security reasons."));
@@ -49,9 +50,9 @@ public class PreLoginTask implements Runnable {
                 }
             }
         } catch (Exception e) {
-            event.setCancelReason(new TextComponent(e.getMessage()));
+            event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);
-            e.printStackTrace();
+            Matrix.getAPI().debug(e);
         } finally {
             event.completeIntent(plugin);
         }

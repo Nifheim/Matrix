@@ -26,8 +26,8 @@ public class DisconnectTask implements Runnable {
             Matrix.getAPI().getPlayers().remove(player);
             Matrix.getAPI().getCache().removePlayer(player);
         } catch (Exception e) {
-            event.getPlayer().disconnect(new TextComponent(e.getMessage()));
-            e.printStackTrace();
+            event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
+            Matrix.getAPI().debug(e);
         }
     }
 }
