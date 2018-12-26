@@ -74,7 +74,7 @@ public class RedisMessaging {
                 case "api-auth":
                     AuthMessage authMessage = api.getGson().fromJson(message, AuthMessage.class);
                     if (api.getPlugin().isOnline(authMessage.getUser(), true)) {
-                        api.getPlayer(authMessage.getUser()).setAuthed(authMessage.isAuthed());
+                        api.getPlayer(authMessage.getUser()).setAuthed(authMessage.isAuthed(), false);
                     }
                     break;
                 case "api-command":

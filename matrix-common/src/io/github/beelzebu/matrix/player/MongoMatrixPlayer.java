@@ -187,10 +187,17 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setAuthed(boolean authed) {
+        setAuthed(authed, false);
+    }
+
+    @Override
+    public void setAuthed(boolean authed, boolean publish) {
         this.authed = authed;
-        AuthMessage authMessage = new AuthMessage(getUniqueId(), authed);
-        Matrix.getAPI().getRedis().sendMessage(authMessage.getChannel(), Matrix.GSON.toJson(authMessage));
         updateCached("authed");
+        if (publish) {
+            AuthMessage authMessage = new AuthMessage(getUniqueId(), authed);
+            Matrix.getAPI().getRedis().sendMessage(authMessage.getChannel(), Matrix.GSON.toJson(authMessage));
+        }
     }
 
     @Override
@@ -223,7 +230,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     public MatrixPlayer save() {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
-        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save(this);
+        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save((MongoMatrixPlayer) Matrix.getAPI().getCache().getPlayer(getUniqueId()).orElse(this));
         setLastLogin(new Date());
         if (getDisplayName() == null) {
             setDisplayName(getName());
@@ -231,6 +238,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return this;
     }
 
+    // TODO: use pub/sub to update field in all loaded players.
     @Override
     public void updateCached(String field) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {

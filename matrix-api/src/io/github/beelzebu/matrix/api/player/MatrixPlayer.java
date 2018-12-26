@@ -100,6 +100,9 @@ public interface MatrixPlayer {
 
     void setAuthed(boolean authed);
 
+    @Deprecated
+    void setAuthed(boolean authed, boolean publish);
+
     long getExp();
 
     void setExp(long xp);
