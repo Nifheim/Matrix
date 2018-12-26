@@ -1,6 +1,8 @@
 package io.github.beelzebu.matrix.api.plugin;
 
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.config.MatrixConfig;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.io.File;
 import java.io.InputStream;
 import java.util.UUID;
@@ -8,7 +10,37 @@ import net.md_5.bungee.api.chat.BaseComponent;
 
 public interface MatrixPlugin {
 
-    AbstractConfig getConfig();
+    /**
+     * Disconnect this player from this server, if this server is a proxy the player will be disconnected from the
+     * network, but if this server is a spigot server the player will be sent to main lobby.
+     *
+     * @param uniqueId UUID of the player that must be disconnected.
+     */
+    default void kickPlayer(UUID uniqueId) {
+        kickPlayer(uniqueId, "");
+    }
+
+    /**
+     * Disconnect this player from this server, if this server is a proxy the player will be disconnected from the
+     * network, but if this server is a spigot server the player will be sent to main lobby.
+     *
+     * @param name Name of the player that must be disconnected.
+     */
+    default void kickPlayer(String name) {
+        kickPlayer(name, "");
+    }
+
+    /**
+     * Disconnect this player from this server, if this server is a proxy the player will be disconnected from the
+     * network, but if this server is a spigot server the player will be sent to main lobby.
+     *
+     * @param matrixPlayer Player that must be disconnected.
+     */
+    default void kickPlayer(MatrixPlayer matrixPlayer) {
+        kickPlayer(matrixPlayer, "");
+    }
+
+    MatrixConfig getConfig();
 
     /**
      * Carga un archivo como si fuera una configuración.
@@ -160,4 +192,34 @@ public interface MatrixPlugin {
      * @return UUID for the player if was found, null otherwise.
      */
     UUID getUniqueId(String name);
+
+    /**
+     * Disconnect this player from this server with the given reason, if this server is a proxy the player will be
+     * disconnected from the network and the reason will be the kick message seen in the screen, but if this server is a
+     * spigot server the player will be sent to main lobby and the provided reason will be sent as a chat message.
+     *
+     * @param uniqueId UUID of the player that must be disconnected.
+     * @param reason   Reason for this disconnection.
+     */
+    void kickPlayer(UUID uniqueId, String reason);
+
+    /**
+     * Disconnect this player from this server with the given reason, if this server is a proxy the player will be
+     * disconnected from the network and the reason will be the kick message seen in the screen, but if this server is a
+     * spigot server the player will be sent to main lobby and the provided reason will be sent as a chat message.
+     *
+     * @param name   Name of the player that must be disconnected.
+     * @param reason Reason for this disconnection.
+     */
+    void kickPlayer(String name, String reason);
+
+    /**
+     * Disconnect this player from this server with the given reason, if this server is a proxy the player will be
+     * disconnected from the network and the reason will be the kick message seen in the screen, but if this server is a
+     * spigot server the player will be sent to main lobby and the provided reason will be sent as a chat message.
+     *
+     * @param matrixPlayer Player that must be disconnected.
+     * @param reason       Reason for this disconnection.
+     */
+    void kickPlayer(MatrixPlayer matrixPlayer, String reason);
 }

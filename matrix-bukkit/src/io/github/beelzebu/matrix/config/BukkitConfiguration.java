@@ -1,13 +1,13 @@
 package io.github.beelzebu.matrix.config;
 
 import io.github.beelzebu.matrix.MatrixBukkit;
-import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import java.io.File;
 import java.util.Collection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class BukkitConfiguration extends AbstractConfig {
+public class BukkitConfiguration extends MatrixConfig {
 
     private FileConfiguration config;
 

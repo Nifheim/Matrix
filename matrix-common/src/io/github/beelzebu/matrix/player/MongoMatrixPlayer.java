@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
@@ -41,9 +42,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private static final transient Map<String, Field> FIELDS = new HashMap<>();
     @Id
     protected ObjectId id;
+    @NonNull
     @Indexed(options = @IndexOptions(unique = true))
     protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
+    @NonNull
     protected String name;
     protected Set<String> knownNames;
     protected String displayName;
@@ -63,7 +66,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected transient String IP;
     protected transient Set<Statistics> statistics = new HashSet<>();
 
-    public MongoMatrixPlayer(UUID uniqueId, String name) {
+    public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
         this.uniqueId = uniqueId;
         this.name = name;
         Matrix.getAPI().getCache().update(name, uniqueId);
@@ -71,10 +74,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
         MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer();
-        loadFields();
         FIELDS.forEach((id, field) -> {
             try {
-                Object value = Matrix.getAPI().getGson().fromJson(hash.get(id), field.getType());
+                Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
                 if (value != null) {
                     field.set(mongoMatrixPlayer, value);
                 }
@@ -85,7 +87,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return mongoMatrixPlayer;
     }
 
-    private static void loadFields() {
+    public static void loadFields() {
         if (FIELDS.isEmpty()) {
             Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).forEach(field -> FIELDS.put(field.getName(), field));
             FIELDS.values().forEach(field -> field.setAccessible(true));
@@ -109,6 +111,17 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public String getDisplayName() {
+        return displayName != null ? displayName : getName();
+    }
+
+    @Override
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+        updateCached("displayName");
+    }
+
+    @Override
     public void setPremium(boolean premium) {
         this.premium = premium;
         setUniqueId(Matrix.getAPI().getPlugin().getUniqueId(name));
@@ -128,14 +141,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getDisplayName() {
-        return displayName != null ? displayName : getName();
-    }
-
-    @Override
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-        updateCached("displayName");
+    public void setIP(String IP) {
+        this.IP = IP;
+        ipHistory.add(IP);
+        updateCached("IP");
+        updateCached("ipHistory");
     }
 
     @Override
@@ -163,32 +173,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setAuthed(boolean authed) {
-        this.authed = authed;
-        AuthMessage authMessage = new AuthMessage(getUniqueId(), authed);
-        Matrix.getAPI().getRedis().sendMessage(authMessage.getChannel(), Matrix.getAPI().getGson().toJson(authMessage));
-        updateCached("authed");
-    }
-
-    @Override
-    public void setCoins(double coins) {
-        this.coins = coins;
-        updateCached("coins");
-    }
-
-    @Override
-    public void setExp(long exp) {
-        this.exp = exp;
-        updateCached("exp");
-    }
-
-    @Override
-    public void setLastLogin(Date lastLogin) {
-        this.lastLogin = lastLogin;
-        updateCached("lastLogin");
-    }
-
-    @Override
     public boolean getOption(PlayerOptionType option) {
         return options.contains(option);
     }
@@ -201,11 +185,29 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setIP(String IP) {
-        this.IP = IP;
-        ipHistory.add(IP);
-        updateCached("IP");
-        updateCached("ipHistory");
+    public void setAuthed(boolean authed) {
+        this.authed = authed;
+        AuthMessage authMessage = new AuthMessage(getUniqueId(), authed);
+        Matrix.getAPI().getRedis().sendMessage(authMessage.getChannel(), Matrix.GSON.toJson(authMessage));
+        updateCached("authed");
+    }
+
+    @Override
+    public void setExp(long exp) {
+        this.exp = exp;
+        updateCached("exp");
+    }
+
+    @Override
+    public void setCoins(double coins) {
+        this.coins = coins;
+        updateCached("coins");
+    }
+
+    @Override
+    public void setLastLogin(Date lastLogin) {
+        this.lastLogin = lastLogin;
+        updateCached("lastLogin");
     }
 
     @Override
@@ -223,17 +225,15 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (getDisplayName() == null) {
             setDisplayName(getName());
         }
-        saveToRedis();
         return this;
     }
 
     @Override
     public void updateCached(String field) {
-        loadFields();
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Object object = FIELDS.get(field).get(this);
             if (object != null) {
-                jedis.hset(getKey(), field, Matrix.getAPI().getGson().toJson(FIELDS.get(field).get(this)));
+                jedis.hset(getKey(), field, Matrix.GSON.toJson(FIELDS.get(field).get(this)));
             } else {
                 jedis.hdel(getKey(), field);
             }
@@ -243,14 +243,14 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     public void saveToRedis() {
-        loadFields();
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
             FIELDS.forEach((id, field) -> {
                 try {
                     if (field.get(this) != null) {
-                        return;
+                        pipeline.hset(getKey(), id, Matrix.GSON.toJson(field.get(this)));
+                    } else {
+                        pipeline.hdel(getKey(), id);
                     }
-                    pipeline.hset(getKey(), id, Matrix.getAPI().getGson().toJson(field.get(this)));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }

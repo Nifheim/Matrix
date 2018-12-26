@@ -1,13 +1,13 @@
 package io.github.beelzebu.matrix.config;
 
-import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-public class BungeeConfiguration extends AbstractConfig {
+public class BungeeConfiguration extends MatrixConfig {
 
     private net.md_5.bungee.config.Configuration config;
 

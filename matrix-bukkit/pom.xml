@@ -14,6 +14,10 @@
     <packaging>jar</packaging>
     <name>Matrix Bukkit</name>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
+
     <repositories>
         <repository>
             <id>placeholderapi</id>

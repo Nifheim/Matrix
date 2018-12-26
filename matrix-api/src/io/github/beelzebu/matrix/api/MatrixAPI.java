@@ -1,15 +1,13 @@
 package io.github.beelzebu.matrix.api;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.github.beelzebu.matrix.api.cache.CacheProvider;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.database.MatrixDatabase;
 import io.github.beelzebu.matrix.api.messaging.RedisMessageEvent;
 import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import io.github.beelzebu.matrix.api.player.Statistics;
-import io.github.beelzebu.matrix.api.player.StatsAdapter;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
 import java.io.File;
@@ -33,22 +31,16 @@ import redis.clients.jedis.exceptions.JedisException;
 @Getter
 public abstract class MatrixAPI {
 
-    private final Gson gson = new GsonBuilder().registerTypeAdapter(Statistics.class, new StatsAdapter()).create();
     private final Set<RedisMessageEvent> redisListeners = new HashSet<>();
     private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
     private final Set<MatrixPlayer> players = new HashSet<>();
 
-    public abstract RedisMessaging getRedis();
-
-    public abstract CacheProvider getCache();
-
-    public abstract MatrixDatabase getDatabase();
-
-    public abstract MatrixPlugin getPlugin();
-
-    public abstract ServerInfo getServerInfo();
-
-    public final AbstractConfig getConfig() {
+    /**
+     * Get matrix configuration file.
+     *
+     * @return matrix configuration file, null if it isn't loaded yet.
+     */
+    public final MatrixConfig getConfig() {
         return getPlugin().getConfig();
     }
 
@@ -126,7 +118,7 @@ public abstract class MatrixAPI {
     }
 
     // Logging and debugging
-
+    // TODO: move this to a logger class.
     public final void log(String message) {
         getPlugin().log(rep(message));
     }
@@ -155,6 +147,11 @@ public abstract class MatrixAPI {
         log("   Stacktrace: " + getStacktrace(ex));
     }
 
+    @Deprecated
+    public Gson getGson() {
+        return Matrix.GSON;
+    }
+
     private String getStacktrace(Exception ex) {
         try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
             ex.printStackTrace(printWriter);
@@ -164,6 +161,16 @@ public abstract class MatrixAPI {
         }
         return "Error getting the stacktrace";
     }
+
+    public abstract RedisMessaging getRedis();
+
+    public abstract CacheProvider getCache();
+
+    public abstract MatrixDatabase getDatabase();
+
+    public abstract MatrixPlugin getPlugin();
+
+    public abstract ServerInfo getServerInfo();
 
     public abstract boolean hasPermission(MatrixPlayer player, String permission);
 }

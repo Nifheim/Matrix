@@ -2,7 +2,6 @@ package io.github.beelzebu.matrix;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import io.github.beelzebu.matrix.api.Matrix;
-import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.channels.Channel;
 import io.github.beelzebu.matrix.command.BasicCommands;
@@ -21,6 +20,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -32,13 +34,16 @@ import net.md_5.bungee.api.plugin.Plugin;
 /**
  * @author Beelzebu
  */
+@Getter
+@Setter
 public class MatrixBungee extends Plugin {
 
     public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Vulthur&7!\n&7IP: &amc.vulthur.cl\n"));
     public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &evulthur.cl/tienda &7Twitter: &e@vulthurmc\n&7Discord: &evulthur.cl/discord &7Web: &evulthur.cl"));
     private static final Map<String, Channel> CHANNELS = new HashMap<>();
-    private static MatrixCommonAPI api;
+    private static MatrixAPIImpl api;
     private boolean maintenance = false;
+    @Setter(AccessLevel.NONE)
     private BungeeConfiguration config;
 
     public static Channel getChannelFor(MatrixPlayer player) {
@@ -48,7 +53,7 @@ public class MatrixBungee extends Plugin {
     @Override
     public void onLoad() {
         config = new BungeeConfiguration(new File(getDataFolder(), "config.yml"));
-        (api = new MatrixBungeeAPI(new BungeeMethods(this))).setup();
+        (api = new MatrixBungeeAPI(new MatrixPluginBungee(this))).setup();
         Matrix.setAPI(api);
     }
 
@@ -71,7 +76,7 @@ public class MatrixBungee extends Plugin {
             String perm = config.getString("Channels." + channel + ".Permission");
             CHANNELS.put(channel, new Channel(channel, perm, ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register());
         });
-        ProxyServer.getInstance().getPlayers().stream().peek(pp -> pp.setTabHeader(TAB_HEADER, TAB_FOOTER)).forEach(pp -> api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new MongoMatrixPlayer(pp.getUniqueId(), pp.getName())).save()));
+        ProxyServer.getInstance().getPlayers().stream().peek(pp -> pp.setTabHeader(TAB_HEADER, TAB_FOOTER)).forEach(pp -> api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new MongoMatrixPlayer(pp.getUniqueId(), pp.getName()).save()).save()));
     }
 
     private void loadManagers() {
@@ -80,23 +85,11 @@ public class MatrixBungee extends Plugin {
         }
     }
 
-    public AbstractConfig getConfig() {
-        return config;
-    }
-
     private void registerListener(Listener listener) {
         ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
     }
 
     private void registerCommand(Command command) {
         ProxyServer.getInstance().getPluginManager().registerCommand(this, command);
-    }
-
-    public boolean isMaintenance() {
-        return maintenance;
-    }
-
-    public void setMaintenance(boolean value) {
-        maintenance = value;
     }
 }

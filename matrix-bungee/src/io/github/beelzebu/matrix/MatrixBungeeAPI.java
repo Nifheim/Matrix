@@ -7,7 +7,7 @@ import net.md_5.bungee.api.ProxyServer;
 /**
  * @author Beelzebu
  */
-public class MatrixBungeeAPI extends MatrixCommonAPI {
+public class MatrixBungeeAPI extends MatrixAPIImpl {
 
     MatrixBungeeAPI(MatrixPlugin plugin) {
         super(plugin);

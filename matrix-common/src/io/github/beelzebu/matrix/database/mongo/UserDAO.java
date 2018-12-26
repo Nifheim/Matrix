@@ -13,6 +13,7 @@ public class UserDAO extends BasicDAO<MongoMatrixPlayer, ObjectId> {
 
     public UserDAO(Datastore ds) {
         super(MongoMatrixPlayer.class, ds);
+        MongoMatrixPlayer.loadFields();
     }
 
     public MongoMatrixPlayer getPlayer(UUID uniqueId) {

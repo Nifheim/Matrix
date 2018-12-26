@@ -44,15 +44,13 @@ import org.bukkit.Statistic;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Getter
 public class MatrixBukkit extends JavaPlugin {
 
-    private MatrixCommonAPI api;
-    @Getter
+    private MatrixAPIImpl api;
     @Setter
     private boolean chatMuted = false;
-    @Getter
     private EffectManager effectManager;
-    @Getter
     private BukkitConfiguration configuration;
 
     @Override
@@ -61,8 +59,20 @@ public class MatrixBukkit extends JavaPlugin {
     }
 
     @Override
+    public void onDisable() {
+        Bukkit.getOnlinePlayers().forEach(p -> {
+            api.getPlayer(p.getUniqueId()).setStatistics(api.getPlayer(p.getUniqueId()).getStatistics(api.getServerInfo().getServerName()).orElseGet(() -> new Statistics(api.getServerInfo().getServerName(), p.getStatistic(Statistic.PLAYER_KILLS), p.getStatistic(Statistic.MOB_KILLS), p.getStatistic(Statistic.DEATHS), StatsListener.getBroken().getOrDefault(p.getUniqueId(), 0), StatsListener.getPlaced().getOrDefault(p.getUniqueId(), 0))));
+            UUID inv = GUIManager.getOpenInventories().get(p.getUniqueId());
+            if (inv != null) {
+                p.closeInventory();
+            }
+        });
+        api.shutdown();
+    }
+
+    @Override
     public void onEnable() {
-        io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixBukkitAPI(new BukkitMethods(this)));
+        io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixBukkitAPI(new MatrixPluginBukkit(this)));
         api.setup();
         // Load things
         loadManagers();
@@ -112,16 +122,11 @@ public class MatrixBukkit extends JavaPlugin {
         }
     }
 
-    @Override
-    public void onDisable() {
-        Bukkit.getOnlinePlayers().forEach(p -> {
-            api.getPlayer(p.getUniqueId()).setStatistics(api.getPlayer(p.getUniqueId()).getStatistics(api.getServerInfo().getServerName()).orElseGet(() -> new Statistics(api.getServerInfo().getServerName(), p.getStatistic(Statistic.PLAYER_KILLS), p.getStatistic(Statistic.MOB_KILLS), p.getStatistic(Statistic.DEATHS), StatsListener.getBroken().getOrDefault(p.getUniqueId(), 0), StatsListener.getPlaced().getOrDefault(p.getUniqueId(), 0))));
-            UUID inv = GUIManager.getOpenInventories().get(p.getUniqueId());
-            if (inv != null) {
-                p.closeInventory();
-            }
-        });
-        api.shutdown();
+    public Boolean isVotifier() {
+        if (Bukkit.getPluginManager().getPlugin("Votifier") != null) {
+            return Bukkit.getPluginManager().getPlugin("Votifier").isEnabled();
+        }
+        return false;
     }
 
     private void loadManagers() {
@@ -143,12 +148,5 @@ public class MatrixBukkit extends JavaPlugin {
 
     private void registerEvents(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, this);
-    }
-
-    public Boolean isVotifier() {
-        if (Bukkit.getPluginManager().getPlugin("Votifier") != null) {
-            return Bukkit.getPluginManager().getPlugin("Votifier").isEnabled();
-        }
-        return false;
     }
 }

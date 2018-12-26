@@ -23,7 +23,13 @@ public class LoginTask implements Runnable {
     public void run() {
         try {
             if (player == null) {
-                player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
+                if (event.getConnection().getUniqueId() != null && event.getConnection().getName() != null) {
+                    player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
+                } else {
+                    event.setCancelled(true);
+                    event.setCancelReason(new TextComponent("Internal error."));
+                    return;
+                }
             }
             if (plugin.isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
@@ -33,12 +39,12 @@ public class LoginTask implements Runnable {
             if (!Matrix.getAPI().getCache().getUniqueId(player.getName()).isPresent()) {
                 Matrix.getAPI().getCache().update(player.getName(), player.getUniqueId());
             }
-            ((MongoMatrixPlayer) player).saveToRedis();
+            player.saveToRedis();
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
-            event.setCancelReason(new TextComponent(e.getMessage()));
+            event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);
-            e.printStackTrace();
+            Matrix.getAPI().debug(e);
         } finally {
             event.completeIntent(plugin);
         }

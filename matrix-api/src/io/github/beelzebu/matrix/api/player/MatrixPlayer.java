@@ -11,6 +11,14 @@ import net.md_5.bungee.api.ChatColor;
  */
 public interface MatrixPlayer {
 
+    default Optional<Statistics> getStatistics(String server) {
+        return getStatistics().stream().filter(statistics -> server.equals(statistics.getServer())).findFirst();
+    }
+
+    default String getKey() {
+        return "user:" + getUniqueId();
+    }
+
     /**
      * Get the UUID of this user.
      *
@@ -108,15 +116,9 @@ public interface MatrixPlayer {
 
     void setStatistics(Statistics statistics);
 
-    default Optional<Statistics> getStatistics(String server) {
-        return getStatistics().stream().filter(statistics -> server.equals(statistics.getServer())).findFirst();
-    }
-
     MatrixPlayer save();
 
     void updateCached(String field);
 
-    default String getKey() {
-        return "user:" + getUniqueId();
-    }
+    void saveToRedis();
 }

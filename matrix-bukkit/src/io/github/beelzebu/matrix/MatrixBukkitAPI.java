@@ -7,7 +7,7 @@ import org.bukkit.Bukkit;
 /**
  * @author Beelzebu
  */
-public class MatrixBukkitAPI extends MatrixCommonAPI {
+public class MatrixBukkitAPI extends MatrixAPIImpl {
 
     MatrixBukkitAPI(MatrixPlugin plugin) {
         super(plugin);

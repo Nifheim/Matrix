@@ -1,10 +1,14 @@
 package io.github.beelzebu.matrix;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.config.MatrixConfig;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +19,12 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 @RequiredArgsConstructor
-public class BungeeMethods implements MatrixPlugin {
+public class MatrixPluginBungee implements MatrixPlugin {
 
     private final MatrixBungee plugin;
 
     @Override
-    public AbstractConfig getConfig() {
+    public MatrixConfig getConfig() {
         return plugin.getConfig();
     }
 
@@ -61,7 +65,21 @@ public class BungeeMethods implements MatrixPlugin {
 
     @Override
     public void sendMessage(Object sender, BaseComponent[] msg) {
-        ((CommandSender) sender).sendMessage(msg);
+        if (sender instanceof CommandSender) {
+            ((CommandSender) sender).sendMessage(msg);
+        } else {
+            Matrix.getAPI().debug(new IllegalArgumentException("Can't cast " + sender.getClass() + " to CommandSender"));
+        }
+    }
+
+    @Override
+    public void sendMessage(String name, String message) {
+        ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(message));
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String message) {
+        ProxyServer.getInstance().getPlayer(uuid).sendMessage(TextComponent.fromLegacyText(message));
     }
 
     @Override
@@ -77,6 +95,24 @@ public class BungeeMethods implements MatrixPlugin {
     @Override
     public String getVersion() {
         return plugin.getDescription().getVersion();
+    }
+
+    @Override
+    public boolean isOnline(String name, boolean here) {
+        if (!here) {
+            return RedisBungee.getApi().isPlayerOnline(RedisBungee.getApi().getUuidFromName(name));
+        } else {
+            return ProxyServer.getInstance().getPlayer(name) != null;
+        }
+    }
+
+    @Override
+    public boolean isOnline(UUID uuid, boolean here) {
+        if (!here) {
+            return RedisBungee.getApi().isPlayerOnline(uuid);
+        } else {
+            return ProxyServer.getInstance().getPlayer(uuid) != null;
+        }
     }
 
     @Override
@@ -103,30 +139,26 @@ public class BungeeMethods implements MatrixPlugin {
     }
 
     @Override
-    public void sendMessage(String name, String message) {
-        ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(message));
-    }
-
-    @Override
-    public void sendMessage(UUID uuid, String message) {
-        ProxyServer.getInstance().getPlayer(uuid).sendMessage(TextComponent.fromLegacyText(message));
-    }
-
-    @Override
-    public boolean isOnline(String name, boolean here) {
-        if (!here) {
-            return RedisBungee.getApi().isPlayerOnline(RedisBungee.getApi().getUuidFromName(name));
-        } else {
-            return ProxyServer.getInstance().getPlayer(name) != null;
+    public void kickPlayer(UUID uniqueId, String reason) {
+        Objects.requireNonNull(uniqueId, "UUID can't be null.");
+        Objects.requireNonNull(reason, "Kick reason can't be null");
+        if (isOnline(uniqueId, true)) {
+            ProxyServer.getInstance().getPlayer(uniqueId).disconnect(TextComponent.fromLegacyText(reason));
         }
     }
 
     @Override
-    public boolean isOnline(UUID uuid, boolean here) {
-        if (!here) {
-            return RedisBungee.getApi().isPlayerOnline(uuid);
-        } else {
-            return ProxyServer.getInstance().getPlayer(uuid) != null;
+    public void kickPlayer(String name, String reason) {
+        Objects.requireNonNull(name, "Name can't be null.");
+        Objects.requireNonNull(reason, "Kick reason can't be null");
+        if (isOnline(name, true)) {
+            ProxyServer.getInstance().getPlayer(name).disconnect(TextComponent.fromLegacyText(reason));
         }
+    }
+
+    @Override
+    public void kickPlayer(MatrixPlayer matrixPlayer, String reason) {
+        Objects.requireNonNull(matrixPlayer, "Player can't be null");
+        kickPlayer(matrixPlayer.getName(), reason);
     }
 }

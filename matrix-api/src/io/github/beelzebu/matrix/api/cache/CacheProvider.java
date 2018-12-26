@@ -10,8 +10,20 @@ import java.util.UUID;
  */
 public interface CacheProvider {
 
+    /**
+     * Get the UUID associated to a username from the cache.
+     *
+     * @param name username to search.
+     * @return {@link Optional} representing the result from the cache.
+     */
     Optional<UUID> getUniqueId(String name);
 
+    /**
+     * Get the Name associated to a UUID from the cache.
+     *
+     * @param uniqueId UUID to search
+     * @return {@link Optional} representing the result from the cache.
+     */
     Optional<String> getName(UUID uniqueId);
 
     void update(String name, UUID uniqueId);

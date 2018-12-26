@@ -2,29 +2,35 @@ package io.github.beelzebu.matrix;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.config.MatrixConfig;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
+import io.github.beelzebu.matrix.utils.bungee.PluginMessage;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * @author Beelzebu
  */
 @RequiredArgsConstructor
-public class BukkitMethods implements MatrixPlugin {
+public class MatrixPluginBukkit implements MatrixPlugin {
 
     private final MatrixBukkit plugin;
     private final CommandSender console = Bukkit.getConsoleSender();
 
     @Override
-    public AbstractConfig getConfig() {
+    public MatrixConfig getConfig() {
         return plugin.getConfiguration();
     }
 
@@ -69,6 +75,16 @@ public class BukkitMethods implements MatrixPlugin {
     }
 
     @Override
+    public void sendMessage(String name, String message) {
+        Bukkit.getPlayer(name).sendMessage(message);
+    }
+
+    @Override
+    public void sendMessage(UUID uuid, String message) {
+        Bukkit.getPlayer(uuid).sendMessage(message);
+    }
+
+    @Override
     public File getDataFolder() {
         return plugin.getDataFolder();
     }
@@ -81,6 +97,16 @@ public class BukkitMethods implements MatrixPlugin {
     @Override
     public String getVersion() {
         return plugin.getDescription().getVersion();
+    }
+
+    @Override
+    public boolean isOnline(String name, boolean here) {
+        return Bukkit.getPlayer(name) != null && Bukkit.getPlayer(name).isOnline();
+    }
+
+    @Override
+    public boolean isOnline(UUID uuid, boolean here) {
+        return Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline();
     }
 
     @Override
@@ -107,22 +133,34 @@ public class BukkitMethods implements MatrixPlugin {
     }
 
     @Override
-    public void sendMessage(String name, String message) {
-        Bukkit.getPlayer(name).sendMessage(message);
+    public void kickPlayer(UUID uniqueId, String reason) {
+        Objects.requireNonNull(uniqueId, "UUID can't be null.");
+        Objects.requireNonNull(reason, "Kick reason can't be null");
+        Player player = Bukkit.getPlayer(uniqueId);
+        if (player != null && player.isOnline()) {
+            player.sendMessage(reason);
+            PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
+        } else {
+            Matrix.getAPI().debug("Tried to kick " + uniqueId + ", but isn't online.");
+        }
     }
 
     @Override
-    public void sendMessage(UUID uuid, String message) {
-        Bukkit.getPlayer(uuid).sendMessage(message);
+    public void kickPlayer(String name, String reason) {
+        Objects.requireNonNull(name, "Name can't be null.");
+        Objects.requireNonNull(reason, "Kick reason can't be null");
+        Player player = Bukkit.getPlayer(name);
+        if (player != null && player.isOnline()) {
+            player.sendMessage(reason);
+            PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
+        } else {
+            Matrix.getAPI().debug("Tried to kick " + name + ", but isn't online.");
+        }
     }
 
     @Override
-    public boolean isOnline(String name, boolean here) {
-        return Bukkit.getPlayer(name) != null && Bukkit.getPlayer(name).isOnline();
-    }
-
-    @Override
-    public boolean isOnline(UUID uuid, boolean here) {
-        return Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline();
+    public void kickPlayer(MatrixPlayer matrixPlayer, String reason) {
+        Objects.requireNonNull(matrixPlayer, "Player can't be null");
+        kickPlayer(matrixPlayer.getName(), reason);
     }
 }

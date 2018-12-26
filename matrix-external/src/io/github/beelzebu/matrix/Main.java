@@ -49,6 +49,6 @@ public class Main {
         } catch (FileNotFoundException | JsonSyntaxException e) {
             throw new RuntimeException("Can't load config from JSON", e);
         }
-        Matrix.setAPI(new MatrixCommonAPI(new MatrixExternalPlugin(this)));
+        Matrix.setAPI(new MatrixAPIImpl(new MatrixExternalPlugin(this)));
     }
 }

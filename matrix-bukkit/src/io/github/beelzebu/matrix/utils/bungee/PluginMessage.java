@@ -1,10 +1,13 @@
 package io.github.beelzebu.matrix.utils.bungee;
 
+import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import io.github.beelzebu.matrix.MatrixBukkit;
-import java.util.Collection;
+import io.github.beelzebu.matrix.api.Matrix;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -44,13 +47,23 @@ public class PluginMessage implements PluginMessageListener {
     }
 
     public void askPlayerCount(String server) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("PlayerCount");
-        out.writeUTF(server);
+        sendMessage("RedisBungee", "PlayerCount", Collections.singletonList(server));
+    }
 
-        Collection<? extends Player> players = Bukkit.getOnlinePlayers();
-        if (players.size() > 0) {
-            players.iterator().next().sendPluginMessage(MatrixBukkit.getPlugin(MatrixBukkit.class), "RedisBungee", out.toByteArray());
+    public void sendMessage(String channel, String subChannel, List<String> message) {
+        sendMessage(channel, subChannel, message, Iterables.getFirst(Bukkit.getOnlinePlayers(), null));
+    }
+
+    public void sendMessage(String channel, String subChannel, List<String> message, Player player) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(subChannel);
+        message.forEach(out::writeUTF);
+        if (player != null) {
+            try {
+                player.sendPluginMessage(MatrixBukkit.getPlugin(MatrixBukkit.class), channel, out.toByteArray());
+            } catch (Exception ex) {
+                Matrix.getAPI().log("Hey, you need to install the plugin in BungeeCord if you have bungeecord enabled in spigot.yml!");
+            }
         }
     }
 }
