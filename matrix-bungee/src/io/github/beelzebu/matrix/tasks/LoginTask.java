@@ -36,9 +36,6 @@ public class LoginTask implements Runnable {
                 event.setCancelReason(TextComponent.fromLegacyText(Matrix.getAPI().getString(Message.MAINTENANCE, player.getLastLocale())));
                 return;
             }
-            if (!Matrix.getAPI().getCache().getUniqueId(player.getName()).isPresent()) {
-                Matrix.getAPI().getCache().update(player.getName(), player.getUniqueId());
-            }
             player.saveToRedis();
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {

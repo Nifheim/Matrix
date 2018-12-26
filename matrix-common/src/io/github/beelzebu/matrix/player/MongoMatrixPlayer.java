@@ -232,6 +232,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     public void updateCached(String field) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Object object = FIELDS.get(field).get(this);
+            Matrix.getAPI().debug("Updating " + getName() + " field: " + field + Matrix.GSON.toJson(FIELDS.get(field).get(this)));
             if (object != null) {
                 jedis.hset(getKey(), field, Matrix.GSON.toJson(FIELDS.get(field).get(this)));
             } else {
@@ -242,6 +243,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
+    @Override
     public void saveToRedis() {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
             FIELDS.forEach((id, field) -> {

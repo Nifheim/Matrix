@@ -132,19 +132,19 @@ public abstract class MatrixAPI {
         log("   Database state: " + ex.getSQLState());
         log("   Error code: " + ex.getErrorCode());
         log("   Error message: " + ex.getMessage());
-        log("   Stacktrace: " + getStacktrace(ex));
+        log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
     public final void debug(JedisException ex) {
         log("JedisException: ");
         log("   Error message: " + ex.getMessage());
-        log("   Stacktrace: " + getStacktrace(ex));
+        log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
     public final void debug(Exception ex) {
         log(ex.getClass().getName() + ": ");
         log("   Error message: " + ex.getMessage());
-        log("   Stacktrace: " + getStacktrace(ex));
+        log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
     @Deprecated
