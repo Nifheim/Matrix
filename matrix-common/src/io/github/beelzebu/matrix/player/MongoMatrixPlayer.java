@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -220,6 +221,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public MatrixPlayer save() {
+        Objects.requireNonNull(getName(), "Can't save a player with null name");
+        Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
         ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save(this);
         setLastLogin(new Date());
         if (getDisplayName() == null) {
