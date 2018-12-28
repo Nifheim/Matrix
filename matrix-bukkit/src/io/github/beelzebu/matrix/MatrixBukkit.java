@@ -16,6 +16,7 @@ import io.github.beelzebu.matrix.commands.utils.AddLore;
 import io.github.beelzebu.matrix.commands.utils.Matrix;
 import io.github.beelzebu.matrix.commands.utils.RemoveLore;
 import io.github.beelzebu.matrix.commands.utils.Rename;
+import io.github.beelzebu.matrix.commands.utils.SyncCommand;
 import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.listeners.DupepatchListener;
 import io.github.beelzebu.matrix.listeners.GUIListener;
@@ -107,6 +108,7 @@ public class MatrixBukkit extends JavaPlugin {
         CommandAPI.registerCommand(this, new Rename());
         CommandAPI.registerCommand(this, new Matrix());
         CommandAPI.registerCommand(this, new Spit());
+        CommandAPI.registerCommand(this, new SyncCommand());
 
         Bukkit.getOnlinePlayers().forEach((p) -> Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
