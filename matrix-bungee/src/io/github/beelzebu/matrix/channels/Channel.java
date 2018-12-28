@@ -36,8 +36,7 @@ public class Channel {
                             msg.append(arg).append(" ");
                         }
                         msg.substring(0, msg.length() - 1);
-                        StaffChatMessage staffChatMessage = new StaffChatMessage(permission, msg.toString());
-                        Matrix.getAPI().getRedis().sendMessage(staffChatMessage.getChannel(), Matrix.getAPI().getGson().toJson(staffChatMessage));
+                        new StaffChatMessage(permission, msg.toString()).send();
                     }
                 });
             }

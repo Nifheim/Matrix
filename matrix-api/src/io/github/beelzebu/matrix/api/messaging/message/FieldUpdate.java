@@ -9,13 +9,14 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TargetedMessage extends RedisMessage {
+public class FieldUpdate extends RedisMessage {
 
-    private final UUID target;
-    private final String message;
+    private final UUID player;
+    private final String field;
+    private final String jsonValue;
 
     @Override
     public String getChannel() {
-        return "api-message";
+        return "api-field-update";
     }
 }

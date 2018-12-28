@@ -23,8 +23,7 @@ public class Responder extends Command {
                 sb.append(args[i]).append(" ");
             }
             sb.append(args[args.length - 1]);
-            TargetedMessage targetedMessage = new TargetedMessage(api.getPlayer(args[0]).getUniqueId(), (sender instanceof ProxiedPlayer ? api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayName() : "Consola") + "&f: " + sb.toString());
-            api.getRedis().sendMessage(targetedMessage.getChannel(), api.getGson().toJson(targetedMessage));
+            new TargetedMessage(api.getPlayer(args[0]).getUniqueId(), (sender instanceof ProxiedPlayer ? api.getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayName() : "Consola") + "&f: " + sb.toString()).send();
             sender.sendMessage(api.rep("&6Haz enviado el siguiente mensaje a &7" + args[0]));
             sender.sendMessage(sb.toString());
         }

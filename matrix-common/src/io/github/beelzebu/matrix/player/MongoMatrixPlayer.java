@@ -1,7 +1,7 @@
 package io.github.beelzebu.matrix.player;
 
 import io.github.beelzebu.matrix.api.Matrix;
-import io.github.beelzebu.matrix.api.messaging.message.AuthMessage;
+import io.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.player.Statistics;
@@ -187,17 +187,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setAuthed(boolean authed) {
-        setAuthed(authed, false);
-    }
-
-    @Override
-    public void setAuthed(boolean authed, boolean publish) {
         this.authed = authed;
         updateCached("authed");
-        if (publish) {
-            AuthMessage authMessage = new AuthMessage(getUniqueId(), authed);
-            Matrix.getAPI().getRedis().sendMessage(authMessage.getChannel(), Matrix.GSON.toJson(authMessage));
-        }
     }
 
     @Override
@@ -231,24 +222,24 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
         ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save((MongoMatrixPlayer) Matrix.getAPI().getCache().getPlayer(getUniqueId()).orElse(this));
-        setLastLogin(new Date());
         if (getDisplayName() == null) {
             setDisplayName(getName());
         }
         return this;
     }
 
-    // TODO: use pub/sub to update field in all loaded players.
     @Override
     public void updateCached(String field) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            Object object = FIELDS.get(field).get(this);
-            Matrix.getAPI().debug("Updating " + getName() + " field: " + field + " " + Matrix.GSON.toJson(FIELDS.get(field).get(this)));
-            if (object != null) {
-                jedis.hset(getKey(), field, Matrix.GSON.toJson(FIELDS.get(field).get(this)));
+            Object value = FIELDS.get(field).get(this);
+            String jsonValue = Matrix.GSON.toJson(value);
+            Matrix.getAPI().debug("Updating " + getName() + " field `" + field + "'  with value `" + jsonValue + "'");
+            if (value != null) {
+                jedis.hset(getKey(), field, jsonValue);
             } else {
                 jedis.hdel(getKey(), field);
             }
+            new FieldUpdate(getUniqueId(), field, jsonValue).send();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -269,6 +260,18 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                 }
             });
             pipeline.sync();
+        }
+    }
+
+    @Override
+    public void setField(String field, Object value) {
+        try {
+            Field f = FIELDS.get(field);
+            if (f != null) {
+                f.set(this, value);
+            }
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
         }
     }
 }

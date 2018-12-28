@@ -100,9 +100,6 @@ public interface MatrixPlayer {
 
     void setAuthed(boolean authed);
 
-    @Deprecated
-    void setAuthed(boolean authed, boolean publish);
-
     long getExp();
 
     void setExp(long xp);
@@ -124,4 +121,12 @@ public interface MatrixPlayer {
     void updateCached(String field);
 
     void saveToRedis();
+
+    /**
+     * Set the field with the given name to the given value without publishing an update to redis.
+     *
+     * @param field Field to update.
+     * @param value Value to set to this field.
+     */
+    void setField(String field, Object value);
 }
