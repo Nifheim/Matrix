@@ -18,11 +18,12 @@ public class DisconnectTask implements Runnable {
     @Override
     public void run() {
         try {
-            player.setAuthed(false);
+            if (player.isAuthed()) {
+                player.setAuthed(false);
+            }
             if (player.isAdmin() && !event.getPlayer().hasPermission("nifheim.admin")) {
                 player.setAdmin(false);
             }
-            player.save();
             Matrix.getAPI().getPlayers().remove(player);
         } catch (Exception e) {
             event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
