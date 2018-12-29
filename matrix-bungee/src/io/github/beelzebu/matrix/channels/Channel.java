@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.channels;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;
+import io.github.beelzebu.matrix.utils.PermsUtils;
 import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -16,10 +17,6 @@ public class Channel {
     private final String permission;
     private final ChatColor color;
 
-    public String getColor() {
-        return color.toString();
-    }
-
     public Channel register() {
         ProxyServer.getInstance().getPluginManager().registerCommand(ProxyServer.getInstance().getPluginManager().getPlugin("Matrix"), new Command(name) {
             @Override
@@ -30,8 +27,15 @@ public class Channel {
                             Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(name);
                             return;
                         }
-                        StringBuilder msg = new StringBuilder();
-                        msg.append(color.toString());
+                        String name;
+                        if (sender instanceof ProxiedPlayer) {
+                            ProxiedPlayer pp = (ProxiedPlayer) sender;
+                            name = PermsUtils.getPrefix(pp.getUniqueId()) + Matrix.getAPI().getPlayer(pp.getUniqueId()).getDisplayName();
+                        } else {
+                            name = sender.getName();
+                        }
+                        StringBuilder msg = new StringBuilder(name);
+                        msg.append("&f:&r ").append(color.toString());
                         for (String arg : args) {
                             msg.append(arg).append(" ");
                         }

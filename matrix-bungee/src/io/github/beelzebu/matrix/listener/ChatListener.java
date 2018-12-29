@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.listener;
 
-import io.github.beelzebu.matrix.MatrixBungee;
+import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.channels.Channel;
@@ -18,7 +18,7 @@ public class ChatListener implements Listener {
     public void onChatEvent(ChatEvent e) {
         Connection sender = e.getSender();
         if (sender instanceof ProxiedPlayer) {
-            Channel channel = MatrixBungee.getChannelFor(Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId()));
+            Channel channel = MatrixBungeeBootstrap.getChannelFor(Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId()));
             if (channel != null && !e.isCommand()) {
                 ((ProxiedPlayer) sender).chat("/" + channel.getName() + " " + e.getMessage());
                 e.setCancelled(true);

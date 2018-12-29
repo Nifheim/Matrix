@@ -1,9 +1,10 @@
 package io.github.beelzebu.matrix.tasks;
 
-import io.github.beelzebu.matrix.MatrixBungee;
+import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.listener.LoginListener;
+import io.github.beelzebu.matrix.utils.ErrorCodes;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -15,14 +16,14 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 @AllArgsConstructor
 public class PreLoginTask implements Runnable {
 
-    private final MatrixBungee plugin;
+    private final MatrixBungeeBootstrap plugin;
     private final PreLoginEvent event;
     private final MatrixPlayer player;
 
     @Override
     public void run() {
         try {
-            if (!event.getConnection().getName().matches("^\\w{3,16}$")) {
+            if (event.getConnection().getName() == null || !event.getConnection().getName().matches("^\\w{3,16}$")) {
                 event.setCancelReason(new TextComponent("\n" +
                         "Your username is invalid, it must be alphanumeric and can't contain spaces.\n" +
                         "Try using: " + event.getConnection().getName().replaceAll("[^\\w]", "") + "\n" +
@@ -39,7 +40,8 @@ public class PreLoginTask implements Runnable {
             MatrixPlayer playerByName = Matrix.getAPI().getPlayer(event.getConnection().getName());
             if (player != null && playerByName != null) {
                 if (!Objects.equals(playerByName.getUniqueId(), event.getConnection().getUniqueId())) {
-                    event.setCancelReason(new TextComponent("\n" +
+                    event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n" +
+                            "\n" +
                             "Your UUID doesn't match with the UUID associated to your name in our database.\n" +
                             "This login attempt was recorded for security reasons."));
                     event.setCancelled(true);

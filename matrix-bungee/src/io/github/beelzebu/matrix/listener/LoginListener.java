@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.listener;
 
-import io.github.beelzebu.matrix.MatrixBungee;
+import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -13,7 +13,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -28,12 +27,12 @@ import net.md_5.bungee.event.EventPriority;
 public class LoginListener implements Listener {
 
     private final MatrixAPI api = Matrix.getAPI();
-    private final MatrixBungee plugin;
+    private final MatrixBungeeBootstrap plugin;
     private static final Map<String, Boolean> blacklist = new HashMap<>();
     private static final Map<String, Object> activeBlacklist = new HashMap<>();
 
-    public LoginListener(MatrixBungee matrixBungee) {
-        plugin = matrixBungee;
+    public LoginListener(MatrixBungeeBootstrap matrixBungeeBootstrap) {
+        plugin = matrixBungeeBootstrap;
         activeBlacklist.put("http://www,stopforumspam,com/api?ip=", "yes");
         activeBlacklist.put("http://www,shroomery,org/ythan/proxycheck,php?ip=", "Y");
         try (Scanner blackList = new Scanner(new URL("http://myip.ms/files/blacklist/csf/latest_blacklist.txt").openStream())) {
@@ -53,7 +52,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerSwitch(ServerSwitchEvent e) {
         if (e.getPlayer().isConnected()) {
-            e.getPlayer().setTabHeader(MatrixBungee.TAB_HEADER, MatrixBungee.TAB_FOOTER);
+            e.getPlayer().setTabHeader(MatrixBungeeBootstrap.TAB_HEADER, MatrixBungeeBootstrap.TAB_FOOTER);
         }
     }
 
@@ -96,7 +95,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = -128)
     public void onConnect(ServerConnectEvent e) {
         if (e.getReason() == ServerConnectEvent.Reason.JOIN_PROXY && e.getPlayer().getPendingConnection().isOnlineMode()) {
-            e.setTarget(ProxyServer.getInstance().getServerInfo("lobby#1"));
+            //e.setTarget(ProxyServer.getInstance().getServerInfo("lobby#1"));
         }
     }
 

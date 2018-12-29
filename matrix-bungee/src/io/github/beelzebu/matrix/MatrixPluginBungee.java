@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -21,7 +22,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 @RequiredArgsConstructor
 public class MatrixPluginBungee implements MatrixPlugin {
 
-    private final MatrixBungee plugin;
+    private final MatrixBungeeBootstrap plugin;
 
     @Override
     public MatrixConfig getConfig() {
@@ -98,7 +99,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public boolean isOnline(String name, boolean here) {
+    public boolean isOnline(@NonNull String name, boolean here) {
         if (!here) {
             return RedisBungee.getApi().isPlayerOnline(RedisBungee.getApi().getUuidFromName(name));
         } else {

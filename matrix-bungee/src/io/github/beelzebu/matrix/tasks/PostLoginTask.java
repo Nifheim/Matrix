@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.tasks;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.utils.ErrorCodes;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -19,7 +20,7 @@ public class PostLoginTask implements Runnable {
     public void run() {
         try {
             if (player == null) {
-                event.getPlayer().disconnect(new TextComponent("Internal error."));
+                event.getPlayer().disconnect(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));
                 return;
             }
             if (event.getPlayer().hasPermission("nifheim.admin")) {

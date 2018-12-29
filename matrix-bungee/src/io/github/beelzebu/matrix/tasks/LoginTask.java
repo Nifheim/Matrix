@@ -1,10 +1,11 @@
 package io.github.beelzebu.matrix.tasks;
 
-import io.github.beelzebu.matrix.MatrixBungee;
+import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.Message;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
+import io.github.beelzebu.matrix.utils.ErrorCodes;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -15,7 +16,7 @@ import net.md_5.bungee.api.event.LoginEvent;
 @AllArgsConstructor
 public class LoginTask implements Runnable {
 
-    private final MatrixBungee plugin;
+    private final MatrixBungeeBootstrap plugin;
     private final LoginEvent event;
     private MatrixPlayer player;
 
@@ -27,7 +28,7 @@ public class LoginTask implements Runnable {
                     player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
                 } else {
                     event.setCancelled(true);
-                    event.setCancelReason(new TextComponent("Internal error."));
+                    event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));
                     return;
                 }
             }
