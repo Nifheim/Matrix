@@ -55,7 +55,7 @@ public class LoginListener implements Listener {
         }
     }
 
-    @EventHandler(priority = 127)
+    @EventHandler(priority = -100)
     public void onPreLogin(PreLoginEvent e) {
         if (e.isCancelled()) {
             return;
@@ -66,6 +66,9 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = -128)
     public void onLogin(LoginEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
         e.registerIntent(plugin);
         api.getPlugin().runAsync(new LoginTask(plugin, e, api.getCache().getPlayer(e.getConnection().getUniqueId()).orElse(api.getDatabase().getPlayer(e.getConnection().getUniqueId()))));
     }

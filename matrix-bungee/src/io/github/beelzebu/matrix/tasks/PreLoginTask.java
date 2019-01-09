@@ -4,6 +4,7 @@ import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.listener.LoginListener;
+import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.utils.ErrorCodes;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,7 @@ public class PreLoginTask implements Runnable {
 
     private final MatrixBungeeBootstrap plugin;
     private final PreLoginEvent event;
-    private final MatrixPlayer player;
+    private MatrixPlayer player;
 
     @Override
     public void run() {
@@ -46,6 +47,15 @@ public class PreLoginTask implements Runnable {
                 Matrix.getAPI().getPlugin().ban(event.getConnection().getAddress().getAddress().getHostAddress());
                 return;
             }
+            if (player == null) {
+                if (event.getConnection().getUniqueId() != null && event.getConnection().getName() != null) {
+                    player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
+                } else {
+                    event.setCancelled(true);
+                    event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));
+                    return;
+                }
+            }
             MatrixPlayer playerByName = Matrix.getAPI().getPlayer(event.getConnection().getName());
             if (player != null && playerByName != null) {
                 if (!Objects.equals(playerByName.getUniqueId(), event.getConnection().getUniqueId())) {
@@ -54,10 +64,6 @@ public class PreLoginTask implements Runnable {
                             "Your UUID doesn't match with the UUID associated to your name in our database.\n" +
                             "This login attempt was recorded for security reasons."));
                     event.setCancelled(true);
-                    return;
-                }
-                if (player.isPremium()) {
-                    event.getConnection().setOnlineMode(true);
                 }
             }
         } catch (Exception e) {
