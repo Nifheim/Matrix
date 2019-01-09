@@ -67,7 +67,7 @@ public class ServerListListener implements Listener {
                 // set player hover
                 ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[playerHover.length];
                 for (int i = 0; i < playerHover.length; i++) {
-                    playerInfos[i] = new ServerPing.PlayerInfo(playerHover[i], emptyUUID);
+                    playerInfos[i] = new ServerPing.PlayerInfo(Matrix.getAPI().rep(playerHover[i]), emptyUUID);
                 }
                 e.getResponse().getPlayers().setSample(playerInfos);
             } catch (Exception ex) {
