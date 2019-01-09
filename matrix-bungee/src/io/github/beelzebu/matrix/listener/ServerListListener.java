@@ -45,10 +45,12 @@ public class ServerListListener implements Listener {
         e.registerIntent((Plugin) Matrix.getAPI().getPlugin().getBootstrap());
         Matrix.getAPI().getPlugin().runAsync(() -> {
             try {
-                String host = e.getConnection().getVirtualHost().getHostName();
-                if (!Objects.equals(host, "mc.nifheim.net")) {
-                    e.getResponse().setDescriptionComponent(new TextComponent("Please join using mc.nifheim.net\nPor favor ingresa usando mc.nifheim.net"));
-                    return;
+                if (e.getConnection().getVirtualHost() != null) {
+                    String host = e.getConnection().getVirtualHost().getHostName();
+                    if (!Objects.equals(host, "mc.nifheim.net")) {
+                        e.getResponse().setDescriptionComponent(new TextComponent("Please join using mc.nifheim.net\nPor favor ingresa usando mc.nifheim.net"));
+                        return;
+                    }
                 }
                 if (((MatrixBungeeBootstrap) Matrix.getAPI().getPlugin().getBootstrap()).isMaintenance()) {
                     e.getResponse().getVersion().setProtocol(-1);
