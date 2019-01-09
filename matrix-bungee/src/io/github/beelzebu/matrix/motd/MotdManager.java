@@ -26,6 +26,9 @@ public final class MotdManager {
 
     public static Countdown getCountdown(String id) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
+            if (!jedis.exists("countdown:" + id)) {
+                return null;
+            }
             return Matrix.GSON.fromJson(jedis.get("countdown:" + id), Countdown.class);
         }
     }
