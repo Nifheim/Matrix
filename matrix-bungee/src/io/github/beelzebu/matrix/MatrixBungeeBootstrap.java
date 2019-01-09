@@ -18,6 +18,8 @@ import io.github.beelzebu.matrix.listener.ServerListListener;
 import io.github.beelzebu.matrix.motd.MotdManager;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -56,7 +58,15 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     @Override
     public void onLoad() {
-        config = new BungeeConfiguration(new File(getDataFolder(), "config.yml"));
+        File configFile = new File(getDataFolder(), "config.yml");
+        if (!configFile.exists()) {
+            try {
+                Files.copy(getResourceAsStream(configFile.getName()), configFile.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        config = new BungeeConfiguration(configFile);
         (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this))).setup();
         Matrix.setAPI(api);
     }
