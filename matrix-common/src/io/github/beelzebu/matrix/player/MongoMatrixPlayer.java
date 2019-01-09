@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
@@ -35,7 +34,6 @@ import redis.clients.jedis.Pipeline;
  * @author Beelzebu
  */
 @Getter
-@Setter(AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(value = "players", noClassnameStored = true)
 public final class MongoMatrixPlayer implements MatrixPlayer {
@@ -52,6 +50,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected Set<String> knownNames;
     protected String displayName;
     protected boolean premium;
+    protected boolean registered;
     protected boolean admin;
     protected String secret;
     protected ChatColor chatColor = ChatColor.RESET;
@@ -127,6 +126,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         this.premium = premium;
         setUniqueId(Matrix.getAPI().getPlugin().getUniqueId(name));
         updateCached("premium");
+    }
+
+    @Override
+    public void setRegistered(boolean registered) {
+        this.registered = registered;
+        updateCached("registered");
     }
 
     @Override

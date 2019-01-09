@@ -60,6 +60,10 @@ public interface MatrixPlayer {
 
     void setPremium(boolean premium);
 
+    boolean isRegistered();
+
+    void setRegistered(boolean registered);
+
     boolean isAdmin();
 
     void setAdmin(boolean admin);
