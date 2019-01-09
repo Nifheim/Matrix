@@ -4,6 +4,7 @@ import de.slikey.effectlib.EffectManager;
 import io.github.beelzebu.matrix.api.commands.CommandAPI;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
 import io.github.beelzebu.matrix.api.player.Statistics;
+import io.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
 import io.github.beelzebu.matrix.commands.staff.Freeze;
@@ -46,13 +47,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
-public class MatrixBukkit extends JavaPlugin {
+public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
     private MatrixAPIImpl api;
     @Setter
     private boolean chatMuted = false;
     private EffectManager effectManager;
     private BukkitConfiguration configuration;
+    private MatrixPluginBukkit matrixPlugin;
 
     @Override
     public void onLoad() {
@@ -73,7 +75,7 @@ public class MatrixBukkit extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixBukkitAPI(new MatrixPluginBukkit(this)));
+        io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this)));
         api.setup();
         // Load things
         loadManagers();
@@ -114,7 +116,7 @@ public class MatrixBukkit extends JavaPlugin {
             try {
                 ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + getConfig().getString("clave"));
             } catch (Exception ex) {
-                Logger.getLogger(MatrixBukkit.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
+                Logger.getLogger(MatrixBukkitBootstrap.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
             }
         }));
         BungeeServerTracker.startTask(5);

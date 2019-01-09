@@ -23,6 +23,15 @@ public class PreLoginTask implements Runnable {
     @Override
     public void run() {
         try {
+            String host = event.getConnection().getVirtualHost().getHostName();
+            if (!Objects.equals(host, "mc.nifheim.net")) {
+                event.setCancelled(true);
+                event.setCancelReason(new TextComponent("\n" +
+                        "Please join using mc.nifheim.net\n" +
+                        "\n" +
+                        "Por favor ingresa usando mc.nifheim.net"));
+                return;
+            }
             if (event.getConnection().getName() == null || !event.getConnection().getName().matches("^\\w{3,16}$")) {
                 event.setCancelReason(new TextComponent("\n" +
                         "Your username is invalid, it must be alphanumeric and can't contain spaces.\n" +

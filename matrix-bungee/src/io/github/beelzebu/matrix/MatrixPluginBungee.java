@@ -11,22 +11,22 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-@RequiredArgsConstructor
+@Data
 public class MatrixPluginBungee implements MatrixPlugin {
 
-    private final MatrixBungeeBootstrap plugin;
+    private final MatrixBungeeBootstrap bootstrap;
 
     @Override
     public MatrixConfig getConfig() {
-        return plugin.getConfig();
+        return bootstrap.getConfig();
     }
 
     @Override
@@ -36,12 +36,12 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public void runAsync(Runnable rn) {
-        ProxyServer.getInstance().getScheduler().runAsync(plugin, rn);
+        ProxyServer.getInstance().getScheduler().runAsync(bootstrap, rn);
     }
 
     @Override
     public void runAsync(Runnable rn, Integer timer) {
-        ProxyServer.getInstance().getScheduler().schedule(plugin, rn, 0, timer, TimeUnit.SECONDS);
+        ProxyServer.getInstance().getScheduler().schedule(bootstrap, rn, 0, timer, TimeUnit.SECONDS);
     }
 
     @Override
@@ -85,17 +85,17 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public File getDataFolder() {
-        return plugin.getDataFolder();
+        return bootstrap.getDataFolder();
     }
 
     @Override
     public InputStream getResource(String filename) {
-        return plugin.getResourceAsStream(filename);
+        return bootstrap.getResourceAsStream(filename);
     }
 
     @Override
     public String getVersion() {
-        return plugin.getDescription().getVersion();
+        return bootstrap.getDescription().getVersion();
     }
 
     @Override

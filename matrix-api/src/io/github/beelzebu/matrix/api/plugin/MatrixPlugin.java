@@ -118,9 +118,9 @@ public interface MatrixPlugin {
     void sendMessage(UUID uuid, String message);
 
     /**
-     * Obtiene la carpeta del plugin.
+     * Obtiene la carpeta del matrixPlugin.
      *
-     * @return carpeta del plugin.
+     * @return carpeta del matrixPlugin.
      */
     File getDataFolder();
 
@@ -133,9 +133,9 @@ public interface MatrixPlugin {
     InputStream getResource(String filename);
 
     /**
-     * Obtiene la versión del plugin, especificada en el pom.
+     * Obtiene la versión del matrixPlugin, especificada en el pom.
      *
-     * @return versión del plugin.
+     * @return versión del matrixPlugin.
      */
     String getVersion();
 
@@ -222,4 +222,13 @@ public interface MatrixPlugin {
      * @param reason       Reason for this disconnection.
      */
     void kickPlayer(MatrixPlayer matrixPlayer, String reason);
+
+    /**
+     * Get the bootstrap (matrixPlugin main class that is loaded by the implementation matrixPlugin manager) that loaded
+     * this
+     * matrixPlugin, it never will be null.
+     *
+     * @return bootstrap instance.
+     */
+    MatrixBootstrap getBootstrap();
 }

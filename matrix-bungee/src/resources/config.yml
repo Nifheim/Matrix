@@ -1,0 +1,51 @@
+Database:
+  Host: localhost
+  Password: S3CUR3P4SSW0RD
+
+Redis:
+  Host: localhost
+  Port: 6379
+  Password: S3CUR3P4SSW0RD
+
+# The server table for the MySQL stats system.
+Server Table: proxy
+
+# Enabling this means that the matrixPlugin will send debug messages to the console.
+Debug: false
+Channels:
+  h:
+    Permission: 'matrix.staff.aprendiz'
+    Color: 'GREEN'
+  m:
+    Permission: 'matrix.staff.mod'
+    Color: 'LIGHT_PURPLE'
+  b:
+    Permission: 'matrix.staff.builder'
+    Color: 'AQUA'
+  ac:
+    Permission: 'matrix.staff.admin'
+    Color: 'RED'
+  o:
+    Permission: 'matrix.staff.owner'
+    Color: 'DARK_RED'
+
+Motds:
+  default:
+    Lines:
+    - '&4           Nifheim Network &8| &awww.nifheim.net'
+    - '&f           &6&k!&e&k!&6&k!&f&l ABIERTO PROXIMAMENTE!! &6&k!&e&k!&6&k!'
+  70:
+    Lines:
+    - '&4           Nifheim Network &8| &awww.nifheim.net'
+    - '&f   &6&l70%&a de descuento en nuestra tienda &6www.nifheim.net/tienda'
+    countdown: '70'
+
+# Server aliases for tablist
+lobby#1: Lobby
+lobby#2: Lobby
+
+# List of youtubers for the /yt command
+Youtubers:
+#  YoutuberName:
+#    Canal: youtubechannel.com
+#    Twitter: twitter.com/youtuber

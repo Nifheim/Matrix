@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -38,7 +38,7 @@ import org.bukkit.inventory.meta.BookMeta;
 @RequiredArgsConstructor
 public class PlayerJoinListener implements Listener {
 
-    private final MatrixBukkit plugin;
+    private final MatrixBukkitBootstrap plugin;
     private final MatrixAPI api = Matrix.getAPI();
     private boolean firstjoin = true;
 

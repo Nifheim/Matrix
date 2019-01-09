@@ -18,9 +18,9 @@ public final class PermsUtils {
     private static final LuckPermsApi permsAPI = LuckPerms.getApi();
 
     /**
-     * Get the prefix for a player from the permissions plugin.
+     * Get the prefix for a player from the permissions matrixPlugin.
      *
-     * @param player The UUID of the player to lookup in the permissions plugin.
+     * @param player The UUID of the player to lookup in the permissions matrixPlugin.
      * @return String representing the prefix.
      */
     public static String getPrefix(UUID player) {

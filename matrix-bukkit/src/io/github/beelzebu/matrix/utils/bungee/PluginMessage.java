@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import java.util.Collections;
 import java.util.List;
@@ -16,17 +16,17 @@ public class PluginMessage implements PluginMessageListener {
 
     private static PluginMessage instance;
 
-    public PluginMessage(MatrixBukkit matrixBukkit) {
+    public PluginMessage(MatrixBukkitBootstrap matrixBukkitBootstrap) {
         instance = this;
-        Bukkit.getMessenger().registerOutgoingPluginChannel(matrixBukkit, "BungeeCord");
-        Bukkit.getMessenger().registerIncomingPluginChannel(matrixBukkit, "BungeeCord", instance);
-        Bukkit.getMessenger().registerOutgoingPluginChannel(matrixBukkit, "RedisBungee");
-        Bukkit.getMessenger().registerIncomingPluginChannel(matrixBukkit, "RedisBungee", instance);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(matrixBukkitBootstrap, "BungeeCord");
+        Bukkit.getMessenger().registerIncomingPluginChannel(matrixBukkitBootstrap, "BungeeCord", instance);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(matrixBukkitBootstrap, "RedisBungee");
+        Bukkit.getMessenger().registerIncomingPluginChannel(matrixBukkitBootstrap, "RedisBungee", instance);
     }
 
     public static PluginMessage get() {
         if (instance == null) {
-            instance = new PluginMessage(MatrixBukkit.getPlugin(MatrixBukkit.class));
+            instance = new PluginMessage(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class));
         }
         return instance;
     }
@@ -60,9 +60,9 @@ public class PluginMessage implements PluginMessageListener {
         message.forEach(out::writeUTF);
         if (player != null) {
             try {
-                player.sendPluginMessage(MatrixBukkit.getPlugin(MatrixBukkit.class), channel, out.toByteArray());
+                player.sendPluginMessage(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class), channel, out.toByteArray());
             } catch (Exception ex) {
-                Matrix.getAPI().log("Hey, you need to install the plugin in BungeeCord if you have bungeecord enabled in spigot.yml!");
+                Matrix.getAPI().log("Hey, you need to install the matrixPlugin in BungeeCord if you have bungeecord enabled in spigot.yml!");
             }
         }
     }

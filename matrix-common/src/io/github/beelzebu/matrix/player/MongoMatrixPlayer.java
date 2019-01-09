@@ -63,8 +63,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected long exp;
     protected Date lastLogin;
     protected Set<PlayerOptionType> options = new HashSet<>();
+    protected String IP;
     protected Set<String> ipHistory = new LinkedHashSet<>();
-    protected transient String IP;
     protected transient Set<Statistics> statistics = new HashSet<>();
 
     public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
@@ -233,7 +233,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Object value = FIELDS.get(field).get(this);
             String jsonValue = Matrix.GSON.toJson(value);
-            Matrix.getAPI().debug("Updating " + getName() + " field `" + field + "'  with value `" + jsonValue + "'");
+            Matrix.getAPI().debug("Updating " + getName() + " field `" + field + "' with value `" + jsonValue + "'");
             if (value != null) {
                 jedis.hset(getKey(), field, jsonValue);
             } else {

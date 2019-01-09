@@ -38,6 +38,9 @@ public class StatsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onFlyChange(PlayerToggleFlightEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
         api.getPlayer(e.getPlayer().getUniqueId()).setOption(PlayerOptionType.FLY, e.getPlayer().getAllowFlight());
     }
 }

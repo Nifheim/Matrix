@@ -6,7 +6,7 @@ import com.gmail.filoghost.holographicdisplays.api.line.ItemLine;
 import de.slikey.effectlib.Effect;
 import de.slikey.effectlib.EffectManager;
 import de.slikey.effectlib.effect.WarpEffect;
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import io.github.beelzebu.matrix.api.server.powerup.Powerup;
 import java.util.HashSet;
@@ -25,17 +25,17 @@ import org.bukkit.potion.PotionEffect;
 public class PowerupManager {
 
     private static PowerupManager instance;
-    private final MatrixBukkit plugin;
+    private final MatrixBukkitBootstrap plugin;
     @Getter
     private final Set<Powerup> powerups = new HashSet<>();
 
-    private PowerupManager(MatrixBukkit matrixBukkit) {
-        plugin = matrixBukkit;
+    private PowerupManager(MatrixBukkitBootstrap matrixBukkitBootstrap) {
+        plugin = matrixBukkitBootstrap;
         LobbyData.getInstance().getConfig().getStringList("Powerups").forEach(powerup -> powerups.add(Powerup.fromString(powerup, new WarpEffect(new EffectManager(plugin)))));
     }
 
     public static PowerupManager getInstance() {
-        return instance == null ? instance = new PowerupManager(MatrixBukkit.getPlugin(MatrixBukkit.class)) : instance;
+        return instance == null ? instance = new PowerupManager(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class)) : instance;
     }
 
     public void spawnPowerup(Location loc, String title, ItemStack item, Effect effect, PotionEffect potionEffect, int chance) {

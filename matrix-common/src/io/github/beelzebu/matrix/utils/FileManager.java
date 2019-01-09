@@ -38,7 +38,7 @@ public class FileManager {
             out.close();
             in.close();
         } catch (IOException e) {
-            Logger.getLogger(FileManager.class.getName()).log(Level.WARNING, "Can''t copy the file {0} to the plugin data folder. Cause: {1}", new Object[]{file.getName(), e.getCause().toString()});
+            Logger.getLogger(FileManager.class.getName()).log(Level.WARNING, "Can''t copy the file {0} to the matrixPlugin data folder. Cause: {1}", new Object[]{file.getName(), e.getCause().toString()});
         }
     }
 

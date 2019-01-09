@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -23,15 +23,15 @@ import org.bukkit.entity.Player;
 /**
  * @author Beelzebu
  */
-@RequiredArgsConstructor
+@Data
 public class MatrixPluginBukkit implements MatrixPlugin {
 
-    private final MatrixBukkit plugin;
+    private final MatrixBukkitBootstrap bootstrap;
     private final CommandSender console = Bukkit.getConsoleSender();
 
     @Override
     public MatrixConfig getConfig() {
-        return plugin.getConfiguration();
+        return bootstrap.getConfiguration();
     }
 
     @Override
@@ -41,17 +41,17 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public void runAsync(Runnable rn) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, rn);
+        Bukkit.getScheduler().runTaskAsynchronously(bootstrap, rn);
     }
 
     @Override
     public void runAsync(Runnable rn, Integer timer) {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, rn, 0, timer * 20);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(bootstrap, rn, 0, timer * 20);
     }
 
     @Override
     public void runSync(Runnable rn) {
-        Bukkit.getScheduler().runTask(plugin, rn);
+        Bukkit.getScheduler().runTask(bootstrap, rn);
     }
 
     @Override
@@ -86,17 +86,17 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public File getDataFolder() {
-        return plugin.getDataFolder();
+        return bootstrap.getDataFolder();
     }
 
     @Override
     public InputStream getResource(String file) {
-        return plugin.getResource(file);
+        return bootstrap.getResource(file);
     }
 
     @Override
     public String getVersion() {
-        return plugin.getDescription().getVersion();
+        return bootstrap.getDescription().getVersion();
     }
 
     @Override

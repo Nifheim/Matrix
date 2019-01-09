@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.listeners;
 
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,10 +10,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class ViewDistanceListener implements Listener {
 
-    private final MatrixBukkit plugin;
+    private final MatrixBukkitBootstrap plugin;
 
-    public ViewDistanceListener(MatrixBukkit matrixBukkit) {
-        plugin = matrixBukkit;
+    public ViewDistanceListener(MatrixBukkitBootstrap matrixBukkitBootstrap) {
+        plugin = matrixBukkitBootstrap;
     }
 
     public static int getViewDistance(Player p) {

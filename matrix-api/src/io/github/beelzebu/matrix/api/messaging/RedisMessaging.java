@@ -34,7 +34,10 @@ public class RedisMessaging {
 
     public RedisMessaging(MatrixAPI api) {
         this.api = api;
-        pool = new JedisPool(new JedisPoolConfig(), api.getConfig().getString("Redis.Host"), api.getConfig().getInt("Redis.Port"), 0, api.getConfig().getString("Redis.Password"));
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMinIdle(1);
+        config.setMaxTotal(101);
+        pool = new JedisPool(config, api.getConfig().getString("Redis.Host"), api.getConfig().getInt("Redis.Port"), 0, api.getConfig().getString("Redis.Password"));
         api.getPlugin().runAsync(pubSubListener = new PubSubListener());
     }
 

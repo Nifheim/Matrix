@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.listeners;
 
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.Titles;
@@ -13,11 +13,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class PlayerDeathListener implements Listener {
 
-    private final MatrixBukkit plugin;
+    private final MatrixBukkitBootstrap plugin;
     private final MatrixAPI core = Matrix.getAPI();
 
-    public PlayerDeathListener(MatrixBukkit matrixBukkit) {
-        plugin = matrixBukkit;
+    public PlayerDeathListener(MatrixBukkitBootstrap matrixBukkitBootstrap) {
+        plugin = matrixBukkitBootstrap;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.utils.bungee;
 
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
@@ -54,7 +54,7 @@ public class BungeeServerTracker {
         if (taskID != -1) {
             Bukkit.getScheduler().cancelTask(taskID);
         }
-        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(MatrixBukkit.getPlugin(MatrixBukkit.class), () -> {
+        taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class), () -> {
             for (String server : trackedServers.keySet()) {
                 PluginMessage.get().askPlayerCount(server);
             }

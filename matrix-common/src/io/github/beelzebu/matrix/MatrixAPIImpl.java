@@ -36,7 +36,7 @@ public class MatrixAPIImpl extends MatrixAPI {
     }
 
     /**
-     * The folder where the plugin data is stored.
+     * The folder where the matrixPlugin data is stored.
      *
      * @return The File representing the folder.
      */

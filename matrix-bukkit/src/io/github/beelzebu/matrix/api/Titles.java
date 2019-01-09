@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.api;
 
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -163,7 +163,7 @@ public class Titles {
                 public void run() {
                     sendActionBar(player, message);
                 }
-            }.runTaskLater(MatrixBukkit.getPlugin(MatrixBukkit.class), sched);
+            }.runTaskLater(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class), sched);
         }
     }
 

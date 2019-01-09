@@ -1,11 +1,3 @@
-# Version of this file, don't edit!
-version: 10
-
-# ========== Universal (BungeeCord and Bukkit) ==========
-
-# The prefix that will be used in the messages with the %prefix% placeholder.
-Prefix: '&a&lNifheim &8&l>&7'
-
 Database:
   Host: localhost
   Password: S3CUR3P4SSW0RD
@@ -26,10 +18,8 @@ Server Table: Lobby
 # World used as Lobby in MINIGAME_MULTIARENA
 Lobby World: Lobby
 
-# Enabling this means that the plugin will send debug messages to the console.
+# Enabling this means that the matrixPlugin will send debug messages to the console.
 Debug: false
-
-# ========== Bukkit/Spigot ==========
 
 ChatControl:
   Caps:
@@ -48,7 +38,7 @@ PortalFix:
   Strict Mode: true
 
 # Commands on first join, this feature executes all the commands in the list the first time that
-# a player joins to the server after a reload of the plugin.
+# a player joins to the server after a reload of the matrixPlugin.
 Join cmds:
 - 'lagg clear'
 - 'lagg gc'
@@ -60,32 +50,3 @@ Join cmds:
 Death Titles:
   Mode: Always
   Stay: 60
-
-# ========== BungeeCord/Waterfall ==========
-
-Channels:
-  h:
-    Permission: 'matrix.staff.aprendiz'
-    Color: 'GREEN'
-  m:
-    Permission: 'matrix.staff.mod'
-    Color: 'LIGHT_PURPLE'
-  b:
-    Permission: 'matrix.staff.builder'
-    Color: 'AQUA'
-  ac:
-    Permission: 'matrix.staff.admin'
-    Color: 'RED'
-  o:
-    Permission: 'matrix.staff.owner'
-    Color: 'DARK_RED'
-
-# Server aliases for tablist
-lobby#1: Lobby
-lobby#2: Lobby
-
-# List of youtubers for the /yt command
-Youtubers:
-#  YoutuberName:
-#    Canal: youtubechannel.com
-#    Twitter: twitter.com/youtuber

@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.config;
 
-import io.github.beelzebu.matrix.MatrixBukkit;
+import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import java.io.File;
 import java.util.Collection;
@@ -14,7 +14,7 @@ public class BukkitConfiguration extends MatrixConfig {
     public BukkitConfiguration(File file) {
         super(file);
         if (file.getName().equalsIgnoreCase("config.yml")) {
-            config = MatrixBukkit.getPlugin(MatrixBukkit.class).getConfig();
+            config = MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class).getConfig();
         } else {
             config = YamlConfiguration.loadConfiguration(file);
         }
@@ -33,8 +33,8 @@ public class BukkitConfiguration extends MatrixConfig {
     @Override
     public void reload() {
         if (file.getName().equalsIgnoreCase("config.yml")) {
-            MatrixBukkit.getPlugin(MatrixBukkit.class).reloadConfig();
-            config = MatrixBukkit.getPlugin(MatrixBukkit.class).getConfig();
+            MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class).reloadConfig();
+            config = MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class).getConfig();
         } else {
             config = YamlConfiguration.loadConfiguration(file);
         }
