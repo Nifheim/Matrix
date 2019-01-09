@@ -17,7 +17,6 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -54,22 +53,6 @@ public class LoginListener implements Listener {
         if (e.getPlayer().isConnected()) {
             e.getPlayer().setTabHeader(MatrixBungeeBootstrap.TAB_HEADER, MatrixBungeeBootstrap.TAB_FOOTER);
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onProxyPing(ProxyPingEvent e) {
-        if (plugin.isMaintenance()) {
-            e.getResponse().getVersion().setProtocol(-1);
-            e.getResponse().getVersion().setName("§cEn mantenimiento");
-        }
-        // banear los proxy en el momento en que hacen ping en la lista de servidores
-        e.registerIntent(plugin);
-        api.getPlugin().runAsync(() -> {
-            if (isProxy(e.getConnection().getAddress().getAddress().getHostAddress())) {
-                api.getPlugin().ban(e.getConnection().getAddress().getAddress().getHostAddress());
-            }
-            e.completeIntent(plugin);
-        });
     }
 
     @EventHandler(priority = 127)

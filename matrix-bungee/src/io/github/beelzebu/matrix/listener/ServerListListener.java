@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.listener;
 
+import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.motd.Motd;
 import io.github.beelzebu.matrix.motd.MotdManager;
@@ -48,6 +49,10 @@ public class ServerListListener implements Listener {
                 if (!Objects.equals(host, "mc.nifheim.net")) {
                     e.getResponse().setDescriptionComponent(new TextComponent("Please join using mc.nifheim.net\nPor favor ingresa usando mc.nifheim.net"));
                     return;
+                }
+                if (((MatrixBungeeBootstrap) Matrix.getAPI().getPlugin().getBootstrap()).isMaintenance()) {
+                    e.getResponse().getVersion().setProtocol(-1);
+                    e.getResponse().getVersion().setName("§cEn mantenimiento");
                 }
                 // select random motd
                 List<Motd> motds = MotdManager.getMotds().stream().filter(motd -> motd.getCountdown() == null || (motd.getCountdown() != null && !motd.getCountdown().isOver())).collect(Collectors.toList());
