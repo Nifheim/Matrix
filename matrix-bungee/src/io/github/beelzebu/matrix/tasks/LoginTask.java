@@ -39,14 +39,16 @@ public class LoginTask implements Runnable {
                     return;
                 }
             }
-            player.setUniqueId(event.getConnection().getUniqueId());
-            player.setName(event.getConnection().getName());
             if (plugin.isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
                 event.setCancelReason(TextComponent.fromLegacyText(Matrix.getAPI().getString(Message.MAINTENANCE, player.getLastLocale())));
                 return;
             }
-            player.saveToRedis();
+            if (event.getConnection().getUniqueId() != null && event.getConnection().getName() != null) {
+                player.setUniqueId(event.getConnection().getUniqueId());
+                player.setName(event.getConnection().getName());
+                player.saveToRedis();
+            }
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
