@@ -239,6 +239,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void updateCached(String field) {
+        if (!Matrix.getAPI().getCache().getPlayer(getUniqueId()).isPresent()) {
+            return;
+        }
         if (Objects.equals(field, "name") && getName() == null) {
             Matrix.getAPI().debug("Trying to save a null name for " + getUniqueId());
             return;
