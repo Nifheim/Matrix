@@ -124,7 +124,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     @Override
     public void setPremium(boolean premium) {
         this.premium = premium;
-        setUniqueId(Matrix.getAPI().getPlugin().getUniqueId(name));
         updateCached("premium");
     }
 
