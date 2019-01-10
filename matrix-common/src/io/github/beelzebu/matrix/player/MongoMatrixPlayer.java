@@ -76,9 +76,14 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer();
         FIELDS.forEach((id, field) -> {
             try {
-                Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
-                if (value != null) {
-                    field.set(mongoMatrixPlayer, value);
+                if (Objects.equals(id, "name") && hash.get(id) == null || Objects.equals(id, "uniqueId") && hash.get(id) == null) {
+                    throw new NullPointerException(id + " can't be null");
+                }
+                if (hash.get(id) != null) {
+                    Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
+                    if (value != null) {
+                        field.set(mongoMatrixPlayer, value);
+                    }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -234,6 +239,14 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void updateCached(String field) {
+        if (Objects.equals(field, "name") && getName() == null) {
+            Matrix.getAPI().debug("Trying to save a null name for " + getUniqueId());
+            return;
+        }
+        if (Objects.equals(field, "uniqueId") && getUniqueId() == null) {
+            Matrix.getAPI().debug("Trying to save a null uuid for " + getName());
+            return;
+        }
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Object value = FIELDS.get(field).get(this);
             String jsonValue = Matrix.GSON.toJson(value);
