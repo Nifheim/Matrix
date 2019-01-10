@@ -6,7 +6,6 @@ import io.github.beelzebu.matrix.api.cache.CacheProvider;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -41,8 +40,9 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void update(String name, UUID uniqueId) {
-        Objects.requireNonNull(name, "Name can't be null");
-        Objects.requireNonNull(uniqueId, "UUID can't be null");
+        if (name == null || uniqueId == null) {
+            return;
+        }
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             jedis.set("uuid:" + name, uniqueId.toString());
             jedis.set("name:" + uniqueId.toString(), name);
