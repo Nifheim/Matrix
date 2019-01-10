@@ -25,7 +25,14 @@ public class LoginTask implements Runnable {
         try {
             if (player == null) {
                 if (event.getConnection().getUniqueId() != null && event.getConnection().getName() != null) {
-                    player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
+                    MatrixPlayer playerByName = Matrix.getAPI().getPlayer(event.getConnection().getName());
+                    if (playerByName != null && !playerByName.isPremium() && event.getConnection().isOnlineMode()) {
+                        playerByName.setUniqueId(event.getConnection().getUniqueId());
+                        playerByName.setPremium(true);
+                        playerByName.setRegistered(true);
+                    } else {
+                        player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
+                    }
                 } else {
                     event.setCancelled(true);
                     event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));
