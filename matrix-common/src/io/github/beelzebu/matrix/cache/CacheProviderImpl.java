@@ -61,13 +61,8 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<MatrixPlayer> getPlayer(String name) {
-        try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            UUID uniqueId = getUniqueId(name).orElse(Matrix.getAPI().getPlugin().getUniqueId(name));
-            return Optional.ofNullable(uniqueId != null ? MongoMatrixPlayer.fromHash(jedis.hgetAll("user:" + uniqueId)) : null);
-        } catch (JedisException | JsonParseException ex) {
-            Matrix.getAPI().debug(ex);
-        }
-        return Optional.empty();
+        UUID uniqueId = getUniqueId(name).orElse(Matrix.getAPI().getPlugin().getUniqueId(name));
+        return uniqueId != null ? getPlayer(uniqueId) : Optional.empty();
     }
 
     @Override
