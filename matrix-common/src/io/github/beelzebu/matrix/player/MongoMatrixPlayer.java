@@ -133,12 +133,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setRegistered(boolean registered) {
-        this.registered = registered;
-        updateCached("registered");
-    }
-
-    @Override
     public void setAdmin(boolean admin) {
         this.admin = admin;
         updateCached("admin");

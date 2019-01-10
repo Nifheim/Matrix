@@ -4,7 +4,6 @@ import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.listener.LoginListener;
-import io.github.beelzebu.matrix.utils.ErrorCodes;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -45,20 +44,6 @@ public class PreLoginTask implements Runnable {
             if (LoginListener.isProxy(event.getConnection().getAddress().getAddress().getHostAddress())) {
                 Matrix.getAPI().getPlugin().ban(event.getConnection().getAddress().getAddress().getHostAddress());
                 return;
-            }
-            MatrixPlayer playerByName = Matrix.getAPI().getPlayer(event.getConnection().getName());
-            if (player != null && playerByName != null) {
-                if (!Objects.equals(playerByName.getUniqueId(), event.getConnection().getUniqueId())) {
-                    event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n" +
-                            "\n" +
-                            "Your UUID doesn't match with the UUID associated to your name in our database.\n" +
-                            "This login attempt was recorded for security reasons."));
-                    event.setCancelled(true);
-                    return;
-                }
-                if (player.isPremium()) {
-                    event.getConnection().setOnlineMode(true);
-                }
             }
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));

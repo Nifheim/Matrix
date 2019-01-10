@@ -6,6 +6,7 @@ import io.github.beelzebu.matrix.api.Message;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.utils.ErrorCodes;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
@@ -28,10 +29,18 @@ public class LoginTask implements Runnable {
             if (player == null) {
                 if (pc.getUniqueId() != null && pc.getName() != null) {
                     MatrixPlayer playerByName = Matrix.getAPI().getPlayer(pc.getName());
-                    if (playerByName != null && !playerByName.isPremium() && pc.isOnlineMode()) {
-                        playerByName.setUniqueId(pc.getUniqueId());
-                        playerByName.setPremium(true);
-                        playerByName.setRegistered(true);
+                    if (playerByName != null) {
+                        if (!playerByName.isPremium() && pc.isOnlineMode()) {
+                            playerByName.setUniqueId(pc.getUniqueId());
+                            playerByName.setPremium(true);
+                        } else if (!Objects.equals(playerByName.getUniqueId(), pc.getUniqueId())) {
+                            event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n" +
+                                    "\n" +
+                                    "Your UUID doesn't match with the UUID associated to your name in our database.\n" +
+                                    "This login attempt was recorded for security reasons."));
+                            event.setCancelled(true);
+                            return;
+                        }
                     } else {
                         player = new MongoMatrixPlayer(pc.getUniqueId(), pc.getName()).save();
                     }
