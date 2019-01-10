@@ -39,6 +39,8 @@ public class LoginTask implements Runnable {
                     return;
                 }
             }
+            player.setUniqueId(event.getConnection().getUniqueId());
+            player.setName(event.getConnection().getName());
             if (plugin.isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
                 event.setCancelReason(TextComponent.fromLegacyText(Matrix.getAPI().getString(Message.MAINTENANCE, player.getLastLocale())));
