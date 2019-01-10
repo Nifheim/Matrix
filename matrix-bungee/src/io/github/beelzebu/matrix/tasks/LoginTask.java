@@ -8,6 +8,7 @@ import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.utils.ErrorCodes;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.LoginEvent;
 
 /**
@@ -23,15 +24,16 @@ public class LoginTask implements Runnable {
     @Override
     public void run() {
         try {
+            PendingConnection pc = event.getConnection();
             if (player == null) {
-                if (event.getConnection().getUniqueId() != null && event.getConnection().getName() != null) {
-                    MatrixPlayer playerByName = Matrix.getAPI().getPlayer(event.getConnection().getName());
-                    if (playerByName != null && !playerByName.isPremium() && event.getConnection().isOnlineMode()) {
-                        playerByName.setUniqueId(event.getConnection().getUniqueId());
+                if (pc.getUniqueId() != null && pc.getName() != null) {
+                    MatrixPlayer playerByName = Matrix.getAPI().getPlayer(pc.getName());
+                    if (playerByName != null && !playerByName.isPremium() && pc.isOnlineMode()) {
+                        playerByName.setUniqueId(pc.getUniqueId());
                         playerByName.setPremium(true);
                         playerByName.setRegistered(true);
                     } else {
-                        player = new MongoMatrixPlayer(event.getConnection().getUniqueId(), event.getConnection().getName()).save();
+                        player = new MongoMatrixPlayer(pc.getUniqueId(), pc.getName()).save();
                     }
                 } else {
                     event.setCancelled(true);
@@ -44,9 +46,9 @@ public class LoginTask implements Runnable {
                 event.setCancelReason(TextComponent.fromLegacyText(Matrix.getAPI().getString(Message.MAINTENANCE, player.getLastLocale())));
                 return;
             }
-            if (event.getConnection().getUniqueId() != null && event.getConnection().getName() != null) {
-                player.setUniqueId(event.getConnection().getUniqueId());
-                player.setName(event.getConnection().getName());
+            if (pc.getUniqueId() != null && pc.getName() != null) {
+                player.setUniqueId(pc.getUniqueId());
+                player.setName(pc.getName());
                 player.saveToRedis();
             }
             Matrix.getAPI().getPlayers().add(player);
