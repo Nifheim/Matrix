@@ -38,6 +38,9 @@ public class RedisMessaging {
         config.setMinIdle(1);
         config.setMaxTotal(101);
         pool = new JedisPool(config, api.getConfig().getString("Redis.Host"), api.getConfig().getInt("Redis.Port"), 0, api.getConfig().getString("Redis.Password"));
+        try (Jedis jedis = pool.getResource()) {
+            jedis.ping();
+        }
         api.getPlugin().runAsync(pubSubListener = new PubSubListener());
     }
 

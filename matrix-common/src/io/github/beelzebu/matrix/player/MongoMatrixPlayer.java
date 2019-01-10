@@ -252,6 +252,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void saveToRedis() {
+        Objects.requireNonNull(uniqueId, "UUID can't be null");
+        Objects.requireNonNull(name, "name can't be null");
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
             FIELDS.forEach((id, field) -> {
                 try {
