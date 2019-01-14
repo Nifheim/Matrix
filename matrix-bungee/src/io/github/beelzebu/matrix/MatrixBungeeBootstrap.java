@@ -14,6 +14,7 @@ import io.github.beelzebu.matrix.command.ReplyCommand;
 import io.github.beelzebu.matrix.config.BungeeConfiguration;
 import io.github.beelzebu.matrix.listener.ChatListener;
 import io.github.beelzebu.matrix.listener.LoginListener;
+import io.github.beelzebu.matrix.listener.PermissionListener;
 import io.github.beelzebu.matrix.listener.ServerListListener;
 import io.github.beelzebu.matrix.motd.MotdManager;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
@@ -43,8 +44,8 @@ import redis.clients.jedis.Jedis;
 @Setter
 public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
-    public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Vulthur&7!\n&7IP: &amc.vulthur.cl\n"));
-    public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &evulthur.cl/tienda &7Twitter: &e@vulthurmc\n&7Discord: &evulthur.cl/discord &7Web: &evulthur.cl"));
+    public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Nifheim&7!\n&7IP: &amc.nifheim.net\n"));
+    public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &enifheim.net/tienda &7Twitter: &e@NifheimNetwork\n&7Discord: &enifheim.net/discord &7Web: &enifheim.net"));
     private static final Map<String, Channel> CHANNELS = new HashMap<>();
     private static final String MAINTENANCE_KEY = "matrix:maintenance";
     private MatrixAPIImpl api;
@@ -83,6 +84,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new ReplyCommand(this));
         registerCommand(new PluginsCommand());
         registerCommand(new CountdownCommand());
+        new PermissionListener();
         MotdManager.onEnable();
         new BasicCommands(this);
         config.getKeys("Channels").forEach((channel) -> CHANNELS.put(channel, new Channel(channel, config.getString("Channels." + channel + ".Permission"), ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register()));

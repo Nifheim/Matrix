@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 public class Spit extends MatrixCommand {
 
     public Spit() {
-        super("spit", "matrix.spit", "escupir");
+        super("spit", "matrix.command.spit", "escupir");
     }
 
     @Override

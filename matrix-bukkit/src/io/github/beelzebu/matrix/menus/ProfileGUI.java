@@ -88,8 +88,6 @@ public class ProfileGUI extends GUIManager {
         AbstractConfig messages = core.getMessages(player.getLocale());
         messages.getKeys("Social.Profile.Items").forEach(itemPath -> items.add(getItem(messages, "Social.Profile.Items." + itemPath)));
         socialItems(getInv(), player, 10);
-        items.forEach(item -> {
-            setItem(item.getSlot(), item.getItemStack(), item.getGuiAction());
-        });
+        items.forEach(this::setItem);
     }
 }

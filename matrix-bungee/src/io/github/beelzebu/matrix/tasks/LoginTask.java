@@ -33,6 +33,7 @@ public class LoginTask implements Runnable {
                         if (!playerByName.isPremium() && pc.isOnlineMode()) {
                             playerByName.setUniqueId(pc.getUniqueId());
                             playerByName.setPremium(true);
+                            player = playerByName;
                         } else if (!Objects.equals(playerByName.getUniqueId(), pc.getUniqueId())) {
                             event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n" +
                                     "\n" +

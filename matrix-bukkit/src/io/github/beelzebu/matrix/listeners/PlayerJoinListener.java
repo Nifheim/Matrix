@@ -78,7 +78,6 @@ public class PlayerJoinListener implements Listener {
                 }
             }
         });
-        api.getPlugin().runSync(() -> api.getPlayer(p.getUniqueId()).getOptions().forEach(opt -> api.getPlayer(p.getUniqueId()).setOption(opt, true)));
 
         // Later task
         Bukkit.getScheduler().runTaskLater(plugin, () -> {

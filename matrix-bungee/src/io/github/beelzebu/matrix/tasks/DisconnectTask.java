@@ -22,7 +22,7 @@ public class DisconnectTask implements Runnable {
             if (player.isAuthed()) {
                 player.setAuthed(false);
             }
-            if (player.isAdmin() && !event.getPlayer().hasPermission("nifheim.admin")) {
+            if (player.isAdmin() && !event.getPlayer().hasPermission("matrix.admin")) {
                 player.setAdmin(false);
             }
             player.setLastLogin(new Date());

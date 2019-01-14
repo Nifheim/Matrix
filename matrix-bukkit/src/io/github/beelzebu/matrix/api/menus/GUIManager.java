@@ -65,6 +65,10 @@ public abstract class GUIManager {
         inventoriesByUUID.put(getUniqueId(), this);
     }
 
+    public final void setItem(Item item) {
+        setItem(item.getSlot(), item.getItemStack(), item.getGuiAction());
+    }
+
     public final void setItem(int slot, ItemStack is, GUIAction action) {
         inv.setItem(slot, is);
         if (action != null) {

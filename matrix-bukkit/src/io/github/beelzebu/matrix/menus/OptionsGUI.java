@@ -20,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * @author Beelzebu
@@ -39,14 +38,9 @@ public class OptionsGUI extends GUIManager {
     private void setItems() {
         MatrixPlayer np = api.getPlayer(player.getUniqueId());
         String lang = player.getLocale();
-        for (int i = 0; i < 27; i++) {
-            setItem(i, new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7));
-        }
 
         List<String> speedlore = new ArrayList<>();
-        api.getMessages(lang).getStringList("Options.Speed.Lore").forEach(line -> {
-            speedlore.add(rep(line, new SpeedOption(np)));
-        });
+        api.getMessages(lang).getStringList("Options.Speed.Lore").forEach(line -> speedlore.add(rep(line, new SpeedOption(np))));
 
         setItem(10, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(api.getString("Options.Speed.Name", lang)).color(Color.RED).lore(speedlore).build(), p -> {
             boolean status = !np.getOption(PlayerOptionType.SPEED);
@@ -59,9 +53,7 @@ public class OptionsGUI extends GUIManager {
         });
 
         List<String> flylore = new ArrayList<>();
-        api.getMessages(lang).getStringList("Options.Fly.Lore").forEach(line -> {
-            flylore.add(rep(line, new FlyOption(np)));
-        });
+        api.getMessages(lang).getStringList("Options.Fly.Lore").forEach(line -> flylore.add(rep(line, new FlyOption(np))));
 
         setItem(12, new ItemBuilder(Material.FEATHER).displayname(api.getString("Options.Fly.Name", lang)).lore(flylore).build(), p -> {
             if (p.hasPermission("matrix.vip.count")) {
@@ -105,7 +97,7 @@ public class OptionsGUI extends GUIManager {
                 p.closeInventory();
             }
         });
-        if (player.hasPermission("nifheim.option.nick")) {
+        if (player.hasPermission("matrix.command.nick")) {
             setItem(26, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(api.rep("&8Ocultar nick")).lore(np.getOption(PlayerOptionType.NICKNAME) + "").build(), p -> {
                 boolean status = !np.getOption(PlayerOptionType.NICKNAME);
                 np.setOption(PlayerOptionType.NICKNAME, status);

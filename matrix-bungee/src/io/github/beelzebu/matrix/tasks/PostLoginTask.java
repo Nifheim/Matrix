@@ -23,9 +23,9 @@ public class PostLoginTask implements Runnable {
                 event.getPlayer().disconnect(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));
                 return;
             }
-            if (event.getPlayer().hasPermission("nifheim.admin")) {
-                player.setAdmin(false);
-            } else if (!event.getPlayer().hasPermission("nifheim.admin") && player.isAdmin()) {
+            if (event.getPlayer().hasPermission("matrix.admin")) {
+                player.setAdmin(true);
+            } else if (player.isAdmin()) {
                 player.setAdmin(false);
             }
             Matrix.getAPI().getPlayers().add(player);
