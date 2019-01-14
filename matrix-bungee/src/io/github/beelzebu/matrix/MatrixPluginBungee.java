@@ -6,6 +6,7 @@ import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import io.github.beelzebu.matrix.config.BungeeConfiguration;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Objects;
@@ -31,7 +32,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public AbstractConfig getFileAsConfig(File file) {
-        throw new UnsupportedOperationException("getMessages is not finished yet.");
+        return new BungeeConfiguration(file);
     }
 
     @Override
