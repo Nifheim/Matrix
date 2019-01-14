@@ -10,7 +10,9 @@ import io.github.beelzebu.matrix.cache.CacheProviderImpl;
 import io.github.beelzebu.matrix.database.MongoStorage;
 import io.github.beelzebu.matrix.utils.FileManager;
 import java.io.File;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -33,6 +35,7 @@ public class MatrixAPIImpl extends MatrixAPI {
         cache = new CacheProviderImpl();
         serverInfo = new ServerInfo(plugin.getConfig().getString("Server Table").replaceAll(" ", ""));
         serverInfo.setServerType(ServerType.valueOf(plugin.getConfig().getString("Server Type").toUpperCase()));
+        Stream.of(Objects.requireNonNull(plugin.getDataFolder().listFiles())).filter(file -> file.getName().startsWith("messages")).forEach(file -> messagesMap.put((file.getName().split("_").length == 2 ? file.getName().split("_")[1] : "default").split(".yml")[0], plugin.getFileAsConfig(file)));
     }
 
     /**

@@ -10,7 +10,6 @@ import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -19,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
@@ -31,8 +31,8 @@ import redis.clients.jedis.exceptions.JedisException;
 @Getter
 public abstract class MatrixAPI {
 
+    protected final Map<String, AbstractConfig> messagesMap = new HashMap<>();
     private final Set<RedisMessageEvent> redisListeners = new HashSet<>();
-    private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
     private final Set<MatrixPlayer> players = new HashSet<>();
 
     /**
@@ -91,26 +91,17 @@ public abstract class MatrixAPI {
     /**
      * Get the messages file for the specified lang.
      *
-     * @param lang locale for the messages file.
+     * @param locale locale for the messages file.
      * @return messages file for the requested lang, if the file doesn't exists,
      * return the default messages file.
      */
-    public final AbstractConfig getMessages(String lang) {
-        if (!messagesMap.containsKey(lang.split("_")[0])) {
-            messagesMap.put(lang.split("_")[0], getPlugin().getFileAsConfig(new File(getPlugin().getDataFolder(), "messages_" + lang.split("_")[0] + ".yml")));
-        }
-        return messagesMap.get(lang.split("_")[0]);
+    public final AbstractConfig getMessages(String locale) {
+        return Optional.ofNullable(messagesMap.get(locale.split("_")[0])).orElse(messagesMap.get("default"));
     }
 
-    public final String getString(String path, String lang) {
-        try {
-            return rep(getMessages(lang).getString(path));
-        } catch (NullPointerException ex) {
-            log("The string " + path + " does not exists in messages_" + lang.split("_")[0] + ".yml");
-            path = getMessages("").getString(path);
-            debug(ex);
-        }
-        return rep(path);
+
+    public final String getString(String path, String locale) {
+        return rep(getMessages(locale).getString(path, rep(getMessages("").getString(path, ""))));
     }
 
     public final String getString(Message message, String lang, String... parameters) {
