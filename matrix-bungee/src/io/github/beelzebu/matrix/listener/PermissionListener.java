@@ -20,6 +20,9 @@ public class PermissionListener {
     private void onRecalculate(UserDataRecalculateEvent e) {
         UUID uniqueId = e.getUser().getUuid();
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uniqueId);
+        if (proxiedPlayer == null) {
+            return;
+        }
         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(uniqueId);
         boolean admin = matrixPlayer.isAdmin();
         if (proxiedPlayer.hasPermission("matrix.admin")) {
