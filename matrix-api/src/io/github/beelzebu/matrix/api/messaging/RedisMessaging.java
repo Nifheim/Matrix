@@ -72,12 +72,13 @@ public class RedisMessaging {
         @Override
         public void run() {
             boolean broken = false;
-            try (Jedis rsc = pool.getResource()) {
+            try (Jedis jedis = pool.getResource()) {
                 try {
                     jpsh = new JedisPubSubHandler();
-                    rsc.subscribe(jpsh, MATRIX_CHANNEL);
+                    jedis.subscribe(jpsh, MATRIX_CHANNEL);
                 } catch (Exception e) {
                     api.log("PubSub error, attempting to recover.");
+                    api.debug(e);
                     try {
                         jpsh.unsubscribe();
                     } catch (Exception ignore) {

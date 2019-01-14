@@ -156,6 +156,8 @@ public class LobbyListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         MatrixPlayer np = api.getPlayer(e.getPlayer().getUniqueId());
         Player p = e.getPlayer();
+        setPvP(p, false);
+        setNormalItems(p);
         Bukkit.getScheduler().runTaskLater(plugin, () -> p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation()), 2);
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
@@ -180,7 +182,6 @@ public class LobbyListener implements Listener {
                 if (np.getOption(PlayerOptionType.FLY)) {
                     p.setAllowFlight(true);
                 }
-                setPvP(p, false);
             }, 10);
         } else {
             playerOptions.put(np, np.getOptions());
