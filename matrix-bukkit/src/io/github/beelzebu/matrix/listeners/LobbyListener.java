@@ -308,9 +308,9 @@ public class LobbyListener implements Listener {
             normalPlayers.remove(p);
         } else if (!pvp) {
             pvpPlayers.remove(p);
+            setNormalItems(p);
             if (!normalPlayers.contains(p)) {
                 normalPlayers.add(p);
-                setNormalItems(p);
             }
         }
     }
@@ -348,6 +348,6 @@ public class LobbyListener implements Listener {
 
     @EventHandler
     public void onLocaleChange(PlayerLocaleChangeEvent e) {
-        setPvP(e.getPlayer(), pvpPlayers.contains(e.getPlayer()));
+        setPvP(e.getPlayer(), canPvP(api.getPlayer(e.getPlayer().getUniqueId())));
     }
 }

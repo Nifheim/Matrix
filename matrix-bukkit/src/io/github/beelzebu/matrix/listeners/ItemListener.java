@@ -26,11 +26,11 @@ public class ItemListener implements Listener {
         }
         if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (core.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName())))) {
             Player p = e.getPlayer();
-            if (core.getString("Lobby items.Server selector.Name", p.getLocale()).equals(e.getItem().getItemMeta().getDisplayName())) {
+            if (e.getItem().getType().equals(Material.COMPASS)) {
                 Bukkit.dispatchCommand(p, "minigames");
-            } else if (core.getString("Lobby items.Options.Name", p.getLocale()).equals(e.getItem().getItemMeta().getDisplayName())) {
+            } else if (e.getItem().getType().equals(Material.REDSTONE_COMPARATOR)) {
                 new OptionsGUI(p, core.getString("Options.Title", p.getLocale())).open(p);
-            } else if (core.getString("Lobby items.Profile.Name", p.getLocale()).equals(e.getItem().getItemMeta().getDisplayName())) {
+            } else if (e.getItem().getType().equals(Material.SKULL_ITEM)) {
                 Bukkit.dispatchCommand(p, "perfil");
             }
         }
