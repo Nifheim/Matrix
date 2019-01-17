@@ -28,7 +28,7 @@ public class MatrixAPIImpl extends MatrixAPI {
     private final CacheProviderImpl cache;
     private final ServerInfo serverInfo;
 
-    MatrixAPIImpl(MatrixPlugin plugin) {
+    public MatrixAPIImpl(MatrixPlugin plugin) {
         this.plugin = plugin;
         database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
         redis = new RedisMessaging(this);

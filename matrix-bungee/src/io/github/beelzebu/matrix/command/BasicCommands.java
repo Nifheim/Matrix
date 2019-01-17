@@ -13,6 +13,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 
 public class BasicCommands {
 
@@ -61,6 +63,33 @@ public class BasicCommands {
                 sender.sendMessage(api.rep(CentredMessage.generate("&8&m----------------------------------------")));
             }
         });
+        commands.add(new Command("discord") {
+            @Override
+            public void execute(CommandSender sender, String[] args) {
+                if (args.length == 0) {
+                    sender.sendMessage(api.rep(CentredMessage.generate("&8&m----------------------------------------")));
+                    sender.sendMessage(api.rep(CentredMessage.generate("&7Nos alegra que te intereses en nuestro discord")));
+                    sender.sendMessage(api.rep(CentredMessage.generate("&7puedes unirte con el siguiente enlace:")));
+                    sender.sendMessage("");
+                    sender.sendMessage(api.rep(CentredMessage.generate("&4https://www.nifheim.net/discord")));
+                    sender.sendMessage("");
+                    sender.sendMessage(api.rep(CentredMessage.generate("&7Para obtener un código y verificar tu cuenta usa:")));
+                    sender.sendMessage(api.rep(CentredMessage.generate("&a/discord verify")));
+                    sender.sendMessage("");
+                    sender.sendMessage(api.rep(CentredMessage.generate("&8&m----------------------------------------")));
+                } else if (args.length == 1 && args[0].equalsIgnoreCase("verify")) {
+                    String key = "discord:";
+                    String random;
+                    try (Jedis jedis = api.getRedis().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
+                        random = randomAlphaNumeric(6);
+                        pipeline.expire(key + random, 360).setDependency(pipeline.set(key + random, sender.getName()));
+                        pipeline.sync();
+                        sender.sendMessage(api.rep("&fTu código de verificación es: &a" + random));
+                        sender.sendMessage(api.rep("&fEl código expira en &a5&f minutos."));
+                    }
+                }
+            }
+        });
         commands.add(new Command("pauth") {
             @Override
             public void execute(CommandSender sender, String[] args) {
@@ -74,5 +103,17 @@ public class BasicCommands {
                 }
             }
         });
+
+    }
+
+    private static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    public static String randomAlphaNumeric(int count) {
+        StringBuilder builder = new StringBuilder();
+        while (count-- != 0) {
+            int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
+            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+        }
+        return builder.toString();
     }
 }
