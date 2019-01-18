@@ -30,7 +30,7 @@ public class LoginTask implements Runnable {
                 if (pc.getUniqueId() != null && pc.getName() != null) {
                     MatrixPlayer playerByName = Matrix.getAPI().getPlayer(pc.getName());
                     if (playerByName != null) {
-                        if (!playerByName.isPremium() && pc.isOnlineMode()) {
+                        if (pc.isOnlineMode()) {
                             playerByName.setUniqueId(pc.getUniqueId());
                             playerByName.setPremium(true);
                             player = playerByName;
