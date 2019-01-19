@@ -52,6 +52,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     private MatrixPluginBungee matrixPlugin;
     @Setter(AccessLevel.NONE)
     private BungeeConfiguration config;
+    private boolean maintenance;
 
     public static Channel getChannelFor(MatrixPlayer player) {
         return CHANNELS.get(player.getStaffChannel());
@@ -98,11 +99,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     public boolean isMaintenance() {
         try (Jedis jedis = api.getRedis().getPool().getResource()) {
-            return jedis.exists(MAINTENANCE_KEY);
+            return (maintenance = jedis.exists(MAINTENANCE_KEY));
         } catch (Exception e) {
             api.debug(e);
-            return true;
         }
+        return maintenance;
     }
 
     public void setMaintenance(boolean maintenance) {
@@ -114,7 +115,10 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
             }
         } catch (Exception e) {
             api.debug(e);
+            setMaintenance(maintenance);
+            return;
         }
+        this.maintenance = maintenance;
     }
 
     private void loadManagers() {

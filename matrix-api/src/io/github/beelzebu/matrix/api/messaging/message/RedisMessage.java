@@ -27,9 +27,11 @@ public abstract class RedisMessage {
      *
      * @return unique id of this message.
      */
-    public UUID getUniqueId() {
+    public final UUID getUniqueId() {
         return uniqueId == null ? uniqueId = UUID.randomUUID() : uniqueId;
     }
 
-    public abstract String getChannel();
+    public String getChannel() {
+        return getClass().getName();
+    }
 }

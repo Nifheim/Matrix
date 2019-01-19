@@ -52,7 +52,13 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public Optional<MatrixPlayer> getPlayer(UUID uniqueId) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            return Optional.ofNullable(jedis.exists("user:" + uniqueId) ? MongoMatrixPlayer.fromHash(jedis.hgetAll("user:" + uniqueId)) : null);
+            try {
+                if (jedis.exists("user:" + uniqueId)) {
+                    return Optional.ofNullable(MongoMatrixPlayer.fromHash(jedis.hgetAll("user:" + uniqueId)));
+                }
+            } catch (ClassCastException e) {
+                return getPlayer(uniqueId);
+            }
         } catch (JedisException | JsonParseException ex) {
             Matrix.getAPI().debug(ex);
         }
