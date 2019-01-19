@@ -12,13 +12,15 @@ import redis.clients.jedis.Jedis;
 public class RanksAsdCommand extends Command {
 
     public RanksAsdCommand() {
-        super("ranksasd");
+        super("ranksasd", "matrix.admin");
     }
 
     @Override
     public void execute(CommandSender sender, String[] strings) {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            jedis.hgetAll("discord:verified").forEach((id, name) -> ProxyServer.getInstance().getPluginManager().dispatchCommand(sender, "lpb user " + name + " parent add elite 7d"));
+
+            jedis.hgetAll("discord:verified").forEach((id, name) -> ProxyServer.getInstance().getPluginManager().dispatchCommand(sender, "lpb user " + name + " parent remove elite 7d"));
+            jedis.hgetAll("discord:verified").forEach((id, name) -> ProxyServer.getInstance().getPluginManager().dispatchCommand(sender, "lpb user " + name + " parent addtemp elite 7d"));
         }
     }
 }
