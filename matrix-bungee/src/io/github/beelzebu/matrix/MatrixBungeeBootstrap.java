@@ -10,6 +10,8 @@ import io.github.beelzebu.matrix.command.HelpOpCommand;
 import io.github.beelzebu.matrix.command.MaintenanceCommand;
 import io.github.beelzebu.matrix.command.PlayerInfoCommand;
 import io.github.beelzebu.matrix.command.PluginsCommand;
+import io.github.beelzebu.matrix.command.PremiumCommand;
+import io.github.beelzebu.matrix.command.RanksAsdCommand;
 import io.github.beelzebu.matrix.command.ReplyCommand;
 import io.github.beelzebu.matrix.config.BungeeConfiguration;
 import io.github.beelzebu.matrix.listener.ChatListener;
@@ -85,6 +87,8 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new ReplyCommand(this));
         registerCommand(new PluginsCommand());
         registerCommand(new CountdownCommand());
+        registerCommand(new PremiumCommand(this));
+        registerCommand(new RanksAsdCommand());
         new PermissionListener();
         MotdManager.onEnable();
         new BasicCommands(this);

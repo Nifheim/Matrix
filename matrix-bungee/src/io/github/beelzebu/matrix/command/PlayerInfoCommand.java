@@ -37,6 +37,7 @@ public class PlayerInfoCommand extends Command {
                                     + " &cExperiencia &8• &7" + player.getExp() + "&r\n"
                                     + " &cRango &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "Usuario" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"
                                     + " &cÚltimo login &8• &7" + new SimpleDateFormat("HH:mm dd/MM/yyyy").format(player.getLastLogin().getTime()) + "&r\n"
+                                    + " &cPremium &8• &7" + player.isPremium() + "\n"
                                     //+ " &cBaneado &8• &7" + (ban != null ? "si" : "no") + "&r\n"
                                     //+ (ban != null ? "   &cRazón &8• &7" + ban.getReason() + "&r\n" : "")
                                     + " &cIP &8• &7" + (player.getIP() != null ? player.getIP() : (player.getIpHistory().stream().findFirst().isPresent() ? player.getIpHistory().stream().findFirst().get() : "no registrada")) + "&r\n"
