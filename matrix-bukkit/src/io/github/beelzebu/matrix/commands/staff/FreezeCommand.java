@@ -11,18 +11,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-public class Freeze extends MatrixCommand {
+public class FreezeCommand extends MatrixCommand {
 
     public static final Set<Player> FROZEN_PLAYERS = new HashSet<>();
 
-    public Freeze() {
-        super("freeze", "matrix.staff.mod");
+    public FreezeCommand() {
+        super("freeze", "matrix.mod");
     }
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 1) {
-            sender.sendMessage(api.getString("Essentials.Freeze.Usage", sender instanceof Player ? ((Player) sender).getLocale() : ""));
+            sender.sendMessage(api.getString("Essentials.FreezeCommand.Usage", sender instanceof Player ? ((Player) sender).getLocale() : ""));
             return;
         }
         api.getPlugin().runSync(() -> {
@@ -46,7 +46,7 @@ public class Freeze extends MatrixCommand {
                     target.setFallDistance(0);
                     target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999999, -5, false, false));
                     Titles.sendTitle(target, 20, 200, 30, api.rep("&6NO TE DESCONECTES"), "");
-                    target.sendMessage(api.getString("Essentials.Freeze.Target", target.getLocale()));
+                    target.sendMessage(api.getString("Essentials.FreezeCommand.Target", target.getLocale()));
                     if (args.length >= 2) {
                         StringBuilder sb = new StringBuilder();
                         for (int i = 1; i < args.length; i++) {

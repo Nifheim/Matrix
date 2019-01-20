@@ -6,9 +6,9 @@ import org.bukkit.command.CommandSender;
 /**
  * @author Beelzebu
  */
-public class NetworkXP extends MatrixCommand {
+public class NetworkXPCommand extends MatrixCommand {
 
-    public NetworkXP(String command, String permission, String... aliases) {
+    public NetworkXPCommand(String command, String permission, String... aliases) {
         super("nifheimxp", "matrix.staff.admin", "nexp", "nxp");
     }
 

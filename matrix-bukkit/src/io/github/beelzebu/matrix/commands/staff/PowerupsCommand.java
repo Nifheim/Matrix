@@ -10,11 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
-public class Powerups extends MatrixCommand {
+public class PowerupsCommand extends MatrixCommand {
 
     private final LobbyData data = LobbyData.getInstance();
 
-    public Powerups() {
+    public PowerupsCommand() {
         super("powerups", null);
     }
 

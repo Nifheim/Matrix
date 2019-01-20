@@ -4,6 +4,7 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.Message;
 import java.util.Arrays;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,8 @@ public abstract class MatrixCommand extends Command {
 
     protected final MatrixAPI api = Matrix.getAPI();
     protected final String perm;
+    @Setter
+    protected boolean async = true;
 
     public MatrixCommand(String command, String permission, String... aliases) {
         super(command);
@@ -24,7 +27,7 @@ public abstract class MatrixCommand extends Command {
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         if (perm == null || sender.hasPermission(perm)) {
-            if (Bukkit.isPrimaryThread()) {
+            if (async && Bukkit.isPrimaryThread()) {
                 api.getPlugin().runAsync(() -> onCommand(sender, args));
             } else {
                 onCommand(sender, args);

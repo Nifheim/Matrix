@@ -4,7 +4,7 @@ import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.CentredMessage;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
-import io.github.beelzebu.matrix.commands.staff.Freeze;
+import io.github.beelzebu.matrix.commands.staff.FreezeCommand;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -27,7 +27,7 @@ public class InternalListener implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (Freeze.FROZEN_PLAYERS.contains(e.getPlayer())) {
+        if (FreezeCommand.FROZEN_PLAYERS.contains(e.getPlayer())) {
             e.setCancelled(true);
         }
     }
@@ -35,7 +35,7 @@ public class InternalListener implements Listener {
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
         if (e.getEntity() instanceof Player) {
-            if (Freeze.FROZEN_PLAYERS.contains((Player) e.getEntity())) {
+            if (FreezeCommand.FROZEN_PLAYERS.contains((Player) e.getEntity())) {
                 e.setCancelled(true);
             }
         }

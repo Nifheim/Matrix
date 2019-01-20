@@ -60,7 +60,7 @@ public class PlayerJoinListener implements Listener {
         ServerType type = api.getServerInfo().getServerType();
         e.setJoinMessage(null);
         if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL))) {
-            if (!p.hasPermission("matrix.staff")) {
+            if (!p.hasPermission("matrix.mod")) {
                 if (p.hasPermission("matrix.joinmessage")) {
                     e.setJoinMessage(api.rep(" &8[&a+&8] &f" + api.getPlayer(p.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
                 }
@@ -89,7 +89,7 @@ public class PlayerJoinListener implements Listener {
                 plugin.getConfig().getStringList("Join cmds").forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
                 firstjoin = false;
             }
-            if (!p.hasPermission("matrix.staff.mod") && !p.hasPermission("matrix.vip.earl") && !p.hasPermission("matrix.vip.count")) {
+            if (!p.hasPermission("matrix.mod") && !p.hasPermission("matrix.fly")) {
                 matrixPlayer.setOption(PlayerOptionType.FLY, false);
             }
             if (api.getConfig().getBoolean("News")) { // TODO: mejor manejo de múltiples páginas y editar nombre del servidor

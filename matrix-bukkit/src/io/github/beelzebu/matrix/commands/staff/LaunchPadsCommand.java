@@ -7,11 +7,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class LaunchPads extends MatrixCommand {
+public class LaunchPadsCommand extends MatrixCommand {
 
     private final LobbyData data = LobbyData.getInstance();
 
-    public LaunchPads() {
+    public LaunchPadsCommand() {
         super("launchpad", "matrix.staff.admin");
     }
 

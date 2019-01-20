@@ -7,10 +7,13 @@ import io.github.beelzebu.matrix.api.player.Statistics;
 import io.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
-import io.github.beelzebu.matrix.commands.staff.Freeze;
-import io.github.beelzebu.matrix.commands.staff.LaunchPads;
-import io.github.beelzebu.matrix.commands.staff.Powerups;
-import io.github.beelzebu.matrix.commands.staff.Reload;
+import io.github.beelzebu.matrix.commands.staff.CommandWatcherCommand;
+import io.github.beelzebu.matrix.commands.staff.FreezeCommand;
+import io.github.beelzebu.matrix.commands.staff.LaunchPadsCommand;
+import io.github.beelzebu.matrix.commands.staff.MatrixReloadCommand;
+import io.github.beelzebu.matrix.commands.staff.PowerupsCommand;
+import io.github.beelzebu.matrix.commands.staff.ReloadCommand;
+import io.github.beelzebu.matrix.commands.staff.StopCommand;
 import io.github.beelzebu.matrix.commands.user.Options;
 import io.github.beelzebu.matrix.commands.user.Spit;
 import io.github.beelzebu.matrix.commands.utils.AddLore;
@@ -100,17 +103,20 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             registerEvents(new VotifierListener(this));
         }
         // Register commands
-        CommandAPI.registerCommand(this, new Freeze());
-        CommandAPI.registerCommand(this, new Reload());
+        CommandAPI.registerCommand(this, new CommandWatcherCommand());
+        CommandAPI.registerCommand(this, new FreezeCommand());
+        CommandAPI.registerCommand(this, new MatrixReloadCommand());
         CommandAPI.registerCommand(this, new Options());
-        CommandAPI.registerCommand(this, new Powerups());
-        CommandAPI.registerCommand(this, new LaunchPads());
+        CommandAPI.registerCommand(this, new PowerupsCommand());
+        CommandAPI.registerCommand(this, new LaunchPadsCommand());
         CommandAPI.registerCommand(this, new RemoveLore());
         CommandAPI.registerCommand(this, new AddLore());
         CommandAPI.registerCommand(this, new Rename());
         CommandAPI.registerCommand(this, new Matrix());
         CommandAPI.registerCommand(this, new Spit());
         CommandAPI.registerCommand(this, new SyncCommand());
+        CommandAPI.registerCommand(this, new ReloadCommand());
+        CommandAPI.registerCommand(this, new StopCommand());
 
         Bukkit.getOnlinePlayers().forEach((p) -> Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {

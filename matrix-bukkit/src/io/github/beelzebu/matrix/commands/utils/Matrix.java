@@ -33,7 +33,7 @@ public class Matrix extends MatrixCommand {
     private final LobbyData data = LobbyData.getInstance();
 
     public Matrix() {
-        super("matrix", "matrix.staff.mod");
+        super("matrix", "matrix.mod");
     }
 
     @Override

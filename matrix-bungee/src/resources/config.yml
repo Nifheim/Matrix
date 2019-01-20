@@ -14,19 +14,19 @@ Server Table: proxy
 Debug: false
 Channels:
   h:
-    Permission: 'matrix.staff.aprendiz'
+    Permission: 'matrix.helper'
     Color: 'GREEN'
   m:
-    Permission: 'matrix.staff.mod'
+    Permission: 'matrix.mod'
     Color: 'LIGHT_PURPLE'
   b:
-    Permission: 'matrix.staff.builder'
+    Permission: 'matrix.builder'
     Color: 'AQUA'
   ac:
-    Permission: 'matrix.staff.admin'
+    Permission: 'matrix.admin'
     Color: 'RED'
   o:
-    Permission: 'matrix.staff.owner'
+    Permission: 'matrix.owner'
     Color: 'DARK_RED'
 
 Motds:

@@ -25,7 +25,7 @@ public class LobbyData {
     private LobbyData() {
         config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "data.yml"));
         launchpads = new ArrayList<>();
-        config.getStringList("LaunchPads").forEach(lp -> launchpads.add(LaunchPad.fromString(lp)));
+        config.getStringList("LaunchPadsCommand").forEach(lp -> launchpads.add(LaunchPad.fromString(lp)));
     }
 
     public static LobbyData getInstance() {
@@ -41,9 +41,9 @@ public class LobbyData {
     }
 
     public void createLaunchpad(Location loc, Vector vec) {
-        List<String> launchp = config.getStringList("LaunchPads");
+        List<String> launchp = config.getStringList("LaunchPadsCommand");
         launchp.add(new LaunchPad(loc, vec, true).toString());
-        config.set("LaunchPads", launchp);
+        config.set("LaunchPadsCommand", launchp);
         saveConfig();
     }
 }

@@ -21,12 +21,8 @@ public class PlayerCommandPreprocessListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCommand(PlayerCommandPreprocessEvent e) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (!e.getPlayer().hasPermission("matrix.staff.admin")) {
-                Bukkit.getOnlinePlayers().forEach(p -> {
-                    if (p.hasPermission("matrix.staff.mod") && core.getPlayer(p.getUniqueId()).isWatcher()) {
-                        p.sendMessage((core.getString("Chat.Command Watcher.Format", p.getLocale())).replaceAll("%player%", e.getPlayer().getName()).replaceAll("%msg%", e.getMessage()));
-                    }
-                });
+            if (!e.getPlayer().hasPermission("matrix.admin")) {
+                Bukkit.getOnlinePlayers().stream().filter(p -> p.hasPermission("matrix.mod")).forEach(p -> p.sendMessage((core.getString("Chat.Command Watcher.Format", p.getLocale())).replaceAll("%player%", e.getPlayer().getName()).replaceAll("%msg%", e.getMessage())));
             }
         });
     }
