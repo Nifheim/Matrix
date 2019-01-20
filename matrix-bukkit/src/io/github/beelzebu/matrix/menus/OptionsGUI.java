@@ -56,7 +56,7 @@ public class OptionsGUI extends GUIManager {
         api.getMessages(lang).getStringList("Options.Fly.Lore").forEach(line -> flylore.add(rep(line, new FlyOption(np))));
 
         setItem(12, new ItemBuilder(Material.FEATHER).displayname(api.getString("Options.Fly.Name", lang)).lore(flylore).build(), p -> {
-            if (p.hasPermission("matrix.vip.count")) {
+            if (p.hasPermission("matrix.vip2")) {
                 boolean status = !np.getOption(PlayerOptionType.FLY);
                 if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                     p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
@@ -65,7 +65,7 @@ public class OptionsGUI extends GUIManager {
                 np.setOption(PlayerOptionType.FLY, status);
             } else {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
-                p.sendMessage(api.rep("&c&lLo sentimos!&7 debes ser &8Count&7 o superior para poder usar esta opción."));
+                p.sendMessage(api.rep("&c&lLo sentimos!&7 no tienes permisos suficientes para usar esto."));
             }
             p.closeInventory();
         });

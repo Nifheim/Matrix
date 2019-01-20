@@ -1,6 +1,13 @@
 package io.github.beelzebu.matrix.listeners;
 
 import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.server.ServerType;
+import java.util.concurrent.ExecutionException;
+import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.Contexts;
+import me.lucko.luckperms.api.LuckPermsApi;
+import me.lucko.luckperms.api.User;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,21 +24,32 @@ public class ViewDistanceListener implements Listener {
     }
 
     public static int getViewDistance(Player p) {
-        if (true) {
-            return 5;
-        }
-        if (p.hasPermission("matrix.staff")) {
-            return 10;
-        } else if (p.hasPermission("matrix.vip.king")) {
-            return 10;
-        } else if (p.hasPermission("matrix.vip.prince")) {
-            return 9;
-        } else if (p.hasPermission("matrix.vip.duke")) {
-            return 8;
-        } else if (p.hasPermission("matrix.vip.sir")) {
-            return 7;
-        } else if (p.hasPermission("matrix.vip.count")) {
-            return 6;
+        if (Matrix.getAPI().getServerInfo().getServerType() == ServerType.SURVIVAL) {
+            LuckPermsApi luckPermsApi = LuckPerms.getApi();
+            try {
+                luckPermsApi.getStorage().loadUser(p.getUniqueId()).get();
+                User user = luckPermsApi.getUser(p.getUniqueId());
+                if (user != null) {
+                    if (user.getCachedData().getMetaData(Contexts.global()).getMeta().containsKey("view-distance")) {
+                        return 32;
+                    }
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (p.hasPermission("matrix.mod")) {
+                return 10;
+            } else if (p.hasPermission("matrix.vip5")) {
+                return 10;
+            } else if (p.hasPermission("matrix.vip4")) {
+                return 9;
+            } else if (p.hasPermission("matrix.vip3")) {
+                return 8;
+            } else if (p.hasPermission("matrix.vip2")) {
+                return 7;
+            } else if (p.hasPermission("matrix.vip1")) {
+                return 6;
+            }
         }
         return Bukkit.getViewDistance();
     }
