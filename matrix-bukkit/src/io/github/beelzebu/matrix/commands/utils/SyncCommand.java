@@ -22,11 +22,11 @@ public class SyncCommand extends MatrixCommand {
         boolean bungee = args[1].equalsIgnoreCase("bungee");
         boolean bukkit = args[1].equalsIgnoreCase("bukkit");
         StringBuilder sb = new StringBuilder();
-        for (String arg : Arrays.copyOfRange(args, 2, args.length)) {
+        for (String arg : Arrays.copyOfRange(args, 1, args.length)) {
             sb.append(arg).append(" ");
         }
         String command = sb.substring(0, sb.length() - 1);
         new CommandMessage(server, command, global, bungee, bukkit).send();
-        Bukkit.dispatchCommand(sender, command);
+        api.getPlugin().runSync(() -> Bukkit.dispatchCommand(sender, command));
     }
 }

@@ -56,7 +56,7 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public void executeCommand(String cmd) {
-        Bukkit.dispatchCommand(console, cmd);
+        runSync(() -> Bukkit.dispatchCommand(console, cmd));
     }
 
     @Override

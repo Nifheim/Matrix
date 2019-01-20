@@ -1,7 +1,6 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
 import io.github.beelzebu.matrix.api.Matrix;
-import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import java.util.UUID;
 
 /**
@@ -19,7 +18,7 @@ public abstract class RedisMessage {
         if (channel == null) {
             channel = getChannel();
         }
-        Matrix.getAPI().getRedis().sendMessage(RedisMessaging.MATRIX_CHANNEL, Matrix.GSON.toJson(this, getClass()));
+        Matrix.getAPI().getRedis().sendMessage(this);
     }
 
     /**

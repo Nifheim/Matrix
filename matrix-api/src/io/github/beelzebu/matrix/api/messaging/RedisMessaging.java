@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.api.messaging;
 
+import com.google.gson.JsonObject;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.messaging.message.CommandMessage;
@@ -54,7 +55,7 @@ public class RedisMessaging {
     public void sendMessage(@NonNull RedisMessage redisMessage) {
         Objects.requireNonNull(redisMessage.getUniqueId(), "Can't send a message with null id");
         messages.add(redisMessage.getUniqueId());
-        sendMessage(redisMessage.getChannel(), Matrix.GSON.toJson(redisMessage, redisMessage.getClass()));
+        sendMessage(MATRIX_CHANNEL, Matrix.GSON.toJson(redisMessage, redisMessage.getClass()));
     }
 
     public void sendMessage(String channel, String message) {
@@ -96,14 +97,11 @@ public class RedisMessaging {
 
         @Override
         public void onMessage(String channel, String message) {
-            if (!Objects.equals(channel, MATRIX_CHANNEL)) {
+            JsonObject jobj = Matrix.GSON.fromJson(message, JsonObject.class);
+            if (messages.contains(UUID.fromString(jobj.get("uniqueId").getAsString()))) {
                 return;
             }
-            RedisMessage redisMessage = Matrix.GSON.fromJson(message, RedisMessage.class);
-            if (messages.contains(redisMessage.getUniqueId())) {
-                return;
-            }
-            String subChannel = redisMessage.getChannel();
+            String subChannel = jobj.get("channel").getAsString();
             api.debug("Redis Log: Received a message in channel: " + subChannel);
             api.debug("Redis Log: Message is:");
             api.debug(message);
