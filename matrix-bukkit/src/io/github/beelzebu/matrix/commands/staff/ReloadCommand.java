@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 public class ReloadCommand extends MatrixCommand {
 
     public ReloadCommand() {
-        super("reload", "matrix.admin");
+        super("reload", "matrix.admin", "bukkit:reload", "spigot:reload", "rl", "bukkit:rl", "spigot:rl");
     }
 
     @Override

@@ -11,6 +11,7 @@ import io.github.beelzebu.matrix.commands.staff.CommandWatcherCommand;
 import io.github.beelzebu.matrix.commands.staff.FreezeCommand;
 import io.github.beelzebu.matrix.commands.staff.LaunchPadsCommand;
 import io.github.beelzebu.matrix.commands.staff.MatrixReloadCommand;
+import io.github.beelzebu.matrix.commands.staff.PluginsCommand;
 import io.github.beelzebu.matrix.commands.staff.PowerupsCommand;
 import io.github.beelzebu.matrix.commands.staff.ReloadCommand;
 import io.github.beelzebu.matrix.commands.staff.StopCommand;
@@ -117,6 +118,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new SyncCommand());
         CommandAPI.registerCommand(this, new ReloadCommand());
         CommandAPI.registerCommand(this, new StopCommand());
+        CommandAPI.registerCommand(this, new PluginsCommand());
 
         Bukkit.getOnlinePlayers().forEach((p) -> Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             try {
