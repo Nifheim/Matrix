@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.api.player;
 
+import io.github.beelzebu.coins.CoinsAPI;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +18,14 @@ public interface MatrixPlayer {
 
     default String getKey() {
         return "user:" + getUniqueId();
+    }
+
+    default double getCoins() {
+        return CoinsAPI.getCoins(getUniqueId());
+    }
+
+    default void setCoins(double coins) {
+        CoinsAPI.setCoins(getUniqueId(), coins);
     }
 
     /**
@@ -103,10 +112,6 @@ public interface MatrixPlayer {
     long getExp();
 
     void setExp(long xp);
-
-    double getCoins();
-
-    void setCoins(double coins);
 
     Date getLastLogin();
 

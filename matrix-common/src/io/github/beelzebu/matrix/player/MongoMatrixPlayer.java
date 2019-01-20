@@ -58,7 +58,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected String staffChannel;
     protected boolean watcher;
     protected boolean authed;
-    protected double coins;
     protected long exp;
     protected Date lastLogin;
     protected Set<PlayerOptionType> options = new HashSet<>();
@@ -101,6 +100,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setUniqueId(@NonNull UUID uniqueId) {
+        if (Objects.equals(this.uniqueId, uniqueId)) {
+            return;
+        }
         this.uniqueId = uniqueId;
         Matrix.getAPI().getCache().update(name, uniqueId);
         updateCached("uniqueId");
@@ -108,6 +110,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setName(@NonNull String name) {
+        if (Objects.equals(this.name, name)) {
+            return;
+        }
         this.name = name;
         knownNames.add(name);
         Matrix.getAPI().getCache().update(name, uniqueId);
@@ -122,30 +127,48 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setDisplayName(String displayName) {
+        if (Objects.equals(this.displayName, displayName)) {
+            return;
+        }
+        if (Objects.equals(displayName, null)) {
+            displayName = getName();
+        }
         this.displayName = displayName;
         updateCached("displayName");
     }
 
     @Override
     public void setPremium(boolean premium) {
+        if (this.premium == premium) {
+            return;
+        }
         this.premium = premium;
         updateCached("premium");
     }
 
     @Override
     public void setAdmin(boolean admin) {
+        if (this.admin == admin) {
+            return;
+        }
         this.admin = admin;
         updateCached("admin");
     }
 
     @Override
     public void setSecret(String secret) {
+        if (Objects.equals(this.secret, secret)) {
+            return;
+        }
         this.secret = secret;
         updateCached("secret");
     }
 
     @Override
     public void setIP(String IP) {
+        if (Objects.equals(this.IP, IP)) {
+            return;
+        }
         this.IP = IP;
         ipHistory.add(IP);
         updateCached("IP");
@@ -154,24 +177,36 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setChatColor(ChatColor chatColor) {
+        if (Objects.equals(this.chatColor, chatColor)) {
+            return;
+        }
         this.chatColor = chatColor;
         updateCached("chatColor");
     }
 
     @Override
     public void setLastLocale(String lastLocale) {
+        if (Objects.equals(this.lastLocale, lastLocale)) {
+            return;
+        }
         this.lastLocale = lastLocale;
         updateCached("lastLocale");
     }
 
     @Override
     public void setStaffChannel(String staffChannel) {
+        if (Objects.equals(this.staffChannel, staffChannel)) {
+            return;
+        }
         this.staffChannel = staffChannel;
         updateCached("staffChannel");
     }
 
     @Override
     public void setWatcher(boolean watcher) {
+        if (this.watcher == watcher) {
+            return;
+        }
         this.watcher = watcher;
         updateCached("watcher");
     }
@@ -183,6 +218,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setOption(PlayerOptionType option, boolean status) {
+        if (status && options.contains(option)) {
+            return;
+        } else if (!status && !options.contains(option)) {
+            return;
+        }
         if (status ? options.add(option) : options.remove(option)) {
             updateCached("options");
         }
@@ -190,24 +230,27 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setAuthed(boolean authed) {
+        if (this.authed == authed) {
+            return;
+        }
         this.authed = authed;
         updateCached("authed");
     }
 
     @Override
     public void setExp(long exp) {
+        if (this.exp == exp) {
+            return;
+        }
         this.exp = exp;
         updateCached("exp");
     }
 
     @Override
-    public void setCoins(double coins) {
-        this.coins = coins;
-        updateCached("coins");
-    }
-
-    @Override
     public void setLastLogin(Date lastLogin) {
+        if (Objects.equals(this.lastLogin, lastLogin)) {
+            return;
+        }
         this.lastLogin = lastLogin;
         updateCached("lastLogin");
     }
@@ -224,10 +267,10 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     public MatrixPlayer save() {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
-        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save((MongoMatrixPlayer) Matrix.getAPI().getCache().getPlayer(getUniqueId()).orElse(this));
         if (getDisplayName() == null) {
             setDisplayName(getName());
         }
+        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save((MongoMatrixPlayer) Matrix.getAPI().getCache().getPlayer(getUniqueId()).orElse(this));
         return this;
     }
 
