@@ -115,6 +115,9 @@ public abstract class MatrixAPI {
     }
 
     public final void debug(String message) {
+        if (!getConfig().getBoolean("Debug")) {
+            return;
+        }
         log("&cDebug: &7" + message);
     }
 
