@@ -12,6 +12,7 @@ import io.github.beelzebu.matrix.database.mongo.ReportDAO;
 import io.github.beelzebu.matrix.database.mongo.UserDAO;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.report.MongoReport;
+import java.util.Date;
 import java.util.UUID;
 import lombok.Getter;
 import org.mongodb.morphia.Datastore;
@@ -36,6 +37,7 @@ public class MongoStorage implements MatrixDatabase {
         datastore.ensureIndexes();
         userDAO = new UserDAO(datastore);
         reportDAO = new ReportDAO(datastore);
+        userDAO.find().asList().stream().filter(mongoMatrixPlayer -> mongoMatrixPlayer.getRegistration() == null).forEach(mongoMatrixPlayer -> mongoMatrixPlayer.setRegistration(new Date()));
     }
 
     @Override

@@ -16,7 +16,7 @@ public interface MatrixPlayer {
         return getStatistics().stream().filter(statistics -> server.equals(statistics.getServer())).findFirst();
     }
 
-    default String getKey() {
+    default String getRedisKey() {
         return "user:" + getUniqueId();
     }
 
@@ -116,6 +116,8 @@ public interface MatrixPlayer {
     Date getLastLogin();
 
     void setLastLogin(Date lastLogin);
+
+    Date getRegistration();
 
     Set<Statistics> getStatistics();
 

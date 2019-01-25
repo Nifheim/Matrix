@@ -59,16 +59,18 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected boolean watcher;
     protected boolean authed;
     protected long exp;
-    protected Date lastLogin;
     protected Set<PlayerOptionType> options = new HashSet<>();
     protected String IP;
     protected Set<String> ipHistory = new LinkedHashSet<>();
+    protected Date lastLogin;
+    protected Date registration;
     protected transient Set<Statistics> statistics = new HashSet<>();
 
     public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
         this.uniqueId = uniqueId;
         this.name = name;
         Matrix.getAPI().getCache().update(name, uniqueId);
+        registration = new Date();
     }
 
     public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
@@ -292,9 +294,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             String jsonValue = Matrix.GSON.toJson(value);
             Matrix.getAPI().debug("Updating " + getName() + " field `" + field + "' with value `" + jsonValue + "'");
             if (value != null) {
-                jedis.hset(getKey(), field, jsonValue);
+                jedis.hset(getRedisKey(), field, jsonValue);
             } else {
-                jedis.hdel(getKey(), field);
+                jedis.hdel(getRedisKey(), field);
             }
             new FieldUpdate(getUniqueId(), field, jsonValue).send();
         } catch (IllegalAccessException e) {
@@ -310,9 +312,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             FIELDS.forEach((id, field) -> {
                 try {
                     if (field.get(this) != null) {
-                        pipeline.hset(getKey(), id, Matrix.GSON.toJson(field.get(this)));
+                        pipeline.hset(getRedisKey(), id, Matrix.GSON.toJson(field.get(this)));
                     } else {
-                        pipeline.hdel(getKey(), id);
+                        pipeline.hdel(getRedisKey(), id);
                     }
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
@@ -332,5 +334,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setRegistration(Date registration) {
+        if (Objects.equals(this.registration, registration)) {
+            return;
+        }
+        this.registration = registration;
+        updateCached("registration");
     }
 }
