@@ -22,6 +22,7 @@ import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -97,6 +98,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
                 api.getCache().removePlayer(matrixPlayer);
             }
         }), 0, 1, TimeUnit.HOURS);
+        api.getDatabase().getUserDAO().find().asList().stream().filter(mongoMatrixPlayer -> mongoMatrixPlayer.getRegistration() == null).forEach(mongoMatrixPlayer -> mongoMatrixPlayer.setRegistration(new Date()));
     }
 
     public boolean isMaintenance() {
