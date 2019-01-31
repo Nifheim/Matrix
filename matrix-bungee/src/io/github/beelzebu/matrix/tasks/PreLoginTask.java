@@ -3,7 +3,6 @@ package io.github.beelzebu.matrix.tasks;
 import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import io.github.beelzebu.matrix.listener.LoginListener;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -41,10 +40,12 @@ public class PreLoginTask implements Runnable {
                 event.setCancelled(true);
                 return;
             }
-            if (LoginListener.isProxy(event.getConnection().getAddress().getAddress().getHostAddress())) {
-                Matrix.getAPI().getPlugin().ban(event.getConnection().getAddress().getAddress().getHostAddress());
-                return;
-            }
+            /**
+             * if (LoginListener.isProxy(event.getConnection().getAddress().getAddress().getHostAddress())) {
+             Matrix.getAPI().getPlugin().ban(event.getConnection().getAddress().getAddress().getHostAddress());
+             return;
+             }
+             */
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);

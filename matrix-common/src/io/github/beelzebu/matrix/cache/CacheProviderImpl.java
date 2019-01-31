@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.cache;
 
 import com.google.gson.JsonParseException;
+import io.github.beelzebu.coins.CoinsAPI;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.cache.CacheProvider;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -55,8 +56,12 @@ public class CacheProviderImpl implements CacheProvider {
             if (jedis.exists(uuidStoreKey)) { // check for old uuid to update
                 UUID oldUniqueId = UUID.fromString(jedis.get(uuidStoreKey));
                 if (oldUniqueId != uniqueId) { // check if old and new are the same
+                    // this is caused when player changed from cracked to premium
                     jedis.del(NAME_KEY_PREFIX + oldUniqueId);
                     jedis.set(uuidStoreKey, uniqueId.toString());
+                    CoinsAPI.createPlayer(name, uniqueId);
+                    CoinsAPI.setCoins(uniqueId, CoinsAPI.getCoins(oldUniqueId));
+                    CoinsAPI.resetCoins(oldUniqueId);
                 }
             } else { // store uuid because it doesn't exists.
                 jedis.set(uuidStoreKey, uniqueId.toString());
