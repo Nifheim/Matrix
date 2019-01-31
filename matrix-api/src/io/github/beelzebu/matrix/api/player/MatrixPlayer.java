@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.api.player;
 
-import io.github.beelzebu.coins.CoinsAPI;
+import io.github.beelzebu.coins.api.CoinsAPI;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;

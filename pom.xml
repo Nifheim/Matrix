@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>io.github.beelzebu</groupId>
-            <artifactId>Coins</artifactId>
+            <artifactId>coins-api</artifactId>
             <version>3.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
