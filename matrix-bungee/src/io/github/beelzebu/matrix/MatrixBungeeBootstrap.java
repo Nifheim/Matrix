@@ -5,6 +5,7 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import io.github.beelzebu.matrix.channels.Channel;
 import io.github.beelzebu.matrix.command.BasicCommands;
+import io.github.beelzebu.matrix.command.BungeeTPCommand;
 import io.github.beelzebu.matrix.command.CountdownCommand;
 import io.github.beelzebu.matrix.command.HelpOpCommand;
 import io.github.beelzebu.matrix.command.MaintenanceCommand;
@@ -88,6 +89,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new PluginsCommand());
         registerCommand(new CountdownCommand());
         registerCommand(new PremiumCommand(this));
+        registerCommand(new BungeeTPCommand());
         new PermissionListener();
         MotdManager.onEnable();
         new BasicCommands(this);

@@ -13,8 +13,8 @@ public class NameUpdatedMessage extends RedisMessage {
 
     private final String name;
     private final String oldName;
-    private final UUID uniqueId;
-    private final UUID oldUniqueId;
+    private final UUID playerUniqueId;
+    private final UUID playerOldUniqueId;
 
     @Override
     public String getChannel() {
