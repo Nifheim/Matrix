@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,6 +65,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected Set<String> ipHistory = new LinkedHashSet<>();
     protected Date lastLogin;
     protected Date registration;
+    protected String discordId;
     protected transient Set<Statistics> statistics = new HashSet<>();
 
     public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
@@ -263,6 +265,15 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             this.statistics.remove(getStatistics(statistics.getServer()).get());
             this.statistics.add(statistics);
         }
+    }
+
+    @Override
+    public void setDiscordId(@Nonnull String discordId) {
+        if (Objects.equals(this.discordId, discordId)) {
+            return;
+        }
+        this.discordId = discordId;
+        updateCached("discordId");
     }
 
     @Override

@@ -28,6 +28,7 @@ public class PostLoginTask implements Runnable {
             } else if (player.isAdmin()) {
                 player.setAdmin(false);
             }
+            player.setIP(event.getPlayer().getPendingConnection().getAddress().getAddress().getHostAddress());
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));

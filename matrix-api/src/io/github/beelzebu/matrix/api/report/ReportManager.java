@@ -13,7 +13,7 @@ public interface ReportManager {
      * @param id id del reporte para buscar en la base de datos.
      * @return repote obtenido desde la base de datos.
      */
-    Optional<Report> getReport(int id);
+    Optional<Report> getReport(long id);
 
     /**
      * Crea un reporte en la base de datos y lo obtiene con la nueva id.

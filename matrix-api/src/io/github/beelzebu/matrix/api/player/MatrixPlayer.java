@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -122,6 +125,11 @@ public interface MatrixPlayer {
     Set<Statistics> getStatistics();
 
     void setStatistics(Statistics statistics);
+
+    @Nullable
+    String getDiscordId();
+
+    void setDiscordId(@Nonnull @NonNull String discordId);
 
     MatrixPlayer save();
 

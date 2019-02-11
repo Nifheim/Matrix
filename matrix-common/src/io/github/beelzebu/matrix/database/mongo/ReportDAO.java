@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.database.mongo;
 
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.report.Report;
 import io.github.beelzebu.matrix.api.report.ReportManager;
 import io.github.beelzebu.matrix.report.MongoReport;
@@ -18,7 +19,7 @@ public class ReportDAO extends BasicDAO<MongoReport, Long> implements ReportMana
     }
 
     @Override
-    public Optional<Report> getReport(int id) {
+    public Optional<Report> getReport(long id) {
         return Optional.ofNullable(findOne("id", id));
     }
 
@@ -31,6 +32,7 @@ public class ReportDAO extends BasicDAO<MongoReport, Long> implements ReportMana
         if (report.getId() != -1) {
             throw new IllegalArgumentException("Id in " + report.toString() + " isn't -1");
         } else {
+            report.setId(((ReportDAO) Matrix.getAPI().getDatabase().getReportManager()).count() + 1);
             save(report);
         }
         return findOne(createQuery().order(Sort.descending("_id")));

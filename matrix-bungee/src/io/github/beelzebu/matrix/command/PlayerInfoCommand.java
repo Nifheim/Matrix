@@ -37,16 +37,16 @@ public class PlayerInfoCommand extends Command {
                                 "%prefix% Información de &c" + player.getName() + "&r\n"
                                         + " \n"
                                         + " &cUUID &8• &7" + player.getUniqueId() + "&r\n"
-                                        + " &cDisplayname &8• &7" + player.getDisplayName() + "&r\n"
-                                        + " &cNivel &8• &7" + NetworkXP.getLevelForXP(player.getExp()) + "&r\n"
-                                        + " &cExperiencia &8• &7" + player.getExp() + "&r\n"
-                                        + " &cRango &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "Usuario" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"
-                                        + " &cÚltimo login &8• &7" + new SimpleDateFormat("HH:mm dd/MM/yyyy").format(player.getLastLogin().getTime()) + "&r\n"
+                                        + " &cDisplay name &8• &7" + player.getDisplayName() + "&r\n"
+                                        + " &cLevel &8• &7" + NetworkXP.getLevelForXP(player.getExp()) + "&r\n"
+                                        + " &cExperience &8• &7" + player.getExp() + "&r\n"
+                                        + " &cRank &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "default" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"
+                                        + " &cLast login &8• &7" + new SimpleDateFormat("HH:mm dd/MM/yyyy").format(player.getLastLogin().getTime()) + "&r\n"
                                         + " &cPremium &8• &7" + player.isPremium() + "\n"
                                         //+ " &cBaneado &8• &7" + (ban != null ? "si" : "no") + "&r\n"
                                         //+ (ban != null ? "   &cRazón &8• &7" + ban.getReason() + "&r\n" : "")
                                         + " &cIP &8• &7" + (player.getIP() != null ? player.getIP() : (player.getIpHistory().stream().findFirst().isPresent() ? player.getIpHistory().stream().findFirst().get() : "no registrada")) + "&r\n"
-                                        + " &cHistorial de IP(s) &8• &r\n" + createList(player.getIpHistory())
+                                        + " &cIP History &8• &r\n" + createList(player.getIpHistory())
                         ));
                         sender.sendMessage(msg);
                     }
