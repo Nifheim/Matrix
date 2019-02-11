@@ -67,7 +67,7 @@ public class ChatListener implements Listener {
                 if (matrixPlayer != null) {
                     matrixPlayer.incrCensoringLevel();
                     int level = matrixPlayer.getCensoringLevel();
-                    punishments.get(punishments.containsKey(level) ? level : punishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", ((ProxiedPlayer) e.getSender()).getName()).replace("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), ""))));
+                    punishments.get(punishments.containsKey(level) ? level : punishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", ((ProxiedPlayer) e.getSender()).getName()).replace("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), "")).replace("%count%", String.valueOf(level))));
                     api.getConfig().getStringList("Messages.Censored").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), ""))))));
                 } else {
                     throw new RuntimeException(((ProxiedPlayer) e.getSender()).getName() + " doesn't exists in the database");
@@ -262,7 +262,7 @@ public class ChatListener implements Listener {
             if (matrixPlayer != null) {
                 matrixPlayer.incrSpammingLevel();
                 int level = matrixPlayer.getSpammingLevel();
-                spamPunishments.get(spamPunishments.containsKey(level) ? level : spamPunishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", spamer.getName()).replace("%message%", message).replace("%word%", message)));
+                spamPunishments.get(spamPunishments.containsKey(level) ? level : spamPunishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", spamer.getName()).replace("%message%", message).replace("%word%", message).replace("%count%", String.valueOf(level))));
             }
         }
     }
