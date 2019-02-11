@@ -59,6 +59,8 @@ public interface MatrixPlayer {
      */
     void setName(String name);
 
+    String getLowercaseName();
+
     /**
      * Get the displayed name of this user, this name is used in messages and chat.
      *
@@ -130,6 +132,14 @@ public interface MatrixPlayer {
     String getDiscordId();
 
     void setDiscordId(@Nonnull @NonNull String discordId);
+
+    int getCensoringLevel();
+
+    void incrCensoringLevel();
+
+    int getSpammingLevel();
+
+    void incrSpammingLevel();
 
     MatrixPlayer save();
 

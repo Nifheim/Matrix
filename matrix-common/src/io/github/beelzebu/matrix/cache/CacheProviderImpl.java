@@ -4,6 +4,7 @@ import com.google.gson.JsonParseException;
 import io.github.beelzebu.coins.api.CoinsAPI;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.cache.CacheProvider;
+import io.github.beelzebu.matrix.api.messaging.message.NameUpdatedMessage;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Collections;
@@ -50,11 +51,16 @@ public class CacheProviderImpl implements CacheProvider {
         if (name == null || uniqueId == null) {
             return;
         }
+
         String uuidStoreKey = UUID_KEY_PREFIX + name;
         String nameStoreKey = NAME_KEY_PREFIX + uniqueId;
+
+        UUID oldUniqueId = null;
+        String oldName = null;
+
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             if (jedis.exists(uuidStoreKey)) { // check for old uuid to update
-                UUID oldUniqueId = UUID.fromString(jedis.get(uuidStoreKey));
+                oldUniqueId = UUID.fromString(jedis.get(uuidStoreKey));
                 if (oldUniqueId != uniqueId) { // check if old and new are the same
                     // this is caused when player changed from cracked to premium
                     jedis.del(NAME_KEY_PREFIX + oldUniqueId);
@@ -67,7 +73,7 @@ public class CacheProviderImpl implements CacheProvider {
                 jedis.set(uuidStoreKey, uniqueId.toString());
             }
             if (jedis.exists(nameStoreKey)) { // check for old name to update
-                String oldName = jedis.get(nameStoreKey);
+                oldName = jedis.get(nameStoreKey);
                 if (!Objects.equals(oldName, name)) { // check if old and new are the same
                     jedis.del(UUID_KEY_PREFIX + oldName);
                     jedis.set(nameStoreKey, name);
@@ -76,6 +82,11 @@ public class CacheProviderImpl implements CacheProvider {
                 jedis.set(nameStoreKey, name);
             }
         }
+
+        if (Objects.equals(name, oldName == null ? name : oldName) && Objects.equals(uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId)) {
+            return;
+        }
+        new NameUpdatedMessage(name, oldName == null ? name : oldName, uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId).send();
     }
 
     @Override

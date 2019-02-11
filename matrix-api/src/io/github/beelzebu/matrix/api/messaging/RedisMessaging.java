@@ -130,10 +130,11 @@ public class RedisMessaging {
                         }
                     }
                     break;
-                case "api-staff-message":
+                case "api-staff-chat":
                     StaffChatMessage staffChatMessage = Matrix.GSON.fromJson(message, StaffChatMessage.class);
                     if (api.isBungee()) {
                         api.getPlayers().stream().filter(p -> api.hasPermission(p, staffChatMessage.getPermission())).forEach(p -> api.getPlugin().sendMessage(p.getUniqueId(), staffChatMessage.getMessage()));
+                        api.log(staffChatMessage.getMessage());
                     }
                     break;
                 default:

@@ -48,6 +48,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     @Indexed(options = @IndexOptions(unique = true))
     @NonNull
     protected String name;
+    protected String lowercaseName;
     protected Set<String> knownNames = new HashSet<>();
     protected String displayName;
     protected boolean premium;
@@ -66,6 +67,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected Date lastLogin;
     protected Date registration;
     protected String discordId;
+    protected int censoringLevel;
+    protected int spammingLevel;
     protected transient Set<Statistics> statistics = new HashSet<>();
 
     public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
@@ -118,9 +121,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             return;
         }
         this.name = name;
+        lowercaseName = name;
         knownNames.add(name);
         Matrix.getAPI().getCache().update(name, uniqueId);
         updateCached("name");
+        updateCached("lowercaseName");
         updateCached("knownNames");
     }
 
@@ -274,6 +279,18 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
         this.discordId = discordId;
         updateCached("discordId");
+    }
+
+    @Override
+    public void incrCensoringLevel() {
+        censoringLevel++;
+        updateCached("censoringLevel");
+    }
+
+    @Override
+    public void incrSpammingLevel() {
+        spammingLevel++;
+        updateCached("spammingLevel");
     }
 
     @Override

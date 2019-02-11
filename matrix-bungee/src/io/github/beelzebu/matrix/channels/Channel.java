@@ -14,6 +14,7 @@ import net.md_5.bungee.api.plugin.Command;
 public class Channel {
 
     private final String name;
+    private final String command;
     private final String permission;
     private final ChatColor color;
 
@@ -24,7 +25,13 @@ public class Channel {
                 Matrix.getAPI().getPlugin().runAsync(() -> {
                     if (sender.hasPermission(permission)) {
                         if (args.length == 0 && sender instanceof ProxiedPlayer) {
-                            Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(name);
+                            if (Matrix.getAPI().getPlayer(sender.getName()).getStaffChannel() == null) {
+                                Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(name);
+                                sender.sendMessage(Matrix.getAPI().rep("&eTodos tus mensajes serán enviados a " + color + Channel.this.name));
+                            } else {
+                                Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(null);
+                                sender.sendMessage(Matrix.getAPI().rep("&eTu chat vuelve a la normalidad."));
+                            }
                             return;
                         }
                         String name;
