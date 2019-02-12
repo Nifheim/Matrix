@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.database.mongo;
 
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
+import java.util.Optional;
 import java.util.UUID;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
@@ -21,6 +22,6 @@ public class UserDAO extends BasicDAO<MongoMatrixPlayer, ObjectId> {
     }
 
     public MongoMatrixPlayer getPlayer(String name) {
-        return findOne("name", name);
+        return Optional.ofNullable(findOne("name", name)).orElse(findOne("lowercaseName", name.toLowerCase()));
     }
 }

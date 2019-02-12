@@ -85,7 +85,7 @@ public abstract class MatrixAPI {
     }
 
     public MatrixPlayer getPlayer(String name) {
-        return players.stream().filter(p -> Objects.equals(p.getName(), name)).findFirst().orElse(getCache().getPlayer(name).orElse(getDatabase().getPlayer(name)));
+        return players.stream().filter(p -> Objects.equals(p.getName().toLowerCase(), name.toLowerCase())).findFirst().orElse(getCache().getPlayer(name).orElse(getDatabase().getPlayer(name)));
     }
 
     /**
