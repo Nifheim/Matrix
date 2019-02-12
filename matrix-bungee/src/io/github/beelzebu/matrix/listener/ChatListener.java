@@ -45,6 +45,7 @@ public class ChatListener implements Listener {
         this.api = api;
         api.getConfig().getStringList("Censoring.command").forEach(k -> punishments.put(Integer.parseInt(k.split(";", 2)[0]), k.split(";", 2)[1]));
         api.getConfig().getStringList("AntiSpam.Commands").forEach(k -> spamPunishments.put(Integer.parseInt(k.split(";", 2)[0]), k.split(";", 2)[1]));
+        SpamUtils.WHITELIST.addAll(api.getConfig().getStringList("AntiSpam.Whitelist"));
     }
 
     @EventHandler(priority = 127)
