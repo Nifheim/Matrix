@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
+import io.github.beelzebu.matrix.api.Matrix;
 import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,5 +19,17 @@ public class FieldUpdate extends RedisMessage {
     @Override
     public String getChannel() {
         return "api-field-update";
+    }
+
+    @Override
+    public void read() {
+        if (api.getPlugin().isOnline(getPlayer(), true)) {
+            api.getPlayer(getPlayer()).setField(getField(), Matrix.GSON.fromJson(getJsonValue(), Object.class));
+        }
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return true;
     }
 }

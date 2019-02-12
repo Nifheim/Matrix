@@ -3,7 +3,6 @@ package io.github.beelzebu.matrix.commands.utils;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import io.github.beelzebu.matrix.api.messaging.message.CommandMessage;
 import java.util.Arrays;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -27,6 +26,5 @@ public class SyncCommand extends MatrixCommand {
         }
         String command = sb.substring(0, sb.length() - 1);
         new CommandMessage(server, command, global, bungee, bukkit).send();
-        api.getPlugin().runSync(() -> Bukkit.dispatchCommand(sender, command));
     }
 }

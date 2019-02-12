@@ -19,6 +19,19 @@ public class StaffChatMessage extends RedisMessage {
         return "api-staff-chat";
     }
 
+    @Override
+    public void read() {
+        if (api.isBungee()) {
+            api.getPlayers().stream().filter(p -> api.hasPermission(p, getPermission())).forEach(p -> api.getPlugin().sendMessage(p.getUniqueId(), getMessage()));
+            api.log(getMessage());
+        }
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
+
     public String getMessage() {
         return ChatColor.translateAlternateColorCodes('&', message);
     }

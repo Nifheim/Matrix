@@ -20,4 +20,14 @@ public class NameUpdatedMessage extends RedisMessage {
     public String getChannel() {
         return "name-updated";
     }
+
+    @Override
+    public void read() {
+        // NOOP
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
 }

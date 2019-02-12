@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.commands.staff;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
+import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -20,7 +21,9 @@ public class PluginsCommand extends MatrixCommand {
         if (sender instanceof Player) {
             sender.sendMessage(Matrix.getAPI().rep("Plugins (12): &aCoins&f, &aDamageIndicator&f, &bEssentialsXL&f, &aFactionsUtils&f, &aLoncoUtils&f, &aLuckPerms&f, &bMatrix-Bukkit&f, &bMatrix-Chat&f, &aNametagEdit&f, &aPlaceholderAPI&f, &aProtocolLib&f, &aViaVersion"));
         } else {
-            Bukkit.dispatchCommand(sender, "plugman list");
+            StringBuilder plugins = new StringBuilder();
+            Stream.of(Bukkit.getPluginManager().getPlugins()).map(plugin -> (plugin.isEnabled() ? "&a" : "&c") + plugin.getName() + "&f, ").forEach(plugins::append);
+            sender.sendMessage(Matrix.getAPI().rep("Plugins (" + Bukkit.getPluginManager().getPlugins().length + "): " + plugins.substring(0, plugins.length() - 2)));
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
 import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import java.util.UUID;
 
 /**
@@ -8,6 +9,7 @@ import java.util.UUID;
  */
 public abstract class RedisMessage {
 
+    protected final MatrixAPI api = Matrix.getAPI();
     private UUID uniqueId;
     private String channel;
 
@@ -19,6 +21,10 @@ public abstract class RedisMessage {
             channel = getChannel();
         }
         Matrix.getAPI().getRedis().sendMessage(this);
+        if (onlyExternal()) {
+            return;
+        }
+        read();
     }
 
     /**
@@ -30,7 +36,9 @@ public abstract class RedisMessage {
         return uniqueId == null ? uniqueId = UUID.randomUUID() : uniqueId;
     }
 
-    public String getChannel() {
-        return getClass().getName();
-    }
+    public abstract String getChannel();
+
+    public abstract void read();
+
+    protected abstract boolean onlyExternal();
 }

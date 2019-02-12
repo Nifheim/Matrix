@@ -20,4 +20,20 @@ public class CommandMessage extends RedisMessage {
     public String getChannel() {
         return "api-command";
     }
+
+    @Override
+    public void read() {
+        if (isGlobal()) {
+            api.getPlugin().executeCommand(getCommand());
+        } else if (isBungee() && api.isBungee()) {
+            api.getPlugin().executeCommand(getCommand());
+        } else if (isBukkit() && !api.isBungee()) {
+            api.getPlugin().executeCommand(getCommand());
+        }
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
 }

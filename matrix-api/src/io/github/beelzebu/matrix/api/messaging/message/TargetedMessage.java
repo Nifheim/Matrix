@@ -18,4 +18,18 @@ public class TargetedMessage extends RedisMessage {
     public String getChannel() {
         return "api-message";
     }
+
+    @Override
+    public void read() {
+        if (api.isBungee()) {
+            if (api.getPlugin().isOnline(getTarget(), true)) {
+                api.getPlugin().sendMessage(getTarget(), api.rep(getMessage()));
+            }
+        }
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
 }

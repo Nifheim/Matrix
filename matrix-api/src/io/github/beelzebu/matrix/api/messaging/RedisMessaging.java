@@ -108,34 +108,19 @@ public class RedisMessaging {
             switch (subChannel) {
                 case "api-field-update":
                     FieldUpdate fieldMessage = Matrix.GSON.fromJson(message, FieldUpdate.class);
-                    if (api.getPlugin().isOnline(fieldMessage.getPlayer(), true)) {
-                        api.getPlayer(fieldMessage.getPlayer()).setField(fieldMessage.getField(), Matrix.GSON.fromJson(fieldMessage.getJsonValue(), Object.class));
-                    }
+                    fieldMessage.read();
                     break;
                 case "api-command":
                     CommandMessage commandMessage = Matrix.GSON.fromJson(message, CommandMessage.class);
-                    if (commandMessage.isGlobal()) {
-                        api.getPlugin().executeCommand(commandMessage.getCommand());
-                    } else if (commandMessage.isBungee() && api.isBungee()) {
-                        api.getPlugin().executeCommand(commandMessage.getCommand());
-                    } else if (commandMessage.isBukkit() && !api.isBungee()) {
-                        api.getPlugin().executeCommand(commandMessage.getCommand());
-                    }
+                    commandMessage.read();
                     break;
                 case "api-message":
                     TargetedMessage targetedMessage = Matrix.GSON.fromJson(message, TargetedMessage.class);
-                    if (api.isBungee()) {
-                        if (api.getPlugin().isOnline(targetedMessage.getTarget(), true)) {
-                            api.getPlugin().sendMessage(targetedMessage.getTarget(), api.rep(targetedMessage.getMessage()));
-                        }
-                    }
+                    targetedMessage.read();
                     break;
                 case "api-staff-chat":
                     StaffChatMessage staffChatMessage = Matrix.GSON.fromJson(message, StaffChatMessage.class);
-                    if (api.isBungee()) {
-                        api.getPlayers().stream().filter(p -> api.hasPermission(p, staffChatMessage.getPermission())).forEach(p -> api.getPlugin().sendMessage(p.getUniqueId(), staffChatMessage.getMessage()));
-                        api.log(staffChatMessage.getMessage());
-                    }
+                    staffChatMessage.read();
                     break;
                 default:
                     break;
