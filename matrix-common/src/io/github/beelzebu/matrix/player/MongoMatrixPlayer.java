@@ -353,11 +353,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setField(String field, Object value) {
+    public void setField(String field, String json) {
         try {
             Field f = FIELDS.get(field);
             if (f != null) {
-                f.set(this, value);
+                f.set(this, Matrix.GSON.fromJson(json, f.getType()));
             }
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();

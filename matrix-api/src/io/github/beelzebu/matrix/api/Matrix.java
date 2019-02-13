@@ -1,7 +1,6 @@
 package io.github.beelzebu.matrix.api;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +10,7 @@ import lombok.Setter;
  */
 public final class Matrix {
 
-    public static final Gson GSON = new GsonBuilder().create();
+    public static final Gson GSON = new Gson();
 
     @Getter
     @Setter

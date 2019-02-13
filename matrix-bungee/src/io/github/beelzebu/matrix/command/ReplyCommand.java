@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.command;
 
 import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import net.md_5.bungee.api.CommandSender;
@@ -40,6 +41,7 @@ public class ReplyCommand extends Command {
                 message.append(args[i]).append(" ");
             }
             message.append(args[args.length - 1]);
+            message = new StringBuilder(Matrix.getAPI().rep(message.toString()));
             new TargetedMessage(target.getUniqueId(), message.toString()).send();
             sender.sendMessage(bootstrap.getApi().rep("&6Haz enviado el siguiente mensaje a &7" + target.getDisplayName()));
             sender.sendMessage(message.toString());

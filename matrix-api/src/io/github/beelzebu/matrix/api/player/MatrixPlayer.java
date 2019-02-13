@@ -151,7 +151,7 @@ public interface MatrixPlayer {
      * Set the field with the given name to the given value without publishing an update to redis.
      *
      * @param field Field to update.
-     * @param value Value to set to this field.
+     * @param json  Json value to set to this field.
      */
-    void setField(String field, Object value);
+    void setField(String field, String json);
 }

@@ -22,8 +22,10 @@ public abstract class RedisMessage {
         }
         Matrix.getAPI().getRedis().sendMessage(this);
         if (onlyExternal()) {
+            api.debug(getChannel() + " is only external");
             return;
         }
+        api.debug("Reading " + getChannel() + " after sent");
         read();
     }
 
