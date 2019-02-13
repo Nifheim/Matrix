@@ -55,7 +55,7 @@ public class RedisMessaging {
     public void sendMessage(@NonNull RedisMessage redisMessage) {
         Objects.requireNonNull(redisMessage.getUniqueId(), "Can't send a message with null id");
         messages.add(redisMessage.getUniqueId());
-        String jsonMessage = Matrix.GSON.toJson(redisMessage, redisMessage.getClass());
+        String jsonMessage = Matrix.GSON.toJson(redisMessage);
         sendMessage(MATRIX_CHANNEL, jsonMessage);
         api.debug("&7Sent: " + jsonMessage);
     }

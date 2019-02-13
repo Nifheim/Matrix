@@ -9,7 +9,7 @@ import java.util.UUID;
  */
 public abstract class RedisMessage {
 
-    protected final MatrixAPI api = Matrix.getAPI();
+    protected transient final MatrixAPI api = Matrix.getAPI();
     private UUID uniqueId;
     private String channel;
 

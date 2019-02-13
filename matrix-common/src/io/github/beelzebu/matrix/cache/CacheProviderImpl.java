@@ -101,7 +101,7 @@ public class CacheProviderImpl implements CacheProvider {
             }
         } catch (JedisDataException e) {
             return getPlayer(uniqueId);
-        } catch (JedisException | JsonParseException ex) {
+        } catch (JedisException | JsonParseException | NullPointerException ex) {
             Matrix.getAPI().debug(ex);
         }
         return Optional.empty();
@@ -116,7 +116,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public Set<MatrixPlayer> getPlayers() {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            return jedis.keys("user:*").stream().map(cached -> getPlayer(UUID.fromString(cached.split(":")[1])).orElse(null)).collect(Collectors.toSet());
+            return jedis.keys("user:*").stream().map(cached -> getPlayer(UUID.fromString(cached.split(":")[1])).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet());
         } catch (JedisException ex) {
             Matrix.getAPI().debug(ex);
         }

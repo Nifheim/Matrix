@@ -92,7 +92,7 @@
         <snapshotRepository>
             <id>nifheim-repo</id>
             <url>https://repo.nifheim.net/repository/nifheim-snapshots/</url>
-            <uniqueVersion>false</uniqueVersion>
+            <uniqueVersion>true</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
 </project>
