@@ -41,7 +41,7 @@ public class Channel {
                         } else {
                             name = sender.getName();
                         }
-                        StringBuilder msg = new StringBuilder("&8[" + color + Channel.this.name + "&8] " + name);
+                        StringBuilder msg = new StringBuilder("&8[" + color + Channel.this.name.toUpperCase() + "&8]&r " + name);
                         msg.append("&f:&r ").append(color.toString());
                         for (String arg : args) {
                             msg.append(arg).append(" ");
