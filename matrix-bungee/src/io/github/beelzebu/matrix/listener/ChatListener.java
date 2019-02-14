@@ -218,6 +218,7 @@ public class ChatListener implements Listener {
     }
 
     private String checkSpam(String path, String message) {
+        message = normalize(message);
         for (String word : api.getConfig().getStringList(path)) {
             if (message.equalsIgnoreCase(word)) {
                 return word;
