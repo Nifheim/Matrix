@@ -6,11 +6,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonObject;
-import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import io.github.beelzebu.matrix.channels.Channel;
 import io.github.beelzebu.matrix.utils.SpamUtils;
 import java.util.Comparator;
 import java.util.Objects;
@@ -184,12 +182,15 @@ public class ChatListener implements Listener {
 
     @EventHandler
     public void onChatEvent(ChatEvent e) {
+        if (e.isCommand()) {
+            return;
+        }
         Connection sender = e.getSender();
         if (sender instanceof ProxiedPlayer) {
-            Channel channel = MatrixBungeeBootstrap.getChannelFor(Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId()));
-            if (channel != null && !e.isCommand()) {
-                ((ProxiedPlayer) sender).chat("/" + channel.getName() + " " + e.getMessage());
+            MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
+            if (matrixPlayer.getStaffChannel() != null) {
                 e.setCancelled(true);
+                ((ProxiedPlayer) sender).chat("/" + matrixPlayer.getStaffChannel() + " " + e.getMessage());
             }
         }
     }

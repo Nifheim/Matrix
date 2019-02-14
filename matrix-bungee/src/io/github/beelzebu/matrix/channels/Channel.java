@@ -26,7 +26,7 @@ public class Channel {
                     if (sender.hasPermission(permission)) {
                         if (args.length == 0 && sender instanceof ProxiedPlayer) {
                             if (Matrix.getAPI().getPlayer(sender.getName()).getStaffChannel() == null) {
-                                Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(name);
+                                Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(command);
                                 sender.sendMessage(Matrix.getAPI().rep("&eTodos tus mensajes serán enviados a " + color + Channel.this.name));
                             } else {
                                 Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(null);
