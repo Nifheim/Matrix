@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.listener;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ArrayListMultimap;
@@ -10,6 +11,7 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.utils.SpamUtils;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.UUID;
@@ -51,6 +53,9 @@ public class ChatListener implements Listener {
         if (e.isCancelled() || e.isCommand()) {
             return;
         }
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) <= 5) {
+            return;
+        }
         if (e.getSender() instanceof ProxiedPlayer) {
             if (((ProxiedPlayer) e.getSender()).hasPermission("matrix.helper")) {
                 return;
@@ -60,13 +65,13 @@ public class ChatListener implements Listener {
             }
             String censoring = checkCensoring(e.getMessage().toLowerCase());
             if (censoring != null) {
-                e.setCancelled(true);
+                e.setMessage(e.getMessage().replaceAll(censoring, Strings.repeat("*", censoring.length())));
                 broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), false);
                 MatrixPlayer matrixPlayer = api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
                 if (matrixPlayer != null) {
                     matrixPlayer.incrCensoringLevel();
-                    int level = matrixPlayer.getCensoringLevel();
-                    punishments.get(punishments.containsKey(level) ? level : punishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", ((ProxiedPlayer) e.getSender()).getName()).replace("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), "")).replace("%count%", String.valueOf(level))));
+                    //int level = matrixPlayer.getCensoringLevel();
+                    //punishments.get(punishments.containsKey(level) ? level : punishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", ((ProxiedPlayer) e.getSender()).getName()).replace("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), "")).replace("%count%", String.valueOf(level))));
                     api.getConfig().getStringList("Messages.Censored").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), ""))))));
                 } else {
                     throw new RuntimeException(((ProxiedPlayer) e.getSender()).getName() + " doesn't exists in the database");
