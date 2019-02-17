@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.api.command;
 
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -25,6 +26,6 @@ public class BungeeCommandSource implements CommandSource {
 
     @Override
     public void sendMessage(String message) {
-        sender.sendMessage(TextComponent.fromLegacyText(message));
+        sender.sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
     }
 }

@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.api.command;
 
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -24,6 +25,6 @@ public class BukkitCommandSource implements CommandSource {
 
     @Override
     public void sendMessage(String message) {
-        sender.sendMessage(message);
+        sender.sendMessage(StringUtils.replace(message));
     }
 }
