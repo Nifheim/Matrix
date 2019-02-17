@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.UUID;
 import lombok.Data;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -68,7 +69,11 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public void sendMessage(Object sender, BaseComponent[] msg) {
-        ((CommandSender) sender).sendMessage(msg);
+        if (sender instanceof CommandSender) {
+            ((CommandSender) sender).sendMessage(msg);
+        } else if (sender instanceof CommandSource) {
+            ((CommandSource) sender).sendMessage(TextComponent.toLegacyText(msg));
+        }
     }
 
     @Override
