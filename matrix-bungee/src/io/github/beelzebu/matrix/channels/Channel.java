@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.channels;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.utils.PermsUtils;
 import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
@@ -27,10 +28,10 @@ public class Channel {
                         if (args.length == 0 && sender instanceof ProxiedPlayer) {
                             if (Matrix.getAPI().getPlayer(sender.getName()).getStaffChannel() == null) {
                                 Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(command);
-                                sender.sendMessage(Matrix.getAPI().rep("&eTodos tus mensajes serán enviados a " + color + Channel.this.name));
+                                sender.sendMessage(StringUtils.replace("&eTodos tus mensajes serán enviados a " + color + Channel.this.name));
                             } else {
                                 Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(null);
-                                sender.sendMessage(Matrix.getAPI().rep("&eTu chat vuelve a la normalidad."));
+                                sender.sendMessage(StringUtils.replace("&eTu chat vuelve a la normalidad."));
                             }
                             return;
                         }

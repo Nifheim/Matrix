@@ -105,7 +105,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         try (Jedis jedis = api.getRedis().getPool().getResource()) {
             return (maintenance = jedis.exists(MAINTENANCE_KEY));
         } catch (Exception e) {
-            api.debug(e);
+            Matrix.getLogger().debug(e);
         }
         return maintenance;
     }
@@ -118,7 +118,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
                 jedis.del(MAINTENANCE_KEY);
             }
         } catch (Exception e) {
-            api.debug(e);
+            Matrix.getLogger().debug(e);
             setMaintenance(maintenance);
             return;
         }
@@ -127,7 +127,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     private void loadManagers() {
         if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
-            api.log("LuckPerms found, hooking into it.");
+            Matrix.getLogger().info("LuckPerms found, hooking into it.");
         }
     }
 

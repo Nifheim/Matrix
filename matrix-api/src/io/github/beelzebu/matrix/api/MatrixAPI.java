@@ -10,6 +10,7 @@ import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -22,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Getter;
-import net.md_5.bungee.api.ChatColor;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -50,8 +50,9 @@ public abstract class MatrixAPI {
      * @param message string to replace color codes and placeholders.
      * @return message with colors and replaced placeholders.
      */
+    @Deprecated
     public final String rep(String message) {
-        return ChatColor.translateAlternateColorCodes('&', message.replace("%prefix%", "&a&lMatrix &8&l>&7"));
+        return StringUtils.replace(message);
     }
 
     /**
@@ -60,8 +61,9 @@ public abstract class MatrixAPI {
      * @param message message to remove colors.
      * @return a plain message without colors.
      */
+    @Deprecated
     public final String removeColor(String message) {
-        return ChatColor.stripColor(message).replaceAll("Debug: ", "");
+        return StringUtils.removeColor(message);
     }
 
     public final void registerRedisListener(RedisMessageEvent event) {
@@ -101,7 +103,7 @@ public abstract class MatrixAPI {
 
 
     public final String getString(String path, String locale) {
-        return rep(getMessages(locale).getString(path, rep(getMessages("").getString(path, ""))));
+        return StringUtils.replace(getMessages(locale).getString(path, StringUtils.replace(getMessages("").getString(path, ""))));
     }
 
     public final String getString(Message message, String lang, String... parameters) {
@@ -110,17 +112,17 @@ public abstract class MatrixAPI {
 
     // Logging and debugging
     // TODO: move this to a logger class.
+    @Deprecated
     public final void log(String message) {
-        getPlugin().log(rep(message));
+        Matrix.getLogger().info(rep(message));
     }
 
+    @Deprecated
     public final void debug(String message) {
-        if (!getConfig().getBoolean("Debug")) {
-            return;
-        }
-        log("&cDebug: &7" + message);
+        Matrix.getLogger().debug(message);
     }
 
+    @Deprecated
     public final void debug(SQLException ex) {
         log("SQLException: ");
         log("   Database state: " + ex.getSQLState());
@@ -129,12 +131,14 @@ public abstract class MatrixAPI {
         log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
+    @Deprecated
     public final void debug(JedisException ex) {
         log("JedisException: ");
         log("   Error message: " + ex.getLocalizedMessage());
         log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
+    @Deprecated
     public final void debug(Exception ex) {
         log(ex.getClass().getName() + ": ");
         log("   Error message: " + ex.getLocalizedMessage());
@@ -146,6 +150,7 @@ public abstract class MatrixAPI {
         return Matrix.GSON;
     }
 
+    @Deprecated
     private String getStacktrace(Exception ex) {
         try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
             ex.printStackTrace(printWriter);

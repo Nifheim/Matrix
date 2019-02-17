@@ -8,6 +8,10 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
  */
 public interface Report {
 
+    default Report create() {
+        return Matrix.getAPI().getDatabase().getReportManager().createReport(this);
+    }
+
     long getId();
 
     MatrixPlayer getReporter();
@@ -15,8 +19,4 @@ public interface Report {
     MatrixPlayer getReported();
 
     String getReason();
-
-    default Report create() {
-        return Matrix.getAPI().getDatabase().getReportManager().createReport(this);
-    }
 }

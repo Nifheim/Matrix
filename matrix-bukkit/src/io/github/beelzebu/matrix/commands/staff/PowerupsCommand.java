@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.commands.staff;
 
+import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import java.util.List;
@@ -21,7 +22,7 @@ public class PowerupsCommand extends MatrixCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length != 5) {
-            sender.sendMessage(api.rep("%prefix% Usa /powerups <mensaje> <PotionEffectType> <segundos> <amplificador> <chance>"));
+            sender.sendMessage(StringUtils.rep("%prefix% Usa /powerups <mensaje> <PotionEffectType> <segundos> <amplificador> <chance>"));
             sender.sendMessage("https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html");
         }
         if (sender instanceof Player) {
@@ -34,7 +35,7 @@ public class PowerupsCommand extends MatrixCommand {
             if (args[0] == null) {
                 return;
             }
-            powerup += api.rep(args[0]);
+            powerup += StringUtils.rep(args[0]);
             ItemStack is = ((Player) sender).getInventory().getItemInMainHand();
             if (is == null || is.getType() == Material.AIR) {
                 return;

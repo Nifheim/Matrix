@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
+import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
@@ -62,7 +63,7 @@ public class PlayerJoinListener implements Listener {
         if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL))) {
             if (!p.hasPermission("matrix.mod")) {
                 if (p.hasPermission("matrix.joinmessage")) {
-                    e.setJoinMessage(api.rep(" &8[&a+&8] &f" + api.getPlayer(p.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
+                    e.setJoinMessage(StringUtils.rep(" &8[&a+&8] &f" + api.getPlayer(p.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
                 }
                 Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
             }

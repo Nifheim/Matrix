@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix.command;
 import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -41,8 +42,8 @@ public class PremiumCommand extends Command {
                 players.remove(sender.getName());
             } else {
                 players.put(sender.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5));
-                sender.sendMessage(Matrix.getAPI().rep("&4&lAtención"));
-                sender.sendMessage(Matrix.getAPI().rep("&7Este comando borrará todos tus datos ligados a las modalidades, tienes 5 minutos para volver a usarlo y confirmar tu desición."));
+                sender.sendMessage(StringUtils.replace("&4&lAtención"));
+                sender.sendMessage(StringUtils.replace("&7Este comando borrará todos tus datos ligados a las modalidades, tienes 5 minutos para volver a usarlo y confirmar tu desición."));
             }
         }
     }

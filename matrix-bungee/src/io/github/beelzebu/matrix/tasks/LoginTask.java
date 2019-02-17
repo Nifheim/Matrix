@@ -65,7 +65,7 @@ public class LoginTask implements Runnable {
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);
-            Matrix.getAPI().debug(e);
+            Matrix.getLogger().debug(e);
         } finally {
             event.completeIntent(plugin);
         }

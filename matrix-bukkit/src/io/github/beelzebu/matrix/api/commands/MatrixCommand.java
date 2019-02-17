@@ -36,7 +36,7 @@ public abstract class MatrixCommand extends Command {
             sender.sendMessage(api.getString(Message.GENERAL_NO_PERMS, sender instanceof Player ? ((Player) sender).getLocale() : ""));
             //else {
         }
-        //  sender.sendMessage(api.rep("&c&lHey!&7 Debes ser rango &c" + perm.split("\\.")[perm.split(".").length - 1] + "&7 o superior para usar este comando."));
+        //  sender.sendMessage(api.replace("&c&lHey!&7 Debes ser rango &c" + perm.split("\\.")[perm.split(".").length - 1] + "&7 o superior para usar este comando."));
         //}
         return true;
     }

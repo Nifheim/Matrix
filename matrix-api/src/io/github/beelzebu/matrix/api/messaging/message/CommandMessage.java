@@ -17,6 +17,11 @@ public class CommandMessage extends RedisMessage {
     private final boolean bungee;
 
     @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
+
+    @Override
     public String getChannel() {
         return "api-command";
     }
@@ -30,10 +35,5 @@ public class CommandMessage extends RedisMessage {
         } else if (isBukkit() && !api.isBungee()) {
             api.getPlugin().executeCommand(getCommand());
         }
-    }
-
-    @Override
-    protected boolean onlyExternal() {
-        return false;
     }
 }

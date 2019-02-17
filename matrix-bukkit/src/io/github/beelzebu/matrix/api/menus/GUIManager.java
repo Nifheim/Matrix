@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.api.menus;
 
+import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.ItemBuilder;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
@@ -56,9 +57,9 @@ public abstract class GUIManager {
             }
         }
         if (type != null && !type.equals(InventoryType.CHEST)) {
-            inv = Bukkit.createInventory(null, type, api.rep(name));
+            inv = Bukkit.createInventory(null, type, StringUtils.rep(name));
         } else {
-            inv = Bukkit.createInventory(null, size, api.rep(name));
+            inv = Bukkit.createInventory(null, size, StringUtils.rep(name));
         }
         actions = new HashMap<>();
         uniqueId = UUID.randomUUID();
@@ -108,7 +109,7 @@ public abstract class GUIManager {
         List<String> lore = config.getStringList(path + ".Lore");
         String soundPath = config.getString(path + ".Sound");
         String command = config.getString(path + ".Command");
-        return new Item(new ItemBuilder(material, amount, api.rep(name)).damage(damage).lore(lore).build(), config.getInt(path + ".Slot"), player -> {
+        return new Item(new ItemBuilder(material, amount, StringUtils.rep(name)).damage(damage).lore(lore).build(), config.getInt(path + ".Slot"), player -> {
             if (command != null) {
                 player.performCommand(command);
             }

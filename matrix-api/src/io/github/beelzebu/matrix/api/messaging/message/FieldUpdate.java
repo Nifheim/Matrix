@@ -16,6 +16,11 @@ public class FieldUpdate extends RedisMessage {
     private final String jsonValue;
 
     @Override
+    protected boolean onlyExternal() {
+        return true;
+    }
+
+    @Override
     public String getChannel() {
         return "api-field-update";
     }
@@ -25,10 +30,5 @@ public class FieldUpdate extends RedisMessage {
         if (api.getPlugin().isOnline(getPlayer(), true)) {
             api.getPlayer(getPlayer()).setField(getField(), getJsonValue());
         }
-    }
-
-    @Override
-    protected boolean onlyExternal() {
-        return true;
     }
 }

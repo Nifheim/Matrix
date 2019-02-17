@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
+import io.github.beelzebu.coins.api.utils.StringUtils;
 import java.util.UUID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,11 @@ public class TargetedMessage extends RedisMessage {
     private final String message;
 
     @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
+
+    @Override
     public String getChannel() {
         return "api-message";
     }
@@ -23,13 +29,8 @@ public class TargetedMessage extends RedisMessage {
     public void read() {
         if (api.isBungee()) {
             if (api.getPlugin().isOnline(getTarget(), true)) {
-                api.getPlugin().sendMessage(getTarget(), api.rep(getMessage()));
+                api.getPlugin().sendMessage(getTarget(), StringUtils.rep(getMessage()));
             }
         }
-    }
-
-    @Override
-    protected boolean onlyExternal() {
-        return false;
     }
 }

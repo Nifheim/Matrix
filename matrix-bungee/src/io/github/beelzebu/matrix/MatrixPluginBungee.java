@@ -2,6 +2,8 @@ package io.github.beelzebu.matrix;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.command.BungeeCommandSource;
+import io.github.beelzebu.matrix.api.command.CommandSource;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -14,16 +16,17 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.Data;
 import lombok.NonNull;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 @Data
 public class MatrixPluginBungee implements MatrixPlugin {
 
     private final MatrixBungeeBootstrap bootstrap;
+    private final CommandSource console = new BungeeCommandSource(ProxyServer.getInstance().getConsole());
 
     @Override
     public MatrixConfig getConfig() {
@@ -56,13 +59,8 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public void log(String message) {
-        ProxyServer.getInstance().getConsole().sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&8[&cMatrix&8] &7" + message)));
-    }
-
-    @Override
-    public Object getConsole() {
-        return ProxyServer.getInstance().getConsole();
+    public CommandSource getConsole() {
+        return console;
     }
 
     @Override
@@ -70,7 +68,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
         if (sender instanceof CommandSender) {
             ((CommandSender) sender).sendMessage(msg);
         } else {
-            Matrix.getAPI().debug(new IllegalArgumentException("Can't cast " + sender.getClass() + " to CommandSender"));
+            Matrix.getLogger().debug(new IllegalArgumentException("Can't cast " + sender.getClass() + " to CommandSender"));
         }
     }
 
@@ -162,5 +160,13 @@ public class MatrixPluginBungee implements MatrixPlugin {
     public void kickPlayer(MatrixPlayer matrixPlayer, String reason) {
         Objects.requireNonNull(matrixPlayer, "Player can't be null");
         kickPlayer(matrixPlayer.getName(), reason);
+    }
+
+    @Override
+    public void dispatchCommand(CommandSource commandSource, String command) {
+        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(commandSource.getName());
+        if (proxiedPlayer != null && proxiedPlayer.isConnected()) {
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(proxiedPlayer, command);
+        }
     }
 }

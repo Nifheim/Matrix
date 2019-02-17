@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.commands.staff;
 
+import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import org.bukkit.Location;
@@ -22,7 +23,7 @@ public class LaunchPadsCommand extends MatrixCommand {
             Location loc = p.getLocation();
             if (args[0].equalsIgnoreCase("create")) {
                 data.createLaunchpad(loc, new Vector(0, 0, 0));
-                p.sendMessage(api.rep("%prefix% LaunchPad creado"));
+                p.sendMessage(StringUtils.rep("%prefix% LaunchPad creado"));
             }
         }
     }

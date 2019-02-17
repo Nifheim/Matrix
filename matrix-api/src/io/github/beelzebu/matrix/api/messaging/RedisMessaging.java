@@ -57,14 +57,14 @@ public class RedisMessaging {
         messages.add(redisMessage.getUniqueId());
         String jsonMessage = Matrix.GSON.toJson(redisMessage);
         sendMessage(MATRIX_CHANNEL, jsonMessage);
-        api.debug("&7Sent: " + jsonMessage);
+        Matrix.getLogger().debug("&7Sent: " + jsonMessage);
     }
 
     public void sendMessage(String channel, String message) {
         try (Jedis jedis = pool.getResource()) {
             jedis.publish(channel, message);
         } catch (JedisException ex) {
-            api.debug(ex);
+            Matrix.getLogger().debug(ex);
         }
     }
 
@@ -80,8 +80,8 @@ public class RedisMessaging {
                     jpsh = new JedisPubSubHandler();
                     jedis.subscribe(jpsh, MATRIX_CHANNEL);
                 } catch (Exception e) {
-                    api.log("PubSub error, attempting to recover.");
-                    api.debug(e);
+                    Matrix.getLogger().info("PubSub error, attempting to recover.");
+                    Matrix.getLogger().debug(e);
                     try {
                         jpsh.unsubscribe();
                     } catch (Exception ignore) {
@@ -104,9 +104,9 @@ public class RedisMessaging {
                 return;
             }
             String subChannel = jobj.get("channel").getAsString();
-            api.debug("Redis Log: Received a message in channel: " + subChannel);
-            api.debug("Redis Log: Message is:");
-            api.debug(message);
+            Matrix.getLogger().debug("Redis Log: Received a message in channel: " + subChannel);
+            Matrix.getLogger().debug("Redis Log: Message is:");
+            Matrix.getLogger().debug(message);
             switch (subChannel) {
                 case "api-field-update":
                     FieldUpdate fieldMessage = Matrix.GSON.fromJson(message, FieldUpdate.class);

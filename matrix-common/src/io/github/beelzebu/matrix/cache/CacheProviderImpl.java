@@ -31,7 +31,7 @@ public class CacheProviderImpl implements CacheProvider {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             return Optional.ofNullable(jedis.exists(UUID_KEY_PREFIX + name) ? UUID.fromString(jedis.get(UUID_KEY_PREFIX + name)) : null);
         } catch (JedisException | JsonParseException ex) {
-            Matrix.getAPI().debug(ex);
+            Matrix.getLogger().debug(ex);
         }
         return Optional.empty();
     }
@@ -41,7 +41,7 @@ public class CacheProviderImpl implements CacheProvider {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             return Optional.ofNullable(jedis.get(NAME_KEY_PREFIX + uniqueId));
         } catch (JedisException | JsonParseException ex) {
-            Matrix.getAPI().debug(ex);
+            Matrix.getLogger().debug(ex);
         }
         return Optional.empty();
     }
@@ -99,14 +99,14 @@ public class CacheProviderImpl implements CacheProvider {
             } catch (ClassCastException e) {
                 return getPlayer(uniqueId);
             } catch (NullPointerException e) {
-                Matrix.getAPI().debug(e);
-                Matrix.getAPI().debug(Matrix.GSON.toJson(jedis.hgetAll(USER_KEY_PREFIX + uniqueId)));
+                Matrix.getLogger().debug(e);
+                Matrix.getLogger().debug(Matrix.GSON.toJson(jedis.hgetAll(USER_KEY_PREFIX + uniqueId)));
                 jedis.del(USER_KEY_PREFIX + uniqueId);
             }
         } catch (JedisDataException e) {
             return getPlayer(uniqueId);
         } catch (JedisException | JsonParseException e) {
-            Matrix.getAPI().debug(e);
+            Matrix.getLogger().debug(e);
         }
         return Optional.empty();
     }
@@ -122,7 +122,7 @@ public class CacheProviderImpl implements CacheProvider {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             return jedis.keys("user:*").stream().map(cached -> getPlayer(UUID.fromString(cached.split(":")[1])).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet());
         } catch (JedisException ex) {
-            Matrix.getAPI().debug(ex);
+            Matrix.getLogger().debug(ex);
         }
         return Collections.emptySet();
     }
@@ -133,7 +133,7 @@ public class CacheProviderImpl implements CacheProvider {
             getPlayer(player.getUniqueId()).orElse(player).save(); // save cached version to database
             jedis.del(USER_KEY_PREFIX + player.getUniqueId()); // remove it from redis
         } catch (JedisException | JsonParseException ex) {
-            Matrix.getAPI().debug(ex);
+            Matrix.getLogger().debug(ex);
         }
     }
 }

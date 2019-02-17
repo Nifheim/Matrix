@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.api;
 
 import com.google.gson.Gson;
+import io.github.beelzebu.matrix.api.logging.MatrixLogger;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 public final class Matrix {
 
     public static final Gson GSON = new Gson();
+    private static final MatrixLogger LOGGER = new MatrixLogger();
 
     @Getter
     @Setter
@@ -18,5 +20,9 @@ public final class Matrix {
 
     public static Optional<MatrixAPI> getAPISafe() {
         return Optional.ofNullable(API);
+    }
+
+    public static MatrixLogger getLogger() {
+        return LOGGER;
     }
 }

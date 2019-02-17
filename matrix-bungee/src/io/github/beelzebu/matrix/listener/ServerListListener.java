@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.listener;
 
 import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.motd.Motd;
 import io.github.beelzebu.matrix.motd.MotdManager;
 import java.util.List;
@@ -69,7 +70,7 @@ public class ServerListListener implements Listener {
                 // set player hover
                 ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[playerHover.length];
                 for (int i = 0; i < playerHover.length; i++) {
-                    playerInfos[i] = new ServerPing.PlayerInfo(Matrix.getAPI().rep(playerHover[i]), emptyUUID);
+                    playerInfos[i] = new ServerPing.PlayerInfo(StringUtils.replace(playerHover[i]), emptyUUID);
                 }
                 e.getResponse().getPlayers().setSample(playerInfos);
             } catch (Exception ex) {

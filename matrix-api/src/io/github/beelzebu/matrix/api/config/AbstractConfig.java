@@ -14,8 +14,6 @@ public abstract class AbstractConfig {
 
     protected final File file;
 
-    public abstract Object get(String path);
-
     public Object get(String path, Object def) {
         return get(path) != null ? get(path) : def;
     }
@@ -31,7 +29,6 @@ public abstract class AbstractConfig {
     public int getInt(String path) {
         return get(path, -1) instanceof Number ? ((Number) get(path, -1)).intValue() : -1;
     }
-
 
     public int getInt(String path, int def) {
         return get(path, def) instanceof Number ? ((Number) get(path, def)).intValue() : def;
@@ -60,6 +57,8 @@ public abstract class AbstractConfig {
     public List<String> getStringList(String path) {
         return getList(path).get(0) instanceof String ? (List<String>) getList(path) : new ArrayList<>();
     }
+
+    public abstract Object get(String path);
 
     public abstract Collection<String> getKeys(String path);
 

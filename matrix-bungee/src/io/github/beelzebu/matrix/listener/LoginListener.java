@@ -26,27 +26,49 @@ import net.md_5.bungee.event.EventPriority;
 
 public class LoginListener implements Listener {
 
-    private final MatrixAPI api = Matrix.getAPI();
-    private final MatrixBungeeBootstrap plugin;
     private static final Map<String, Boolean> blacklist = new HashMap<>();
     private static final Map<String, Object> activeBlacklist = new HashMap<>();
+    private final MatrixAPI api = Matrix.getAPI();
+    private final MatrixBungeeBootstrap plugin;
 
     public LoginListener(MatrixBungeeBootstrap matrixBungeeBootstrap) {
         plugin = matrixBungeeBootstrap;
         activeBlacklist.put("http://www,stopforumspam,com/api?ip=", "yes");
         activeBlacklist.put("http://www,shroomery,org/ythan/proxycheck,php?ip=", "Y");
         try (Scanner blackList = new Scanner(new URL("http://myip.ms/files/blacklist/csf/latest_blacklist.txt").openStream())) {
-            api.log("[AJB] Downloading Blacklist...");
+            Matrix.getLogger().info("[AJB] Downloading Blacklist...");
             while (blackList.hasNextLine()) {
                 String IP = blackList.nextLine();
                 if (IP.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}") && !blacklist.containsKey(IP)) {
                     blacklist.put(IP, true);
                 }
             }
-            api.log("[AJB] Blacklist successfully Downloaded");
+            Matrix.getLogger().info("[AJB] Blacklist successfully Downloaded");
         } catch (IOException e) {
-            api.log("[AJB] Error Downloading the Blacklist");
+            Matrix.getLogger().info("[AJB] Error Downloading the Blacklist");
         }
+    }
+
+    public static boolean isProxy(String IP) {
+        if ((IP.equals("127.0.0.1")) || (IP.equals("localhost")) || (IP.matches("192\\.168\\.[01]{1}\\.[0-9]{1,3}"))) { // está enviando información falsa
+            return true;
+        }
+        for (String s : activeBlacklist.keySet()) {
+            try (Scanner scanner = new Scanner(new URL(s.replace(",", ".") + IP).openStream())) {
+                StringBuilder res = new StringBuilder();
+                while (scanner.hasNextLine()) {
+                    res.append(scanner.nextLine());
+                }
+                String[] args = ((String) activeBlacklist.get(s)).split(",");
+                for (String arg : args) {
+                    if (res.toString().matches(arg)) {
+                        return true;
+                    }
+                }
+            } catch (Exception ignore) {
+            }
+        }
+        return blacklist.containsKey(IP) && blacklist.get(IP);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -87,27 +109,5 @@ public class LoginListener implements Listener {
     public void onDisconnect(PlayerDisconnectEvent e) {
         MatrixPlayer player = api.getPlayer(e.getPlayer().getUniqueId());
         api.getPlugin().runAsync(new DisconnectTask(e, player));
-    }
-
-    public static boolean isProxy(String IP) {
-        if ((IP.equals("127.0.0.1")) || (IP.equals("localhost")) || (IP.matches("192\\.168\\.[01]{1}\\.[0-9]{1,3}"))) { // está enviando información falsa
-            return true;
-        }
-        for (String s : activeBlacklist.keySet()) {
-            try (Scanner scanner = new Scanner(new URL(s.replace(",", ".") + IP).openStream())) {
-                StringBuilder res = new StringBuilder();
-                while (scanner.hasNextLine()) {
-                    res.append(scanner.nextLine());
-                }
-                String[] args = ((String) activeBlacklist.get(s)).split(",");
-                for (String arg : args) {
-                    if (res.toString().matches(arg)) {
-                        return true;
-                    }
-                }
-            } catch (Exception ignore) {
-            }
-        }
-        return blacklist.containsKey(IP) && blacklist.get(IP);
     }
 }

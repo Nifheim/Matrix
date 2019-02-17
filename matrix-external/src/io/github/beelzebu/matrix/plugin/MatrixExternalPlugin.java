@@ -24,6 +24,10 @@ public class MatrixExternalPlugin implements MatrixPlugin {
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
 
     @Override
+    public void log(String message) {
+    }
+
+    @Override
     public AbstractConfig getConfig() {
         return config;
     }
@@ -57,10 +61,6 @@ public class MatrixExternalPlugin implements MatrixPlugin {
                 e.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public void log(String message) {
     }
 
     @Override

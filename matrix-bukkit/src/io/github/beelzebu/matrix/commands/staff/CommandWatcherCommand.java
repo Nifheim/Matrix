@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix.commands.staff;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -19,6 +20,6 @@ public class CommandWatcherCommand extends MatrixCommand {
         MatrixPlayer mp = Matrix.getAPI().getPlayer(sender.getName());
         boolean status = !mp.isWatcher();
         mp.setWatcher(status);
-        sender.sendMessage(Matrix.getAPI().rep("&7Command watcher: " + (status ? "&aactivado" : "&cdesactivado") + "&7."));
+        sender.sendMessage(StringUtils.replace("&7Command watcher: " + (status ? "&aactivado" : "&cdesactivado") + "&7."));
     }
 }

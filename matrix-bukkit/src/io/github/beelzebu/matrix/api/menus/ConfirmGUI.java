@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.api.menus;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -11,7 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class ConfirmGUI extends GUIManager {
 
-    private final MatrixAPI core = Matrix.getAPI();
+    private final MatrixAPI api = Matrix.getAPI();
     private final Player player;
     private final ItemStack item;
     private final String name;
@@ -48,14 +49,14 @@ public class ConfirmGUI extends GUIManager {
         {
             ItemStack is = new ItemStack(Material.STAINED_GLASS, 1, (short) 5);
             ItemMeta meta = is.getItemMeta();
-            meta.setDisplayName(core.getString("Utils.GUI.Confirm.Accept", player.getLocale()));
+            meta.setDisplayName(api.getString("Utils.GUI.Confirm.Accept", player.getLocale()));
             is.setItemMeta(meta);
             setItem(2, is, accept);
         }
         {
             ItemMeta meta = item.getItemMeta();
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES, ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_UNBREAKABLE);
-            meta.setDisplayName(core.rep(name));
+            meta.setDisplayName(StringUtils.replace(name));
             meta.setLore(lore);
             item.setItemMeta(meta);
             setItem(4, item);
@@ -63,7 +64,7 @@ public class ConfirmGUI extends GUIManager {
         {
             ItemStack is = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
             ItemMeta meta = is.getItemMeta();
-            meta.setDisplayName(core.getString("Utils.GUI.Confirm.Decline", player.getLocale()));
+            meta.setDisplayName(api.getString("Utils.GUI.Confirm.Decline", player.getLocale()));
             is.setItemMeta(meta);
             setItem(6, is, decline);
         }

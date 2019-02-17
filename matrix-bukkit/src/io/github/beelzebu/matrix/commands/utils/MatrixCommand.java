@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import io.github.beelzebu.matrix.api.commands.MatrixCommand;
+import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import io.github.beelzebu.matrix.listeners.LobbyListener;
@@ -28,11 +28,11 @@ import org.bukkit.inventory.meta.BookMeta;
 /**
  * @author Beelzebu
  */
-public class Matrix extends MatrixCommand {
+public class MatrixCommand extends io.github.beelzebu.matrix.api.commands.MatrixCommand {
 
     private final LobbyData data = LobbyData.getInstance();
 
-    public Matrix() {
+    public MatrixCommand() {
         super("matrix", "matrix.mod");
     }
 
@@ -63,12 +63,12 @@ public class Matrix extends MatrixCommand {
         // (0)xp (1)set (2)player (3)int = 4
         if (args.length == 1 || args[1].equalsIgnoreCase("?")) {
             api.getMessages(locale).getStringList("NetworkXP.Help.User").forEach((str) -> {
-                sender.sendMessage(api.rep(str));
+                sender.sendMessage(StringUtils.rep(str));
             });
             return true;
         } else if (args[1].equalsIgnoreCase("admin")) {
             api.getMessages(locale).getStringList("NetworkXP.Help.Admin").forEach((str) -> {
-                sender.sendMessage(api.rep(str));
+                sender.sendMessage(StringUtils.rep(str));
             });
             return true;
         } else if (args[1].equalsIgnoreCase("get") && args.length <= 3) {

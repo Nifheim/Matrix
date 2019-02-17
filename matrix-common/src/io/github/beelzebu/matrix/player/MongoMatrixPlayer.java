@@ -5,6 +5,7 @@ import io.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.player.Statistics;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.database.MongoStorage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -127,6 +128,16 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("name");
         updateCached("lowercaseName");
         updateCached("knownNames");
+    }
+
+    @Override
+    public void execute(String command) {
+        Matrix.getAPI().getPlugin().dispatchCommand(this, command);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        Matrix.getAPI().getPlugin().sendMessage(getName(), StringUtils.replace(message));
     }
 
     @Override
@@ -310,17 +321,17 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             return;
         }
         if (Objects.equals(field, "name") && getName() == null) {
-            Matrix.getAPI().debug("Trying to save a null name for " + getUniqueId());
+            Matrix.getLogger().debug("Trying to save a null name for " + getUniqueId());
             return;
         }
         if (Objects.equals(field, "uniqueId") && getUniqueId() == null) {
-            Matrix.getAPI().debug("Trying to save a null uuid for " + getName());
+            Matrix.getLogger().debug("Trying to save a null uuid for " + getName());
             return;
         }
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
             Object value = FIELDS.get(field).get(this);
             String jsonValue = Matrix.GSON.toJson(value);
-            Matrix.getAPI().debug("Updating " + getName() + " field `" + field + "' with value `" + jsonValue + "'");
+            Matrix.getLogger().debug("Updating " + getName() + " field `" + field + "' with value `" + jsonValue + "'");
             if (value != null) {
                 jedis.hset(getRedisKey(), field, jsonValue);
             } else {

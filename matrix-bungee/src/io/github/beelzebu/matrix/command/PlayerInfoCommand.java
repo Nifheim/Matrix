@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix.command;
 import com.google.gson.GsonBuilder;
 import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.utils.PermsUtils;
@@ -26,14 +27,14 @@ public class PlayerInfoCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         bootstrap.getApi().getPlugin().runAsync(() -> {
             if (args.length == 0) {
-                sender.sendMessage(bootstrap.getApi().rep("%prefix% &6Por favor usa &e/" + getName() + " <nombre>"));
+                sender.sendMessage(StringUtils.replace("%prefix% &6Por favor usa &e/" + getName() + " <nombre>"));
             } else {
                 if (bootstrap.getApi().getDatabase().isRegistered(args[0])) {
                     MatrixPlayer player = bootstrap.getApi().getPlayer(args[0]);
                     if (args.length >= 2 && args[1].equalsIgnoreCase("json")) {
                         sender.sendMessage(TextComponent.fromLegacyText(new GsonBuilder().setPrettyPrinting().create().toJson(player, MongoMatrixPlayer.class)));
                     } else {
-                        BaseComponent[] msg = TextComponent.fromLegacyText(bootstrap.getApi().rep(
+                        BaseComponent[] msg = TextComponent.fromLegacyText(StringUtils.replace(
                                 "%prefix% Información de &c" + player.getName() + "&r\n"
                                         + " \n"
                                         + " &cUUID &8• &7" + player.getUniqueId() + "&r\n"
@@ -51,7 +52,7 @@ public class PlayerInfoCommand extends Command {
                         sender.sendMessage(msg);
                     }
                 } else {
-                    sender.sendMessage(bootstrap.getApi().rep("%prefix% No se ha encontrado a " + args[0] + " en la base de datos."));
+                    sender.sendMessage(StringUtils.replace("%prefix% No se ha encontrado a " + args[0] + " en la base de datos."));
                 }
             }
         });
@@ -59,7 +60,7 @@ public class PlayerInfoCommand extends Command {
 
     private String createList(Collection<String> collection) {
         StringBuilder list = new StringBuilder();
-        collection.forEach(entry -> list.append(bootstrap.getApi().rep("  &f- &7" + entry + "\n")));
+        collection.forEach(entry -> list.append(StringUtils.replace("  &f- &7" + entry + "\n")));
         return list.toString();
     }
 }

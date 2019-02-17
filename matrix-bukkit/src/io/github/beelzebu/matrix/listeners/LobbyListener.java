@@ -290,6 +290,11 @@ public class LobbyListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onLocaleChange(PlayerLocaleChangeEvent e) {
+        setPvP(e.getPlayer(), canPvP(api.getPlayer(e.getPlayer().getUniqueId())));
+    }
+
     private boolean canPvP(MatrixPlayer p) {
         try {
             WorldGuardPlugin worldguard = (WorldGuardPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
@@ -344,10 +349,5 @@ public class LobbyListener implements Listener {
             is.setItemMeta(meta);
             p.getInventory().setItem(8, is);
         }
-    }
-
-    @EventHandler
-    public void onLocaleChange(PlayerLocaleChangeEvent e) {
-        setPvP(e.getPlayer(), canPvP(api.getPlayer(e.getPlayer().getUniqueId())));
     }
 }

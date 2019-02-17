@@ -32,7 +32,7 @@ public class PostLoginTask implements Runnable {
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
-            Matrix.getAPI().debug(e);
+            Matrix.getLogger().debug(e);
         }
     }
 }

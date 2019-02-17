@@ -1,6 +1,8 @@
 package io.github.beelzebu.matrix;
 
 import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.command.BukkitCommandSource;
+import io.github.beelzebu.matrix.api.command.CommandSource;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -27,7 +29,7 @@ import org.bukkit.entity.Player;
 public class MatrixPluginBukkit implements MatrixPlugin {
 
     private final MatrixBukkitBootstrap bootstrap;
-    private final CommandSender console = Bukkit.getConsoleSender();
+    private final CommandSource console = new BukkitCommandSource(Bukkit.getConsoleSender());
 
     @Override
     public MatrixConfig getConfig() {
@@ -56,17 +58,12 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public void executeCommand(String cmd) {
-        runSync(() -> Bukkit.dispatchCommand(console, cmd));
+        runSync(() -> console.execute(cmd));
     }
 
     @Override
-    public void log(String message) {
-        console.sendMessage(Matrix.getAPI().rep("&8[&cMatrix&8] &7" + message));
-    }
-
-    @Override
-    public Object getConsole() {
-        return Bukkit.getConsoleSender();
+    public CommandSource getConsole() {
+        return console;
     }
 
     @Override
@@ -141,7 +138,7 @@ public class MatrixPluginBukkit implements MatrixPlugin {
             player.sendMessage(reason);
             PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
         } else {
-            Matrix.getAPI().debug("Tried to kick " + uniqueId + ", but isn't online.");
+            Matrix.getLogger().debug("Tried to kick " + uniqueId + ", but isn't online.");
         }
     }
 
@@ -154,7 +151,7 @@ public class MatrixPluginBukkit implements MatrixPlugin {
             player.sendMessage(reason);
             PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
         } else {
-            Matrix.getAPI().debug("Tried to kick " + name + ", but isn't online.");
+            Matrix.getLogger().debug("Tried to kick " + name + ", but isn't online.");
         }
     }
 
@@ -162,5 +159,13 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     public void kickPlayer(MatrixPlayer matrixPlayer, String reason) {
         Objects.requireNonNull(matrixPlayer, "Player can't be null");
         kickPlayer(matrixPlayer.getName(), reason);
+    }
+
+    @Override
+    public void dispatchCommand(CommandSource commandSource, String command) {
+        Player player = Bukkit.getPlayer(commandSource.getName());
+        if (player != null && player.isOnline()) {
+            Bukkit.dispatchCommand(player, command);
+        }
     }
 }

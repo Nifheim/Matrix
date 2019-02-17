@@ -62,7 +62,7 @@ public class PluginMessage implements PluginMessageListener {
             try {
                 player.sendPluginMessage(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class), channel, out.toByteArray());
             } catch (Exception ex) {
-                Matrix.getAPI().log("Hey, you need to install the matrixPlugin in BungeeCord if you have bungeecord enabled in spigot.yml!");
+                Matrix.getLogger().log("Hey, you need to install the matrixPlugin in BungeeCord if you have bungeecord enabled in spigot.yml!");
             }
         }
     }

@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.api.player;
 
 import io.github.beelzebu.coins.api.CoinsAPI;
+import io.github.beelzebu.matrix.api.command.CommandSource;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -13,7 +14,7 @@ import net.md_5.bungee.api.ChatColor;
 /**
  * @author Beelzebu
  */
-public interface MatrixPlayer {
+public interface MatrixPlayer extends CommandSource {
 
     default Optional<Statistics> getStatistics(String server) {
         return getStatistics().stream().filter(statistics -> server.equals(statistics.getServer())).findFirst();
@@ -50,6 +51,7 @@ public interface MatrixPlayer {
      *
      * @return Saved Name of this user.
      */
+    @Override
     String getName();
 
     /**
@@ -58,6 +60,12 @@ public interface MatrixPlayer {
      * @param name New UUID to set.
      */
     void setName(String name);
+
+    @Override
+    void execute(String command);
+
+    @Override
+    void sendMessage(String message);
 
     String getLowercaseName();
 

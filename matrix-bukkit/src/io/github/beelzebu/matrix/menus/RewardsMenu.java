@@ -1,8 +1,8 @@
 package io.github.beelzebu.matrix.menus;
 
 import io.github.beelzebu.matrix.api.ItemBuilder;
-import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.networkxp.RewardManager;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Material;
@@ -30,6 +30,6 @@ public class RewardsMenu extends GUIManager {
     }
 
     private String rep(String string) {
-        return Matrix.getAPI().rep(PlaceholderAPI.setPlaceholders(opener, string));
+        return StringUtils.replace(PlaceholderAPI.setPlaceholders(opener, string));
     }
 }

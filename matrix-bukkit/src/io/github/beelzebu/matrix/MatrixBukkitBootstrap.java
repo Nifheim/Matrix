@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix;
 
 import de.slikey.effectlib.EffectManager;
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.commands.CommandAPI;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
 import io.github.beelzebu.matrix.api.player.Statistics;
@@ -18,9 +19,9 @@ import io.github.beelzebu.matrix.commands.staff.StopCommand;
 import io.github.beelzebu.matrix.commands.user.Options;
 import io.github.beelzebu.matrix.commands.user.Spit;
 import io.github.beelzebu.matrix.commands.utils.AddLore;
-import io.github.beelzebu.matrix.commands.utils.Matrix;
+import io.github.beelzebu.matrix.commands.utils.MatrixCommand;
 import io.github.beelzebu.matrix.commands.utils.RemoveLore;
-import io.github.beelzebu.matrix.commands.utils.Rename;
+import io.github.beelzebu.matrix.commands.utils.RenameCommand;
 import io.github.beelzebu.matrix.commands.utils.SyncCommand;
 import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.listeners.DupepatchListener;
@@ -112,8 +113,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new LaunchPadsCommand());
         CommandAPI.registerCommand(this, new RemoveLore());
         CommandAPI.registerCommand(this, new AddLore());
-        CommandAPI.registerCommand(this, new Rename());
-        CommandAPI.registerCommand(this, new Matrix());
+        CommandAPI.registerCommand(this, new RenameCommand());
+        CommandAPI.registerCommand(this, new MatrixCommand());
         CommandAPI.registerCommand(this, new Spit());
         CommandAPI.registerCommand(this, new SyncCommand());
         CommandAPI.registerCommand(this, new ReloadCommand());
@@ -144,13 +145,13 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     private void loadManagers() {
         if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
             if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
-                api.log("LuckPerms found, hooking into it.");
+                Matrix.getLogger().info("LuckPerms found, hooking into it.");
             } else {
                 Bukkit.shutdown();
             }
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            api.log("PlaceholderAPI found, hooking into it.");
+            Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
             // Utils
             StatsPlaceholders statsPlaceholders = new StatsPlaceholders(this);
             statsPlaceholders.hook();

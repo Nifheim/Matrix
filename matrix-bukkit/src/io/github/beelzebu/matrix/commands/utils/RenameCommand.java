@@ -1,15 +1,16 @@
 package io.github.beelzebu.matrix.commands.utils;
 
+import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-public class Rename extends MatrixCommand {
+public class RenameCommand extends MatrixCommand {
 
-    public Rename() {
-        super("rename", "matrix.vip.lord", "ren", "renombrar");
+    public RenameCommand() {
+        super("rename", "matrix.command.rename", "ren", "renombrar");
     }
 
     @Override
@@ -31,10 +32,10 @@ public class Rename extends MatrixCommand {
             }
             ItemStack item = p.getInventory().getItemInMainHand();
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(api.rep(name.substring(0, name.length() - 1)));
+            meta.setDisplayName(StringUtils.rep(name.substring(0, name.length() - 1)));
             item.setItemMeta(meta);
             p.getInventory().setItemInMainHand(item);
-            p.sendMessage(api.getString("Item Utils.Rename.Successful", locale).replaceAll("%name%", name.toString()));
+            p.sendMessage(api.getString("Item Utils.Rename.Successful", locale).replace("%name%", name.toString()));
             return;
         }
         p.sendMessage(api.getString("Item Utils.Rename.Help", locale));

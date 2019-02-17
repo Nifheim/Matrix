@@ -63,16 +63,17 @@ public class ChatListener implements Listener {
             if (Stream.of(disabledServers).anyMatch(server -> ((ProxiedPlayer) e.getSender()).getServer().getInfo().getName().equalsIgnoreCase(server))) {
                 return;
             }
-            String censoring = checkCensoring(e.getMessage().toLowerCase());
-            if (censoring != null) {
-                e.setMessage(e.getMessage().replaceAll(censoring, Strings.repeat("*", censoring.length())));
+            String regex = checkCensoring(e.getMessage().toLowerCase());
+            if (regex != null) {
+                String word = e.getMessage().replaceAll(e.getMessage().replaceAll(regex, ""), "");
+                e.setMessage(e.getMessage().replaceAll(regex, Strings.repeat("*", word.length())));
                 broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), false);
                 MatrixPlayer matrixPlayer = api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
                 if (matrixPlayer != null) {
                     matrixPlayer.incrCensoringLevel();
                     //int level = matrixPlayer.getCensoringLevel();
                     //punishments.get(punishments.containsKey(level) ? level : punishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", ((ProxiedPlayer) e.getSender()).getName()).replace("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), "")).replace("%count%", String.valueOf(level))));
-                    api.getConfig().getStringList("Messages.Censored").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), ""))))));
+                    api.getConfig().getStringList("Messages.Censored").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(regex, ""), ""))))));
                 } else {
                     throw new RuntimeException(((ProxiedPlayer) e.getSender()).getName() + " doesn't exists in the database");
                 }

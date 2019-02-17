@@ -1,5 +1,7 @@
 package io.github.beelzebu.matrix.api.plugin;
 
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.command.CommandSource;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -38,6 +40,16 @@ public interface MatrixPlugin {
      */
     default void kickPlayer(MatrixPlayer matrixPlayer) {
         kickPlayer(matrixPlayer, "");
+    }
+
+    /**
+     * Envía un mensaje a la consola con el prefijo del log.
+     *
+     * @param message mensaje para enviar.
+     */
+    @Deprecated
+    default void log(String message) {
+        Matrix.getLogger().info(message);
     }
 
     MatrixConfig getConfig();
@@ -80,18 +92,11 @@ public interface MatrixPlugin {
     void executeCommand(String command);
 
     /**
-     * Envía un mensaje a la consola con el prefijo del log.
+     * Gets the console command source.
      *
-     * @param message mensaje para enviar.
+     * @return console instance.
      */
-    void log(String message);
-
-    /**
-     * Obtiene la consola del servidor.
-     *
-     * @return -
-     */
-    Object getConsole();
+    CommandSource getConsole();
 
     /**
      * Envía un mensaje a un CommandSender (consola o jugador).
@@ -231,4 +236,6 @@ public interface MatrixPlugin {
      * @return bootstrap instance.
      */
     MatrixBootstrap getBootstrap();
+
+    void dispatchCommand(CommandSource commandSource, String command);
 }

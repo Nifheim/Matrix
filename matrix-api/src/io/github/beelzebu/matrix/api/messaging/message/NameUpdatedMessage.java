@@ -17,6 +17,11 @@ public class NameUpdatedMessage extends RedisMessage {
     private final UUID playerOldUniqueId;
 
     @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
+
+    @Override
     public String getChannel() {
         return "name-updated";
     }
@@ -24,10 +29,5 @@ public class NameUpdatedMessage extends RedisMessage {
     @Override
     public void read() {
         // NOOP
-    }
-
-    @Override
-    protected boolean onlyExternal() {
-        return false;
     }
 }

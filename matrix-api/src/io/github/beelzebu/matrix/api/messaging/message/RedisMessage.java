@@ -22,10 +22,10 @@ public abstract class RedisMessage {
         }
         Matrix.getAPI().getRedis().sendMessage(this);
         if (onlyExternal()) {
-            api.debug(getChannel() + " is only external");
+            Matrix.getLogger().debug(getChannel() + " is only external");
             return;
         }
-        api.debug("Reading " + getChannel() + " after sent");
+        Matrix.getLogger().debug("Reading " + getChannel() + " after sent");
         read();
     }
 
@@ -38,9 +38,9 @@ public abstract class RedisMessage {
         return uniqueId == null ? uniqueId = UUID.randomUUID() : uniqueId;
     }
 
+    protected abstract boolean onlyExternal();
+
     public abstract String getChannel();
 
     public abstract void read();
-
-    protected abstract boolean onlyExternal();
 }

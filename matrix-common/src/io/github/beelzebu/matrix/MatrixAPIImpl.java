@@ -6,6 +6,7 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
 import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.cache.CacheProviderImpl;
 import io.github.beelzebu.matrix.database.MongoStorage;
 import io.github.beelzebu.matrix.utils.FileManager;
@@ -62,17 +63,17 @@ public class MatrixAPIImpl extends MatrixAPI {
 
     private void motd() {
         plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(""));
-        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(rep("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")));
-        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(rep("        &4Matrix &fBy: &7Beelzebu")));
-        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(rep("")));
+        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")));
+        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("        &4Matrix &fBy: &7Beelzebu")));
+        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("")));
         StringBuilder version = new StringBuilder();
         int spaces = (48 - ("v: " + plugin.getVersion()).length()) / 2;
         for (int i = 0; i < spaces; i++) {
             version.append(" ");
         }
-        version.append(rep("&4v: &f" + plugin.getVersion()));
-        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(rep(version.toString())));
-        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(rep("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")));
+        version.append(StringUtils.replace("&4v: &f" + plugin.getVersion()));
+        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace(version.toString())));
+        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")));
     }
 
     /**
