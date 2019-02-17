@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix;
 
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -37,6 +38,7 @@ public class MatrixAPIImpl extends MatrixAPI {
         serverInfo = new ServerInfo(plugin.getConfig().getString("Server Table").replaceAll(" ", ""));
         serverInfo.setServerType(ServerType.valueOf(plugin.getConfig().getString("Server Type").toUpperCase()));
         Stream.of(Objects.requireNonNull(plugin.getDataFolder().listFiles())).filter(file -> file.getName().startsWith("messages")).forEach(file -> messagesMap.put((file.getName().split("_").length == 2 ? file.getName().split("_")[1] : "default").split(".yml")[0], plugin.getFileAsConfig(file)));
+        Matrix.getLogger().init(this);
     }
 
     /**
@@ -62,7 +64,7 @@ public class MatrixAPIImpl extends MatrixAPI {
     }
 
     private void motd() {
-        plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(""));
+        plugin.getConsole().sendMessage("");
         plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")));
         plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("        &4Matrix &fBy: &7Beelzebu")));
         plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("")));

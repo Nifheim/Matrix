@@ -67,6 +67,8 @@ public class MatrixPluginBungee implements MatrixPlugin {
     public void sendMessage(Object sender, BaseComponent[] msg) {
         if (sender instanceof CommandSender) {
             ((CommandSender) sender).sendMessage(msg);
+        } else if (sender instanceof CommandSource) {
+            ((CommandSource) sender).sendMessage(TextComponent.toLegacyText(msg));
         } else {
             Matrix.getLogger().debug(new IllegalArgumentException("Can't cast " + sender.getClass() + " to CommandSender"));
         }

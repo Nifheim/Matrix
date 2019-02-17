@@ -1,10 +1,11 @@
 package io.github.beelzebu.matrix.api.logging;
 
-import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.logging.Level;
 import redis.clients.jedis.exceptions.JedisException;
 
@@ -14,12 +15,20 @@ import redis.clients.jedis.exceptions.JedisException;
 public class MatrixLogger {
 
     private static final String PREFIX = "&8[&cMatrix&8] &7";
+    private MatrixAPI matrixAPI;
+
+    public void init(MatrixAPI matrixAPI) {
+        if (this.matrixAPI == null) {
+            this.matrixAPI = matrixAPI;
+        }
+    }
 
     public void log(Level level, String msg) {
-        if (level.intValue() <= Level.FINE.intValue() && Matrix.getAPI().getConfig().getBoolean("Debug")) {
-            Matrix.getAPI().getPlugin().getConsole().sendMessage(PREFIX + "&cDebug: &7" + msg);
+        Objects.requireNonNull(msg);
+        if (level.intValue() <= Level.FINE.intValue() && matrixAPI.getConfig().getBoolean("Debug")) {
+            matrixAPI.getPlugin().getConsole().sendMessage(PREFIX + "&cDebug: &7" + msg);
         } else {
-            Matrix.getAPI().getPlugin().getConsole().sendMessage(PREFIX + msg);
+            matrixAPI.getPlugin().getConsole().sendMessage(PREFIX + msg);
         }
     }
 
