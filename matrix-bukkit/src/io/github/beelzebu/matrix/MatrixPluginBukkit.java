@@ -9,7 +9,7 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
-import io.github.beelzebu.matrix.utils.bungee.PluginMessage;
+import io.github.beelzebu.matrix.util.bungee.PluginMessage;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;

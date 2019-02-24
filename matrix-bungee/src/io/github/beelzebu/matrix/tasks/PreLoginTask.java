@@ -31,12 +31,13 @@ public class PreLoginTask implements Runnable {
                 return;
             }
             if (event.getConnection().getName() == null || !event.getConnection().getName().matches("^\\w{3,16}$")) {
+                String goodName = event.getConnection().getName().replaceAll("[^\\w]", "");
                 event.setCancelReason(new TextComponent("\n" +
                         "Your username is invalid, it must be alphanumeric and can't contain spaces.\n" +
-                        "Try using: " + event.getConnection().getName().replaceAll("[^\\w]", "") + "\n" +
+                        "Try using: " + goodName + "\n" +
                         "\n" +
                         "Tu nombre es inválido, debe ser alfanumérico y no puede contener espacios.\n" +
-                        "Intenta usando: " + event.getConnection().getName().replaceAll("[^\\w]", "")));
+                        "Intenta usando: " + goodName));
                 event.setCancelled(true);
                 return;
             }

@@ -90,15 +90,15 @@ public class OptionsGUI extends GUIManager {
         });
 
         setItem(16, new ItemBuilder(Material.BOOK_AND_QUILL).displayname(StringUtils.rep("&8Nick")).lore(Arrays.asList("", StringUtils.rep("&7Haz click para cambiar"), StringUtils.rep("&7el color de tu nick."))).build(), p -> {
-            if (p.hasPermission("matrix.vip.duke")) {
+            if (p.hasPermission("matrix.command.nick")) {
                 Bukkit.dispatchCommand(p, "nick");
             } else {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
-                p.sendMessage(StringUtils.rep("&c&lLo sentimos!&7 debes ser &cDuke&7 o superior para poder usar esta opción."));
+                p.sendMessage(StringUtils.rep("&c&lLo sentimos!&7 no tienes permisos suficientes para hacer esto."));
                 p.closeInventory();
             }
         });
-        if (player.hasPermission("matrix.command.nick")) {
+        if (player.hasPermission("matrix.command.vanish")) {
             setItem(26, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(StringUtils.rep("&8Ocultar nick")).lore(np.getOption(PlayerOptionType.NICKNAME) + "").build(), p -> {
                 boolean status = !np.getOption(PlayerOptionType.NICKNAME);
                 np.setOption(PlayerOptionType.NICKNAME, status);

@@ -2,7 +2,7 @@ package io.github.beelzebu.matrix.tasks;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import io.github.beelzebu.matrix.utils.ErrorCodes;
+import io.github.beelzebu.matrix.util.ErrorCodes;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PostLoginEvent;

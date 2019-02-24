@@ -6,7 +6,7 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import io.github.beelzebu.matrix.utils.PermsUtils;
+import io.github.beelzebu.matrix.util.PermsUtils;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import net.md_5.bungee.api.CommandSender;

@@ -8,44 +8,47 @@ import io.github.beelzebu.matrix.api.player.Statistics;
 import io.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
-import io.github.beelzebu.matrix.commands.staff.CommandWatcherCommand;
-import io.github.beelzebu.matrix.commands.staff.FreezeCommand;
-import io.github.beelzebu.matrix.commands.staff.LaunchPadsCommand;
-import io.github.beelzebu.matrix.commands.staff.MatrixReloadCommand;
-import io.github.beelzebu.matrix.commands.staff.PluginsCommand;
-import io.github.beelzebu.matrix.commands.staff.PowerupsCommand;
-import io.github.beelzebu.matrix.commands.staff.ReloadCommand;
-import io.github.beelzebu.matrix.commands.staff.StopCommand;
-import io.github.beelzebu.matrix.commands.user.Options;
-import io.github.beelzebu.matrix.commands.user.Spit;
-import io.github.beelzebu.matrix.commands.utils.AddLore;
-import io.github.beelzebu.matrix.commands.utils.MatrixCommand;
-import io.github.beelzebu.matrix.commands.utils.RemoveLore;
-import io.github.beelzebu.matrix.commands.utils.RenameCommand;
-import io.github.beelzebu.matrix.commands.utils.SyncCommand;
+import io.github.beelzebu.matrix.command.staff.CommandWatcherCommand;
+import io.github.beelzebu.matrix.command.staff.FreezeCommand;
+import io.github.beelzebu.matrix.command.staff.LaunchPadsCommand;
+import io.github.beelzebu.matrix.command.staff.MatrixReloadCommand;
+import io.github.beelzebu.matrix.command.staff.PluginsCommand;
+import io.github.beelzebu.matrix.command.staff.PowerupsCommand;
+import io.github.beelzebu.matrix.command.staff.ReloadCommand;
+import io.github.beelzebu.matrix.command.staff.StopCommand;
+import io.github.beelzebu.matrix.command.user.Options;
+import io.github.beelzebu.matrix.command.user.Spit;
+import io.github.beelzebu.matrix.command.utils.AddLore;
+import io.github.beelzebu.matrix.command.utils.MatrixManagerCommand;
+import io.github.beelzebu.matrix.command.utils.RemoveLore;
+import io.github.beelzebu.matrix.command.utils.RenameCommand;
+import io.github.beelzebu.matrix.command.utils.SyncCommand;
 import io.github.beelzebu.matrix.config.BukkitConfiguration;
-import io.github.beelzebu.matrix.listeners.DupepatchListener;
-import io.github.beelzebu.matrix.listeners.GUIListener;
-import io.github.beelzebu.matrix.listeners.InternalListener;
-import io.github.beelzebu.matrix.listeners.ItemListener;
-import io.github.beelzebu.matrix.listeners.LobbyListener;
-import io.github.beelzebu.matrix.listeners.PlayerCommandPreprocessListener;
-import io.github.beelzebu.matrix.listeners.PlayerDeathListener;
-import io.github.beelzebu.matrix.listeners.PlayerJoinListener;
-import io.github.beelzebu.matrix.listeners.PlayerQuitListener;
-import io.github.beelzebu.matrix.listeners.StatsListener;
-import io.github.beelzebu.matrix.listeners.ViewDistanceListener;
-import io.github.beelzebu.matrix.listeners.VotifierListener;
-import io.github.beelzebu.matrix.utils.ReadURL;
-import io.github.beelzebu.matrix.utils.bungee.BungeeCleanupTask;
-import io.github.beelzebu.matrix.utils.bungee.BungeeServerTracker;
-import io.github.beelzebu.matrix.utils.placeholders.StatsPlaceholders;
+import io.github.beelzebu.matrix.listener.DupepatchListener;
+import io.github.beelzebu.matrix.listener.GUIListener;
+import io.github.beelzebu.matrix.listener.InternalListener;
+import io.github.beelzebu.matrix.listener.ItemListener;
+import io.github.beelzebu.matrix.listener.LobbyListener;
+import io.github.beelzebu.matrix.listener.PlayerCommandPreprocessListener;
+import io.github.beelzebu.matrix.listener.PlayerDeathListener;
+import io.github.beelzebu.matrix.listener.PlayerJoinListener;
+import io.github.beelzebu.matrix.listener.PlayerQuitListener;
+import io.github.beelzebu.matrix.listener.StatsListener;
+import io.github.beelzebu.matrix.listener.ViewDistanceListener;
+import io.github.beelzebu.matrix.listener.VotifierListener;
+import io.github.beelzebu.matrix.util.ReadURL;
+import io.github.beelzebu.matrix.util.bungee.BungeeCleanupTask;
+import io.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
+import io.github.beelzebu.matrix.util.placeholders.StatsPlaceholders;
 import java.io.File;
+import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.Statistic;
 import org.bukkit.event.Listener;
@@ -114,20 +117,24 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new RemoveLore());
         CommandAPI.registerCommand(this, new AddLore());
         CommandAPI.registerCommand(this, new RenameCommand());
-        CommandAPI.registerCommand(this, new MatrixCommand());
+        CommandAPI.registerCommand(this, new MatrixManagerCommand());
         CommandAPI.registerCommand(this, new Spit());
         CommandAPI.registerCommand(this, new SyncCommand());
         CommandAPI.registerCommand(this, new ReloadCommand());
         CommandAPI.registerCommand(this, new StopCommand());
         CommandAPI.registerCommand(this, new PluginsCommand());
 
-        Bukkit.getOnlinePlayers().forEach((p) -> Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-            try {
-                ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + getConfig().getString("clave"));
-            } catch (Exception ex) {
-                Logger.getLogger(MatrixBukkitBootstrap.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
-            }
-        }));
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            Bukkit.getOperators().forEach(op -> op.setOp(false)); // remove operators
+            Stream.of(BanList.Type.values()).map(Bukkit::getBanList).forEach(banList -> banList.getBanEntries().forEach(banEntry -> banEntry.setExpiration(new Date()))); // expire vanilla bans
+            Bukkit.getOnlinePlayers().forEach(p -> {
+                try {
+                    ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + p.getName() + "&clave=" + getConfig().getString("clave"));
+                } catch (Exception ex) {
+                    Logger.getLogger(MatrixBukkitBootstrap.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
+                }
+            });
+        });
         BungeeServerTracker.startTask(5);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BungeeCleanupTask(), 600, 600);
         if (!api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
@@ -135,7 +142,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         }
     }
 
-    public Boolean isVotifier() {
+    public boolean isVotifier() {
         if (Bukkit.getPluginManager().getPlugin("Votifier") != null) {
             return Bukkit.getPluginManager().getPlugin("Votifier").isEnabled();
         }

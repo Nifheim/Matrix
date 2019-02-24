@@ -9,23 +9,24 @@ import java.util.UUID;
  */
 public abstract class RedisMessage {
 
-    protected transient final MatrixAPI api = Matrix.getAPI();
+    protected transient static final MatrixAPI api = Matrix.getAPI();
+    private final RedisMessageType redisMessageType;
     private UUID uniqueId;
-    private String channel;
+
+    public RedisMessage(RedisMessageType redisMessageType) {
+        this.redisMessageType = redisMessageType;
+    }
 
     /**
      * Send this message though redis to notify other servers.
      */
     public final void send() {
-        if (channel == null) {
-            channel = getChannel();
-        }
         Matrix.getAPI().getRedis().sendMessage(this);
         if (onlyExternal()) {
-            Matrix.getLogger().debug(getChannel() + " is only external");
+            Matrix.getLogger().debug(redisMessageType + " is only external");
             return;
         }
-        Matrix.getLogger().debug("Reading " + getChannel() + " after sent");
+        Matrix.getLogger().debug("Reading " + redisMessageType + " after sent");
         read();
     }
 
@@ -38,9 +39,30 @@ public abstract class RedisMessage {
         return uniqueId == null ? uniqueId = UUID.randomUUID() : uniqueId;
     }
 
+    public RedisMessageType getType() {
+        return redisMessageType;
+    }
+
     protected abstract boolean onlyExternal();
 
-    public abstract String getChannel();
-
     public abstract void read();
+
+    public static RedisMessage getFromType(RedisMessageType redisMessageType, String jsonMessage) {
+        switch (redisMessageType) {
+            case COMMAND:
+                return Matrix.GSON.fromJson(jsonMessage, CommandMessage.class);
+            case NAME_UPDATE:
+                return Matrix.GSON.fromJson(jsonMessage, NameUpdatedMessage.class);
+            case STAFF_CHAT:
+                return Matrix.GSON.fromJson(jsonMessage, StaffChatMessage.class);
+            case FIELD_UPDATE:
+                return Matrix.GSON.fromJson(jsonMessage, FieldUpdate.class);
+            case TARGETED_MESSAGE:
+                return Matrix.GSON.fromJson(jsonMessage, TargetedMessage.class);
+            case DISCORD_RANK_UPDATE:
+                return Matrix.GSON.fromJson(jsonMessage, DiscordRankUpdateMessage.class);
+            default:
+                return null;
+        }
+    }
 }

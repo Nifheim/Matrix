@@ -2,27 +2,28 @@ package io.github.beelzebu.matrix.api.messaging.message;
 
 import io.github.beelzebu.coins.api.utils.StringUtils;
 import java.util.UUID;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Data
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class TargetedMessage extends RedisMessage {
 
     private final UUID target;
     private final String message;
 
-    @Override
-    protected boolean onlyExternal() {
-        return false;
+    public TargetedMessage(UUID target, String message) {
+        super(RedisMessageType.TARGETED_MESSAGE);
+        this.target = target;
+        this.message = message;
     }
 
     @Override
-    public String getChannel() {
-        return "api-message";
+    protected boolean onlyExternal() {
+        return false;
     }
 
     @Override

@@ -1,13 +1,13 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
 import java.util.UUID;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Data
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class FieldUpdate extends RedisMessage {
 
@@ -15,14 +15,16 @@ public class FieldUpdate extends RedisMessage {
     private final String field;
     private final String jsonValue;
 
-    @Override
-    protected boolean onlyExternal() {
-        return true;
+    public FieldUpdate(UUID player, String field, String jsonValue) {
+        super(RedisMessageType.FIELD_UPDATE);
+        this.player = player;
+        this.field = field;
+        this.jsonValue = jsonValue;
     }
 
     @Override
-    public String getChannel() {
-        return "api-field-update";
+    protected boolean onlyExternal() {
+        return true;
     }
 
     @Override

@@ -1,13 +1,13 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
 import java.util.UUID;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Data
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class NameUpdatedMessage extends RedisMessage {
 
@@ -16,14 +16,17 @@ public class NameUpdatedMessage extends RedisMessage {
     private final UUID playerUniqueId;
     private final UUID playerOldUniqueId;
 
-    @Override
-    protected boolean onlyExternal() {
-        return false;
+    public NameUpdatedMessage(String name, String oldName, UUID playerUniqueId, UUID playerOldUniqueId) {
+        super(RedisMessageType.NAME_UPDATE);
+        this.name = name;
+        this.oldName = oldName;
+        this.playerUniqueId = playerUniqueId;
+        this.playerOldUniqueId = playerOldUniqueId;
     }
 
     @Override
-    public String getChannel() {
-        return "name-updated";
+    protected boolean onlyExternal() {
+        return false;
     }
 
     @Override

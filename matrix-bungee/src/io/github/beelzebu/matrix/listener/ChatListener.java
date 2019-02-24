@@ -10,7 +10,9 @@ import com.google.gson.JsonObject;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import io.github.beelzebu.matrix.utils.SpamUtils;
+import io.github.beelzebu.matrix.api.util.StringUtils;
+import io.github.beelzebu.matrix.util.SpamUtils;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Objects;
@@ -21,6 +23,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -34,7 +37,7 @@ import net.md_5.bungee.event.EventHandler;
 public class ChatListener implements Listener {
 
     private final MatrixAPI api;
-    private final String[] blockedCommands = {"version", "icanhasbukkit", "ver", "about", "bukkit:about"};
+    private final String[] blockedCommands = {"version", "icanhasbukkit", "ver", "about", "lp", "lpb", "perms", "luckperms", "pp", "pex", "powerfulperms", "permissionsex", "bungee"};
     private final String[] disabledServers = {"auth", "auth#1", "auth#2"};
     private final Cache<UUID, String> messageEquals = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
     private final Cache<UUID, Boolean> messageCooldown = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
@@ -147,8 +150,15 @@ public class ChatListener implements Listener {
 
     @EventHandler(priority = 120)
     public void onChat4(ChatEvent e) { // spam
+        if (!(e.getSender() instanceof ProxiedPlayer)) {
+            return;
+        }
         if (e.isCancelled()) {
             return;
+        }
+        if (e.getMessage().matches("[\\uff01-\\uff5e]+")) {
+            e.setCancelled(true);
+            api.getPlugin().getConsole().execute("ban " + ((ProxiedPlayer) e.getSender()).getName() + " [GGK] Uso de cliente hack");
         }
         if (!(e.getSender() instanceof ProxiedPlayer)) {
             return;
@@ -196,7 +206,7 @@ public class ChatListener implements Listener {
             MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
             if (matrixPlayer.getStaffChannel() != null) {
                 e.setCancelled(true);
-                ((ProxiedPlayer) sender).chat("/" + matrixPlayer.getStaffChannel() + " " + e.getMessage());
+                ProxyServer.getInstance().getPluginManager().dispatchCommand((CommandSender) sender, matrixPlayer.getStaffChannel() + " " + e.getMessage());
             }
         }
     }
@@ -215,7 +225,12 @@ public class ChatListener implements Listener {
         if (Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getName()).isAdmin()) {
             return;
         }
-        if (Stream.of(blockedCommands).anyMatch(cmd -> cmd.equals(e.getMessage().toLowerCase().split(" ", 1)[0].replaceFirst("/", "")))) {
+        String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 1)[0];
+        if (command.split(":").length > 0) {
+            e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));
+            command = command.split(":")[1];
+        }
+        if (Arrays.asList(blockedCommands).contains(command)) {
             e.setCancelled(true);
         }
     }
@@ -225,7 +240,6 @@ public class ChatListener implements Listener {
     }
 
     private String checkSpam(String path, String message) {
-        message = normalize(message);
         for (String word : api.getConfig().getStringList(path)) {
             if (message.equalsIgnoreCase(word)) {
                 return word;
@@ -236,12 +250,12 @@ public class ChatListener implements Listener {
             if (message.matches(word)) {
                 return word;
             }
-            Pattern pattern = Pattern.compile(word, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+            Pattern pattern = Pattern.compile("^" + word + "$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(message);
             if (matcher.find()) {
                 return matcher.group(0);
             }
-            String[] words = message.split(" ");
+            String[] words = Stream.of(message.split(" ")).map(this::normalize).toArray(String[]::new);
             if (words.length > 1) {
                 for (String w : words) {
                     String cs = checkSpam(path, w);
@@ -256,14 +270,14 @@ public class ChatListener implements Listener {
 
     private void broadcast(ProxiedPlayer spamer, String message, boolean ban) {
         ProxyServer.getInstance().getPlayers().stream().filter(p -> p.hasPermission("matrix.helper") && !p.getServer().getInfo().getName().contains("Auth")).forEach(p -> {
-            p.sendMessage("§8§m--------------------§R §c§lANTISPAM §8§M-------------------");
-            p.sendMessage("§7El jugador §b" + spamer.getName() + " §r§7 ha dicho algo inapropiado");
+            p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&8&m--------------------&R &c&lANTISPAM &8&M-------------------")));
+            p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&7El jugador &b" + spamer.getName() + " &r&7 ha dicho algo inapropiado")));
             String svname = spamer.getServer().getInfo().getName();
-            TextComponent msg = new TextComponent("§c§l(!) §r§7Servidor: §e" + svname + " §7(Click para ir)");
+            TextComponent msg = new TextComponent("&c&l(!) &r&7Servidor: &e" + svname + " &7(Click para ir)");
             msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/btp " + svname));
             p.sendMessage(msg);
-            p.sendMessage("§7Mensaje: §e" + message);
-            p.sendMessage("§8§m--------------------------------------------------");
+            p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&7Mensaje: &e" + message)));
+            p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&8&m--------------------------------------------------")));
         });
         if (ban) {
             api.getConfig().getStringList("AntiSpam.Commands").forEach(cmd -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), cmd.replace("%player%", spamer.getName()).replace("%message%", message).replace("%word%", message)));

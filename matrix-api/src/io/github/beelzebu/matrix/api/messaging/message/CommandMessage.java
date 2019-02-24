@@ -1,13 +1,11 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
 public class CommandMessage extends RedisMessage {
 
     private final String server;
@@ -16,14 +14,18 @@ public class CommandMessage extends RedisMessage {
     private final boolean bukkit;
     private final boolean bungee;
 
-    @Override
-    protected boolean onlyExternal() {
-        return false;
+    public CommandMessage(String server, String command, boolean global, boolean bukkit, boolean bungee) {
+        super(RedisMessageType.COMMAND);
+        this.server = server;
+        this.command = command;
+        this.global = global;
+        this.bukkit = bukkit;
+        this.bungee = bungee;
     }
 
     @Override
-    public String getChannel() {
-        return "api-command";
+    protected boolean onlyExternal() {
+        return false;
     }
 
     @Override

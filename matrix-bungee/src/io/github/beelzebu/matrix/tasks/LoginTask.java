@@ -5,7 +5,7 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.Message;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import io.github.beelzebu.matrix.utils.ErrorCodes;
+import io.github.beelzebu.matrix.util.ErrorCodes;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;

@@ -149,6 +149,10 @@ public interface MatrixPlayer extends CommandSource {
 
     void incrSpammingLevel();
 
+    boolean isVanished();
+
+    void setVanished(boolean vanished);
+
     MatrixPlayer save();
 
     void updateCached(String field);

@@ -3,7 +3,7 @@ package io.github.beelzebu.matrix.channels;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;
 import io.github.beelzebu.matrix.api.util.StringUtils;
-import io.github.beelzebu.matrix.utils.PermsUtils;
+import io.github.beelzebu.matrix.util.PermsUtils;
 import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;

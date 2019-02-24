@@ -10,7 +10,7 @@ import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.cache.CacheProviderImpl;
 import io.github.beelzebu.matrix.database.MongoStorage;
-import io.github.beelzebu.matrix.utils.FileManager;
+import io.github.beelzebu.matrix.util.FileManager;
 import java.io.File;
 import java.util.Objects;
 import java.util.UUID;

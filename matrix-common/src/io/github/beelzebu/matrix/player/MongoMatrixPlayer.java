@@ -38,7 +38,7 @@ import redis.clients.jedis.Pipeline;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(value = "players", noClassnameStored = true)
-public final class MongoMatrixPlayer implements MatrixPlayer {
+public class MongoMatrixPlayer implements MatrixPlayer {
 
     private static final transient Map<String, Field> FIELDS = new HashMap<>();
     @Id
@@ -70,6 +70,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     protected String discordId;
     protected int censoringLevel;
     protected int spammingLevel;
+    protected boolean vanished;
     protected transient Set<Statistics> statistics = new HashSet<>();
 
     public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
@@ -302,6 +303,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     public void incrSpammingLevel() {
         spammingLevel++;
         updateCached("spammingLevel");
+    }
+
+    @Override
+    public void setVanished(boolean vanished) {
+        this.vanished = vanished;
+        updateCached("vanished");
     }
 
     @Override

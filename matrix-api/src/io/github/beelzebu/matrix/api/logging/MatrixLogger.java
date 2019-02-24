@@ -25,7 +25,10 @@ public class MatrixLogger {
 
     public void log(Level level, String msg) {
         Objects.requireNonNull(msg);
-        if (level.intValue() <= Level.FINE.intValue() && matrixAPI.getConfig().getBoolean("Debug")) {
+        if (level.intValue() <= Level.FINE.intValue()) {
+            if (!matrixAPI.getConfig().getBoolean("Debug", true)) {
+                return;
+            }
             matrixAPI.getPlugin().getConsole().sendMessage(PREFIX + "&cDebug: &7" + msg);
         } else {
             matrixAPI.getPlugin().getConsole().sendMessage(PREFIX + msg);

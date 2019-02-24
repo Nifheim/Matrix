@@ -1,19 +1,25 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
 import io.github.beelzebu.matrix.api.Matrix;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 
 /**
  * @author Beelzebu
  */
-@Data
+@Getter
 @EqualsAndHashCode(callSuper = true)
 public class StaffChatMessage extends RedisMessage {
 
     private final String permission;
     private final String message;
+
+    public StaffChatMessage(String permission, String message) {
+        super(RedisMessageType.STAFF_CHAT);
+        this.permission = permission;
+        this.message = message;
+    }
 
     public String getMessage() {
         return ChatColor.translateAlternateColorCodes('&', message);
@@ -22,11 +28,6 @@ public class StaffChatMessage extends RedisMessage {
     @Override
     protected boolean onlyExternal() {
         return false;
-    }
-
-    @Override
-    public String getChannel() {
-        return "api-staff-chat";
     }
 
     @Override

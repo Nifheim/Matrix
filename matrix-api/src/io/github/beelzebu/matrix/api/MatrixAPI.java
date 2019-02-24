@@ -26,6 +26,8 @@ import lombok.Getter;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
+ * TODO: add support for NTNBAN
+ *
  * @author Beelzebu
  */
 @Getter
@@ -111,7 +113,6 @@ public abstract class MatrixAPI {
     }
 
     // Logging and debugging
-    // TODO: move this to a logger class.
     @Deprecated
     public final void log(String message) {
         Matrix.getLogger().info(rep(message));

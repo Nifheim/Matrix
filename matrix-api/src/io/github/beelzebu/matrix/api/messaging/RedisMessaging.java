@@ -6,9 +6,11 @@ import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.messaging.message.CommandMessage;
 import io.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import io.github.beelzebu.matrix.api.messaging.message.RedisMessage;
+import io.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
 import io.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;
 import io.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -32,6 +34,7 @@ public class RedisMessaging {
     @Getter
     private final PubSubListener pubSubListener;
     private final Set<UUID> messages = new HashSet<>();
+    private final Set<RedisMessageListener<? extends RedisMessage>> listeners = new LinkedHashSet<>();
 
     public RedisMessaging(MatrixAPI api) {
         this.api = api;
@@ -58,6 +61,10 @@ public class RedisMessaging {
         String jsonMessage = Matrix.GSON.toJson(redisMessage);
         sendMessage(MATRIX_CHANNEL, jsonMessage);
         Matrix.getLogger().debug("&7Sent: " + jsonMessage);
+    }
+
+    public void registerListener(RedisMessageListener<? extends RedisMessage> redisMessageListener) {
+        listeners.add(redisMessageListener);
     }
 
     public void sendMessage(String channel, String message) {
@@ -103,31 +110,32 @@ public class RedisMessaging {
             if (messages.contains(UUID.fromString(jobj.get("uniqueId").getAsString()))) {
                 return;
             }
-            String subChannel = jobj.get("channel").getAsString();
-            Matrix.getLogger().debug("Redis Log: Received a message in channel: " + subChannel);
+            RedisMessageType type = RedisMessageType.valueOf(jobj.get("redisMessageType").getAsString());
+            Matrix.getLogger().debug("Redis Log: Received a message in channel: " + type);
             Matrix.getLogger().debug("Redis Log: Message is:");
             Matrix.getLogger().debug(message);
-            switch (subChannel) {
-                case "api-field-update":
+            switch (type) {
+                case FIELD_UPDATE:
                     FieldUpdate fieldMessage = Matrix.GSON.fromJson(message, FieldUpdate.class);
                     fieldMessage.read();
                     break;
-                case "api-command":
+                case COMMAND:
                     CommandMessage commandMessage = Matrix.GSON.fromJson(message, CommandMessage.class);
                     commandMessage.read();
                     break;
-                case "api-message":
+                case TARGETED_MESSAGE:
                     TargetedMessage targetedMessage = Matrix.GSON.fromJson(message, TargetedMessage.class);
                     targetedMessage.read();
                     break;
-                case "api-staff-chat":
+                case STAFF_CHAT:
                     StaffChatMessage staffChatMessage = Matrix.GSON.fromJson(message, StaffChatMessage.class);
                     staffChatMessage.read();
                     break;
                 default:
                     break;
             }
-            api.getRedisListeners().forEach(listener -> listener.onMessage(subChannel, message));
+            api.getRedisListeners().forEach(listener -> listener.onMessage(type.toString(), message));
+            listeners.stream().filter(redisMessageListener -> redisMessageListener.getType().equals(type)).forEach(redisMessageListener -> redisMessageListener.$$onMessage0$$(RedisMessage.getFromType(type, message)));
         }
     }
 }

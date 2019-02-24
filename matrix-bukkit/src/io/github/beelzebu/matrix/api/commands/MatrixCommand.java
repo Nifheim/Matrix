@@ -13,20 +13,29 @@ import org.bukkit.entity.Player;
 public abstract class MatrixCommand extends Command {
 
     protected final MatrixAPI api = Matrix.getAPI();
-    protected final String perm;
+    protected final String permission;
     @Setter
     protected boolean async = true;
 
+    @Deprecated
     public MatrixCommand(String command, String permission, String... aliases) {
         super(command);
         setPermission(permission);
         setAliases(Arrays.asList(aliases));
-        perm = permission;
+        this.permission = permission;
+    }
+
+    public MatrixCommand(String command, String permission, boolean async, String... aliases) {
+        super(command);
+        setPermission(permission);
+        setAliases(Arrays.asList(aliases));
+        this.permission = permission;
+        this.async = async;
     }
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (perm == null || sender.hasPermission(perm)) {
+        if (permission == null || sender.hasPermission(permission)) {
             if (async && Bukkit.isPrimaryThread()) {
                 api.getPlugin().runAsync(() -> onCommand(sender, args));
             } else {
@@ -34,10 +43,7 @@ public abstract class MatrixCommand extends Command {
             }
         } else {
             sender.sendMessage(api.getString(Message.GENERAL_NO_PERMS, sender instanceof Player ? ((Player) sender).getLocale() : ""));
-            //else {
         }
-        //  sender.sendMessage(api.replace("&c&lHey!&7 Debes ser rango &c" + perm.split("\\.")[perm.split(".").length - 1] + "&7 o superior para usar este comando."));
-        //}
         return true;
     }
 
