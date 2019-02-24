@@ -226,7 +226,7 @@ public class ChatListener implements Listener {
             return;
         }
         String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 1)[0];
-        if (command.split(":").length > 0) {
+        if (command.split(":").length > 1) {
             e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));
             command = command.split(":")[1];
         }
