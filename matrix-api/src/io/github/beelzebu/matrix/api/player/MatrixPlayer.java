@@ -3,6 +3,7 @@ package io.github.beelzebu.matrix.api.player;
 import io.github.beelzebu.coins.api.CoinsAPI;
 import io.github.beelzebu.matrix.api.command.CommandSource;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -103,6 +104,8 @@ public interface MatrixPlayer extends CommandSource {
     String getLastLocale();
 
     void setLastLocale(String lastLocale);
+
+    void setLastLocale(Locale lastLocale);
 
     String getStaffChannel();
 

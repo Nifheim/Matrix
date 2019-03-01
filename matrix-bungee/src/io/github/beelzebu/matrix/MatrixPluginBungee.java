@@ -8,6 +8,7 @@ import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.config.BungeeConfiguration;
 import java.io.File;
 import java.io.InputStream;
@@ -76,12 +77,12 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public void sendMessage(String name, String message) {
-        ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(message));
+        ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
     }
 
     @Override
     public void sendMessage(UUID uuid, String message) {
-        ProxyServer.getInstance().getPlayer(uuid).sendMessage(TextComponent.fromLegacyText(message));
+        ProxyServer.getInstance().getPlayer(uuid).sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
     }
 
     @Override

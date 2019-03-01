@@ -7,6 +7,7 @@ import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.config.BukkitConfiguration;
 import io.github.beelzebu.matrix.event.LevelUPEvent;
 import io.github.beelzebu.matrix.util.bungee.PluginMessage;
@@ -78,12 +79,12 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public void sendMessage(String name, String message) {
-        Bukkit.getPlayer(name).sendMessage(message);
+        Bukkit.getPlayer(name).sendMessage(StringUtils.replace(message));
     }
 
     @Override
     public void sendMessage(UUID uuid, String message) {
-        Bukkit.getPlayer(uuid).sendMessage(message);
+        Bukkit.getPlayer(uuid).sendMessage(StringUtils.replace(message));
     }
 
     @Override

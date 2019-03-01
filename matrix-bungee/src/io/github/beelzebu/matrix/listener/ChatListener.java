@@ -69,8 +69,8 @@ public class ChatListener implements Listener {
             String regex = checkCensoring(e.getMessage().toLowerCase());
             if (regex != null) {
                 String word = e.getMessage().replaceAll(e.getMessage().replaceAll(regex, ""), "");
+                broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), BroadcastType.CENSORING);
                 e.setMessage(e.getMessage().replaceAll(regex, Strings.repeat("*", word.length())));
-                broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), false);
                 MatrixPlayer matrixPlayer = api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
                 if (matrixPlayer != null) {
                     matrixPlayer.incrCensoringLevel();
@@ -175,14 +175,14 @@ public class ChatListener implements Listener {
         if (SpamUtils.checkSpam(e.getMessage())) {
             e.setCancelled(true);
             api.getConfig().getStringList("Messages.Spam.Detected").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage())))));
-            broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), true);
+            broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), BroadcastType.SPAM);
             return;
         }
         String censoring = checkSpam("AntiSpam.Censored", e.getMessage());
         if (censoring != null) {
             e.setCancelled(true);
             api.getConfig().getStringList("Messages.Spam.Detected").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(censoring, ""), ""))))));
-            broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), true);
+            broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), BroadcastType.SPAM);
         }
     }
 
@@ -192,7 +192,7 @@ public class ChatListener implements Listener {
             JsonObject message = Matrix.GSON.fromJson(ByteStreams.newDataInput(e.getData()).readUTF(), JsonObject.class);
             ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(message.get("player").getAsString());
             String spam = message.get("message").getAsString();
-            broadcast(pp, spam, true);
+            broadcast(pp, spam, BroadcastType.SPAM);
         }
     }
 
@@ -268,19 +268,19 @@ public class ChatListener implements Listener {
         return null;
     }
 
-    private void broadcast(ProxiedPlayer spamer, String message, boolean ban) {
+    private void broadcast(ProxiedPlayer spamer, String message, BroadcastType broadcastType) {
         ProxyServer.getInstance().getPlayers().stream().filter(p -> p.hasPermission("matrix.helper") && !p.getServer().getInfo().getName().contains("Auth")).forEach(p -> {
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&8&m--------------------&R &c&lANTISPAM &8&M-------------------")));
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&7El jugador &b" + spamer.getName() + " &r&7 ha dicho algo inapropiado")));
+            p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&7Tipo: " + broadcastType)));
             String svname = spamer.getServer().getInfo().getName();
-            TextComponent msg = new TextComponent("&c&l(!) &r&7Servidor: &e" + svname + " &7(Click para ir)");
+            TextComponent msg = new TextComponent(StringUtils.replace("&c&l(!) &r&7Servidor: &e" + svname + " &7(Click para ir)"));
             msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/btp " + svname));
             p.sendMessage(msg);
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&7Mensaje: &e" + message)));
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&8&m--------------------------------------------------")));
         });
-        if (ban) {
-            api.getConfig().getStringList("AntiSpam.Commands").forEach(cmd -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), cmd.replace("%player%", spamer.getName()).replace("%message%", message).replace("%word%", message)));
+        if (broadcastType == BroadcastType.SPAM) {
             MatrixPlayer matrixPlayer = api.getPlayer(spamer.getUniqueId());
             if (matrixPlayer != null) {
                 matrixPlayer.incrSpammingLevel();
@@ -301,4 +301,8 @@ public class ChatListener implements Listener {
         return normalize(newMessage).contains(normalize(oldMessage)) && Math.max(normalize(newMessage).length(), normalize(oldMessage).length()) - Math.min(normalize(newMessage).length(), normalize(oldMessage).length()) <= 3;
     }
 
+    private enum BroadcastType {
+        CENSORING,
+        SPAM
+    }
 }

@@ -19,7 +19,7 @@ public class PlayerInfoCommand extends Command {
     private final MatrixBungeeBootstrap bootstrap;
 
     public PlayerInfoCommand(MatrixBungeeBootstrap bootstrap) {
-        super("playerinfo", "matrix.admin", "pinfo", "lookup");
+        super("playerinfo", "matrix.modp", "pinfo", "lookup");
         this.bootstrap = bootstrap;
     }
 

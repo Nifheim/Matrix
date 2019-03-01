@@ -1,6 +1,7 @@
 package io.github.beelzebu.matrix.tasks;
 
 import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.messaging.message.DiscordRankUpdateMessage;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.util.ErrorCodes;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,14 @@ public class PostLoginTask implements Runnable {
                 player.setAdmin(false);
             }
             player.setIP(event.getPlayer().getPendingConnection().getAddress().getAddress().getHostAddress());
+            if (player.getLastLocale() == null) {
+                player.setLastLocale(event.getPlayer().getLocale());
+            }
+            if (event.getPlayer().hasPermission("matrix.vip1")) {
+                new DiscordRankUpdateMessage(player.getUniqueId(), DiscordRankUpdateMessage.DiscordRankType.VIP, DiscordRankUpdateMessage.Action.ADD);
+            } else {
+                new DiscordRankUpdateMessage(player.getUniqueId(), DiscordRankUpdateMessage.DiscordRankType.VIP, DiscordRankUpdateMessage.Action.REMOVE);
+            }
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));

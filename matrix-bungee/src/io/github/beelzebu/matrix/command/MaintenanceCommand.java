@@ -10,7 +10,7 @@ public class MaintenanceCommand extends Command {
     private final MatrixBungeeBootstrap plugin;
 
     public MaintenanceCommand(MatrixBungeeBootstrap plugin) {
-        super("maintenance", "matrix.staff.admin");
+        super("maintenance", "matrix.admin");
         this.plugin = plugin;
     }
 

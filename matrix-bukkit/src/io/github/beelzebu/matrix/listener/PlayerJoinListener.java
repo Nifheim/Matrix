@@ -51,7 +51,6 @@ public class PlayerJoinListener implements Listener {
         }
         if (!api.getPlayer(e.getName()).getUniqueId().equals(e.getUniqueId())) {
             e.disallow(Result.KICK_OTHER, "Tu UUID no coincide con la UUID que hay en nuestra base de datos\ntus datos fueron registrados por seguridad.");
-            return;
         }
     }
 

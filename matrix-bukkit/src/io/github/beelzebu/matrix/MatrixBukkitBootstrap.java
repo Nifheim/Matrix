@@ -16,6 +16,7 @@ import io.github.beelzebu.matrix.command.staff.PluginsCommand;
 import io.github.beelzebu.matrix.command.staff.PowerupsCommand;
 import io.github.beelzebu.matrix.command.staff.ReloadCommand;
 import io.github.beelzebu.matrix.command.staff.StopCommand;
+import io.github.beelzebu.matrix.command.staff.VanishCommand;
 import io.github.beelzebu.matrix.command.user.Options;
 import io.github.beelzebu.matrix.command.user.Spit;
 import io.github.beelzebu.matrix.command.utils.AddLore;
@@ -29,11 +30,13 @@ import io.github.beelzebu.matrix.listener.GUIListener;
 import io.github.beelzebu.matrix.listener.InternalListener;
 import io.github.beelzebu.matrix.listener.ItemListener;
 import io.github.beelzebu.matrix.listener.LobbyListener;
+import io.github.beelzebu.matrix.listener.LoginListener;
 import io.github.beelzebu.matrix.listener.PlayerCommandPreprocessListener;
 import io.github.beelzebu.matrix.listener.PlayerDeathListener;
 import io.github.beelzebu.matrix.listener.PlayerJoinListener;
 import io.github.beelzebu.matrix.listener.PlayerQuitListener;
 import io.github.beelzebu.matrix.listener.StatsListener;
+import io.github.beelzebu.matrix.listener.VanishListener;
 import io.github.beelzebu.matrix.listener.ViewDistanceListener;
 import io.github.beelzebu.matrix.listener.VotifierListener;
 import io.github.beelzebu.matrix.util.ReadURL;
@@ -107,6 +110,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         if (isVotifier()) {
             registerEvents(new VotifierListener(this));
         }
+        registerEvents(new VanishListener(this));
+        registerEvents(new LoginListener());
         // Register commands
         CommandAPI.registerCommand(this, new CommandWatcherCommand());
         CommandAPI.registerCommand(this, new FreezeCommand());
@@ -123,6 +128,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new ReloadCommand());
         CommandAPI.registerCommand(this, new StopCommand());
         CommandAPI.registerCommand(this, new PluginsCommand());
+        CommandAPI.registerCommand(this, new VanishCommand());
 
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             Bukkit.getOperators().forEach(op -> op.setOp(false)); // remove operators

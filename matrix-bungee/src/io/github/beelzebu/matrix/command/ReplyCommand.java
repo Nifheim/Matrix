@@ -4,6 +4,7 @@ import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.util.StringUtils;
+import io.github.beelzebu.matrix.util.PermsUtils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -31,7 +32,11 @@ public class ReplyCommand extends Command {
         if (bootstrap.getApi().getPlugin().isOnline(target.getUniqueId(), false)) {
             String name;
             if (sender instanceof ProxiedPlayer) {
-                name = bootstrap.getApi().getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayName();
+                if (target.getUniqueId() == ((ProxiedPlayer) sender).getUniqueId()) {
+                    sender.sendMessage(StringUtils.replace("&cNo te puedes responder a ti mismo."));
+                    return;
+                }
+                name = PermsUtils.getPrefix(((ProxiedPlayer) sender).getUniqueId()) + bootstrap.getApi().getPlayer(((ProxiedPlayer) sender).getUniqueId()).getDisplayName();
             } else {
                 name = sender.getName();
             }

@@ -15,6 +15,7 @@ import io.github.beelzebu.matrix.command.PremiumCommand;
 import io.github.beelzebu.matrix.command.ReplyCommand;
 import io.github.beelzebu.matrix.config.BungeeConfiguration;
 import io.github.beelzebu.matrix.listener.ChatListener;
+import io.github.beelzebu.matrix.listener.LanguageListener;
 import io.github.beelzebu.matrix.listener.LoginListener;
 import io.github.beelzebu.matrix.listener.PermissionListener;
 import io.github.beelzebu.matrix.listener.ServerListListener;
@@ -81,6 +82,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerListener(new ChatListener(api));
         registerListener(new ServerListListener());
         registerListener(new LoginListener(this));
+        registerListener(new LanguageListener());
         registerCommand(new HelpOpCommand(this));
         registerCommand(new PlayerInfoCommand(this));
         registerCommand(new MaintenanceCommand(this));
@@ -93,12 +95,18 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         MotdManager.onEnable();
         new BasicCommands(this);
         config.getKeys("Channels").forEach((channel) -> CHANNELS.put(channel, new Channel(channel, channel, config.getString("Channels." + channel + ".Permission"), ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register()));
-        ProxyServer.getInstance().getPlayers().stream().peek(pp -> pp.setTabHeader(TAB_HEADER, TAB_FOOTER)).forEach(pp -> api.getPlugin().runAsync(() -> Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new MongoMatrixPlayer(pp.getUniqueId(), pp.getName()).save()).save()));
+        ProxyServer.getInstance().getPlayers().stream().peek(pp -> pp.setTabHeader(TAB_HEADER, TAB_FOOTER)).forEach(pp -> api.getPlugin().runAsync(() -> api.getPlayers().add(Optional.ofNullable(api.getPlayer(pp.getUniqueId())).orElse(new MongoMatrixPlayer(pp.getUniqueId(), pp.getName()).save()).save())));
         ProxyServer.getInstance().getScheduler().schedule(this, () -> api.getCache().getPlayers().stream().filter(matrixPlayer -> api.getPlugin().isOnline(matrixPlayer.getUniqueId(), false)).forEach(matrixPlayer -> {
             if (!api.getPlugin().isOnline(matrixPlayer.getUniqueId(), false)) { // player may be logged in again.
                 api.getCache().removePlayer(matrixPlayer);
             }
         }), 0, 1, TimeUnit.HOURS);
+    }
+
+    @Override
+    public void onDisable() {
+        api.getPlayers().forEach(MatrixPlayer::save);
+        api.getPlayers().clear();
     }
 
     public boolean isMaintenance() {

@@ -1,11 +1,13 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
 @Getter
+@EqualsAndHashCode(callSuper = true)
 public class CommandMessage extends RedisMessage {
 
     private final String server;

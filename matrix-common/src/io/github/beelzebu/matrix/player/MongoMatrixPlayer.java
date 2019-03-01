@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -141,6 +142,13 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         Matrix.getAPI().getPlugin().sendMessage(getName(), StringUtils.replace(message));
     }
 
+    public String getLowercaseName() {
+        if (!Objects.equals(lowercaseName, getName().toLowerCase())) {
+            lowercaseName = getName().toLowerCase();
+        }
+        return lowercaseName;
+    }
+
     @Override
     public String getDisplayName() {
         return displayName != null ? displayName : getName();
@@ -151,7 +159,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(this.displayName, displayName)) {
             return;
         }
-        if (Objects.equals(displayName, null)) {
+        if (Objects.isNull(displayName)) {
             displayName = getName();
         }
         this.displayName = displayName;
@@ -212,6 +220,11 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         }
         this.lastLocale = lastLocale;
         updateCached("lastLocale");
+    }
+
+    @Override
+    public void setLastLocale(Locale lastLocale) {
+        setLastLocale(lastLocale.getISO3Language());
     }
 
     @Override
@@ -354,6 +367,9 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     public void saveToRedis() {
         Objects.requireNonNull(uniqueId, "UUID can't be null");
         Objects.requireNonNull(name, "name can't be null");
+        if (Objects.isNull(lowercaseName)) {
+            lowercaseName = getName().toLowerCase();
+        }
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
             FIELDS.forEach((id, field) -> {
                 try {
