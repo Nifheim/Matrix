@@ -142,6 +142,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         Matrix.getAPI().getPlugin().sendMessage(getName(), StringUtils.replace(message));
     }
 
+    @Override
     public String getLowercaseName() {
         if (!Objects.equals(lowercaseName, getName().toLowerCase())) {
             lowercaseName = getName().toLowerCase();
@@ -224,6 +225,9 @@ public class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setLastLocale(Locale lastLocale) {
+        if (Objects.isNull(lastLocale)) {
+            return;
+        }
         setLastLocale(lastLocale.getISO3Language());
     }
 
