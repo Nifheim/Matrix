@@ -159,6 +159,7 @@ public class ChatListener implements Listener {
         if (e.getMessage().matches("[\\uff01-\\uff5e]+")) {
             e.setCancelled(true);
             api.getPlugin().getConsole().execute("ban " + ((ProxiedPlayer) e.getSender()).getName() + " [GGK] Uso de cliente hack");
+            return;
         }
         if (!(e.getSender() instanceof ProxiedPlayer)) {
             return;
@@ -240,6 +241,7 @@ public class ChatListener implements Listener {
     }
 
     private String checkSpam(String path, String message) {
+        message = message.toLowerCase();
         for (String word : api.getConfig().getStringList(path)) {
             if (message.equalsIgnoreCase(word)) {
                 return word;
@@ -255,7 +257,7 @@ public class ChatListener implements Listener {
             if (matcher.find()) {
                 return matcher.group(0);
             }
-            String[] words = Stream.of(message.split(" ")).map(this::normalize).toArray(String[]::new);
+            String[] words = Stream.of(message.replace(".", " ").split(" ")).map(this::normalize).toArray(String[]::new);
             if (words.length > 1) {
                 for (String w : words) {
                     String cs = checkSpam(path, w);
