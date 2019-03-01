@@ -12,6 +12,7 @@ import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.util.PermsUtils;
 import io.github.beelzebu.matrix.util.ReadURL;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -62,7 +63,7 @@ public class PlayerJoinListener implements Listener {
         if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL))) {
             if (!p.hasPermission("matrix.mod")) {
                 if (p.hasPermission("matrix.joinmessage")) {
-                    e.setJoinMessage(StringUtils.rep(" &8[&a+&8] &f" + api.getPlayer(p.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
+                    e.setJoinMessage(StringUtils.rep(" &8[&a+&8] &f" + PermsUtils.getPrefix(p.getUniqueId()) + api.getPlayer(p.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
                 }
                 Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
             }
