@@ -13,16 +13,16 @@ public class CommandMessage extends RedisMessage {
     private final String server;
     private final String command;
     private final boolean global;
-    private final boolean bukkit;
     private final boolean bungee;
+    private final boolean bukkit;
 
-    public CommandMessage(String server, String command, boolean global, boolean bukkit, boolean bungee) {
+    public CommandMessage(String server, String command, boolean global, boolean bungee, boolean bukkit) {
         super(RedisMessageType.COMMAND);
         this.server = server;
         this.command = command;
         this.global = global;
-        this.bukkit = bukkit;
         this.bungee = bungee;
+        this.bukkit = bukkit;
     }
 
     @Override
