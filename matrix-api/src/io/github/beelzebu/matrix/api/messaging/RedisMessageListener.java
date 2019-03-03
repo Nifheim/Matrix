@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.api.messaging;
 
 import io.github.beelzebu.matrix.api.messaging.message.RedisMessage;
 import io.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
+import java.util.Objects;
 
 /**
  * @author Beelzebu
@@ -9,7 +10,8 @@ import io.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
 public interface RedisMessageListener <T extends RedisMessage> {
 
     default void $$onMessage0$$(RedisMessage message) {
-        if (message.getType() != getType()) {
+        Objects.requireNonNull(message, "Can't pass a null message");
+        if (Objects.equals(message.getType(), getType())) {
             return;
         }
         onMessage((T) message);

@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.command.staff;
 
+import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import org.bukkit.GameMode;
@@ -24,11 +25,12 @@ public class VanishCommand extends MatrixCommand {
             MatrixPlayer matrixPlayer = api.getPlayer(player.getUniqueId());
             boolean vanished = !matrixPlayer.isVanished();
             matrixPlayer.setVanished(vanished);
+            matrixPlayer.setGameMode(MatrixPlayer.GameMode.valueOf(player.getGameMode().toString()), Matrix.getAPI().getServerInfo().getGameType());
             matrixPlayer.sendMessage("&7Tu vanish ha sido: " + (vanished ? "&aactivado" : "&cdesactivado"));
             if (vanished) {
                 player.setGameMode(GameMode.SPECTATOR);
             } else {
-                player.setGameMode(GameMode.SURVIVAL);
+                player.setGameMode(GameMode.valueOf(matrixPlayer.getGameMode(Matrix.getAPI().getServerInfo().getGameType()).toString()));
             }
         }
     }

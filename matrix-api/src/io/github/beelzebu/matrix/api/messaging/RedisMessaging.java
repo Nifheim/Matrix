@@ -3,12 +3,8 @@ package io.github.beelzebu.matrix.api.messaging;
 import com.google.gson.JsonObject;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
-import io.github.beelzebu.matrix.api.messaging.message.CommandMessage;
-import io.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import io.github.beelzebu.matrix.api.messaging.message.RedisMessage;
 import io.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
-import io.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;
-import io.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -114,26 +110,11 @@ public class RedisMessaging {
             Matrix.getLogger().debug("Redis Log: Received a message in channel: " + type);
             Matrix.getLogger().debug("Redis Log: Message is:");
             Matrix.getLogger().debug(message);
-            switch (type) {
-                case FIELD_UPDATE:
-                    FieldUpdate fieldMessage = Matrix.GSON.fromJson(message, FieldUpdate.class);
-                    fieldMessage.read();
-                    break;
-                case COMMAND:
-                    CommandMessage commandMessage = Matrix.GSON.fromJson(message, CommandMessage.class);
-                    commandMessage.read();
-                    break;
-                case TARGETED_MESSAGE:
-                    TargetedMessage targetedMessage = Matrix.GSON.fromJson(message, TargetedMessage.class);
-                    targetedMessage.read();
-                    break;
-                case STAFF_CHAT:
-                    StaffChatMessage staffChatMessage = Matrix.GSON.fromJson(message, StaffChatMessage.class);
-                    staffChatMessage.read();
-                    break;
-                default:
-                    break;
+            RedisMessage redisMessage = RedisMessage.getFromType(type, message);
+            if (redisMessage == null) {
+                return;
             }
+            redisMessage.read();
             api.getRedisListeners().forEach(listener -> listener.onMessage(type.toString(), message));
             listeners.stream().filter(redisMessageListener -> redisMessageListener.getType().equals(type)).forEach(redisMessageListener -> redisMessageListener.$$onMessage0$$(RedisMessage.getFromType(type, message)));
         }

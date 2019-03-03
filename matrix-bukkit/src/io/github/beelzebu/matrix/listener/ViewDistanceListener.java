@@ -14,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class ViewDistanceListener implements Listener {
 
@@ -57,8 +59,24 @@ public class ViewDistanceListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            if (e.getPlayer().isOnline()) {
+                e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
+            }
+        }, 100L);
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent e) {
+        e.getPlayer().setViewDistance(2);
+    }
+
+    @EventHandler
+    public void onPlayerMoveEvent(PlayerMoveEvent e) {
+        if (e.getTo().getY() <= 40) {
+            e.getPlayer().setViewDistance(4);
+        } else {
             e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
-        }, 60L);
+        }
     }
 
     @EventHandler

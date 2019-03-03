@@ -20,13 +20,11 @@ public class DisconnectTask implements Runnable {
     @Override
     public void run() {
         try {
-            if (player.isAuthed()) {
-                player.setAuthed(false);
-            }
+            player.setLoggedIn(false);
             if (player.isAdmin() && !event.getPlayer().hasPermission("matrix.admin")) {
                 player.setAdmin(false);
             }
-            if (player.getLastLogin() != null && player.getRegistration() != null && player.getRegistration().before(player.getLastLogin())) {
+            if (player.getLastLogin() != null && player.getRegistration() != null && player.getRegistration().after(player.getLastLogin())) {
                 ((MongoMatrixPlayer) player).setRegistration(player.getLastLogin());
             }
             player.setLastLogin(new Date());

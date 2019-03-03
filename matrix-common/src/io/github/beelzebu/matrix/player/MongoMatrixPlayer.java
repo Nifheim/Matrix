@@ -4,11 +4,12 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
-import io.github.beelzebu.matrix.api.player.Statistics;
+import io.github.beelzebu.matrix.api.server.GameType;
 import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.database.MongoStorage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +51,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     @Indexed(options = @IndexOptions(unique = true))
     @NonNull
     protected String name;
+    @Indexed(options = @IndexOptions(unique = true))
     protected String lowercaseName;
     protected Set<String> knownNames = new HashSet<>();
     protected String displayName;
@@ -57,13 +59,15 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected boolean registered;
     protected boolean admin;
     protected String secret;
+    protected String hashedPassword;
+    protected boolean loggedIn;
     protected ChatColor chatColor = ChatColor.RESET;
     protected String lastLocale;
     protected String staffChannel;
     protected boolean watcher;
-    protected boolean authed;
     protected long exp;
     protected Set<PlayerOptionType> options = new HashSet<>();
+    @Indexed
     protected String IP;
     protected Set<String> ipHistory = new LinkedHashSet<>();
     protected Date lastLogin;
@@ -72,7 +76,11 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected int censoringLevel;
     protected int spammingLevel;
     protected boolean vanished;
-    protected transient Set<Statistics> statistics = new HashSet<>();
+    protected Map<GameType, GameMode> gameModeByGame = new HashMap<>();
+    protected GameType lastGameType;
+    protected Map<GameType, Long> totalPlayTimeByGame = new HashMap<>();
+    protected Map<GameType, Long> playTimeByGame = new HashMap<>();
+    protected Map<GameType, Long> playedGamesMap = new HashMap<>();
 
     public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
         this.uniqueId = uniqueId;
@@ -177,6 +185,15 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public void setRegistered(boolean registered) {
+        if (this.registered == registered) {
+            return;
+        }
+        this.registered = registered;
+        updateCached("registered");
+    }
+
+    @Override
     public void setAdmin(boolean admin) {
         if (this.admin == admin) {
             return;
@@ -195,14 +212,21 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setIP(String IP) {
-        if (Objects.equals(this.IP, IP)) {
+    public void setHashedPassword(String hashedPassword) {
+        if (Objects.equals(this.hashedPassword, hashedPassword)) {
             return;
         }
-        this.IP = IP;
-        ipHistory.add(IP);
-        updateCached("IP");
-        updateCached("ipHistory");
+        this.hashedPassword = hashedPassword;
+        updateCached("hashedPassword");
+    }
+
+    @Override
+    public void setLoggedIn(boolean loggedIn) {
+        if (this.loggedIn == loggedIn) {
+            return;
+        }
+        this.loggedIn = loggedIn;
+        updateCached("loggedIn");
     }
 
     @Override
@@ -215,20 +239,20 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public void setLastLocale(Locale lastLocale) {
+        if (Objects.isNull(lastLocale)) {
+            return;
+        }
+        setLastLocale(lastLocale.getISO3Language());
+    }
+
+    @Override
     public void setLastLocale(String lastLocale) {
         if (Objects.equals(this.lastLocale, lastLocale)) {
             return;
         }
         this.lastLocale = lastLocale;
         updateCached("lastLocale");
-    }
-
-    @Override
-    public void setLastLocale(Locale lastLocale) {
-        if (Objects.isNull(lastLocale)) {
-            return;
-        }
-        setLastLocale(lastLocale.getISO3Language());
     }
 
     @Override
@@ -250,6 +274,15 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public void setExp(long exp) {
+        if (this.exp == exp) {
+            return;
+        }
+        this.exp = exp;
+        updateCached("exp");
+    }
+
+    @Override
     public boolean getOption(PlayerOptionType option) {
         return options.contains(option);
     }
@@ -267,21 +300,14 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setAuthed(boolean authed) {
-        if (this.authed == authed) {
+    public void setIP(String IP) {
+        if (Objects.equals(this.IP, IP)) {
             return;
         }
-        this.authed = authed;
-        updateCached("authed");
-    }
-
-    @Override
-    public void setExp(long exp) {
-        if (this.exp == exp) {
-            return;
-        }
-        this.exp = exp;
-        updateCached("exp");
+        this.IP = IP;
+        ipHistory.add(IP);
+        updateCached("IP");
+        updateCached("ipHistory");
     }
 
     @Override
@@ -291,14 +317,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         }
         this.lastLogin = lastLogin;
         updateCached("lastLogin");
-    }
-
-    @Override
-    public void setStatistics(Statistics statistics) {
-        if (getStatistics(statistics.getServer()).isPresent()) {
-            this.statistics.remove(getStatistics(statistics.getServer()).get());
-            this.statistics.add(statistics);
-        }
     }
 
     @Override
@@ -329,6 +347,87 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public GameMode getGameMode(GameType gameType) {
+        return gameModeByGame.getOrDefault(gameType, Matrix.getAPI().getServerInfo().getDefaultGameMode());
+    }
+
+    @Override
+    public void setGameMode(GameMode gameMode, GameType gameType) {
+        if (Objects.equals(gameModeByGame.get(gameType), gameMode)) {
+            return;
+        }
+        gameModeByGame.put(gameType, gameMode);
+        updateCached("gameModeByGame");
+    }
+
+    @Override
+    public void setLastGameType(GameType lastGameType) {
+        if (Objects.equals(this.lastGameType, lastGameType)) {
+            return;
+        }
+        this.lastGameType = lastGameType;
+        updateCached("lastGameType");
+    }
+
+    @Override
+    public long getTotalPlayTime(GameType gameType) {
+        return totalPlayTimeByGame.getOrDefault(gameType, 0L);
+    }
+
+    @Override
+    public long getGlobalTotalPlayTime() {
+        long total = 0;
+        for (long i : totalPlayTimeByGame.values()) {
+            total += i;
+        }
+        return total;
+    }
+
+    @Override
+    public long getLastPlayTime(GameType gameType) {
+        return playTimeByGame.getOrDefault(gameType, 0L);
+    }
+
+    @Override
+    public long getGlobalLastPlayTime() {
+        long total = 0;
+        for (long i : playTimeByGame.values()) {
+            total += i;
+        }
+        return total;
+    }
+
+    @Override
+    public void setLastPlayTime(GameType gameType, long playTime) {
+        if (playTime <= 0) {
+            throw new IllegalArgumentException("playTime can't be equal or less than zero.");
+        }
+        if (getLastPlayTime(gameType) == playTime) {
+            return;
+        }
+        playTimeByGame.put(gameType, playTime);
+        totalPlayTimeByGame.put(gameType, getTotalPlayTime(gameType) + playTime);
+        updateCached("playTimeByGame");
+        updateCached("totalPlayTimeByGame");
+    }
+
+    @Override
+    public Collection<GameType> getPlayedGames() {
+        return playedGamesMap.keySet();
+    }
+
+    @Override
+    public long getJoins(GameType gameType) {
+        return playedGamesMap.getOrDefault(gameType, 0L);
+    }
+
+    @Override
+    public void addPlayedGame(GameType gameType) {
+        playedGamesMap.put(gameType, playedGamesMap.getOrDefault(gameType, 0L) + 1);
+        updateCached("playedGamesMap");
+    }
+
+    @Override
     public MatrixPlayer save() {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
@@ -341,7 +440,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void updateCached(String field) {
-        if (!Matrix.getAPI().getCache().getPlayer(getUniqueId()).isPresent()) {
+        if (!Matrix.getAPI().getCache().isCached(getUniqueId())) {
             return;
         }
         if (Objects.equals(field, "name") && getName() == null) {

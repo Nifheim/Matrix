@@ -35,4 +35,6 @@ public interface CacheProvider {
     Set<MatrixPlayer> getPlayers();
 
     void removePlayer(MatrixPlayer player);
+
+    boolean isCached(UUID uniqueId);
 }

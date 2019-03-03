@@ -4,7 +4,6 @@ import de.slikey.effectlib.EffectManager;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.commands.CommandAPI;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
-import io.github.beelzebu.matrix.api.player.Statistics;
 import io.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
@@ -53,7 +52,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
-import org.bukkit.Statistic;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -75,7 +73,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     @Override
     public void onDisable() {
         Bukkit.getOnlinePlayers().forEach(p -> {
-            api.getPlayer(p.getUniqueId()).setStatistics(api.getPlayer(p.getUniqueId()).getStatistics(api.getServerInfo().getServerName()).orElseGet(() -> new Statistics(api.getServerInfo().getServerName(), p.getStatistic(Statistic.PLAYER_KILLS), p.getStatistic(Statistic.MOB_KILLS), p.getStatistic(Statistic.DEATHS), StatsListener.getBroken().getOrDefault(p.getUniqueId(), 0), StatsListener.getPlaced().getOrDefault(p.getUniqueId(), 0))));
             UUID inv = GUIManager.getOpenInventories().get(p.getUniqueId());
             if (inv != null) {
                 p.closeInventory();

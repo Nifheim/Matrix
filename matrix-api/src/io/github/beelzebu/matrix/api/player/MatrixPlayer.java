@@ -2,24 +2,23 @@ package io.github.beelzebu.matrix.api.player;
 
 import io.github.beelzebu.coins.api.CoinsAPI;
 import io.github.beelzebu.matrix.api.command.CommandSource;
+import io.github.beelzebu.matrix.api.server.GameType;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 
 /**
  * @author Beelzebu
  */
 public interface MatrixPlayer extends CommandSource {
-
-    default Optional<Statistics> getStatistics(String server) {
-        return getStatistics().stream().filter(statistics -> server.equals(statistics.getServer())).findFirst();
-    }
 
     default String getRedisKey() {
         return "user:" + getUniqueId();
@@ -31,6 +30,10 @@ public interface MatrixPlayer extends CommandSource {
 
     default void setCoins(double coins) {
         CoinsAPI.setCoins(getUniqueId(), coins);
+    }
+
+    default boolean hasPlayed(GameType gameType) {
+        return getPlayedGames().contains(gameType);
     }
 
     /**
@@ -83,6 +86,10 @@ public interface MatrixPlayer extends CommandSource {
 
     void setPremium(boolean premium);
 
+    boolean isRegistered();
+
+    void setRegistered(boolean registered);
+
     boolean isAdmin();
 
     void setAdmin(boolean admin);
@@ -91,11 +98,13 @@ public interface MatrixPlayer extends CommandSource {
 
     void setSecret(String secret);
 
-    String getIP();
+    String getHashedPassword();
 
-    void setIP(String IP);
+    void setHashedPassword(String hashedPassword);
 
-    Set<String> getIpHistory();
+    boolean isLoggedIn();
+
+    void setLoggedIn(boolean loggedIn);
 
     ChatColor getChatColor();
 
@@ -103,9 +112,9 @@ public interface MatrixPlayer extends CommandSource {
 
     String getLastLocale();
 
-    void setLastLocale(String lastLocale);
-
     void setLastLocale(Locale lastLocale);
+
+    void setLastLocale(String lastLocale);
 
     String getStaffChannel();
 
@@ -115,29 +124,27 @@ public interface MatrixPlayer extends CommandSource {
 
     void setWatcher(boolean watcher);
 
+    long getExp();
+
+    void setExp(long xp);
+
     Set<PlayerOptionType> getOptions();
 
     boolean getOption(PlayerOptionType option);
 
     void setOption(PlayerOptionType option, boolean status);
 
-    boolean isAuthed();
+    String getIP();
 
-    void setAuthed(boolean authed);
+    void setIP(String IP);
 
-    long getExp();
-
-    void setExp(long xp);
+    Set<String> getIpHistory();
 
     Date getLastLogin();
 
     void setLastLogin(Date lastLogin);
 
     Date getRegistration();
-
-    Set<Statistics> getStatistics();
-
-    void setStatistics(Statistics statistics);
 
     @Nullable
     String getDiscordId();
@@ -156,6 +163,30 @@ public interface MatrixPlayer extends CommandSource {
 
     void setVanished(boolean vanished);
 
+    GameMode getGameMode(GameType gameType);
+
+    void setGameMode(GameMode gameMode, GameType gameType);
+
+    GameType getLastGameType();
+
+    void setLastGameType(GameType lastGameType);
+
+    long getTotalPlayTime(GameType gameType);
+
+    long getGlobalTotalPlayTime();
+
+    long getLastPlayTime(GameType gameType);
+
+    long getGlobalLastPlayTime();
+
+    void setLastPlayTime(GameType gameType, long playTime);
+
+    Collection<GameType> getPlayedGames();
+
+    long getJoins(GameType gameType);
+
+    void addPlayedGame(GameType gameType);
+
     MatrixPlayer save();
 
     void updateCached(String field);
@@ -169,4 +200,24 @@ public interface MatrixPlayer extends CommandSource {
      * @param json  Json value to set to this field.
      */
     void setField(String field, String json);
+
+    @Getter
+    @RequiredArgsConstructor
+    enum GameMode {
+        SURVIVAL(0),
+        CREATIVE(1),
+        ADVENTURE(2),
+        SPECTATOR(3);
+
+        private final int id;
+
+        public static GameMode getById(int id) {
+            for (GameMode gameMode : values()) {
+                if (gameMode.id == id) {
+                    return gameMode;
+                }
+            }
+            return null;
+        }
+    }
 }

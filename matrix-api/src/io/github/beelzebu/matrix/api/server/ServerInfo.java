@@ -1,17 +1,15 @@
 package io.github.beelzebu.matrix.api.server;
 
 import io.github.beelzebu.matrix.api.Matrix;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
+import lombok.Data;
 
-@Getter
-@Setter
-@RequiredArgsConstructor
+@Data
 public class ServerInfo {
 
     private final String serverName;
-    private ServerType serverType;
+    private final GameType gameType;
+    private final ServerType serverType;
 
     /**
      * Get lobby name for this server.
@@ -23,5 +21,9 @@ public class ServerInfo {
             return Matrix.getAPI().getConfig().getLobby();
         }
         return null;
+    }
+
+    public MatrixPlayer.GameMode getDefaultGameMode() {
+        return MatrixPlayer.GameMode.valueOf(Matrix.getAPI().getConfig().getString("default.game-mode", "ADVENTURE"));
     }
 }

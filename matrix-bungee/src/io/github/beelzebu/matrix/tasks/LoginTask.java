@@ -59,7 +59,12 @@ public class LoginTask implements Runnable {
             if (pc.getUniqueId() != null && pc.getName() != null) {
                 player.setUniqueId(pc.getUniqueId());
                 player.setName(pc.getName());
-                player.saveToRedis();
+                if (!player.isRegistered() && pc.isOnlineMode()) {
+                    player.setRegistered(true);
+                }
+                if (!Matrix.getAPI().getCache().isCached(player.getUniqueId())) {
+                    player.saveToRedis();
+                }
             }
             Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {

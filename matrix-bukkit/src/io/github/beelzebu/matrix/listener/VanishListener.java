@@ -40,13 +40,15 @@ public class VanishListener implements Listener {
         if (player.hasPermission(VanishCommand.PERMISSION)) {
             boolean toVanish = event.getNewGameMode() == GameMode.SPECTATOR;
             if (matrixPlayer.isVanished()) {
-                if (!toVanish) {
-                    event.setCancelled(true);
-                }
                 if (player.getGameMode() != GameMode.SPECTATOR) {
                     player.setGameMode(GameMode.SPECTATOR);
                 }
+                if (!toVanish) {
+                    event.setCancelled(true);
+                    return;
+                }
             }
+            matrixPlayer.setGameMode(MatrixPlayer.GameMode.valueOf(event.getNewGameMode().toString()), Matrix.getAPI().getServerInfo().getGameType());
         }
     }
 
@@ -55,7 +57,7 @@ public class VanishListener implements Listener {
         if (matrixPlayer.isVanished()) {
             player.setGameMode(GameMode.SPECTATOR);
         } else {
-            player.setGameMode(GameMode.SURVIVAL);
+            player.setGameMode(GameMode.valueOf(matrixPlayer.getGameMode(Matrix.getAPI().getServerInfo().getGameType()).toString()));
         }
     }
 }

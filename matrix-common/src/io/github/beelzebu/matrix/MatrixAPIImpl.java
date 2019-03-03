@@ -5,6 +5,7 @@ import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import io.github.beelzebu.matrix.api.server.GameType;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.util.StringUtils;
@@ -35,8 +36,7 @@ public class MatrixAPIImpl extends MatrixAPI {
         database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
         redis = new RedisMessaging(this);
         cache = new CacheProviderImpl();
-        serverInfo = new ServerInfo(plugin.getConfig().getString("Server Table").replaceAll(" ", ""));
-        serverInfo.setServerType(ServerType.valueOf(plugin.getConfig().getString("Server Type").toUpperCase()));
+        serverInfo = new ServerInfo(plugin.getConfig().getString("Server Table").replaceAll(" ", ""), GameType.valueOf(plugin.getConfig().getString("game-type", "LOBBY").toUpperCase()), ServerType.valueOf(plugin.getConfig().getString("Server Type", "OTHER").toUpperCase()));
         Stream.of(Objects.requireNonNull(plugin.getDataFolder().listFiles())).filter(file -> file.getName().startsWith("messages")).forEach(file -> messagesMap.put((file.getName().split("_").length == 2 ? file.getName().split("_")[1] : "default").split(".yml")[0], plugin.getFileAsConfig(file)));
         Matrix.getLogger().init(this);
     }

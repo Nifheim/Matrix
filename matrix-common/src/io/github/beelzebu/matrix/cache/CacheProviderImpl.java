@@ -120,7 +120,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public Set<MatrixPlayer> getPlayers() {
         try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
-            return jedis.keys("user:*").stream().map(cached -> getPlayer(UUID.fromString(cached.split(":")[1])).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet());
+            return jedis.keys(USER_KEY_PREFIX + "*").stream().map(cached -> getPlayer(UUID.fromString(cached.split(":")[1])).orElse(null)).filter(Objects::nonNull).collect(Collectors.toSet());
         } catch (JedisException ex) {
             Matrix.getLogger().debug(ex);
         }
@@ -134,6 +134,13 @@ public class CacheProviderImpl implements CacheProvider {
             jedis.del(USER_KEY_PREFIX + player.getUniqueId()); // remove it from redis
         } catch (JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
+        }
+    }
+
+    @Override
+    public boolean isCached(UUID uniqueId) {
+        try (Jedis jedis = Matrix.getAPI().getRedis().getPool().getResource()) {
+            return jedis.exists(USER_KEY_PREFIX + uniqueId);
         }
     }
 }

@@ -107,8 +107,8 @@ public class BasicCommands {
                 if (sender instanceof ProxiedPlayer && args.length == 1) {
                     ProxiedPlayer pp = (ProxiedPlayer) sender;
                     MatrixPlayer player = api.getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                    if (!player.isAuthed() && Objects.equals(args[0], player.getSecret())) {
-                        player.setAuthed(true);
+                    if (!player.isLoggedIn() && Objects.equals(args[0], player.getSecret())) {
+                        player.setLoggedIn(true);
                         pp.sendMessage(new TextComponent("Logged in."));
                     }
                 }
