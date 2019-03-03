@@ -51,7 +51,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     @Indexed(options = @IndexOptions(unique = true))
     @NonNull
     protected String name;
-    @Indexed(options = @IndexOptions(unique = true))
+    @Indexed
     protected String lowercaseName;
     protected Set<String> knownNames = new HashSet<>();
     protected String displayName;
