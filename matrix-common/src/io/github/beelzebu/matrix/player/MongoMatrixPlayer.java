@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.player;
 
+import com.google.common.collect.ImmutableSet;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -19,7 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import lombok.AccessLevel;
@@ -79,9 +79,9 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected boolean vanished;
     protected Map<GameType, GameMode> gameModeByGame = new HashMap<>();
     protected GameType lastGameType;
-    protected Map<String, Long> totalPlayTimeByGame = new HashMap<>();
-    protected Map<String, Long> playTimeByGame = new HashMap<>();
-    protected Map<String, Long> playedGamesMap = new HashMap<>();
+    protected Map<GameType, Long> totalPlayTimeByGame = new HashMap<>();
+    protected Map<GameType, Long> playTimeByGame = new HashMap<>();
+    protected Map<GameType, Long> playedGamesMap = new HashMap<>();
 
     public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
         this.uniqueId = uniqueId;
@@ -98,7 +98,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
                     throw new NullPointerException(id + " can't be null");
                 }
                 if (hash.get(id) != null) {
-                    Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
+                    Object value = Matrix.GSON.fromJson(hash.get(id), field.getGenericType());
                     if (value != null) {
                         field.set(mongoMatrixPlayer, value);
                     }
@@ -112,8 +112,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
 
     public static void loadFields() {
         if (FIELDS.isEmpty()) {
-            Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).forEach(field -> FIELDS.put(field.getName(), field));
-            FIELDS.values().forEach(field -> field.setAccessible(true));
+            Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).peek(field -> field.setAccessible(true)).forEach(field -> FIELDS.put(field.getName(), field));
         }
     }
 
@@ -372,7 +371,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public long getTotalPlayTime(GameType gameType) {
-        return totalPlayTimeByGame.getOrDefault(gameType.toString(), 0L);
+        return totalPlayTimeByGame.getOrDefault(gameType, 0L);
     }
 
     @Override
@@ -386,7 +385,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public long getLastPlayTime(GameType gameType) {
-        return playTimeByGame.getOrDefault(gameType.toString(), 0L);
+        return playTimeByGame.getOrDefault(gameType, 0L);
     }
 
     @Override
@@ -406,25 +405,25 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         if (getLastPlayTime(gameType) == playTime) {
             return;
         }
-        playTimeByGame.put(gameType.toString(), playTime);
-        totalPlayTimeByGame.put(gameType.toString(), getTotalPlayTime(gameType) + playTime);
+        playTimeByGame.put(gameType, playTime);
+        totalPlayTimeByGame.put(gameType, getTotalPlayTime(gameType) + playTime);
         updateCached("playTimeByGame");
         updateCached("totalPlayTimeByGame");
     }
 
     @Override
     public Collection<GameType> getPlayedGames() {
-        return playedGamesMap.keySet().stream().map(GameType::valueOf).collect(Collectors.toSet());
+        return ImmutableSet.copyOf(playedGamesMap.keySet());
     }
 
     @Override
     public long getJoins(GameType gameType) {
-        return playedGamesMap.getOrDefault(gameType.toString(), 0L);
+        return playedGamesMap.getOrDefault(gameType, 0L);
     }
 
     @Override
     public void addPlayedGame(GameType gameType) {
-        playedGamesMap.put(gameType.toString(), playedGamesMap.getOrDefault(gameType.toString(), 0L) + 1);
+        playedGamesMap.put(gameType, playedGamesMap.getOrDefault(gameType, 0L) + 1);
         updateCached("playedGamesMap");
     }
 
