@@ -14,6 +14,14 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="io.github.beelzebu.matrix-api.main" target="1.8" />
+      <module name="io.github.beelzebu.matrix-api.test" target="1.8" />
+      <module name="io.github.beelzebu.matrix-bukkit.main" target="1.8" />
+      <module name="io.github.beelzebu.matrix-bukkit.test" target="1.8" />
+      <module name="io.github.beelzebu.matrix-bungee.main" target="1.8" />
+      <module name="io.github.beelzebu.matrix-bungee.test" target="1.8" />
+      <module name="io.github.beelzebu.matrix-common.main" target="1.8" />
+      <module name="io.github.beelzebu.matrix-common.test" target="1.8" />
       <module name="Matrix" target="1.8" />
       <module name="matrix-api" target="1.8" />
       <module name="matrix-bukkit" target="1.8" />

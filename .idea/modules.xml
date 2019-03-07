@@ -2,7 +2,19 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Matrix.iml" filepath="$PROJECT_DIR$/Matrix.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/io.github.beelzebu.matrix.iml" filepath="$PROJECT_DIR$/.idea/modules/io.github.beelzebu.matrix.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-api/io.github.beelzebu.matrix-api.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-api/io.github.beelzebu.matrix-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-api/io.github.beelzebu.matrix-api.main.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-api/io.github.beelzebu.matrix-api.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-api/io.github.beelzebu.matrix-api.test.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-api/io.github.beelzebu.matrix-api.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-bukkit/io.github.beelzebu.matrix-bukkit.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-bukkit/io.github.beelzebu.matrix-bukkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-bukkit/io.github.beelzebu.matrix-bukkit.main.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-bukkit/io.github.beelzebu.matrix-bukkit.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-bukkit/io.github.beelzebu.matrix-bukkit.test.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-bukkit/io.github.beelzebu.matrix-bukkit.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-bungee/io.github.beelzebu.matrix-bungee.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-bungee/io.github.beelzebu.matrix-bungee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-bungee/io.github.beelzebu.matrix-bungee.main.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-bungee/io.github.beelzebu.matrix-bungee.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-bungee/io.github.beelzebu.matrix-bungee.test.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-bungee/io.github.beelzebu.matrix-bungee.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-common/io.github.beelzebu.matrix-common.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-common/io.github.beelzebu.matrix-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-common/io.github.beelzebu.matrix-common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-common/io.github.beelzebu.matrix-common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-common/io.github.beelzebu.matrix-common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-common/io.github.beelzebu.matrix-common.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/matrix-api/matrix-api.iml" filepath="$PROJECT_DIR$/matrix-api/matrix-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/matrix-bukkit/matrix-bukkit.iml" filepath="$PROJECT_DIR$/matrix-bukkit/matrix-bukkit.iml" />
       <module fileurl="file://$PROJECT_DIR$/matrix-bungee/matrix-bungee.iml" filepath="$PROJECT_DIR$/matrix-bungee/matrix-bungee.iml" />

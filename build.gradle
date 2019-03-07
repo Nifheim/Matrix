@@ -1,0 +1,110 @@
+allprojects {
+    group = 'io.github.beelzebu'
+    version = '1.0.0-SNAPSHOT'
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven {
+            url = 'https://repo.nifheim.net/repository/nifheim/'
+
+            credentials {
+                username '$mavenUser'
+                password '$mavenPassword'
+            }
+        }
+
+        maven {
+            def baseUrl = 'https://repo.nifheim.net/repository/nifheim-'
+            def releasesRepoUrl = baseUrl + 'releases/'
+            def snapshotsRepoUrl = baseUrl + 'snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username '$mavenUser'
+                password '$mavenPassword'
+            }
+        }
+
+        maven {
+            url = 'https://ci.nifheim.net/plugin/repository/everything/'
+        }
+
+        maven {
+            url = 'https://repo.lucko.me/'
+        }
+
+        maven {
+            url = 'http://repo.maven.apache.org/maven2'
+        }
+
+        maven {
+            url = 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+
+        maven {
+            url = 'http://repo.md-5.net/content/repositories/snapshots/'
+        }
+
+        maven {
+            url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
+        }
+
+        maven {
+            url = 'https://repo.destroystokyo.com/repository/maven-snapshots/'
+        }
+
+        maven {
+            url = 'http://maven.sk89q.com/artifactory/repo'
+        }
+
+        maven {
+            url = 'http://repo.dmulloy2.net/nexus/repository/public/'
+        }
+
+        maven {
+            url = 'http://nexus.ghac.de/content/repositories/snapshots/'
+        }
+
+        maven {
+            url = 'http://simonsator.de/repo/'
+        }
+
+        maven {
+            url = 'https://ci.filoghost.me/plugin/repository/everything/'
+        }
+
+        maven {
+            url = 'https://repo.parallelblock.com/repository/maven-public/'
+        }
+
+        maven {
+            url = 'http://maven.elmakers.com/repository/'
+        }
+    }
+
+    dependencies {
+        compileOnly 'me.lucko.luckperms:luckperms-api:4.0'
+        compileOnly 'org.projectlombok:lombok:1.18.2'
+        compileOnly 'io.github.beelzebu:coins-api:3.0.0-SNAPSHOT'
+        compileOnly 'net.md-5:bungeecord-chat:1.13-SNAPSHOT'
+        compileOnly 'redis.clients:jedis:3.0.0'
+        compileOnly 'com.google.code.gson:gson:2.8.5'
+        compileOnly 'com.google.guava:guava:27.0.1-jre'
+    }
+
+    sourceCompatibility = '1.8'
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Jar) {
+        destinationDir = file("$rootDir/out")
+    }
+}

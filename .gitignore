@@ -10,3 +10,6 @@ buildNumber.properties
 .idea/libraries/
 workspace.xml
 uiDesigner.xml
+out/
+.gradle/
+*/build/
