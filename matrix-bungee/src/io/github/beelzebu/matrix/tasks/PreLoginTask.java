@@ -4,19 +4,23 @@ import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
 /**
  * @author Beelzebu
  */
-@AllArgsConstructor
 public class PreLoginTask implements Runnable {
 
     private final MatrixBungeeBootstrap plugin;
     private final PreLoginEvent event;
     private final MatrixPlayer player;
+
+    public PreLoginTask(MatrixBungeeBootstrap plugin, PreLoginEvent event, MatrixPlayer player) {
+        this.plugin = plugin;
+        this.event = event;
+        this.player = player;
+    }
 
     @Override
     public void run() {

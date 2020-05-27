@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.api;
 
 import com.google.gson.Gson;
 import io.github.beelzebu.matrix.api.util.StringUtils;
+import io.github.beelzebu.matrix.util.CompatUtil;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -133,7 +134,7 @@ public class ItemBuilder {
 
     /**
      * Initalizes the ItemBuilder with an already existing
-     * {@link cc.acquized.itembuilder.api.ItemBuilder}
+     * {@link ItemBuilder}
      *
      * @deprecated Use the already initalized {@code ItemBuilder} Instance to
      * improve performance
@@ -370,7 +371,7 @@ public class ItemBuilder {
      * @param unbreakable If it should be unbreakable
      */
     public ItemBuilder unbreakable(boolean unbreakable) {
-        meta.spigot().setUnbreakable(unbreakable);
+        CompatUtil.getInstance().setUnbreakable(item, unbreakable);
         return this;
     }
 
@@ -392,7 +393,7 @@ public class ItemBuilder {
     @Deprecated
     public ItemBuilder owner(String user) {
         Validate.notNull(user, "The Username is null.");
-        if ((material == Material.SKULL_ITEM) || (material == Material.SKULL)) {
+        if ((material == CompatUtil.getInstance().getPlayerHeadItem().getType()) || (material == CompatUtil.getInstance().getPlayerHeadWall().getType()) || (material == CompatUtil.getInstance().getPlayerHeadItem().getType())) {
             SkullMeta smeta = (SkullMeta) meta;
             smeta.setOwner(user);
             meta = smeta;

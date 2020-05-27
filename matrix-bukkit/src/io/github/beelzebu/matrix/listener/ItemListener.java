@@ -4,6 +4,7 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.menus.OptionsGUI;
+import io.github.beelzebu.matrix.util.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,9 +29,9 @@ public class ItemListener implements Listener {
             Player p = e.getPlayer();
             if (e.getItem().getType().equals(Material.COMPASS)) {
                 Bukkit.dispatchCommand(p, "minigames");
-            } else if (e.getItem().getType().equals(Material.REDSTONE_COMPARATOR)) {
+            } else if (e.getItem().getType().equals(CompatUtil.getInstance().getRedstoneComparator())) {
                 new OptionsGUI(p, core.getString("Options.Title", p.getLocale())).open(p);
-            } else if (e.getItem().getType().equals(Material.SKULL_ITEM)) {
+            } else if (e.getItem().getType().equals(CompatUtil.getInstance().getPlayerHead())) {
                 Bukkit.dispatchCommand(p, "perfil");
             }
         }

@@ -2,20 +2,18 @@ package io.github.beelzebu.matrix.util;
 
 import io.github.beelzebu.matrix.api.Matrix;
 import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.api.caching.MetaData;
 
-@NoArgsConstructor(access = AccessLevel.NONE)
 public final class PermsUtils {
 
-    @Getter
     private static final LuckPermsApi permsAPI = LuckPerms.getApi();
+
+    public PermsUtils() {
+    }
 
     /**
      * Get the prefix for a player from the permissions matrixPlugin.
@@ -46,5 +44,9 @@ public final class PermsUtils {
         } catch (Exception ignore) {
         }
         return "none";
+    }
+
+    public static LuckPermsApi getPermsAPI() {
+        return PermsUtils.permsAPI;
     }
 }

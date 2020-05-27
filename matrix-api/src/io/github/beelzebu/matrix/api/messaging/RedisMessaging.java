@@ -2,7 +2,6 @@ package io.github.beelzebu.matrix.api.messaging;
 
 import com.google.gson.JsonObject;
 import io.github.beelzebu.matrix.api.Matrix;
-import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.messaging.message.RedisMessage;
 import io.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
 import java.util.HashSet;
@@ -10,8 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.NonNull;
+import java.util.function.Consumer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -24,24 +22,21 @@ import redis.clients.jedis.exceptions.JedisException;
 public class RedisMessaging {
 
     public static final String MATRIX_CHANNEL = "matrix-messaging";
-    private final MatrixAPI api;
-    @Getter
     private final JedisPool pool;
-    @Getter
     private final PubSubListener pubSubListener;
     private final Set<UUID> messages = new HashSet<>();
     private final Set<RedisMessageListener<? extends RedisMessage>> listeners = new LinkedHashSet<>();
 
-    public RedisMessaging(MatrixAPI api) {
-        this.api = api;
+    public RedisMessaging(String host, int port, String password, Consumer<Runnable> runnableConsumer) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMinIdle(1);
         config.setMaxTotal(101);
-        pool = new JedisPool(config, api.getConfig().getString("Redis.Host"), api.getConfig().getInt("Redis.Port"), 0, api.getConfig().getString("Redis.Password"));
+        config.setBlockWhenExhausted(true);
+        pool = new JedisPool(config, host, port, 0, password);
         try (Jedis jedis = pool.getResource()) {
             jedis.ping();
         }
-        api.getPlugin().runAsync(pubSubListener = new PubSubListener());
+        runnableConsumer.accept(pubSubListener = new PubSubListener());
     }
 
     /**
@@ -51,7 +46,7 @@ public class RedisMessaging {
      *
      * @param redisMessage message to send though redis.
      */
-    public void sendMessage(@NonNull RedisMessage redisMessage) {
+    public void sendMessage(RedisMessage redisMessage) {
         Objects.requireNonNull(redisMessage.getUniqueId(), "Can't send a message with null id");
         messages.add(redisMessage.getUniqueId());
         String jsonMessage = Matrix.GSON.toJson(redisMessage);
@@ -69,6 +64,14 @@ public class RedisMessaging {
         } catch (JedisException ex) {
             Matrix.getLogger().debug(ex);
         }
+    }
+
+    public JedisPool getPool() {
+        return pool;
+    }
+
+    public PubSubListener getPubSubListener() {
+        return pubSubListener;
     }
 
     public class PubSubListener implements Runnable {
@@ -115,7 +118,6 @@ public class RedisMessaging {
                 return;
             }
             redisMessage.read();
-            api.getRedisListeners().forEach(listener -> listener.onMessage(type.toString(), message));
             listeners.stream().filter(redisMessageListener -> redisMessageListener.getType().equals(type)).forEach(redisMessageListener -> redisMessageListener.$$onMessage0$$(RedisMessage.getFromType(type, message)));
         }
     }

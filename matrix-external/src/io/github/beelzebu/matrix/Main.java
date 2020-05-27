@@ -12,12 +12,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.HashMap;
-import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Getter
 public class Main {
 
     private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -34,6 +32,18 @@ public class Main {
 
     public static void main(String[] args) {
         new Main().run(args);
+    }
+
+    public Gson getGson() {
+        return gson;
+    }
+
+    public File getConfigFile() {
+        return configFile;
+    }
+
+    public HashMap<String, Object> getConfig() {
+        return config;
     }
 
     private void run(String[] args) {

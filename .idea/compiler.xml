@@ -2,32 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <module name="matrix-api" />
-        <module name="matrix-bukkit" />
-        <module name="matrix-bungee" />
-        <module name="matrix-common" />
-        <module name="matrix-external" />
-      </profile>
+      <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="io.github.beelzebu.matrix-api.main" target="1.8" />
-      <module name="io.github.beelzebu.matrix-api.test" target="1.8" />
-      <module name="io.github.beelzebu.matrix-bukkit.main" target="1.8" />
-      <module name="io.github.beelzebu.matrix-bukkit.test" target="1.8" />
-      <module name="io.github.beelzebu.matrix-bungee.main" target="1.8" />
-      <module name="io.github.beelzebu.matrix-bungee.test" target="1.8" />
-      <module name="io.github.beelzebu.matrix-common.main" target="1.8" />
-      <module name="io.github.beelzebu.matrix-common.test" target="1.8" />
-      <module name="Matrix" target="1.8" />
-      <module name="matrix-api" target="1.8" />
-      <module name="matrix-bukkit" target="1.8" />
-      <module name="matrix-bungee" target="1.8" />
-      <module name="matrix-common" target="1.8" />
-      <module name="matrix-external" target="1.8" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8" />
   </component>
 </project>

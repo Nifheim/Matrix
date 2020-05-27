@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
-import lombok.Data;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.BanList;
@@ -27,11 +26,14 @@ import org.bukkit.entity.Player;
 /**
  * @author Beelzebu
  */
-@Data
 public class MatrixPluginBukkit implements MatrixPlugin {
 
     private final MatrixBukkitBootstrap bootstrap;
     private final CommandSource console = new BukkitCommandSource(Bukkit.getConsoleSender());
+
+    public MatrixPluginBukkit(MatrixBukkitBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
+    }
 
     @Override
     public MatrixConfig getConfig() {
@@ -173,5 +175,13 @@ public class MatrixPluginBukkit implements MatrixPlugin {
         if (player != null && player.isOnline()) {
             Bukkit.dispatchCommand(player, command);
         }
+    }
+
+    public MatrixBukkitBootstrap getBootstrap() {
+        return bootstrap;
+    }
+
+    public String toString() {
+        return "MatrixPluginBukkit(bootstrap=" + bootstrap + ", console=" + getConsole() + ")";
     }
 }

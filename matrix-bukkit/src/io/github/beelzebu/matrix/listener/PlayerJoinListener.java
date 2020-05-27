@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import io.github.beelzebu.coins.api.utils.StringUtils;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
@@ -20,7 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -37,12 +36,15 @@ import org.bukkit.inventory.meta.BookMeta;
 /**
  * @author Beelzebu
  */
-@RequiredArgsConstructor
 public class PlayerJoinListener implements Listener {
 
     private final MatrixBukkitBootstrap plugin;
     private final MatrixAPI api = Matrix.getAPI();
     private boolean firstjoin = true;
+
+    public PlayerJoinListener(MatrixBukkitBootstrap plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLogin(AsyncPlayerPreLoginEvent e) {
@@ -63,7 +65,7 @@ public class PlayerJoinListener implements Listener {
         if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL))) {
             if (!p.hasPermission("matrix.mod")) {
                 if (p.hasPermission("matrix.joinmessage")) {
-                    e.setJoinMessage(StringUtils.rep(" &8[&a+&8] &f" + PermsUtils.getPrefix(p.getUniqueId()) + api.getPlayer(p.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
+                    e.setJoinMessage(StringUtils.replace(" &8[&a+&8] &f" + PermsUtils.getPrefix(p.getUniqueId()) + api.getPlayer(p.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
                 }
                 Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
             }

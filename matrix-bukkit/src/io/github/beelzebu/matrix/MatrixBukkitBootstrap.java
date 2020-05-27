@@ -1,6 +1,5 @@
 package io.github.beelzebu.matrix;
 
-import de.slikey.effectlib.EffectManager;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.commands.CommandAPI;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
@@ -38,6 +37,7 @@ import io.github.beelzebu.matrix.listener.StatsListener;
 import io.github.beelzebu.matrix.listener.VanishListener;
 import io.github.beelzebu.matrix.listener.ViewDistanceListener;
 import io.github.beelzebu.matrix.listener.VotifierListener;
+import io.github.beelzebu.matrix.util.CompatUtil;
 import io.github.beelzebu.matrix.util.ReadURL;
 import io.github.beelzebu.matrix.util.bungee.BungeeCleanupTask;
 import io.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
@@ -48,20 +48,15 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@Getter
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
     private MatrixAPIImpl api;
-    @Setter
     private boolean chatMuted = false;
-    private EffectManager effectManager;
     private BukkitConfiguration configuration;
     private MatrixPluginBukkit matrixPlugin;
 
@@ -84,6 +79,15 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     @Override
     public void onEnable() {
         io.github.beelzebu.matrix.api.Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this)));
+        try {
+            CompatUtil.setInstance((CompatUtil) Class.forName("io.github.beelzebu.matrix.util.CompatUtil15").newInstance());
+        } catch (ReflectiveOperationException e) {
+            try {
+                CompatUtil.setInstance((CompatUtil) Class.forName("io.github.beelzebu.matrix.util.CompatUtil12").newInstance());
+            } catch (ReflectiveOperationException e2) {
+                e2.printStackTrace();
+            }
+        }
         api.setup();
         // Load things
         loadManagers();
@@ -152,6 +156,26 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         return false;
     }
 
+    public MatrixAPIImpl getApi() {
+        return api;
+    }
+
+    public boolean isChatMuted() {
+        return chatMuted;
+    }
+
+    public void setChatMuted(boolean chatMuted) {
+        this.chatMuted = chatMuted;
+    }
+
+    public BukkitConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    public MatrixPluginBukkit getMatrixPlugin() {
+        return matrixPlugin;
+    }
+
     private void loadManagers() {
         if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
             if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
@@ -166,7 +190,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             StatsPlaceholders statsPlaceholders = new StatsPlaceholders(this);
             statsPlaceholders.hook();
         }
-        effectManager = new EffectManager(this);
     }
 
     private void registerEvents(Listener listener) {

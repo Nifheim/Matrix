@@ -6,12 +6,12 @@ import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.SkullURL;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
+import io.github.beelzebu.matrix.util.CompatUtil;
 import io.github.beelzebu.matrix.util.placeholders.Placeholders;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -33,10 +33,10 @@ public class ProfileGUI extends GUIManager {
         setItems();
     }
 
-    public static void socialItems(Inventory inv, Player user, int color) {
-        ItemStack cristal = new ItemBuilder(Material.STAINED_GLASS_PANE, 1).damage((byte) color).build();
+    public static void socialItems(Inventory inv, Player user) {
+        ItemStack cristal = new ItemBuilder(CompatUtil.getInstance().getPurpleGlass()).build();
         {
-            ItemStack perfil = new ItemBuilder(Material.SKULL_ITEM, 1, core.getString("Social.Profile.Name", user.getLocale())).damage((byte) 3).build();
+            ItemStack perfil = new ItemBuilder(CompatUtil.getInstance().getPlayerHead()).amount(1).displayname(core.getString("Social.Profile.Name", user.getLocale())).build();
             SkullMeta meta = (SkullMeta) perfil.getItemMeta();
             meta.setOwningPlayer(user);
             List<String> lore = new ArrayList<>();
@@ -87,7 +87,7 @@ public class ProfileGUI extends GUIManager {
     private void setItems() {
         AbstractConfig messages = core.getMessages(player.getLocale());
         messages.getKeys("Social.Profile.Items").forEach(itemPath -> items.add(getItem(messages, "Social.Profile.Items." + itemPath)));
-        socialItems(getInv(), player, 10);
+        socialItems(getInv(), player);
         items.forEach(this::setItem);
     }
 }

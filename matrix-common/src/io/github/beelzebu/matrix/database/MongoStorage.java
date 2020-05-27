@@ -13,7 +13,6 @@ import io.github.beelzebu.matrix.database.mongo.UserDAO;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.report.MongoReport;
 import java.util.UUID;
-import lombok.Getter;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.converters.UUIDConverter;
@@ -21,7 +20,6 @@ import org.mongodb.morphia.converters.UUIDConverter;
 /**
  * @author Beelzebu
  */
-@Getter
 public class MongoStorage implements MatrixDatabase {
 
     private final UserDAO userDAO;
@@ -34,7 +32,7 @@ public class MongoStorage implements MatrixDatabase {
         morphia.getMapper().getConverters().addConverter(new UUIDConverter());
         Datastore datastore = morphia.createDatastore(client, database);
         datastore.ensureIndexes();
-        userDAO = new UserDAO(datastore);
+        userDAO = new UserDAO(MongoMatrixPlayer.class, datastore);
         reportDAO = new ReportDAO(datastore);
     }
 
@@ -66,6 +64,14 @@ public class MongoStorage implements MatrixDatabase {
 
     @Override
     public ReportManager getReportManager() {
+        return reportDAO;
+    }
+
+    public UserDAO getUserDAO() {
+        return userDAO;
+    }
+
+    public ReportDAO getReportDAO() {
         return reportDAO;
     }
 }

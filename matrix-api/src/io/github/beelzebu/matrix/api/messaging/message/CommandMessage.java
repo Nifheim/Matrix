@@ -1,13 +1,8 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-
 /**
  * @author Beelzebu
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class CommandMessage extends RedisMessage {
 
     private final String server;
@@ -25,9 +20,24 @@ public class CommandMessage extends RedisMessage {
         this.bukkit = bukkit;
     }
 
-    @Override
-    protected boolean onlyExternal() {
-        return false;
+    public String getServer() {
+        return server;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public boolean isGlobal() {
+        return global;
+    }
+
+    public boolean isBungee() {
+        return bungee;
+    }
+
+    public boolean isBukkit() {
+        return bukkit;
     }
 
     @Override
@@ -39,5 +49,14 @@ public class CommandMessage extends RedisMessage {
         } else if (isBukkit() && !api.isBungee()) {
             api.getPlugin().executeCommand(getCommand());
         }
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
+
+    protected boolean canEqual(Object other) {
+        return other instanceof io.github.beelzebu.matrix.api.messaging.message.CommandMessage;
     }
 }

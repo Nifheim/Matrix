@@ -6,7 +6,6 @@ import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import lombok.Getter;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -16,11 +15,17 @@ import org.bukkit.event.player.PlayerToggleFlightEvent;
 
 public class StatsListener implements Listener {
 
-    @Getter
     private static final Map<UUID, Integer> placed = new HashMap<>();
-    @Getter
     private static final Map<UUID, Integer> broken = new HashMap<>();
     private final MatrixAPI api = Matrix.getAPI();
+
+    public static Map<UUID, Integer> getPlaced() {
+        return StatsListener.placed;
+    }
+
+    public static Map<UUID, Integer> getBroken() {
+        return StatsListener.broken;
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent e) {

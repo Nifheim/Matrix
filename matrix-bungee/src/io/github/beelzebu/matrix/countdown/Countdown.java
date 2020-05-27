@@ -1,19 +1,21 @@
 package io.github.beelzebu.matrix.countdown;
 
 import java.util.concurrent.TimeUnit;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Getter
-@AllArgsConstructor
 public class Countdown {
 
     private final String id;
     private final long start;
     private final long end;
+
+    public Countdown(String id, long start, long end) {
+        this.id = id;
+        this.start = start;
+        this.end = end;
+    }
 
     private static String formatTime(long millis) {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
@@ -39,5 +41,17 @@ public class Countdown {
 
     public boolean isOver() {
         return end < System.currentTimeMillis();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public long getStart() {
+        return start;
+    }
+
+    public long getEnd() {
+        return end;
     }
 }

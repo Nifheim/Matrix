@@ -7,7 +7,6 @@ import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.util.ErrorCodes;
 import java.util.Objects;
-import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -15,12 +14,17 @@ import net.md_5.bungee.api.event.LoginEvent;
 /**
  * @author Beelzebu
  */
-@AllArgsConstructor
 public class LoginTask implements Runnable {
 
     private final MatrixBungeeBootstrap plugin;
     private final LoginEvent event;
     private MatrixPlayer player;
+
+    public LoginTask(MatrixBungeeBootstrap plugin, LoginEvent event, MatrixPlayer player) {
+        this.plugin = plugin;
+        this.event = event;
+        this.player = player;
+    }
 
     @Override
     public void run() {

@@ -1,18 +1,15 @@
 package io.github.beelzebu.matrix.api.menus;
 
-import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.ItemBuilder;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -26,19 +23,12 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class GUIManager {
 
-    @Getter
     private static final Map<UUID, GUIManager> inventoriesByUUID = new HashMap<>();
-    @Getter
     private static final Map<UUID, UUID> openInventories = Collections.synchronizedMap(new HashMap<>());
     private final MatrixAPI api = Matrix.getAPI();
-    @Getter
     private final Inventory inv;
-    @Getter
     private final Map<Integer, GUIAction> actions;
-    @Getter
     private final UUID uniqueId;
-    @Getter
-    @Setter
     private ItemStack opener;
 
     public GUIManager(int size, String name) {
@@ -57,13 +47,21 @@ public abstract class GUIManager {
             }
         }
         if (type != null && !type.equals(InventoryType.CHEST)) {
-            inv = Bukkit.createInventory(null, type, StringUtils.rep(name));
+            inv = Bukkit.createInventory(null, type, StringUtils.replace(name));
         } else {
-            inv = Bukkit.createInventory(null, size, StringUtils.rep(name));
+            inv = Bukkit.createInventory(null, size, StringUtils.replace(name));
         }
         actions = new HashMap<>();
         uniqueId = UUID.randomUUID();
         inventoriesByUUID.put(getUniqueId(), this);
+    }
+
+    public static Map<UUID, GUIManager> getInventoriesByUUID() {
+        return GUIManager.inventoriesByUUID;
+    }
+
+    public static Map<UUID, UUID> getOpenInventories() {
+        return GUIManager.openInventories;
     }
 
     public final void setItem(Item item) {
@@ -109,7 +107,7 @@ public abstract class GUIManager {
         List<String> lore = config.getStringList(path + ".Lore");
         String soundPath = config.getString(path + ".Sound");
         String command = config.getString(path + ".Command");
-        return new Item(new ItemBuilder(material, amount, StringUtils.rep(name)).damage(damage).lore(lore).build(), config.getInt(path + ".Slot"), player -> {
+        return new Item(new ItemBuilder(material, amount, StringUtils.replace(name)).damage(damage).lore(lore).build(), config.getInt(path + ".Slot"), player -> {
             if (command != null) {
                 player.performCommand(command);
             }
@@ -123,18 +121,53 @@ public abstract class GUIManager {
         });
     }
 
+    public Inventory getInv() {
+        return inv;
+    }
+
+    public Map<Integer, GUIAction> getActions() {
+        return actions;
+    }
+
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
+    public ItemStack getOpener() {
+        return opener;
+    }
+
+    public void setOpener(ItemStack opener) {
+        this.opener = opener;
+    }
+
     public interface GUIAction {
 
         void click(Player p);
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
     public class Item {
 
         private final ItemStack itemStack;
         private final int slot;
         private final GUIAction guiAction;
+
+        public Item(ItemStack itemStack, int slot, io.github.beelzebu.matrix.api.menus.GUIManager.GUIAction guiAction) {
+            this.itemStack = itemStack;
+            this.slot = slot;
+            this.guiAction = guiAction;
+        }
+
+        public ItemStack getItemStack() {
+            return itemStack;
+        }
+
+        public int getSlot() {
+            return slot;
+        }
+
+        public io.github.beelzebu.matrix.api.menus.GUIManager.GUIAction getGuiAction() {
+            return guiAction;
+        }
     }
 }

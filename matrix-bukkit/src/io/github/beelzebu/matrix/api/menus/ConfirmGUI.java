@@ -3,8 +3,8 @@ package io.github.beelzebu.matrix.api.menus;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.util.StringUtils;
+import io.github.beelzebu.matrix.util.CompatUtil;
 import java.util.List;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -47,7 +47,7 @@ public class ConfirmGUI extends GUIManager {
             return;
         }
         {
-            ItemStack is = new ItemStack(Material.STAINED_GLASS, 1, (short) 5);
+            ItemStack is = CompatUtil.getInstance().getGreenGlass();
             ItemMeta meta = is.getItemMeta();
             meta.setDisplayName(api.getString("Utils.GUI.Confirm.Accept", player.getLocale()));
             is.setItemMeta(meta);
@@ -62,7 +62,7 @@ public class ConfirmGUI extends GUIManager {
             setItem(4, item);
         }
         {
-            ItemStack is = new ItemStack(Material.STAINED_GLASS, 1, (short) 14);
+            ItemStack is = CompatUtil.getInstance().getRedGlass();
             ItemMeta meta = is.getItemMeta();
             meta.setDisplayName(api.getString("Utils.GUI.Confirm.Decline", player.getLocale()));
             is.setItemMeta(meta);

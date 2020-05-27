@@ -4,11 +4,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import lombok.Getter;
 
 public class RewardManager {
 
-    @Getter
     private static final Multimap<Integer, Reward> rewardsByLevel = ArrayListMultimap.create();
 
     public static void loadRewards() {
@@ -17,5 +15,9 @@ public class RewardManager {
 
     public static void addReward(Reward reward) {
         rewardsByLevel.put(reward.getLevel(), reward);
+    }
+
+    public static Multimap<Integer, Reward> getRewardsByLevel() {
+        return RewardManager.rewardsByLevel;
     }
 }

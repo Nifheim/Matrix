@@ -28,9 +28,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -43,8 +40,6 @@ import redis.clients.jedis.Jedis;
 /**
  * @author Beelzebu
  */
-@Getter
-@Setter
 public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Nifheim&7!\n&7IP: &amc.nifheim.net\n"));
@@ -53,7 +48,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     private static final String MAINTENANCE_KEY = "matrix:maintenance";
     private MatrixAPIImpl api;
     private MatrixPluginBungee matrixPlugin;
-    @Setter(AccessLevel.NONE)
     private BungeeConfiguration config;
     private boolean maintenance;
 
@@ -131,6 +125,30 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
             return;
         }
         this.maintenance = maintenance;
+    }
+
+    public MatrixAPIImpl getApi() {
+        return api;
+    }
+
+    public void setApi(MatrixAPIImpl api) {
+        this.api = api;
+    }
+
+    public MatrixPluginBungee getMatrixPlugin() {
+        return matrixPlugin;
+    }
+
+    public void setMatrixPlugin(MatrixPluginBungee matrixPlugin) {
+        this.matrixPlugin = matrixPlugin;
+    }
+
+    public BungeeConfiguration getConfig() {
+        return config;
+    }
+
+    public void setConfig(BungeeConfiguration config) {
+        this.config = config;
     }
 
     private void loadManagers() {

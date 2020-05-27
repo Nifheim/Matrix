@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.api.player;
 
-import io.github.beelzebu.coins.api.CoinsAPI;
+import com.github.beelzebu.coins.api.CoinsAPI;
 import io.github.beelzebu.matrix.api.command.CommandSource;
 import io.github.beelzebu.matrix.api.server.GameType;
 import java.util.Collection;
@@ -10,9 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -124,9 +121,14 @@ public interface MatrixPlayer extends CommandSource {
 
     void setWatcher(boolean watcher);
 
-    long getExp();
+    default long getExp() {
+        // TODO: use network levels
+        return 0;
+    }
 
-    void setExp(long xp);
+    default void setExp(long xp) {
+        // TODO: use network levels
+    }
 
     Set<PlayerOptionType> getOptions();
 
@@ -149,7 +151,7 @@ public interface MatrixPlayer extends CommandSource {
     @Nullable
     String getDiscordId();
 
-    void setDiscordId(@Nonnull @NonNull String discordId);
+    void setDiscordId(@Nonnull String discordId);
 
     int getCensoringLevel();
 
@@ -201,8 +203,6 @@ public interface MatrixPlayer extends CommandSource {
      */
     void setField(String field, String json);
 
-    @Getter
-    @RequiredArgsConstructor
     enum GameMode {
         SURVIVAL(0),
         CREATIVE(1),
@@ -211,6 +211,10 @@ public interface MatrixPlayer extends CommandSource {
 
         private final int id;
 
+        private GameMode(int id) {
+            this.id = id;
+        }
+
         public static GameMode getById(int id) {
             for (GameMode gameMode : values()) {
                 if (gameMode.id == id) {
@@ -218,6 +222,10 @@ public interface MatrixPlayer extends CommandSource {
                 }
             }
             return null;
+        }
+
+        public int getId() {
+            return id;
         }
     }
 }

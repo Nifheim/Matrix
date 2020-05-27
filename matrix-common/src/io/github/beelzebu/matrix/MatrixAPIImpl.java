@@ -11,19 +11,18 @@ import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.cache.CacheProviderImpl;
 import io.github.beelzebu.matrix.database.MongoStorage;
+import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import io.github.beelzebu.matrix.util.FileManager;
 import java.io.File;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Stream;
-import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * @author Beelzebu
  */
-@Getter
-public class MatrixAPIImpl extends MatrixAPI {
+public abstract class MatrixAPIImpl extends MatrixAPI {
 
     private final MatrixPlugin plugin;
     private final MongoStorage database;
@@ -34,7 +33,7 @@ public class MatrixAPIImpl extends MatrixAPI {
     public MatrixAPIImpl(MatrixPlugin plugin) {
         this.plugin = plugin;
         database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
-        redis = new RedisMessaging(this);
+        redis = new RedisMessaging(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"), runnable -> getPlugin().runAsync(runnable));
         cache = new CacheProviderImpl();
         serverInfo = new ServerInfo(plugin.getConfig().getString("Server Table").replaceAll(" ", ""), GameType.valueOf(plugin.getConfig().getString("game-type", "LOBBY").toUpperCase()), ServerType.valueOf(plugin.getConfig().getString("Server Type", "OTHER").toUpperCase()));
         Stream.of(Objects.requireNonNull(plugin.getDataFolder().listFiles())).filter(file -> file.getName().startsWith("messages")).forEach(file -> messagesMap.put((file.getName().split("_").length == 2 ? file.getName().split("_")[1] : "default").split(".yml")[0], plugin.getFileAsConfig(file)));
@@ -59,8 +58,26 @@ public class MatrixAPIImpl extends MatrixAPI {
     }
 
     @Override
-    public boolean hasPermission(MatrixPlayer player, String permission) {
-        return false;
+    public abstract boolean hasPermission(MatrixPlayer player, String permission);
+
+    public MatrixPlugin getPlugin() {
+        return plugin;
+    }
+
+    public MongoStorage getDatabase() {
+        return database;
+    }
+
+    public RedisMessaging getRedis() {
+        return redis;
+    }
+
+    public CacheProviderImpl getCache() {
+        return cache;
+    }
+
+    public ServerInfo getServerInfo() {
+        return serverInfo;
     }
 
     private void motd() {

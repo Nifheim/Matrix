@@ -4,7 +4,6 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.Message;
 import java.util.Arrays;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,7 +13,6 @@ public abstract class MatrixCommand extends Command {
 
     protected final MatrixAPI api = Matrix.getAPI();
     protected final String permission;
-    @Setter
     protected boolean async = true;
 
     @Deprecated
@@ -45,6 +43,10 @@ public abstract class MatrixCommand extends Command {
             sender.sendMessage(api.getString(Message.GENERAL_NO_PERMS, sender instanceof Player ? ((Player) sender).getLocale() : ""));
         }
         return true;
+    }
+
+    public void setAsync(boolean async) {
+        this.async = async;
     }
 
     public abstract void onCommand(CommandSender sender, String[] args);

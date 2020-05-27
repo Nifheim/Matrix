@@ -2,6 +2,7 @@ package io.github.beelzebu.matrix.api;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import io.github.beelzebu.matrix.util.CompatUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -9,7 +10,6 @@ import java.util.Random;
 import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +36,7 @@ public class SkullURL {
     }
 
     public static ItemStack getCustomSkull(String url) {
-        ItemStack localItemStack = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        ItemStack localItemStack = CompatUtil.getInstance().getPlayerHeadItem();
         if (url.isEmpty()) {
             return localItemStack;
         } else {
@@ -66,7 +66,7 @@ public class SkullURL {
     }
 
     public static void setSkullWithNonPlayerProfile(String skinURL, boolean randomName, Block skull) {
-        if (skull.getType() != Material.SKULL) {
+        if (skull.getType() != CompatUtil.getInstance().getPlayerHead().getType() || skull.getType() != CompatUtil.getInstance().getPlayerHeadWall().getType()) {
             throw new IllegalArgumentException("Block must be a skull.");
         }
         Skull s = (Skull) skull.getState();

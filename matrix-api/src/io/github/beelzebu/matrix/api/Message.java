@@ -1,10 +1,5 @@
 package io.github.beelzebu.matrix.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
 public enum Message {
 
     CHAT_GLOBALMUTE_MUTE("Chat.GlobalMute.Mute", "%prefix% &eThe chat is now muted!"),
@@ -45,4 +40,17 @@ public enum Message {
     MAINTENANCE("Error.Maintenance", "&cCurrently the server is in maintenance, we'll be back soon!");
 
     private final String path, defaults;
+
+    private Message(String path, String defaults) {
+        this.path = path;
+        this.defaults = defaults;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public String getDefaults() {
+        return defaults;
+    }
 }

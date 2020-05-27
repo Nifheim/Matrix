@@ -1,7 +1,7 @@
 package io.github.beelzebu.matrix.cache;
 
+import com.github.beelzebu.coins.api.CoinsAPI;
 import com.google.gson.JsonParseException;
-import io.github.beelzebu.coins.api.CoinsAPI;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.cache.CacheProvider;
 import io.github.beelzebu.matrix.api.messaging.message.NameUpdatedMessage;

@@ -1,18 +1,20 @@
 package io.github.beelzebu.matrix.api.server.lobby;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
-@Getter
-@AllArgsConstructor
 public class LaunchPad {
 
     private final Location location;
     private final Vector vector;
     private final boolean effect;
+
+    public LaunchPad(Location location, Vector vector, boolean effect) {
+        this.location = location;
+        this.vector = vector;
+        this.effect = effect;
+    }
 
     public static LaunchPad fromString(String launchpad) {
         String[] args = launchpad.split(",");
@@ -40,5 +42,17 @@ public class LaunchPad {
         launchpad += vector.getY() + ",";
         launchpad += vector.getZ();
         return launchpad;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public Vector getVector() {
+        return vector;
+    }
+
+    public boolean isEffect() {
+        return effect;
     }
 }

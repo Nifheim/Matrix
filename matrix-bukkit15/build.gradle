@@ -1,0 +1,22 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+}
+
+dependencies {
+    compile project(':matrix-api')
+    compile project(':matrix-common')
+    compile project(':matrix-bukkit')
+    compileOnly 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
+}
+
+artifacts {
+    archives shadowJar
+}
+
+shadowJar {
+    baseName = 'Matrix-Bukkit15'
+    classifier = null
+    version = null
+}
+
+description = 'Matrix Bukkit15'

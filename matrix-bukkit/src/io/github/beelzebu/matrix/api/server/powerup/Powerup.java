@@ -1,6 +1,5 @@
 package io.github.beelzebu.matrix.api.server.powerup;
 
-import de.slikey.effectlib.Effect;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,15 +12,13 @@ public class Powerup {
     private final Location l;
     private final String t;
     private final ItemStack i;
-    private final Effect e;
     private final PotionEffect pe;
     private final int c;
 
-    public Powerup(Location loc, String title, ItemStack item, Effect effect, PotionEffect potionEffect, int chance) {
+    public Powerup(Location loc, String title, ItemStack item, PotionEffect potionEffect, int chance) {
         l = loc;
         t = title;
         i = item;
-        e = effect;
         pe = potionEffect;
         c = chance;
     }
@@ -34,14 +31,14 @@ public class Powerup {
      * @param effect The effect to use.
      * @return a new Powerup.
      */
-    public static Powerup fromString(String string, Effect effect) {
+    public static Powerup fromString(String string) {
         String[] args = string.split(";");
-        Location l = new Location(Bukkit.getWorld(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
+        Location l = new Location(Bukkit.getWorld(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
         String t = args[4];
-        ItemStack i = new ItemStack(Material.matchMaterial(args[5]), 1, Short.valueOf(args[6]));
-        PotionEffect pe = new PotionEffect(PotionEffectType.getByName(args[7]), Integer.valueOf(args[8]), Integer.valueOf(args[9]));
-        int c = Integer.valueOf(args[10]);
-        return new Powerup(l, t, i, effect, pe, c);
+        ItemStack i = new ItemStack(Material.matchMaterial(args[5]), 1, Short.parseShort(args[6]));
+        PotionEffect pe = new PotionEffect(PotionEffectType.getByName(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]));
+        int c = Integer.parseInt(args[10]);
+        return new Powerup(l, t, i, pe, c);
     }
 
     public Location getLocation() {
@@ -54,10 +51,6 @@ public class Powerup {
 
     public ItemStack getItemStack() {
         return i;
-    }
-
-    public Effect getEffect() {
-        return e;
     }
 
     public PotionEffect getPotionEffect() {

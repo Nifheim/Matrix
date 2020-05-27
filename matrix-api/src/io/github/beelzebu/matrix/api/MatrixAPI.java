@@ -10,6 +10,7 @@ import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import io.github.beelzebu.matrix.api.server.ServerInfo;
+import io.github.beelzebu.matrix.api.util.MatrixPlayerSet;
 import io.github.beelzebu.matrix.api.util.StringUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,7 +23,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import lombok.Getter;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -30,12 +30,11 @@ import redis.clients.jedis.exceptions.JedisException;
  *
  * @author Beelzebu
  */
-@Getter
 public abstract class MatrixAPI {
 
     protected final Map<String, AbstractConfig> messagesMap = new HashMap<>();
     private final Set<RedisMessageEvent> redisListeners = new HashSet<>();
-    private final Set<MatrixPlayer> players = new HashSet<>();
+    private final Set<MatrixPlayer> players = new MatrixPlayerSet<>();
 
     /**
      * Get matrix configuration file.
@@ -85,11 +84,21 @@ public abstract class MatrixAPI {
     }
 
     public MatrixPlayer getPlayer(UUID uniqueId) {
-        return players.stream().filter(p -> Objects.equals(p.getUniqueId(), uniqueId)).findFirst().orElse(getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId)));
+        for (MatrixPlayer matrixPlayer : players) {
+            if (Objects.equals(matrixPlayer.getUniqueId(), uniqueId)) {
+                return matrixPlayer;
+            }
+        }
+        return getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId));
     }
 
     public MatrixPlayer getPlayer(String name) {
-        return players.stream().filter(p -> Objects.equals(p.getName().toLowerCase(), name.toLowerCase())).findFirst().orElse(getCache().getPlayer(name).orElse(getDatabase().getPlayer(name)));
+        for (MatrixPlayer matrixPlayer : players) {
+            if (Objects.equals(matrixPlayer.getName().toLowerCase(), name.toLowerCase())) {
+                return matrixPlayer;
+            }
+        }
+        return getCache().getPlayer(name).orElse(getDatabase().getPlayer(name));
     }
 
     /**
@@ -149,6 +158,18 @@ public abstract class MatrixAPI {
     @Deprecated
     public Gson getGson() {
         return Matrix.GSON;
+    }
+
+    public Map<String, AbstractConfig> getMessagesMap() {
+        return messagesMap;
+    }
+
+    public Set<RedisMessageEvent> getRedisListeners() {
+        return redisListeners;
+    }
+
+    public Set<MatrixPlayer> getPlayers() {
+        return players;
     }
 
     @Deprecated

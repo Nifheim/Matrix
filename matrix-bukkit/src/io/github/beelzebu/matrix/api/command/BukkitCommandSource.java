@@ -1,17 +1,19 @@
 package io.github.beelzebu.matrix.api.command;
 
 import io.github.beelzebu.matrix.api.util.StringUtils;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 /**
  * @author Beelzebu
  */
-@RequiredArgsConstructor
 public class BukkitCommandSource implements CommandSource {
 
     private final CommandSender sender;
+
+    public BukkitCommandSource(CommandSender sender) {
+        this.sender = sender;
+    }
 
     @Override
     public String getName() {

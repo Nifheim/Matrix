@@ -1,6 +1,5 @@
 package io.github.beelzebu.matrix.menus;
 
-import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.ItemBuilder;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.MatrixAPI;
@@ -8,9 +7,11 @@ import io.github.beelzebu.matrix.api.menus.GUIManager;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.server.ServerType;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.player.options.FlyOption;
 import io.github.beelzebu.matrix.player.options.Option;
 import io.github.beelzebu.matrix.player.options.SpeedOption;
+import io.github.beelzebu.matrix.util.CompatUtil;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,12 +67,12 @@ public class OptionsGUI extends GUIManager {
                 np.setOption(PlayerOptionType.FLY, status);
             } else {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
-                p.sendMessage(StringUtils.rep("&c&lLo sentimos!&7 no tienes permisos suficientes para usar esto."));
+                p.sendMessage(StringUtils.replace("&c&lLo sentimos!&7 no tienes permisos suficientes para usar esto."));
             }
             p.closeInventory();
         });
 
-        setItem(14, new ItemBuilder(Material.INK_SACK).damage((short) 5).displayname(api.getString("Options.Hide.Name", lang)).lore(api.getMessages(lang).getStringList("Options.Hide.Lore")).build(), p -> {
+        setItem(14, new ItemBuilder(CompatUtil.getInstance().getGreenDye()).displayname(api.getString("Options.Hide.Name", lang)).lore(api.getMessages(lang).getStringList("Options.Hide.Lore")).build(), p -> {
             boolean fail = false;
             try {
                 if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
@@ -89,17 +90,17 @@ public class OptionsGUI extends GUIManager {
             }
         });
 
-        setItem(16, new ItemBuilder(Material.BOOK_AND_QUILL).displayname(StringUtils.rep("&8Nick")).lore(Arrays.asList("", StringUtils.rep("&7Haz click para cambiar"), StringUtils.rep("&7el color de tu nick."))).build(), p -> {
+        setItem(16, new ItemBuilder(CompatUtil.getInstance().getBookAndQuill()).displayname(StringUtils.replace("&8Nick")).lore(Arrays.asList("", StringUtils.replace("&7Haz click para cambiar"), StringUtils.replace("&7el color de tu nick."))).build(), p -> {
             if (p.hasPermission("matrix.command.nick")) {
                 Bukkit.dispatchCommand(p, "nick");
             } else {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
-                p.sendMessage(StringUtils.rep("&c&lLo sentimos!&7 no tienes permisos suficientes para hacer esto."));
+                p.sendMessage(StringUtils.replace("&c&lLo sentimos!&7 no tienes permisos suficientes para hacer esto."));
                 p.closeInventory();
             }
         });
         if (player.hasPermission("matrix.command.vanish")) {
-            setItem(26, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(StringUtils.rep("&8Ocultar nick")).lore(np.getOption(PlayerOptionType.NICKNAME) + "").build(), p -> {
+            setItem(26, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(StringUtils.replace("&8Ocultar nick")).lore(np.getOption(PlayerOptionType.NICKNAME) + "").build(), p -> {
                 boolean status = !np.getOption(PlayerOptionType.NICKNAME);
                 np.setOption(PlayerOptionType.NICKNAME, status);
                 p.closeInventory();
@@ -108,6 +109,6 @@ public class OptionsGUI extends GUIManager {
     }
 
     private String rep(String str, Option opt) {
-        return StringUtils.rep(str.replaceAll("%status%", opt.getStatus()));
+        return StringUtils.replace(str.replaceAll("%status%", opt.getStatus()));
     }
 }

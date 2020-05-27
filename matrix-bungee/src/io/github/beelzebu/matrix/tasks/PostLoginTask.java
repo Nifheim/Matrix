@@ -4,18 +4,21 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.DiscordRankUpdateMessage;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.util.ErrorCodes;
-import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 
 /**
  * @author Beelzebu
  */
-@AllArgsConstructor
 public class PostLoginTask implements Runnable {
 
     private final PostLoginEvent event;
     private final MatrixPlayer player;
+
+    public PostLoginTask(PostLoginEvent event, MatrixPlayer player) {
+        this.event = event;
+        this.player = player;
+    }
 
     @Override
     public void run() {

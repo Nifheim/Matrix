@@ -4,20 +4,25 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;
 import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.util.PermsUtils;
-import lombok.Data;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-@Data
 public class Channel {
 
     private final String name;
     private final String command;
     private final String permission;
     private final ChatColor color;
+
+    public Channel(String name, String command, String permission, ChatColor color) {
+        this.name = name;
+        this.command = command;
+        this.permission = permission;
+        this.color = color;
+    }
 
     public Channel register() {
         ProxyServer.getInstance().getPluginManager().registerCommand(ProxyServer.getInstance().getPluginManager().getPlugin("Matrix"), new Command(name) {
@@ -28,7 +33,7 @@ public class Channel {
                         if (args.length == 0 && sender instanceof ProxiedPlayer) {
                             if (Matrix.getAPI().getPlayer(sender.getName()).getStaffChannel() == null) {
                                 Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(command);
-                                sender.sendMessage(StringUtils.replace("&eTodos tus mensajes serán enviados a " + color + Channel.this.name));
+                                sender.sendMessage(StringUtils.replace("&eTodos tus mensajes serán enviados a " + color + name));
                             } else {
                                 Matrix.getAPI().getPlayer(sender.getName()).setStaffChannel(null);
                                 sender.sendMessage(StringUtils.replace("&eTu chat vuelve a la normalidad."));
@@ -55,5 +60,77 @@ public class Channel {
             }
         });
         return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public String getPermission() {
+        return permission;
+    }
+
+    public ChatColor getColor() {
+        return color;
+    }
+
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof io.github.beelzebu.matrix.channels.Channel)) {
+            return false;
+        }
+        io.github.beelzebu.matrix.channels.Channel other = (io.github.beelzebu.matrix.channels.Channel) o;
+        if (!other.canEqual((java.lang.Object) this)) {
+            return false;
+        }
+        java.lang.Object this$name = name;
+        java.lang.Object other$name = other.name;
+        if (this$name == null ? other$name != null : !this$name.equals(other$name)) {
+            return false;
+        }
+        java.lang.Object this$command = command;
+        java.lang.Object other$command = other.command;
+        if (this$command == null ? other$command != null : !this$command.equals(other$command)) {
+            return false;
+        }
+        java.lang.Object this$permission = permission;
+        java.lang.Object other$permission = other.permission;
+        if (this$permission == null ? other$permission != null : !this$permission.equals(other$permission)) {
+            return false;
+        }
+        java.lang.Object this$color = color;
+        java.lang.Object other$color = other.color;
+        if (this$color == null ? other$color != null : !this$color.equals(other$color)) {
+            return false;
+        }
+        return true;
+    }
+
+    public int hashCode() {
+        final int PRIME = 59;
+        int result = 1;
+        java.lang.Object $name = name;
+        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
+        java.lang.Object $command = command;
+        result = result * PRIME + ($command == null ? 43 : $command.hashCode());
+        java.lang.Object $permission = permission;
+        result = result * PRIME + ($permission == null ? 43 : $permission.hashCode());
+        java.lang.Object $color = color;
+        result = result * PRIME + ($color == null ? 43 : $color.hashCode());
+        return result;
+    }
+
+    public String toString() {
+        return "Channel(name=" + name + ", command=" + command + ", permission=" + permission + ", color=" + color + ")";
+    }
+
+    protected boolean canEqual(Object other) {
+        return other instanceof io.github.beelzebu.matrix.channels.Channel;
     }
 }

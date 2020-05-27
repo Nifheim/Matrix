@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -23,7 +22,6 @@ import net.md_5.bungee.event.EventHandler;
 /**
  * @author Beelzebu
  */
-@AllArgsConstructor
 public class ServerListListener implements Listener {
 
     private final UUID emptyUUID = UUID.fromString("0-0-0-0-0");
@@ -40,6 +38,9 @@ public class ServerListListener implements Listener {
             "&8&m-----------------------------------&f"
     };
     private final Random r = new Random();
+
+    public ServerListListener() {
+    }
 
     @EventHandler(priority = 127)
     public void onPing(ProxyPingEvent e) {

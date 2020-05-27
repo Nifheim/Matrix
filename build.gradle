@@ -10,30 +10,6 @@ subprojects {
     repositories {
         mavenCentral()
         mavenLocal()
-        maven {
-            url = 'https://repo.nifheim.net/repository/nifheim/'
-
-            credentials {
-                username '$mavenUser'
-                password '$mavenPassword'
-            }
-        }
-
-        maven {
-            def baseUrl = 'https://repo.nifheim.net/repository/nifheim-'
-            def releasesRepoUrl = baseUrl + 'releases/'
-            def snapshotsRepoUrl = baseUrl + 'snapshots/'
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-
-            credentials {
-                username '$mavenUser'
-                password '$mavenPassword'
-            }
-        }
-
-        maven {
-            url = 'https://ci.nifheim.net/plugin/repository/everything/'
-        }
 
         maven {
             url = 'https://repo.lucko.me/'
@@ -86,13 +62,16 @@ subprojects {
         maven {
             url = 'http://maven.elmakers.com/repository/'
         }
+
+        maven {
+            url 'https://dl.bintray.com/ichbinjoe/public/'
+        }
     }
 
     dependencies {
         compileOnly 'me.lucko.luckperms:luckperms-api:4.0'
-        compileOnly 'org.projectlombok:lombok:1.18.2'
-        compileOnly 'io.github.beelzebu:coins-api:3.0.0-SNAPSHOT'
-        compileOnly 'net.md-5:bungeecord-chat:1.13-SNAPSHOT'
+        compileOnly 'com.github.beelzebu:coins3-api:3.0'
+        compileOnly 'net.md-5:bungeecord-chat:1.15-SNAPSHOT'
         compileOnly 'redis.clients:jedis:3.0.0'
         compileOnly 'com.google.code.gson:gson:2.8.5'
         compileOnly 'com.google.guava:guava:27.0.1-jre'
@@ -106,5 +85,10 @@ subprojects {
 
     tasks.withType(Jar) {
         destinationDir = file("$rootDir/out")
+    }
+
+    sourceSets {
+        main.java.srcDirs = ['src/']
+        main.resources.srcDirs = ['src/resources']
     }
 }

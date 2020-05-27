@@ -1,6 +1,6 @@
 package io.github.beelzebu.matrix.command.utils;
 
-import io.github.beelzebu.coins.api.utils.StringUtils;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
 import java.util.List;
 import org.bukkit.command.CommandSender;
@@ -36,10 +36,10 @@ public class RemoveLore extends MatrixCommand {
                                 p.getInventory().setItemInMainHand(item);
                                 p.sendMessage(api.getString("Item Utils.RemoveLore.Successful", locale).replaceAll("%line%", lore));
                             } else {
-                                p.sendMessage(StringUtils.rep("%prefix% §4Error:§c Este item no tiene ningún lore en esta linea"));
+                                p.sendMessage(StringUtils.replace("%prefix% §4Error:§c Este item no tiene ningún lore en esta linea"));
                             }
                         } else {
-                            p.sendMessage(StringUtils.rep("%prefix% §4Error:§c Este item no tiene lores"));
+                            p.sendMessage(StringUtils.replace("%prefix% §4Error:§c Este item no tiene lores"));
                         }
                     } catch (NumberFormatException e) {
                         p.sendMessage(api.getString("Item Utils.No Number", locale).replaceAll("%arg%", args[0]));

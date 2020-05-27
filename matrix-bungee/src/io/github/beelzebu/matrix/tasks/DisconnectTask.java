@@ -4,18 +4,21 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Date;
-import lombok.AllArgsConstructor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 
 /**
  * @author Beelzebu
  */
-@AllArgsConstructor
 public class DisconnectTask implements Runnable {
 
     private final PlayerDisconnectEvent event;
     private final MatrixPlayer player;
+
+    public DisconnectTask(PlayerDisconnectEvent event, MatrixPlayer player) {
+        this.event = event;
+        this.player = player;
+    }
 
     @Override
     public void run() {

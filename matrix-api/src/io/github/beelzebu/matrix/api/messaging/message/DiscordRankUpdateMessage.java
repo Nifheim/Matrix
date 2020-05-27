@@ -1,14 +1,10 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
 import java.util.UUID;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class DiscordRankUpdateMessage extends RedisMessage {
 
     private final UUID userUniqueId;
@@ -22,14 +18,30 @@ public class DiscordRankUpdateMessage extends RedisMessage {
         this.action = action;
     }
 
-    @Override
-    protected boolean onlyExternal() {
-        return false;
+    public UUID getUserUniqueId() {
+        return userUniqueId;
+    }
+
+    public DiscordRankType getRankType() {
+        return rankType;
+    }
+
+    public Action getAction() {
+        return action;
     }
 
     @Override
     public void read() {
         // NOOP, must be handled by Hoenheim
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
+
+    protected boolean canEqual(Object other) {
+        return other instanceof io.github.beelzebu.matrix.api.messaging.message.DiscordRankUpdateMessage;
     }
 
     public enum DiscordRankType {

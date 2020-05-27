@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,9 +16,7 @@ public class LobbyData {
 
     private static LobbyData instance;
     private final MatrixBukkitBootstrap plugin = MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class);
-    @Getter
     private final FileConfiguration config;
-    @Getter
     private final List<LaunchPad> launchpads;
 
     private LobbyData() {
@@ -45,5 +42,13 @@ public class LobbyData {
         launchp.add(new LaunchPad(loc, vec, true).toString());
         config.set("LaunchPadsCommand", launchp);
         saveConfig();
+    }
+
+    public FileConfiguration getConfig() {
+        return config;
+    }
+
+    public List<LaunchPad> getLaunchpads() {
+        return launchpads;
     }
 }

@@ -1,8 +1,8 @@
 package io.github.beelzebu.matrix.command.staff;
 
-import io.github.beelzebu.coins.api.utils.StringUtils;
 import io.github.beelzebu.matrix.api.Titles;
 import io.github.beelzebu.matrix.api.commands.MatrixCommand;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.listener.ViewDistanceListener;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,8 +35,8 @@ public class FreezeCommand extends MatrixCommand {
                     target.setFlySpeed(0.1f);
                     target.removePotionEffect(PotionEffectType.JUMP);
                     target.setViewDistance(ViewDistanceListener.getViewDistance(target));
-                    target.sendMessage(StringUtils.rep("%prefix% &fFuiste descongelado, puedes volver a jugar :)"));
-                    sender.sendMessage(StringUtils.rep("%prefix% &aUsuario descongelado."));
+                    target.sendMessage(StringUtils.replace("%prefix% &fFuiste descongelado, puedes volver a jugar :)"));
+                    sender.sendMessage(StringUtils.replace("%prefix% &aUsuario descongelado."));
                 } else {
                     FROZEN_PLAYERS.add(target);
                     target.setWalkSpeed(0);
@@ -46,19 +46,20 @@ public class FreezeCommand extends MatrixCommand {
                     target.setViewDistance(2);
                     target.setFallDistance(0);
                     target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999999, -5, false, false));
-                    Titles.sendTitle(target, 20, 200, 30, StringUtils.rep("&6NO TE DESCONECTES"), "");
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999999, -5, false, false));
+                    Titles.sendTitle(target, 20, 200, 30, StringUtils.replace("&6NO TE DESCONECTES"), "");
                     target.sendMessage(api.getString("Essentials.FreezeCommand.Target", target.getLocale()));
                     if (args.length >= 2) {
                         StringBuilder sb = new StringBuilder();
                         for (int i = 1; i < args.length; i++) {
                             sb.append(args[i]).append(" ");
                         }
-                        sender.sendMessage(StringUtils.rep("%prefix% &6" + sb.toString()));
+                        sender.sendMessage(StringUtils.replace("%prefix% &6" + sb.toString()));
                     }
-                    sender.sendMessage(StringUtils.rep("%prefix% &aUsuario congelado."));
+                    sender.sendMessage(StringUtils.replace("%prefix% &aUsuario congelado."));
                 }
             } else {
-                sender.sendMessage(StringUtils.rep("%prefix% &cEste jugador no está conectado."));
+                sender.sendMessage(StringUtils.replace("%prefix% &cEste jugador no está conectado."));
             }
         });
     }

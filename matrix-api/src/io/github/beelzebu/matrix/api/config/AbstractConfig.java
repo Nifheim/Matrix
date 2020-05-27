@@ -4,15 +4,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import lombok.AllArgsConstructor;
 
 /**
  * @author Beelzebu
  */
-@AllArgsConstructor
 public abstract class AbstractConfig {
 
     protected final File file;
+
+    public AbstractConfig(File file) {
+        this.file = file;
+    }
 
     public Object get(String path, Object def) {
         return get(path) != null ? get(path) : def;

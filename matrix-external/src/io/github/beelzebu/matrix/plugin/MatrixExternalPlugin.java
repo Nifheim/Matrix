@@ -10,18 +10,20 @@ import java.io.InputStream;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.chat.BaseComponent;
 
 /**
  * @author Beelzebu
  */
-@RequiredArgsConstructor
 public class MatrixExternalPlugin implements MatrixPlugin {
 
     private final Main main;
     private final ExternalConfig config = new ExternalConfig(main, main.getConfigFile());
     private final ExecutorService executor = Executors.newFixedThreadPool(4);
+
+    public MatrixExternalPlugin(Main main) {
+        this.main = main;
+    }
 
     @Override
     public void log(String message) {

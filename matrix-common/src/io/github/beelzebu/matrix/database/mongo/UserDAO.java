@@ -1,5 +1,6 @@
 package io.github.beelzebu.matrix.database.mongo;
 
+import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,16 +13,15 @@ import org.mongodb.morphia.dao.BasicDAO;
  */
 public class UserDAO extends BasicDAO<MongoMatrixPlayer, ObjectId> {
 
-    public UserDAO(Datastore ds) {
-        super(MongoMatrixPlayer.class, ds);
-        MongoMatrixPlayer.loadFields();
+    public UserDAO(Class<MongoMatrixPlayer> mpClass, Datastore ds) {
+        super(mpClass, ds);
     }
 
-    public MongoMatrixPlayer getPlayer(UUID uniqueId) {
+    public MatrixPlayer getPlayer(UUID uniqueId) {
         return findOne("uniqueId", uniqueId);
     }
 
-    public MongoMatrixPlayer getPlayer(String name) {
+    public MatrixPlayer getPlayer(String name) {
         return Optional.ofNullable(findOne("name", name)).orElse(findOne("lowercaseName", name.toLowerCase()));
     }
 }

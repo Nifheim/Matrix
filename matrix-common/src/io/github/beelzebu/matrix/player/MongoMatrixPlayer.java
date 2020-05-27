@@ -1,13 +1,14 @@
 package io.github.beelzebu.matrix.player;
 
 import com.google.common.collect.ImmutableSet;
+import io.github.beelzebu.matrix.MatrixAPIImpl;
 import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.player.PlayerOptionType;
 import io.github.beelzebu.matrix.api.server.GameType;
 import io.github.beelzebu.matrix.api.util.StringUtils;
-import io.github.beelzebu.matrix.database.MongoStorage;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -18,14 +19,11 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
@@ -38,19 +36,15 @@ import redis.clients.jedis.Pipeline;
 /**
  * @author Beelzebu
  */
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity(value = "players", noClassnameStored = true)
 public class MongoMatrixPlayer implements MatrixPlayer {
 
     private static final transient Map<String, Field> FIELDS = new HashMap<>();
     @Id
     protected ObjectId id;
-    @NonNull
     @Indexed(options = @IndexOptions(unique = true))
     protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
-    @NonNull
     protected String name;
     @Indexed
     protected String lowercaseName;
@@ -83,61 +77,46 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected Map<GameType, Long> playTimeByGame = new HashMap<>();
     protected Map<GameType, Long> playedGamesMap = new HashMap<>();
 
-    public MongoMatrixPlayer(@NonNull UUID uniqueId, @NonNull String name) {
+    static {
+        Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).peek(field -> field.setAccessible(true)).forEach(field -> FIELDS.put(field.getName(), field));
+    }
+
+    public MongoMatrixPlayer(UUID uniqueId, String name) {
+        this();
         this.uniqueId = uniqueId;
         this.name = name;
         Matrix.getAPI().getCache().update(name, uniqueId);
         registration = new Date();
     }
 
+    private MongoMatrixPlayer() {
+        Optional<MatrixAPI> apiOptional = Matrix.getAPISafe();
+        apiOptional.ifPresent(matrixAPI -> matrixAPI.getPlayers().add(this));
+    }
+
     public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
         MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer();
-        FIELDS.forEach((id, field) -> {
+        for (Map.Entry<String, Field> ent : FIELDS.entrySet()) {
+            String id = ent.getKey();
+            Field field = ent.getValue();
             try {
-                if (Objects.equals(id, "name") && hash.get(id) == null || Objects.equals(id, "uniqueId") && hash.get(id) == null) {
-                    throw new NullPointerException(id + " can't be null");
+                if (Objects.equals(id, "name") || Objects.equals(id, "uniqueId")) {
+                    Objects.requireNonNull(hash.get(id), id + " can't be null");
                 }
                 if (hash.get(id) != null) {
                     Object value = Matrix.GSON.fromJson(hash.get(id), field.getGenericType());
                     if (value != null) {
                         field.set(mongoMatrixPlayer, value);
                     }
+                } else {
+                    field.set(id, null);
                 }
-            } catch (IllegalAccessException e) {
+            } catch (IllegalAccessException | NullPointerException e) {
                 e.printStackTrace();
+                return null;
             }
-        });
+        }
         return mongoMatrixPlayer;
-    }
-
-    public static void loadFields() {
-        if (FIELDS.isEmpty()) {
-            Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).peek(field -> field.setAccessible(true)).forEach(field -> FIELDS.put(field.getName(), field));
-        }
-    }
-
-    @Override
-    public void setUniqueId(@NonNull UUID uniqueId) {
-        if (Objects.equals(this.uniqueId, uniqueId)) {
-            return;
-        }
-        this.uniqueId = uniqueId;
-        Matrix.getAPI().getCache().update(name, uniqueId);
-        updateCached("uniqueId");
-    }
-
-    @Override
-    public void setName(@NonNull String name) {
-        if (Objects.equals(this.name, name)) {
-            return;
-        }
-        this.name = name;
-        lowercaseName = name;
-        knownNames.add(name);
-        Matrix.getAPI().getCache().update(name, uniqueId);
-        updateCached("name");
-        updateCached("lowercaseName");
-        updateCached("knownNames");
     }
 
     @Override
@@ -176,113 +155,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setPremium(boolean premium) {
-        if (this.premium == premium) {
-            return;
-        }
-        this.premium = premium;
-        updateCached("premium");
-    }
-
-    @Override
-    public void setRegistered(boolean registered) {
-        if (this.registered == registered) {
-            return;
-        }
-        this.registered = registered;
-        updateCached("registered");
-    }
-
-    @Override
-    public void setAdmin(boolean admin) {
-        if (this.admin == admin) {
-            return;
-        }
-        this.admin = admin;
-        updateCached("admin");
-    }
-
-    @Override
-    public void setSecret(String secret) {
-        if (Objects.equals(this.secret, secret)) {
-            return;
-        }
-        this.secret = secret;
-        updateCached("secret");
-    }
-
-    @Override
-    public void setHashedPassword(String hashedPassword) {
-        if (Objects.equals(this.hashedPassword, hashedPassword)) {
-            return;
-        }
-        this.hashedPassword = hashedPassword;
-        updateCached("hashedPassword");
-    }
-
-    @Override
-    public void setLoggedIn(boolean loggedIn) {
-        if (this.loggedIn == loggedIn) {
-            return;
-        }
-        this.loggedIn = loggedIn;
-        updateCached("loggedIn");
-    }
-
-    @Override
-    public void setChatColor(ChatColor chatColor) {
-        if (Objects.equals(this.chatColor, chatColor)) {
-            return;
-        }
-        this.chatColor = chatColor;
-        updateCached("chatColor");
-    }
-
-    @Override
-    public void setLastLocale(Locale lastLocale) {
-        if (Objects.isNull(lastLocale)) {
-            return;
-        }
-        setLastLocale(lastLocale.getISO3Language());
-    }
-
-    @Override
-    public void setLastLocale(String lastLocale) {
-        if (Objects.equals(this.lastLocale, lastLocale)) {
-            return;
-        }
-        this.lastLocale = lastLocale;
-        updateCached("lastLocale");
-    }
-
-    @Override
-    public void setStaffChannel(String staffChannel) {
-        if (Objects.equals(this.staffChannel, staffChannel)) {
-            return;
-        }
-        this.staffChannel = staffChannel;
-        updateCached("staffChannel");
-    }
-
-    @Override
-    public void setWatcher(boolean watcher) {
-        if (this.watcher == watcher) {
-            return;
-        }
-        this.watcher = watcher;
-        updateCached("watcher");
-    }
-
-    @Override
-    public void setExp(long exp) {
-        if (this.exp == exp) {
-            return;
-        }
-        this.exp = exp;
-        updateCached("exp");
-    }
-
-    @Override
     public boolean getOption(PlayerOptionType option) {
         return options.contains(option);
     }
@@ -300,35 +172,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setIP(String IP) {
-        if (Objects.equals(this.IP, IP)) {
-            return;
-        }
-        this.IP = IP;
-        ipHistory.add(IP);
-        updateCached("IP");
-        updateCached("ipHistory");
-    }
-
-    @Override
-    public void setLastLogin(Date lastLogin) {
-        if (Objects.equals(this.lastLogin, lastLogin)) {
-            return;
-        }
-        this.lastLogin = lastLogin;
-        updateCached("lastLogin");
-    }
-
-    @Override
-    public void setDiscordId(@Nonnull String discordId) {
-        if (Objects.equals(this.discordId, discordId)) {
-            return;
-        }
-        this.discordId = discordId;
-        updateCached("discordId");
-    }
-
-    @Override
     public void incrCensoringLevel() {
         censoringLevel++;
         updateCached("censoringLevel");
@@ -338,12 +181,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     public void incrSpammingLevel() {
         spammingLevel++;
         updateCached("spammingLevel");
-    }
-
-    @Override
-    public void setVanished(boolean vanished) {
-        this.vanished = vanished;
-        updateCached("vanished");
     }
 
     @Override
@@ -358,15 +195,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         }
         gameModeByGame.put(gameType, gameMode);
         updateCached("gameModeByGame");
-    }
-
-    @Override
-    public void setLastGameType(GameType lastGameType) {
-        if (Objects.equals(this.lastGameType, lastGameType)) {
-            return;
-        }
-        this.lastGameType = lastGameType;
-        updateCached("lastGameType");
     }
 
     @Override
@@ -434,7 +262,8 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         if (getDisplayName() == null) {
             setDisplayName(getName());
         }
-        ((MongoStorage) Matrix.getAPI().getDatabase()).getUserDAO().save((MongoMatrixPlayer) Matrix.getAPI().getCache().getPlayer(getUniqueId()).orElse(this));
+        MatrixAPIImpl api = (MatrixAPIImpl) Matrix.getAPI();
+        api.getDatabase().getUserDAO().save((MongoMatrixPlayer) api.getCache().getPlayer(getUniqueId()).orElse(this));
         return this;
     }
 
@@ -501,11 +330,304 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
+    public ObjectId getId() {
+        return id;
+    }
+
+
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
+    @Override
+    public void setUniqueId(UUID uniqueId) {
+        if (Objects.equals(this.uniqueId, uniqueId)) {
+            return;
+        }
+        this.uniqueId = uniqueId;
+        Matrix.getAPI().getCache().update(name, uniqueId);
+        updateCached("uniqueId");
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        if (Objects.equals(this.name, name)) {
+            return;
+        }
+        this.name = name;
+        lowercaseName = name;
+        knownNames.add(name);
+        Matrix.getAPI().getCache().update(name, uniqueId);
+        updateCached("name");
+        updateCached("lowercaseName");
+        updateCached("knownNames");
+    }
+
+    public Set<String> getKnownNames() {
+        return knownNames;
+    }
+
+    public boolean isPremium() {
+        return premium;
+    }
+
+    @Override
+    public void setPremium(boolean premium) {
+        if (this.premium == premium) {
+            return;
+        }
+        this.premium = premium;
+        updateCached("premium");
+    }
+
+    public boolean isRegistered() {
+        return registered;
+    }
+
+    @Override
+    public void setRegistered(boolean registered) {
+        if (this.registered == registered) {
+            return;
+        }
+        this.registered = registered;
+        updateCached("registered");
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    @Override
+    public void setAdmin(boolean admin) {
+        if (this.admin == admin) {
+            return;
+        }
+        this.admin = admin;
+        updateCached("admin");
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    @Override
+    public void setSecret(String secret) {
+        if (Objects.equals(this.secret, secret)) {
+            return;
+        }
+        this.secret = secret;
+        updateCached("secret");
+    }
+
+    public String getHashedPassword() {
+        return hashedPassword;
+    }
+
+    @Override
+    public void setHashedPassword(String hashedPassword) {
+        if (Objects.equals(this.hashedPassword, hashedPassword)) {
+            return;
+        }
+        this.hashedPassword = hashedPassword;
+        updateCached("hashedPassword");
+    }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
+    @Override
+    public void setLoggedIn(boolean loggedIn) {
+        if (this.loggedIn == loggedIn) {
+            return;
+        }
+        this.loggedIn = loggedIn;
+        updateCached("loggedIn");
+    }
+
+    public ChatColor getChatColor() {
+        return chatColor;
+    }
+
+    @Override
+    public void setChatColor(ChatColor chatColor) {
+        if (Objects.equals(this.chatColor, chatColor)) {
+            return;
+        }
+        this.chatColor = chatColor;
+        updateCached("chatColor");
+    }
+
+    public String getLastLocale() {
+        return lastLocale;
+    }
+
+    @Override
+    public void setLastLocale(Locale lastLocale) {
+        if (Objects.isNull(lastLocale)) {
+            return;
+        }
+        setLastLocale(lastLocale.getISO3Language());
+    }
+
+    @Override
+    public void setLastLocale(String lastLocale) {
+        if (Objects.equals(this.lastLocale, lastLocale)) {
+            return;
+        }
+        this.lastLocale = lastLocale;
+        updateCached("lastLocale");
+    }
+
+    public String getStaffChannel() {
+        return staffChannel;
+    }
+
+    @Override
+    public void setStaffChannel(String staffChannel) {
+        if (Objects.equals(this.staffChannel, staffChannel)) {
+            return;
+        }
+        this.staffChannel = staffChannel;
+        updateCached("staffChannel");
+    }
+
+    public boolean isWatcher() {
+        return watcher;
+    }
+
+    @Override
+    public void setWatcher(boolean watcher) {
+        if (this.watcher == watcher) {
+            return;
+        }
+        this.watcher = watcher;
+        updateCached("watcher");
+    }
+
+    public long getExp() {
+        return exp;
+    }
+
+    @Override
+    public void setExp(long exp) {
+        if (this.exp == exp) {
+            return;
+        }
+        this.exp = exp;
+        updateCached("exp");
+    }
+
+    public Set<PlayerOptionType> getOptions() {
+        return options;
+    }
+
+    public String getIP() {
+        return IP;
+    }
+
+    @Override
+    public void setIP(String IP) {
+        if (Objects.equals(this.IP, IP)) {
+            return;
+        }
+        this.IP = IP;
+        ipHistory.add(IP);
+        updateCached("IP");
+        updateCached("ipHistory");
+    }
+
+    public Set<String> getIpHistory() {
+        return ipHistory;
+    }
+
+    public Date getLastLogin() {
+        return lastLogin;
+    }
+
+    @Override
+    public void setLastLogin(Date lastLogin) {
+        if (Objects.equals(this.lastLogin, lastLogin)) {
+            return;
+        }
+        this.lastLogin = lastLogin;
+        updateCached("lastLogin");
+    }
+
+    public Date getRegistration() {
+        return registration;
+    }
+
     public void setRegistration(Date registration) {
         if (Objects.equals(this.registration, registration)) {
             return;
         }
         this.registration = registration;
         updateCached("registration");
+    }
+
+    public String getDiscordId() {
+        return discordId;
+    }
+
+    @Override
+    public void setDiscordId(@Nonnull String discordId) {
+        if (Objects.equals(this.discordId, discordId)) {
+            return;
+        }
+        this.discordId = discordId;
+        updateCached("discordId");
+    }
+
+    public int getCensoringLevel() {
+        return censoringLevel;
+    }
+
+    public int getSpammingLevel() {
+        return spammingLevel;
+    }
+
+    public boolean isVanished() {
+        return vanished;
+    }
+
+    @Override
+    public void setVanished(boolean vanished) {
+        this.vanished = vanished;
+        updateCached("vanished");
+    }
+
+    public Map<GameType, GameMode> getGameModeByGame() {
+        return gameModeByGame;
+    }
+
+    public GameType getLastGameType() {
+        return lastGameType;
+    }
+
+    @Override
+    public void setLastGameType(GameType lastGameType) {
+        if (Objects.equals(this.lastGameType, lastGameType)) {
+            return;
+        }
+        this.lastGameType = lastGameType;
+        updateCached("lastGameType");
+    }
+
+    public Map<GameType, Long> getTotalPlayTimeByGame() {
+        return totalPlayTimeByGame;
+    }
+
+    public Map<GameType, Long> getPlayTimeByGame() {
+        return playTimeByGame;
+    }
+
+    public Map<GameType, Long> getPlayedGamesMap() {
+        return playedGamesMap;
     }
 }

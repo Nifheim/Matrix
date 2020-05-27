@@ -1,15 +1,11 @@
 package io.github.beelzebu.matrix.api.messaging.message;
 
-import io.github.beelzebu.coins.api.utils.StringUtils;
+import io.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.UUID;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 
 /**
  * @author Beelzebu
  */
-@Getter
-@EqualsAndHashCode(callSuper = true)
 public class TargetedMessage extends RedisMessage {
 
     private final UUID target;
@@ -21,17 +17,29 @@ public class TargetedMessage extends RedisMessage {
         this.message = message;
     }
 
-    @Override
-    protected boolean onlyExternal() {
-        return false;
+    public UUID getTarget() {
+        return target;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     @Override
     public void read() {
         if (api.isBungee()) {
             if (api.getPlugin().isOnline(getTarget(), true)) {
-                api.getPlugin().sendMessage(getTarget(), StringUtils.rep(getMessage()));
+                api.getPlugin().sendMessage(getTarget(), StringUtils.replace(getMessage()));
             }
         }
+    }
+
+    @Override
+    protected boolean onlyExternal() {
+        return false;
+    }
+
+    protected boolean canEqual(Object other) {
+        return other instanceof io.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
     }
 }

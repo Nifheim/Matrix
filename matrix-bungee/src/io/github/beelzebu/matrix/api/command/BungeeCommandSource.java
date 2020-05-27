@@ -1,7 +1,6 @@
 package io.github.beelzebu.matrix.api.command;
 
 import io.github.beelzebu.matrix.api.util.StringUtils;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -9,10 +8,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 /**
  * @author Beelzebu
  */
-@RequiredArgsConstructor
 public class BungeeCommandSource implements CommandSource {
 
     private final CommandSender sender;
+
+    public BungeeCommandSource(CommandSender sender) {
+        this.sender = sender;
+    }
 
     @Override
     public String getName() {

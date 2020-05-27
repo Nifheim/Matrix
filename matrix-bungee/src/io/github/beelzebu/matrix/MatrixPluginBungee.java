@@ -1,6 +1,5 @@
 package io.github.beelzebu.matrix;
 
-import com.imaginarycode.minecraft.redisbungee.RedisBungee;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.command.BungeeCommandSource;
 import io.github.beelzebu.matrix.api.command.CommandSource;
@@ -15,19 +14,20 @@ import java.io.InputStream;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import lombok.Data;
-import lombok.NonNull;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-@Data
 public class MatrixPluginBungee implements MatrixPlugin {
 
     private final MatrixBungeeBootstrap bootstrap;
     private final CommandSource console = new BungeeCommandSource(ProxyServer.getInstance().getConsole());
+
+    public MatrixPluginBungee(MatrixBungeeBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
+    }
 
     @Override
     public MatrixConfig getConfig() {
@@ -101,21 +101,33 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public boolean isOnline(@NonNull String name, boolean here) {
+    public boolean isOnline(String name, boolean here) {
+        try {
+            return ProxyServer.getInstance().getPlayer(name) != null;
+
+        } catch (Exception e) {
+            return false;
+        }/*
         if (!here) {
             return RedisBungee.getApi().isPlayerOnline(RedisBungee.getApi().getUuidFromName(name));
         } else {
             return ProxyServer.getInstance().getPlayer(name) != null;
-        }
+        }*/
     }
 
     @Override
     public boolean isOnline(UUID uuid, boolean here) {
+        try {
+            return ProxyServer.getInstance().getPlayer(uuid) != null;
+
+        } catch (Exception e) {
+            return false;
+        }/*
         if (!here) {
             return RedisBungee.getApi().isPlayerOnline(uuid);
         } else {
             return ProxyServer.getInstance().getPlayer(uuid) != null;
-        }
+        }*/
     }
 
     @Override
@@ -138,7 +150,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public UUID getUniqueId(String name) {
-        return isOnline(name, false) ? RedisBungee.getApi().getUuidFromName(name) : null;
+        return ProxyServer.getInstance().getPlayer(name).getUniqueId() /*isOnline(name, false) ? RedisBungee.getApi().getUuidFromName(name) : null*/;
     }
 
     @Override
@@ -171,5 +183,17 @@ public class MatrixPluginBungee implements MatrixPlugin {
         if (proxiedPlayer != null && proxiedPlayer.isConnected()) {
             ProxyServer.getInstance().getPluginManager().dispatchCommand(proxiedPlayer, command);
         }
+    }
+
+    public MatrixBungeeBootstrap getBootstrap() {
+        return bootstrap;
+    }
+
+    public String toString() {
+        return "MatrixPluginBungee(bootstrap=" + bootstrap + ", console=" + getConsole() + ")";
+    }
+
+    protected boolean canEqual(Object other) {
+        return other instanceof io.github.beelzebu.matrix.MatrixPluginBungee;
     }
 }

@@ -1,21 +1,13 @@
 package io.github.beelzebu.matrix.manager;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.gmail.filoghost.holographicdisplays.api.line.ItemLine;
-import de.slikey.effectlib.Effect;
-import de.slikey.effectlib.EffectManager;
-import de.slikey.effectlib.effect.WarpEffect;
 import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import io.github.beelzebu.matrix.api.server.powerup.Powerup;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
@@ -26,22 +18,22 @@ public class PowerupManager {
 
     private static PowerupManager instance;
     private final MatrixBukkitBootstrap plugin;
-    @Getter
     private final Set<Powerup> powerups = new HashSet<>();
 
     private PowerupManager(MatrixBukkitBootstrap matrixBukkitBootstrap) {
         plugin = matrixBukkitBootstrap;
-        LobbyData.getInstance().getConfig().getStringList("Powerups").forEach(powerup -> powerups.add(Powerup.fromString(powerup, new WarpEffect(new EffectManager(plugin)))));
+        LobbyData.getInstance().getConfig().getStringList("Powerups").forEach(powerup -> powerups.add(Powerup.fromString(powerup)));
     }
 
     public static PowerupManager getInstance() {
         return instance == null ? instance = new PowerupManager(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class)) : instance;
     }
 
-    public void spawnPowerup(Location loc, String title, ItemStack item, Effect effect, PotionEffect potionEffect, int chance) {
+    public void spawnPowerup(Location loc, String title, ItemStack item, PotionEffect potionEffect, int chance) {
         if (new Random().nextInt(100) > chance) {
             return;
         }
+        /*
         Hologram holo = HologramsAPI.createHologram(plugin, loc);
         holo.getVisibilityManager().setVisibleByDefault(true);
         holo.appendTextLine(title);
@@ -54,12 +46,13 @@ public class PowerupManager {
             effect.start();
             holo.delete();
         });
+         */
     }
 
     public synchronized void spawnPowerup(Powerup powerup) {
         if (new Random().nextInt(100) > powerup.getChance()) {
             return;
-        }
+        }/*
         Hologram holo = HologramsAPI.createHologram(plugin, powerup.getLocation());
         holo.getVisibilityManager().setVisibleByDefault(true);
         holo.appendTextLine(powerup.getTitle());
@@ -73,6 +66,11 @@ public class PowerupManager {
             holo.delete();
             powerups.add(powerup);
         });
+        */
         Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> powerups.remove(powerup), 60);
+    }
+
+    public Set<Powerup> getPowerups() {
+        return powerups;
     }
 }

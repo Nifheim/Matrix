@@ -1,13 +1,6 @@
 package io.github.beelzebu.matrix.listener;
 
-import com.vexsoftware.votifier.model.Vote;
-import com.vexsoftware.votifier.model.VotifierEvent;
 import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import io.github.beelzebu.matrix.util.ReadURL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class VotifierListener implements Listener {
@@ -17,7 +10,7 @@ public class VotifierListener implements Listener {
     public VotifierListener(MatrixBukkitBootstrap matrixBukkitBootstrap) {
         plugin = matrixBukkitBootstrap;
     }
-
+/*
     @EventHandler
     public void onVotifier(VotifierEvent e) {
         Vote vote = e.getVote();
@@ -31,4 +24,5 @@ public class VotifierListener implements Listener {
             });
         }
     }
+ */
 }
