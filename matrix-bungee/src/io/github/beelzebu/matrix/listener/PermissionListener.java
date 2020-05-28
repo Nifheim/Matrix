@@ -3,8 +3,8 @@ package io.github.beelzebu.matrix.listener;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.util.UUID;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.event.user.UserDataRecalculateEvent;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.event.user.UserDataRecalculateEvent;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -14,11 +14,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class PermissionListener {
 
     public PermissionListener() {
-        LuckPerms.getApi().getEventBus().subscribe(UserDataRecalculateEvent.class, this::onRecalculate);
+        LuckPermsProvider.get().getEventBus().subscribe(UserDataRecalculateEvent.class, this::onRecalculate);
     }
 
     private void onRecalculate(UserDataRecalculateEvent e) {
-        UUID uniqueId = e.getUser().getUuid();
+        UUID uniqueId = e.getUser().getUniqueId();
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uniqueId);
         if (proxiedPlayer == null) {
             return;

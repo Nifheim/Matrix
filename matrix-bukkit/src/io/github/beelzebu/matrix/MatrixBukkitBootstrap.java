@@ -38,6 +38,7 @@ import io.github.beelzebu.matrix.listener.VanishListener;
 import io.github.beelzebu.matrix.listener.ViewDistanceListener;
 import io.github.beelzebu.matrix.listener.VotifierListener;
 import io.github.beelzebu.matrix.util.CompatUtil;
+import io.github.beelzebu.matrix.util.PluginsUtility;
 import io.github.beelzebu.matrix.util.ReadURL;
 import io.github.beelzebu.matrix.util.bungee.BungeeCleanupTask;
 import io.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
@@ -59,6 +60,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     private boolean chatMuted = false;
     private BukkitConfiguration configuration;
     private MatrixPluginBukkit matrixPlugin;
+    private PluginsUtility pluginsUtility;
 
     @Override
     public void onLoad() {
@@ -131,7 +133,10 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new PluginsCommand());
         CommandAPI.registerCommand(this, new VanishCommand());
 
+        pluginsUtility = new PluginsUtility();
+
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            pluginsUtility.checkForPluginsToRemove();
             Bukkit.getOperators().forEach(op -> op.setOp(false)); // remove operators
             Stream.of(BanList.Type.values()).map(Bukkit::getBanList).forEach(banList -> banList.getBanEntries().forEach(banEntry -> banEntry.setExpiration(new Date()))); // expire vanilla bans
             Bukkit.getOnlinePlayers().forEach(p -> {

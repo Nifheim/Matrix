@@ -4,10 +4,8 @@ import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import java.util.concurrent.ExecutionException;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.Contexts;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,18 +25,6 @@ public class ViewDistanceListener implements Listener {
 
     public static int getViewDistance(Player p) {
         if (Matrix.getAPI().getServerInfo().getServerType() == ServerType.SURVIVAL) {
-            LuckPermsApi luckPermsApi = LuckPerms.getApi();
-            try {
-                luckPermsApi.getStorage().loadUser(p.getUniqueId()).get();
-                User user = luckPermsApi.getUser(p.getUniqueId());
-                if (user != null) {
-                    if (user.getCachedData().getMetaData(Contexts.global()).getMeta().containsKey("view-distance")) {
-                        return 32;
-                    }
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
             if (p.hasPermission("matrix.mod")) {
                 return 10;
             } else if (p.hasPermission("matrix.vip5")) {

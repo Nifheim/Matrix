@@ -1,6 +1,12 @@
 package io.github.beelzebu.matrix.listener;
 
+import com.vexsoftware.votifier.model.Vote;
+import com.vexsoftware.votifier.model.VotifierEvent;
 import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import io.github.beelzebu.matrix.api.Matrix;
+import io.github.beelzebu.matrix.util.ReadURL;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class VotifierListener implements Listener {
@@ -10,7 +16,7 @@ public class VotifierListener implements Listener {
     public VotifierListener(MatrixBukkitBootstrap matrixBukkitBootstrap) {
         plugin = matrixBukkitBootstrap;
     }
-/*
+
     @EventHandler
     public void onVotifier(VotifierEvent e) {
         Vote vote = e.getVote();
@@ -19,10 +25,9 @@ public class VotifierListener implements Listener {
                 try {
                     ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + vote.getUsername() + "&clave=" + plugin.getConfig().getString("clave"));
                 } catch (Exception ex) {
-                    Logger.getLogger(VotifierListener.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", vote.getUsername());
+                    Matrix.getLogger().info("Can't send the vote for " + vote.getUsername());
                 }
             });
         }
     }
- */
 }

@@ -16,7 +16,7 @@ subprojects {
         }
 
         maven {
-            url = 'http://repo.maven.apache.org/maven2'
+            url = 'https://repo.maven.apache.org/maven2'
         }
 
         maven {
@@ -64,15 +64,15 @@ subprojects {
         }
 
         maven {
-            url 'https://dl.bintray.com/ichbinjoe/public/'
+            url = 'https://dl.bintray.com/ichbinjoe/public/'
         }
     }
 
     dependencies {
-        compileOnly 'me.lucko.luckperms:luckperms-api:4.0'
+        compileOnly 'net.luckperms:api:5.1'
         compileOnly 'com.github.beelzebu:coins3-api:3.0'
         compileOnly 'net.md-5:bungeecord-chat:1.15-SNAPSHOT'
-        compileOnly 'redis.clients:jedis:3.0.0'
+        compileOnly 'redis.clients:jedis:3.3.0'
         compileOnly 'com.google.code.gson:gson:2.8.5'
         compileOnly 'com.google.guava:guava:27.0.1-jre'
     }
