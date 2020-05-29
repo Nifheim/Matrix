@@ -13,7 +13,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -74,7 +73,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerSwitch(ServerSwitchEvent e) {
         if (e.getPlayer().isConnected()) {
-            e.getPlayer().setTabHeader(MatrixBungeeBootstrap.TAB_HEADER, MatrixBungeeBootstrap.TAB_FOOTER);
+            //e.getPlayer().setTabHeader(MatrixBungeeBootstrap.TAB_HEADER, MatrixBungeeBootstrap.TAB_FOOTER);
         }
     }
 
@@ -101,7 +100,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = -128)
     public void onConnect(ServerConnectEvent e) {
         if (e.getReason() == ServerConnectEvent.Reason.JOIN_PROXY && e.getPlayer().getPendingConnection().isOnlineMode()) {
-            e.setTarget(ProxyServer.getInstance().getServerInfo("lobby#1"));
+            //    e.setTarget(ProxyServer.getInstance().getServerInfo("lobby#1"));
         }
     }
 

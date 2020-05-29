@@ -22,9 +22,9 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 public class CacheProviderImpl implements CacheProvider {
 
-    public static final String UUID_KEY_PREFIX = "uuid:";
-    public static final String NAME_KEY_PREFIX = "name:";
-    public static final String USER_KEY_PREFIX = "user:";
+    public static final String UUID_KEY_PREFIX = "matrixuuid:";
+    public static final String NAME_KEY_PREFIX = "matrixname:";
+    public static final String USER_KEY_PREFIX = "matrixuser:";
 
     @Override
     public Optional<UUID> getUniqueId(String name) {

@@ -60,7 +60,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected String lastLocale;
     protected String staffChannel;
     protected boolean watcher;
-    protected long exp;
     protected Set<PlayerOptionType> options = new HashSet<>();
     @Indexed
     protected String IP;
@@ -111,7 +110,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
                 } else {
                     field.set(id, null);
                 }
-            } catch (IllegalAccessException | NullPointerException e) {
+            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
                 e.printStackTrace();
                 return null;
             }
@@ -508,19 +507,6 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         }
         this.watcher = watcher;
         updateCached("watcher");
-    }
-
-    public long getExp() {
-        return exp;
-    }
-
-    @Override
-    public void setExp(long exp) {
-        if (this.exp == exp) {
-            return;
-        }
-        this.exp = exp;
-        updateCached("exp");
     }
 
     public Set<PlayerOptionType> getOptions() {

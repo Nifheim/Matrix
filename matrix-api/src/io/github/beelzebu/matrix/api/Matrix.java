@@ -9,6 +9,7 @@ import java.util.Optional;
  */
 public final class Matrix {
 
+    public static final String IP = "mc.indiopikaro.cl";
     public static final Gson GSON = new Gson();
     private static final MatrixLogger LOGGER = new MatrixLogger();
 

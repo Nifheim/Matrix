@@ -6,7 +6,6 @@ import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.motd.Motd;
 import io.github.beelzebu.matrix.motd.MotdManager;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,17 +46,25 @@ public class ServerListListener implements Listener {
         e.registerIntent((Plugin) Matrix.getAPI().getPlugin().getBootstrap());
         Matrix.getAPI().getPlugin().runAsync(() -> {
             try {
-                if (e.getConnection().getVirtualHost() != null) {
+                // TODO: rehabilitar
+                /*if (e.getConnection().getVirtualHost() != null) {
                     String host = e.getConnection().getVirtualHost().getHostName();
-                    if (!Objects.equals(host, "mc.nifheim.net")) {
-                        e.getResponse().setDescriptionComponent(new TextComponent("Please join using mc.nifheim.net\nPor favor ingresa usando mc.nifheim.net"));
+                    if (!Objects.equals(host, Matrix.IP)) {
+                        e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
+                        return;
+                    }
+                    int port = e.getConnection().getVirtualHost().getPort();
+                    if (!Objects.equals(port, 25565)) {
+                        e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
                         return;
                     }
                 }
+                 */
                 if (((MatrixBungeeBootstrap) Matrix.getAPI().getPlugin().getBootstrap()).isMaintenance()) {
                     e.getResponse().getVersion().setProtocol(-1);
                     e.getResponse().getVersion().setName("§cEn mantenimiento");
                 }
+                // TODO: optimize
                 // select random motd
                 List<Motd> motds = MotdManager.getMotds().stream().filter(motd -> motd.getCountdown() == null || (motd.getCountdown() != null && !motd.getCountdown().isOver())).collect(Collectors.toList());
                 if (motds.size() > 1 && motds.stream().filter(motd -> motd.getCountdown() != null && !motd.getCountdown().isOver()).count() >= 1) {

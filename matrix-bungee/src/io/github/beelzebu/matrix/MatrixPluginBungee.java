@@ -150,7 +150,12 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public UUID getUniqueId(String name) {
-        return ProxyServer.getInstance().getPlayer(name).getUniqueId() /*isOnline(name, false) ? RedisBungee.getApi().getUuidFromName(name) : null*/;
+        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(name);
+        if (proxiedPlayer != null) {
+            return proxiedPlayer.getUniqueId();
+        }
+        return null;
+        /*isOnline(name, false) ? RedisBungee.getApi().getUuidFromName(name) : null*/
     }
 
     @Override

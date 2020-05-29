@@ -32,7 +32,11 @@ public class RedisMessaging {
         config.setMinIdle(1);
         config.setMaxTotal(101);
         config.setBlockWhenExhausted(true);
-        pool = new JedisPool(config, host, port, 0, password);
+        if (password == null || password.trim().isEmpty()) {
+            pool = new JedisPool(config, host, port, 0);
+        } else {
+            pool = new JedisPool(config, host, port, 0, password);
+        }
         try (Jedis jedis = pool.getResource()) {
             jedis.ping();
         }

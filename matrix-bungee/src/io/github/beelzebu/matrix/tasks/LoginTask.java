@@ -70,7 +70,8 @@ public class LoginTask implements Runnable {
                     player.saveToRedis();
                 }
             }
-            Matrix.getAPI().getPlayers().add(player);
+            // TODO: check
+            //Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);

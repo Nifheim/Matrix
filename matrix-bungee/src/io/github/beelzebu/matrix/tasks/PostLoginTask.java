@@ -41,7 +41,8 @@ public class PostLoginTask implements Runnable {
             } else {
                 new DiscordRankUpdateMessage(player.getUniqueId(), DiscordRankUpdateMessage.DiscordRankType.VIP, DiscordRankUpdateMessage.Action.REMOVE);
             }
-            Matrix.getAPI().getPlayers().add(player);
+            //TODO: check
+            //Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
             Matrix.getLogger().debug(e);

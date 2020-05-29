@@ -3,7 +3,6 @@ package io.github.beelzebu.matrix.tasks;
 import io.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import java.util.Objects;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
@@ -25,15 +24,26 @@ public class PreLoginTask implements Runnable {
     @Override
     public void run() {
         try {
+            // TODO: rehabilitar
+            /*
             String host = event.getConnection().getVirtualHost().getHostName();
-            if (!Objects.equals(host, "mc.nifheim.net")) {
+            if (!Objects.equals(host, Matrix.IP)) {
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("\n" +
-                        "Please join using mc.nifheim.net\n" +
+                        "Please join using " + Matrix.IP + "\n" +
                         "\n" +
-                        "Por favor ingresa usando mc.nifheim.net"));
+                        "Por favor ingresa usando " + Matrix.IP));
                 return;
             }
+            if (!Objects.equals(event.getConnection().getVirtualHost().getPort(), 25565)) {
+                event.setCancelled(true);
+                event.setCancelReason(new TextComponent("\n" +
+                        "Please join using " + Matrix.IP + "\n" +
+                        "\n" +
+                        "Por favor ingresa usando " + Matrix.IP));
+                return;
+            }
+             */
             if (event.getConnection().getName() == null || !event.getConnection().getName().matches("^\\w{3,16}$")) {
                 String goodName = event.getConnection().getName().replaceAll("[^\\w]", "");
                 event.setCancelReason(new TextComponent("\n" +
@@ -45,6 +55,7 @@ public class PreLoginTask implements Runnable {
                 event.setCancelled(true);
                 return;
             }
+            Matrix.getAPI().getCache().update(event.getConnection().getName(), event.getConnection().getUniqueId());
             /**
              * if (LoginListener.isProxy(event.getConnection().getAddress().getAddress().getHostAddress())) {
              Matrix.getAPI().getPlugin().ban(event.getConnection().getAddress().getAddress().getHostAddress());
