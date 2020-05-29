@@ -6,6 +6,7 @@ import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.countdown.Countdown;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import redis.clients.jedis.Jedis;
 
 /**
@@ -13,6 +14,7 @@ import redis.clients.jedis.Jedis;
  */
 public final class MotdManager {
 
+    private static final Random r = new Random();
     private static final List<Motd> MOTDS = new ArrayList<>();
 
     public static void onEnable() {
@@ -31,5 +33,22 @@ public final class MotdManager {
             }
             return Matrix.GSON.fromJson(jedis.get("countdown:" + id), Countdown.class);
         }
+    }
+
+    public static Motd getRandomMotd() {
+        Motd motd = null;
+        for (int i = 0; i < MOTDS.size(); i++) {
+            motd = MOTDS.get(i);
+            if (motd.getCountdown() != null) {
+                if (motd.getCountdown().isOver()) {
+                    motd = null;
+                    continue;
+                }
+            }
+            if (r.nextBoolean() || i == MOTDS.size()) {
+                return motd;
+            }
+        }
+        return motd;
     }
 }

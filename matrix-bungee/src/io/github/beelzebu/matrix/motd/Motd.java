@@ -39,52 +39,8 @@ public class Motd {
         return lines;
     }
 
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof io.github.beelzebu.matrix.motd.Motd)) {
-            return false;
-        }
-        io.github.beelzebu.matrix.motd.Motd other = (io.github.beelzebu.matrix.motd.Motd) o;
-        if (!other.canEqual((java.lang.Object) this)) {
-            return false;
-        }
-        java.lang.Object this$id = id;
-        java.lang.Object other$id = other.id;
-        if (this$id == null ? other$id != null : !this$id.equals(other$id)) {
-            return false;
-        }
-        java.lang.Object this$lines = lines;
-        java.lang.Object other$lines = other.lines;
-        if (this$lines == null ? other$lines != null : !this$lines.equals(other$lines)) {
-            return false;
-        }
-        java.lang.Object this$countdown = getCountdown();
-        java.lang.Object other$countdown = other.getCountdown();
-        if (this$countdown == null ? other$countdown != null : !this$countdown.equals(other$countdown)) {
-            return false;
-        }
-        return true;
-    }
-
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        java.lang.Object $id = id;
-        result = result * PRIME + ($id == null ? 43 : $id.hashCode());
-        java.lang.Object $lines = lines;
-        result = result * PRIME + ($lines == null ? 43 : $lines.hashCode());
-        java.lang.Object $countdown = getCountdown();
-        result = result * PRIME + ($countdown == null ? 43 : $countdown.hashCode());
-        return result;
-    }
-
     public String toString() {
         return "Motd(id=" + id + ", lines=" + lines + ", countdown=" + getCountdown() + ")";
     }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof io.github.beelzebu.matrix.motd.Motd;
-    }
 }

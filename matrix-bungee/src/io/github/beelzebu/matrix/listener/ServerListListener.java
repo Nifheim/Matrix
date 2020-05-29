@@ -5,10 +5,7 @@ import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.util.StringUtils;
 import io.github.beelzebu.matrix.motd.Motd;
 import io.github.beelzebu.matrix.motd.MotdManager;
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
@@ -36,7 +33,6 @@ public class ServerListListener implements Listener {
             "&f Facebook: &awww.facebook.com/NifheimNetwork",
             "&8&m-----------------------------------&f"
     };
-    private final Random r = new Random();
 
     public ServerListListener() {
     }
@@ -64,17 +60,14 @@ public class ServerListListener implements Listener {
                     e.getResponse().getVersion().setProtocol(-1);
                     e.getResponse().getVersion().setName("§cEn mantenimiento");
                 }
-                // TODO: optimize
                 // select random motd
-                List<Motd> motds = MotdManager.getMotds().stream().filter(motd -> motd.getCountdown() == null || (motd.getCountdown() != null && !motd.getCountdown().isOver())).collect(Collectors.toList());
-                if (motds.size() > 1 && motds.stream().filter(motd -> motd.getCountdown() != null && !motd.getCountdown().isOver()).count() >= 1) {
-                    motds = motds.stream().filter(motd -> motd.getCountdown() != null && !motd.getCountdown().isOver()).collect(Collectors.toList());
+                Motd motd = MotdManager.getRandomMotd();
+                if (motd != null) {
+                    String s = motd.getLines().get(0) + "\n" + motd.getLines().get(1);
+                    TextComponent tc = new TextComponent();
+                    Stream.of(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', s).replace("%countdown%", motd.getCountdown() != null ? motd.getCountdown().getCountdown() : ""))).forEach(tc::addExtra);
+                    e.getResponse().setDescriptionComponent(tc);
                 }
-                Motd motd = motds.get(r.nextInt(motds.size()));
-                String s = motd.getLines().get(0) + "\n" + motd.getLines().get(1);
-                TextComponent tc = new TextComponent();
-                Stream.of(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', s).replace("%countdown%", motd.getCountdown() != null ? motd.getCountdown().getCountdown() : ""))).forEach(tc::addExtra);
-                e.getResponse().setDescriptionComponent(tc);
                 // set player hover
                 ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[playerHover.length];
                 for (int i = 0; i < playerHover.length; i++) {
