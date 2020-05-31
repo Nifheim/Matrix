@@ -19,6 +19,7 @@ import io.github.beelzebu.matrix.listener.LanguageListener;
 import io.github.beelzebu.matrix.listener.LoginListener;
 import io.github.beelzebu.matrix.listener.PermissionListener;
 import io.github.beelzebu.matrix.listener.ServerListListener;
+import io.github.beelzebu.matrix.listener.ServerRegisterListener;
 import io.github.beelzebu.matrix.motd.MotdManager;
 import java.io.File;
 import java.io.IOException;
@@ -92,6 +93,8 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
                 api.getCache().removePlayer(matrixPlayer);
             }
         }), 0, 1, TimeUnit.HOURS);
+
+        api.getRedis().registerListener(new ServerRegisterListener());
     }
 
     @Override

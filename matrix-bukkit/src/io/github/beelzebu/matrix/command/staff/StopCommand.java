@@ -17,6 +17,9 @@ public class StopCommand extends MatrixCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (sender instanceof ConsoleCommandSender) {
+            if (Bukkit.getPluginManager().getPlugin("MySQLPlayerDataBridge") != null) {
+                Bukkit.dispatchCommand(sender, "mpdb saveandkick");
+            }
             Bukkit.shutdown();
         }
     }

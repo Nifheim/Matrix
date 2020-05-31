@@ -3,3 +3,4 @@ main: io.github.beelzebu.matrix.MatrixBukkitBootstrap
 version: ${project.version}
 author: Beelzebu
 softdepend: [PlaceholderAPI, Votifier, LuckPerms]
+api-version: 1.15

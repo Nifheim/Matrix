@@ -211,7 +211,7 @@ public interface MatrixPlayer extends CommandSource {
 
         private final int id;
 
-        private GameMode(int id) {
+        GameMode(int id) {
             this.id = id;
         }
 

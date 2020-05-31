@@ -34,7 +34,7 @@ public class FreezeCommand extends MatrixCommand {
                     target.setWalkSpeed(0.2f);
                     target.setFlySpeed(0.1f);
                     target.removePotionEffect(PotionEffectType.JUMP);
-                    target.setViewDistance(ViewDistanceListener.getViewDistance(target));
+                    //target.setViewDistance(ViewDistanceListener.getViewDistance(target));
                     target.sendMessage(StringUtils.replace("%prefix% &fFuiste descongelado, puedes volver a jugar :)"));
                     sender.sendMessage(StringUtils.replace("%prefix% &aUsuario descongelado."));
                 } else {
@@ -43,7 +43,7 @@ public class FreezeCommand extends MatrixCommand {
                     target.setFlySpeed(0);
                     target.setFlying(false);
                     target.setAllowFlight(false);
-                    target.setViewDistance(2);
+                    //target.setViewDistance(2);
                     target.setFallDistance(0);
                     target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999999, -5, false, false));
                     target.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999999, -5, false, false));

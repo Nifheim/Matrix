@@ -1,8 +1,10 @@
 package io.github.beelzebu.matrix;
 
+import com.destroystokyo.paper.PaperConfig;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.commands.CommandAPI;
 import io.github.beelzebu.matrix.api.menus.GUIManager;
+import io.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
 import io.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import io.github.beelzebu.matrix.api.server.ServerType;
 import io.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
@@ -45,14 +47,17 @@ import io.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
 import io.github.beelzebu.matrix.util.placeholders.StatsPlaceholders;
 import java.io.File;
 import java.util.Date;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.spigotmc.SpigotConfig;
 
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
@@ -61,9 +66,19 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     private BukkitConfiguration configuration;
     private MatrixPluginBukkit matrixPlugin;
     private PluginsUtility pluginsUtility;
+    private final String[] localAddresses = {"localhost", "127.0.0.1", "172.20.0.2", "172.20.0.3"};
 
     @Override
     public void onLoad() {
+        if (Bukkit.getIp().isEmpty() || Bukkit.getIp().equals("0.0.0.0")) {
+            getLogger().warning("Server must not run on a public address.");
+            Bukkit.shutdown();
+        }
+        if (!SpigotConfig.bungee) {
+            getLogger().warning("Bungee is disabled in spigot config, forcing it to true.");
+            SpigotConfig.bungee = true;
+        }
+        saveResource("config.yml", false);
         configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
     }
 
@@ -88,6 +103,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 CompatUtil.setInstance((CompatUtil) Class.forName("io.github.beelzebu.matrix.util.CompatUtil12").newInstance());
             } catch (ReflectiveOperationException e2) {
                 e2.printStackTrace();
+                getLogger().warning("Can't find a compat util implementation.");
+                Bukkit.shutdown();
             }
         }
         api.setup();
@@ -135,6 +152,18 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
         pluginsUtility = new PluginsUtility();
 
+        ServerRegisterMessage serverRegisterMessage = null;
+
+        for (String ip : localAddresses) {
+            if (Objects.equals(Bukkit.getIp(), ip)) {
+                serverRegisterMessage = new ServerRegisterMessage(ip, Bukkit.getPort());
+                break;
+            }
+        }
+        if (serverRegisterMessage != null) {
+            serverRegisterMessage.send();
+        }
+
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             pluginsUtility.checkForPluginsToRemove();
             Bukkit.getOperators().forEach(op -> op.setOp(false)); // remove operators
@@ -149,7 +178,16 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         });
         BungeeServerTracker.startTask(5);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BungeeCleanupTask(), 600, 600);
-        if (!api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
+        if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
+            if (PaperConfig.savePlayerData) {
+                getLogger().warning("SavePlayerData is enabled in paper config, forcing it to false.");
+                PaperConfig.savePlayerData = false;
+            }
+            if (PaperConfig.enablePlayerCollisions) {
+                getLogger().warning("EnablePlayerCollisions is enabled in paper config, forcing it to false.");
+                PaperConfig.enablePlayerCollisions = false;
+            }
+        } else {
             Bukkit.getScheduler().runTaskTimer(this, new PowerupSpawnTask(), 0, 1200);
         }
     }
@@ -192,8 +230,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
             // Utils
-            StatsPlaceholders statsPlaceholders = new StatsPlaceholders(this);
-            statsPlaceholders.hook();
+            StatsPlaceholders statsPlaceholders = new StatsPlaceholders();
+            PlaceholderAPI.registerExpansion(statsPlaceholders);
         }
     }
 

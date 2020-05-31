@@ -6,18 +6,14 @@ import io.github.beelzebu.matrix.api.MatrixAPI;
 import io.github.beelzebu.matrix.networkxp.NetworkXP;
 import io.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
 import java.text.DecimalFormat;
-import me.clip.placeholderapi.external.EZPlaceholderHook;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class StatsPlaceholders extends EZPlaceholderHook {
+public class StatsPlaceholders extends PlaceholderExpansion {
 
     private final MatrixAPI api = Matrix.getAPI();
-
-    public StatsPlaceholders(MatrixBukkitBootstrap matrixBukkitBootstrap) {
-        super(matrixBukkitBootstrap, "ncore-stats");
-    }
 
     @Override
     public String onPlaceholderRequest(Player p, String stat) {
@@ -30,7 +26,7 @@ public class StatsPlaceholders extends EZPlaceholderHook {
         if (stat.startsWith("online")) {
             if (stat.matches("^onlineplayers$")) {
                 int online = 0;
-                online = Bukkit.getOnlinePlayers().stream().filter((op) -> (p.canSee(op))).map((_item) -> 1).reduce(online, Integer::sum);
+                online = Bukkit.getOnlinePlayers().stream().filter(p::canSee).map((_item) -> 1).reduce(online, Integer::sum);
                 return String.valueOf(online);
             }
             if (stat.matches("online_.*")) {
@@ -83,5 +79,25 @@ public class StatsPlaceholders extends EZPlaceholderHook {
             }
         }
         return "UNKNOW STATISTIC OR SERVER";
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "matrix";
+    }
+
+    @Override
+    public String getAuthor() {
+        return "Beelzebu";
+    }
+
+    @Override
+    public String getVersion() {
+        return MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class).getDescription().getVersion();
+    }
+
+    @Override
+    public boolean persist() {
+        return true;
     }
 }

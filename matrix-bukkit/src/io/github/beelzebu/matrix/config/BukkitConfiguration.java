@@ -13,6 +13,7 @@ public class BukkitConfiguration extends MatrixConfig {
 
     public BukkitConfiguration(File file) {
         super(file);
+        file.getParentFile().mkdirs();
         if (file.getName().equalsIgnoreCase("config.yml")) {
             config = MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class).getConfig();
         } else {

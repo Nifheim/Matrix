@@ -5,7 +5,6 @@ import io.github.beelzebu.matrix.api.cache.CacheProvider;
 import io.github.beelzebu.matrix.api.config.AbstractConfig;
 import io.github.beelzebu.matrix.api.config.MatrixConfig;
 import io.github.beelzebu.matrix.api.database.MatrixDatabase;
-import io.github.beelzebu.matrix.api.messaging.RedisMessageEvent;
 import io.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import io.github.beelzebu.matrix.api.player.MatrixPlayer;
 import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
@@ -33,7 +32,6 @@ import redis.clients.jedis.exceptions.JedisException;
 public abstract class MatrixAPI {
 
     protected final Map<String, AbstractConfig> messagesMap = new HashMap<>();
-    private final Set<RedisMessageEvent> redisListeners = new HashSet<>();
     private final Set<MatrixPlayer> players = new MatrixPlayerSet<>();
 
     /**
@@ -65,13 +63,6 @@ public abstract class MatrixAPI {
     @Deprecated
     public final String removeColor(String message) {
         return StringUtils.removeColor(message);
-    }
-
-    public final void registerRedisListener(RedisMessageEvent event) {
-        if (redisListeners.contains(event)) {
-            throw new RuntimeException("Listener already registered");
-        }
-        redisListeners.add(event);
     }
 
     public final boolean isBungee() {
@@ -162,10 +153,6 @@ public abstract class MatrixAPI {
 
     public Map<String, AbstractConfig> getMessagesMap() {
         return messagesMap;
-    }
-
-    public Set<RedisMessageEvent> getRedisListeners() {
-        return redisListeners;
     }
 
     public Set<MatrixPlayer> getPlayers() {

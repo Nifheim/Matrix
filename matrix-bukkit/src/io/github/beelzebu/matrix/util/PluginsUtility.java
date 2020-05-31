@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
  */
 public class PluginsUtility {
 
-    private final String[] pluginNames = {"TAB", "ClearLag", "Spartan", "NoCheatPlus"};
+    private final String[] pluginNames = {"TAB", "ClearLag", "Spartan", "NoCheatPlus", "SkinsRestorer", "40ServidoresMC", "IPWhiteList"};
 
     public PluginsUtility() {
 

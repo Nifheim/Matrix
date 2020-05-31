@@ -61,7 +61,10 @@ public abstract class RedisMessage {
                 return Matrix.GSON.fromJson(jsonMessage, TargetedMessage.class);
             case DISCORD_RANK_UPDATE:
                 return Matrix.GSON.fromJson(jsonMessage, DiscordRankUpdateMessage.class);
+            case SERVER_REGISTER:
+                return Matrix.GSON.fromJson(jsonMessage, ServerRegisterMessage.class);
+            default:
+                return null;
         }
-        return null;
     }
 }

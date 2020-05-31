@@ -119,10 +119,17 @@ public class RedisMessaging {
             Matrix.getLogger().debug(message);
             RedisMessage redisMessage = RedisMessage.getFromType(type, message);
             if (redisMessage == null) {
+                Matrix.getLogger().debug("RedisMessage is null.");
                 return;
             }
             redisMessage.read();
-            listeners.stream().filter(redisMessageListener -> redisMessageListener.getType().equals(type)).forEach(redisMessageListener -> redisMessageListener.$$onMessage0$$(RedisMessage.getFromType(type, message)));
+            Matrix.getLogger().debug("Sending message to listeners...");
+            for (RedisMessageListener<?> listener : listeners) {
+                if (listener.getType() == type) {
+                    Matrix.getLogger().debug("Sending to listener: " + listener);
+                    listener.$$onMessage0$$(redisMessage);
+                }
+            }
         }
     }
 }

@@ -10,5 +10,6 @@ public enum RedisMessageType {
     FIELD_UPDATE,
     NAME_UPDATE,
     STAFF_CHAT,
-    TARGETED_MESSAGE
+    TARGETED_MESSAGE,
+    SERVER_REGISTER
 }

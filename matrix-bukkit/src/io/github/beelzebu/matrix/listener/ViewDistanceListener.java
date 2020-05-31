@@ -3,9 +3,6 @@ package io.github.beelzebu.matrix.listener;
 import io.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import io.github.beelzebu.matrix.api.Matrix;
 import io.github.beelzebu.matrix.api.server.ServerType;
-import java.util.concurrent.ExecutionException;
-import net.luckperms.api.LuckPerms;
-import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -46,27 +43,27 @@ public class ViewDistanceListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (e.getPlayer().isOnline()) {
-                e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
+                //e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
             }
         }, 100L);
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        e.getPlayer().setViewDistance(2);
+        //e.getPlayer().setViewDistance(2);
     }
 
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent e) {
         if (e.getTo().getY() <= 40) {
-            e.getPlayer().setViewDistance(4);
+            //e.getPlayer().setViewDistance(4);
         } else {
-            e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
+            //e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
         }
     }
 
     @EventHandler
     public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
-        e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
+        //e.getPlayer().setViewDistance(getViewDistance(e.getPlayer()));
     }
 }

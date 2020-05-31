@@ -46,7 +46,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
     protected UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
     protected String name;
-    @Indexed
+    @Indexed(options = @IndexOptions(unique = true))
     protected String lowercaseName;
     protected Set<String> knownNames = new HashSet<>();
     protected String displayName;
@@ -84,6 +84,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         this();
         this.uniqueId = uniqueId;
         this.name = name;
+        this.lowercaseName = name.toLowerCase();
         Matrix.getAPI().getCache().update(name, uniqueId);
         registration = new Date();
     }
@@ -261,6 +262,9 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         if (getDisplayName() == null) {
             setDisplayName(getName());
         }
+        if (lowercaseName == null) {
+            setName(name);
+        }
         MatrixAPIImpl api = (MatrixAPIImpl) Matrix.getAPI();
         api.getDatabase().getUserDAO().save((MongoMatrixPlayer) api.getCache().getPlayer(getUniqueId()).orElse(this));
         return this;
@@ -359,7 +363,7 @@ public class MongoMatrixPlayer implements MatrixPlayer {
             return;
         }
         this.name = name;
-        lowercaseName = name;
+        lowercaseName = name.toLowerCase();
         knownNames.add(name);
         Matrix.getAPI().getCache().update(name, uniqueId);
         updateCached("name");
