@@ -6,6 +6,7 @@ import com.github.beelzebu.matrix.api.database.SQLDatabase;
 import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
@@ -124,4 +125,6 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     public SQLDatabase getSQLDatabase() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    public abstract SchedulerAdapter getScheduler();
 }

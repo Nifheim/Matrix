@@ -20,12 +20,14 @@ import com.github.beelzebu.matrix.command.staff.ReloadCommand;
 import com.github.beelzebu.matrix.command.staff.StopCommand;
 import com.github.beelzebu.matrix.command.staff.VanishCommand;
 import com.github.beelzebu.matrix.command.user.OptionsCommand;
+import com.github.beelzebu.matrix.command.user.ProfileCommand;
 import com.github.beelzebu.matrix.command.user.SpitCommand;
 import com.github.beelzebu.matrix.command.utils.AddLore;
 import com.github.beelzebu.matrix.command.utils.MatrixManagerCommand;
 import com.github.beelzebu.matrix.command.utils.RemoveLore;
 import com.github.beelzebu.matrix.command.utils.RenameCommand;
 import com.github.beelzebu.matrix.command.utils.SyncCommand;
+import com.github.beelzebu.matrix.config.BukkitConfiguration;
 import com.github.beelzebu.matrix.listener.DupepatchListener;
 import com.github.beelzebu.matrix.listener.GUIListener;
 import com.github.beelzebu.matrix.listener.InternalListener;
@@ -34,21 +36,19 @@ import com.github.beelzebu.matrix.listener.PlayerCommandPreprocessListener;
 import com.github.beelzebu.matrix.listener.PlayerDeathListener;
 import com.github.beelzebu.matrix.listener.PlayerJoinListener;
 import com.github.beelzebu.matrix.listener.PlayerQuitListener;
+import com.github.beelzebu.matrix.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.listener.StatsListener;
 import com.github.beelzebu.matrix.listener.VanishListener;
 import com.github.beelzebu.matrix.listener.ViewDistanceListener;
 import com.github.beelzebu.matrix.listener.VotifierListener;
 import com.github.beelzebu.matrix.listener.lobby.ItemListener;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
+import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.PluginsUtility;
 import com.github.beelzebu.matrix.util.ReadURL;
-import com.github.beelzebu.matrix.util.placeholders.StatsPlaceholders;
-import com.github.beelzebu.matrix.command.user.ProfileCommand;
-import com.github.beelzebu.matrix.config.BukkitConfiguration;
-import com.github.beelzebu.matrix.listener.ServerRequestListener;
-import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.bungee.BungeeCleanupTask;
 import com.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
+import com.github.beelzebu.matrix.util.placeholders.StatsPlaceholders;
 import java.io.File;
 import java.util.Date;
 import java.util.Objects;
@@ -104,7 +104,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     @Override
     public void onEnable() {
-        Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this)));
+        Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this), this));
         try {
             CompatUtil.setInstance((CompatUtil) Class.forName("com.github.beelzebu.matrix.util.CompatUtil15").newInstance());
         } catch (ReflectiveOperationException e) {

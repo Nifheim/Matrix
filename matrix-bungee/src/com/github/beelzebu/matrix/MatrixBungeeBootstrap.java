@@ -5,10 +5,14 @@ import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.channels.Channel;
+import com.github.beelzebu.matrix.command.BasicCommands;
+import com.github.beelzebu.matrix.command.BungeeTPCommand;
 import com.github.beelzebu.matrix.command.CountdownCommand;
+import com.github.beelzebu.matrix.command.HelpOpCommand;
 import com.github.beelzebu.matrix.command.MaintenanceCommand;
 import com.github.beelzebu.matrix.command.MatrixServersCommand;
 import com.github.beelzebu.matrix.command.PlayerInfoCommand;
+import com.github.beelzebu.matrix.command.PluginsCommand;
 import com.github.beelzebu.matrix.command.PremiumCommand;
 import com.github.beelzebu.matrix.command.ReplyCommand;
 import com.github.beelzebu.matrix.config.BungeeConfiguration;
@@ -18,12 +22,8 @@ import com.github.beelzebu.matrix.listener.LoginListener;
 import com.github.beelzebu.matrix.listener.PermissionListener;
 import com.github.beelzebu.matrix.listener.ServerListListener;
 import com.github.beelzebu.matrix.listener.ServerRegisterListener;
-import com.github.beelzebu.matrix.motd.MotdManager;
-import com.github.beelzebu.matrix.command.BasicCommands;
-import com.github.beelzebu.matrix.command.BungeeTPCommand;
-import com.github.beelzebu.matrix.command.HelpOpCommand;
-import com.github.beelzebu.matrix.command.PluginsCommand;
 import com.github.beelzebu.matrix.listener.ServerUnregisterListener;
+import com.github.beelzebu.matrix.motd.MotdManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -59,6 +59,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     public void onLoad() {
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             configFile.getParentFile().mkdirs();
             try {
                 Files.copy(getResourceAsStream("config.yml"), configFile.toPath());
@@ -67,7 +68,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
             }
         }
         config = new BungeeConfiguration(configFile);
-        (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this))).setup();
+        (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this), this)).setup();
         Matrix.setAPI(api);
     }
 
