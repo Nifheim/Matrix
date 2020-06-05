@@ -1,5 +1,5 @@
 allprojects {
-    group = 'io.github.beelzebu'
+    group = 'com.github.beelzebu'
     version = '1.0.0-SNAPSHOT'
 }
 

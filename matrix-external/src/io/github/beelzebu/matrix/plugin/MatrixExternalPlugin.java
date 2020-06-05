@@ -1,9 +1,9 @@
-package io.github.beelzebu.matrix.plugin;
+package com.github.beelzebu.matrix.plugin;
 
-import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.api.config.AbstractConfig;
-import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
-import io.github.beelzebu.matrix.config.ExternalConfig;
+import com.github.beelzebu.matrix.Main;
+import com.github.beelzebu.matrix.api.config.AbstractConfig;
+import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import com.github.beelzebu.matrix.config.ExternalConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

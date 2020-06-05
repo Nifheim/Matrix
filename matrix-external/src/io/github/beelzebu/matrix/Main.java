@@ -1,10 +1,10 @@
-package io.github.beelzebu.matrix;
+package com.github.beelzebu.matrix;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import io.github.beelzebu.matrix.api.Matrix;
-import io.github.beelzebu.matrix.plugin.MatrixExternalPlugin;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.plugin.MatrixExternalPlugin;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

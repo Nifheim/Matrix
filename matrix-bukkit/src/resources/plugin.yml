@@ -1,5 +1,6 @@
 name: Matrix-Bukkit
-main: io.github.beelzebu.matrix.MatrixBukkitBootstrap
-version: ${project.version}
+main: com.github.beelzebu.matrix.MatrixBukkitBootstrap
+description: 'Network management plugin'
+version: ${pluginVersion}
 author: Beelzebu
 softdepend: [PlaceholderAPI, Votifier, LuckPerms]

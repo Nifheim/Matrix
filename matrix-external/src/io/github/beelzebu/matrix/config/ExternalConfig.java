@@ -1,7 +1,7 @@
-package io.github.beelzebu.matrix.config;
+package com.github.beelzebu.matrix.config;
 
-import io.github.beelzebu.matrix.Main;
-import io.github.beelzebu.matrix.api.config.AbstractConfig;
+import com.github.beelzebu.matrix.Main;
+import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import java.io.File;
 import java.util.Collection;
 
