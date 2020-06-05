@@ -78,59 +78,8 @@ public class Channel {
         return color;
     }
 
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof Channel)) {
-            return false;
-        }
-        Channel other = (Channel) o;
-        if (!other.canEqual((java.lang.Object) this)) {
-            return false;
-        }
-        java.lang.Object this$name = name;
-        java.lang.Object other$name = other.name;
-        if (this$name == null ? other$name != null : !this$name.equals(other$name)) {
-            return false;
-        }
-        java.lang.Object this$command = command;
-        java.lang.Object other$command = other.command;
-        if (this$command == null ? other$command != null : !this$command.equals(other$command)) {
-            return false;
-        }
-        java.lang.Object this$permission = permission;
-        java.lang.Object other$permission = other.permission;
-        if (this$permission == null ? other$permission != null : !this$permission.equals(other$permission)) {
-            return false;
-        }
-        java.lang.Object this$color = color;
-        java.lang.Object other$color = other.color;
-        if (this$color == null ? other$color != null : !this$color.equals(other$color)) {
-            return false;
-        }
-        return true;
-    }
-
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        java.lang.Object $name = name;
-        result = result * PRIME + ($name == null ? 43 : $name.hashCode());
-        java.lang.Object $command = command;
-        result = result * PRIME + ($command == null ? 43 : $command.hashCode());
-        java.lang.Object $permission = permission;
-        result = result * PRIME + ($permission == null ? 43 : $permission.hashCode());
-        java.lang.Object $color = color;
-        result = result * PRIME + ($color == null ? 43 : $color.hashCode());
-        return result;
-    }
-
     public String toString() {
         return "Channel(name=" + name + ", command=" + command + ", permission=" + permission + ", color=" + color + ")";
     }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof Channel;
-    }
 }

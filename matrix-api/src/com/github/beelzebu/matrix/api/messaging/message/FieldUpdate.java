@@ -30,50 +30,6 @@ public class FieldUpdate extends RedisMessage {
         return jsonValue;
     }
 
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof FieldUpdate)) {
-            return false;
-        }
-        FieldUpdate other = (FieldUpdate) o;
-        if (!other.canEqual((java.lang.Object) this)) {
-            return false;
-        }
-        if (!super.equals(o)) {
-            return false;
-        }
-        java.lang.Object this$player = getPlayer();
-        java.lang.Object other$player = other.getPlayer();
-        if (this$player == null ? other$player != null : !this$player.equals(other$player)) {
-            return false;
-        }
-        java.lang.Object this$field = getField();
-        java.lang.Object other$field = other.getField();
-        if (this$field == null ? other$field != null : !this$field.equals(other$field)) {
-            return false;
-        }
-        java.lang.Object this$jsonValue = getJsonValue();
-        java.lang.Object other$jsonValue = other.getJsonValue();
-        if (this$jsonValue == null ? other$jsonValue != null : !this$jsonValue.equals(other$jsonValue)) {
-            return false;
-        }
-        return true;
-    }
-
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = super.hashCode();
-        java.lang.Object $player = getPlayer();
-        result = result * PRIME + ($player == null ? 43 : $player.hashCode());
-        java.lang.Object $field = getField();
-        result = result * PRIME + ($field == null ? 43 : $field.hashCode());
-        java.lang.Object $jsonValue = getJsonValue();
-        result = result * PRIME + ($jsonValue == null ? 43 : $jsonValue.hashCode());
-        return result;
-    }
-
     @Override
     public void read() {
         if (api.getPlugin().isOnline(getPlayer(), true)) {
@@ -86,7 +42,4 @@ public class FieldUpdate extends RedisMessage {
         return true;
     }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof FieldUpdate;
-    }
 }

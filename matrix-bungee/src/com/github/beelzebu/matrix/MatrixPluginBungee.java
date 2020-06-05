@@ -1,14 +1,14 @@
-package io.github.beelzebu.matrix;
+package com.github.beelzebu.matrix;
 
-import io.github.beelzebu.matrix.api.Matrix;
-import io.github.beelzebu.matrix.api.command.BungeeCommandSource;
-import io.github.beelzebu.matrix.api.command.CommandSource;
-import io.github.beelzebu.matrix.api.config.AbstractConfig;
-import io.github.beelzebu.matrix.api.config.MatrixConfig;
-import io.github.beelzebu.matrix.api.player.MatrixPlayer;
-import io.github.beelzebu.matrix.api.plugin.MatrixPlugin;
-import io.github.beelzebu.matrix.api.util.StringUtils;
-import io.github.beelzebu.matrix.config.BungeeConfiguration;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.command.BungeeCommandSource;
+import com.github.beelzebu.matrix.api.command.CommandSource;
+import com.github.beelzebu.matrix.api.config.AbstractConfig;
+import com.github.beelzebu.matrix.api.config.MatrixConfig;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.config.BungeeConfiguration;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Objects;
@@ -131,11 +131,6 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public void callLevelUPEvent(UUID uuid, long newexp, long oldexp) {
-        throw new UnsupportedOperationException("callLevelUPEvent is not finished yet.");
-    }
-
-    @Override
     public String getLocale(UUID uuid) {
         if (ProxyServer.getInstance().getPlayer(uuid) != null) {
             return ProxyServer.getInstance().getPlayer(uuid).getLocale().getLanguage();
@@ -196,9 +191,5 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     public String toString() {
         return "MatrixPluginBungee(bootstrap=" + bootstrap + ", console=" + getConsole() + ")";
-    }
-
-    protected boolean canEqual(Object other) {
-        return other instanceof io.github.beelzebu.matrix.MatrixPluginBungee;
     }
 }

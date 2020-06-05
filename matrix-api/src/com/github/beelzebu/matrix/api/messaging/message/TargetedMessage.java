@@ -39,7 +39,4 @@ public class TargetedMessage extends RedisMessage {
         return false;
     }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof TargetedMessage;
-    }
 }

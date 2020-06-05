@@ -55,57 +55,7 @@ public class MongoReport implements Report {
         this.reason = reason;
     }
 
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof MongoReport)) {
-            return false;
-        }
-        MongoReport other = (MongoReport) o;
-        if (!other.canEqual((java.lang.Object) this)) {
-            return false;
-        }
-        if (id != other.id) {
-            return false;
-        }
-        java.lang.Object this$reporter = reporter;
-        java.lang.Object other$reporter = other.reporter;
-        if (this$reporter == null ? other$reporter != null : !this$reporter.equals(other$reporter)) {
-            return false;
-        }
-        java.lang.Object this$reported = reported;
-        java.lang.Object other$reported = other.reported;
-        if (this$reported == null ? other$reported != null : !this$reported.equals(other$reported)) {
-            return false;
-        }
-        java.lang.Object this$reason = reason;
-        java.lang.Object other$reason = other.reason;
-        if (this$reason == null ? other$reason != null : !this$reason.equals(other$reason)) {
-            return false;
-        }
-        return true;
-    }
-
-    public int hashCode() {
-        final int PRIME = 59;
-        int result = 1;
-        long $id = id;
-        result = result * PRIME + (int) ($id >>> 32 ^ $id);
-        java.lang.Object $reporter = reporter;
-        result = result * PRIME + ($reporter == null ? 43 : $reporter.hashCode());
-        java.lang.Object $reported = reported;
-        result = result * PRIME + ($reported == null ? 43 : $reported.hashCode());
-        java.lang.Object $reason = reason;
-        result = result * PRIME + ($reason == null ? 43 : $reason.hashCode());
-        return result;
-    }
-
     public String toString() {
         return "MongoReport(id=" + id + ", reporter=" + reporter + ", reported=" + reported + ", reason=" + reason + ")";
-    }
-
-    protected boolean canEqual(Object other) {
-        return other instanceof MongoReport;
     }
 }

@@ -40,10 +40,6 @@ public class DiscordRankUpdateMessage extends RedisMessage {
         return false;
     }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof DiscordRankUpdateMessage;
-    }
-
     public enum DiscordRankType {
         VERIFIED,
         VIP,

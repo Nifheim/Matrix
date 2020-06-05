@@ -56,7 +56,4 @@ public class CommandMessage extends RedisMessage {
         return false;
     }
 
-    protected boolean canEqual(Object other) {
-        return other instanceof CommandMessage;
-    }
 }
