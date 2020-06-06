@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.player;
 
-import com.google.common.collect.ImmutableSet;
 import com.github.beelzebu.matrix.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
@@ -9,8 +8,10 @@ import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
+import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.google.common.collect.ImmutableSet;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import net.md_5.bungee.api.ChatColor;
@@ -39,44 +41,44 @@ import redis.clients.jedis.Pipeline;
  * @author Beelzebu
  */
 @Entity(value = "players", noClassnameStored = true)
-public class MongoMatrixPlayer implements MatrixPlayer {
+public final class MongoMatrixPlayer implements MatrixPlayer {
 
     private static final transient Map<String, Field> FIELDS = new HashMap<>();
     @Id
-    protected ObjectId id;
+    private ObjectId id;
     @Indexed(options = @IndexOptions(unique = true))
-    protected UUID uniqueId;
+    private UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
-    protected String name;
+    private String name;
     @Indexed(options = @IndexOptions(unique = true))
-    protected String lowercaseName;
-    protected Set<String> knownNames = new HashSet<>();
-    protected String displayName;
-    protected boolean premium;
-    protected boolean registered;
-    protected boolean admin;
-    protected String secret;
-    protected String hashedPassword;
-    protected boolean loggedIn;
-    protected ChatColor chatColor = ChatColor.RESET;
-    protected String lastLocale;
-    protected String staffChannel;
-    protected boolean watcher;
-    protected Set<PlayerOptionType> options = new HashSet<>();
+    private String lowercaseName;
+    private Set<String> knownNames = new HashSet<>();
+    private String displayName;
+    private boolean premium;
+    private boolean registered;
+    private boolean admin;
+    private String secret;
+    private String hashedPassword;
+    private boolean loggedIn;
+    private ChatColor chatColor = ChatColor.RESET;
+    private String lastLocale;
+    private String staffChannel;
+    private boolean watcher;
+    private Set<PlayerOptionType> options = new HashSet<>();
     @Indexed
-    protected String IP;
-    protected Set<String> ipHistory = new LinkedHashSet<>();
-    protected Date lastLogin;
-    protected Date registration;
-    protected String discordId;
-    protected int censoringLevel;
-    protected int spammingLevel;
-    protected boolean vanished;
-    protected Map<GameType, GameMode> gameModeByGame = new HashMap<>();
-    protected GameType lastGameType;
-    protected Map<GameType, Long> totalPlayTimeByGame = new HashMap<>();
-    protected Map<GameType, Long> playTimeByGame = new HashMap<>();
-    protected Map<GameType, Long> playedGamesMap = new HashMap<>();
+    private String IP;
+    private Set<String> ipHistory = new LinkedHashSet<>();
+    private Date lastLogin;
+    private Date registration;
+    private String discordId;
+    private int censoringLevel;
+    private int spammingLevel;
+    private boolean vanished;
+    private Map<GameType, GameMode> gameModeByGame = new HashMap<>();
+    private GameType lastGameType;
+    private Map<GameType, Long> totalPlayTimeByGame = new HashMap<>();
+    private Map<GameType, Long> playTimeByGame = new HashMap<>();
+    private Map<GameType, Long> playedGamesMap = new HashMap<>();
 
     static {
         Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).peek(field -> field.setAccessible(true)).forEach(field -> FIELDS.put(field.getName(), field));
@@ -336,11 +338,26 @@ public class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
+    @Override
+    public void saveStats(Map<Statistic, Long> stats) {
+        Matrix.getAPI().getSQLDatabase().incrStats(uniqueId, /* using group name here because actual server name may be just an arena server*/Matrix.getAPI().getServerInfo().getGroupName(), stats);
+    }
+
+    @Override
+    public void saveStat(Statistic stat, long value) {
+        Matrix.getAPI().getSQLDatabase().incrStat(uniqueId, Matrix.getAPI().getServerInfo().getGroupName(), stat, value);
+    }
+
+    @Override
+    public Future<Long> getStat(Statistic statistic) {
+        return Matrix.getAPI().getSQLDatabase().getStat(uniqueId, Matrix.getAPI().getServerInfo().getGroupName(), statistic);
+    }
+
     public ObjectId getId() {
         return id;
     }
 
-
+    @Override
     public UUID getUniqueId() {
         return uniqueId;
     }

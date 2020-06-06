@@ -5,8 +5,6 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import com.github.beelzebu.matrix.util.PermsUtils;
-import com.github.beelzebu.matrix.util.ReadURL;
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
@@ -14,6 +12,8 @@ import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.util.PermsUtils;
+import com.github.beelzebu.matrix.util.ReadURL;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.lang.reflect.InvocationTargetException;
@@ -52,11 +52,10 @@ public class PlayerJoinListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onLogin(AsyncPlayerPreLoginEvent e) {
-        // TODO: database log
-        // mysql log?
         MatrixPlayer matrixPlayer = api.getPlayer(e.getUniqueId());
         if (matrixPlayer == null) { // si el usuario aún no existe en la base de datos es porque no ha entrado por el proxy
             e.disallow(Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
+            api.getSQLDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(1)", e.getName(), e.getAddress().getHostAddress()));
             return;
         }
         if (!matrixPlayer.isLoggedIn() && !api.getServerInfo().getGroupName().equals("auth")) {
@@ -65,10 +64,12 @@ public class PlayerJoinListener implements Listener {
                 return;
             }
             e.disallow(Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
+            api.getSQLDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(2)", e.getName(), e.getAddress().getHostAddress()));
             return;
         }
         if (!api.getPlayer(e.getName()).getUniqueId().equals(e.getUniqueId())) {
             e.disallow(Result.KICK_OTHER, "Tu UUID no coincide con la UUID que hay en nuestra base de datos\ntus datos fueron registrados por seguridad.");
+            api.getSQLDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(3)", e.getName(), e.getAddress().getHostAddress()));
         }
     }
 
@@ -79,6 +80,7 @@ public class PlayerJoinListener implements Listener {
         if (premiumPlayer.contains(player.getUniqueId())) {
             premiumPlayer.remove(player.getUniqueId());
             player.kickPlayer("Se ha detectado un acceso no autorizado.");
+            api.getSQLDatabase().addFailedLogin(player.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on PlayerJoinEvent", player.getName(), player.getAddress().getAddress().getHostAddress()));
             return;
         }
         ServerType type = api.getServerInfo().getServerType();

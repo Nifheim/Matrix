@@ -32,39 +32,6 @@ Essentials:
   Freeze:
     Usage: '%prefix% &7Please use &c"/freeze <player> (message)"&7.'
     Target: '%prefix%&c&l Hey!&7 You where frozen by an staff member, &4&lDON''T DISCONNECT&7.'
-NetworkXP:
-  Help:
-    User:
-    - '&8&m+-------------------------------------------------+'
-    - '%prefix% Avaliable commands:'
-    - ' '
-    - ' &a/matrix xp ? &f- &7Show this help message.'
-    - ' &a/matrix xp get [player] &f- &7Shows the levels of the player.'
-    - '&8&m+-------------------------------------------------+'
-    Admin:
-    - '&8&m+-------------------------------------------------+'
-    - '%prefix% Avaliable commands:'
-    - ' '
-    - ' &a/matrix xp ? &f- &7Show this help message.'
-    - ' &a/matrix xp add [player] &f- &7Add levels to the player.'
-    - '&8&m+-------------------------------------------------+'
-  LevelUP:
-  - '&6&m-----------------------------------------------'
-  - ''
-  - '&7¡Congratulations &c%player%&7 you''ve level up!'
-  - '&7Your new level is: %level%'
-  - '&7You need &e%next%&7 xp points to reach the next level.'
-  - ''
-  - '&6&m-----------------------------------------------'
-  Get:
-    Self: '%prefix% You have &a%level% &7xp levels and need &a%xp% &7points for reach the next level.'
-    Target: '%prefix% &a%player% &7has &a%level% &7xp levels and need &a%xp% &7points for reach the next level.'
-    No Target: '%prefix% &a%player% &7isn''t online.'
-  Add:
-    Help:
-    - '%prefix% &cPlease use &7/matrix xp add [player] [ammount](L)'
-    Sender: '%prefix% &7You added &a%level% &7level(s) and &a%xp%&7 xp point(s) to &a%player%&7!'
-    Target: '%prefix% &7You received &a%level% &7level(s) and &a%xp%&7 xp point(s)'
 Death Titles:
   Title: '&cYou''re dead! :('
   Subtitle: ''
@@ -93,7 +60,7 @@ Options:
     Lore:
     - ''
     - '&7Click to enable/disable'
-    - '&your speed.'
+    - '&7your speed.'
     - ''
     - '&7&oCurrently: %status%'
   Chat:

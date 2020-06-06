@@ -1,9 +1,9 @@
 Database:
-  Host: 172.20.0.3
-  Password: jaime1xd2
+  Host: '172.20.0.3'
+  Password: ''
 
 Redis:
-  Host: 172.20.0.2
+  Host: '172.20.0.2'
   Port: 6379
   Password: ''
 
@@ -12,6 +12,14 @@ server-info:
   name: 'bungee1'
   game-type: 'none'
   server-type: 'proxy'
+
+mysql:
+  host: '172.20.0.2'
+  port: 3306
+  database: 'matrix'
+  user: 'plugins'
+  password: ''
+  pool: 12
 
 # Enabling this means that the plugin will send debug messages to the console.
 Debug: true

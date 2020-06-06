@@ -13,6 +13,7 @@ import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.github.beelzebu.matrix.database.MongoStorage;
+import com.github.beelzebu.matrix.database.MySQLStorage;
 import com.github.beelzebu.matrix.util.FileManager;
 import java.io.File;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     private final RedisMessaging redis;
     private final CacheProviderImpl cache;
     private final ServerInfo serverInfo;
+    private final MySQLStorage mySQLStorage;
 
     public MatrixAPIImpl(MatrixPlugin plugin) {
         this.plugin = plugin;
@@ -42,6 +44,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
                 GameType.valueOf(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase())
         );
+        mySQLStorage = new MySQLStorage(plugin, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
         Stream.of(Objects.requireNonNull(plugin.getDataFolder().listFiles())).filter(file -> file.getName().startsWith("messages")).forEach(file -> messagesMap.put((file.getName().split("_").length == 2 ? file.getName().split("_")[1] : "default").split(".yml")[0], plugin.getFileAsConfig(file)));
         Matrix.getLogger().init(this);
     }
@@ -123,8 +126,10 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     @Override
     public SQLDatabase getSQLDatabase() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return mySQLStorage;
     }
 
-    public abstract SchedulerAdapter getScheduler();
+    public final SchedulerAdapter getScheduler() {
+        return plugin.getBootstrap().getScheduler();
+    }
 }

@@ -8,6 +8,7 @@ import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
+import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
 import com.github.beelzebu.matrix.command.staff.CommandWatcherCommand;
@@ -43,6 +44,7 @@ import com.github.beelzebu.matrix.listener.ViewDistanceListener;
 import com.github.beelzebu.matrix.listener.VotifierListener;
 import com.github.beelzebu.matrix.listener.lobby.ItemListener;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
+import com.github.beelzebu.matrix.scheduler.BukkitSchedulerAdapter;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.PluginsUtility;
 import com.github.beelzebu.matrix.util.ReadURL;
@@ -75,6 +77,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     private MatrixPluginBukkit matrixPlugin;
     private PluginsUtility pluginsUtility;
     private ServerRegisterMessage serverRegisterMessage;
+    private BukkitSchedulerAdapter scheduler;
 
     @Override
     public void onLoad() {
@@ -104,7 +107,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     @Override
     public void onEnable() {
-        Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this), this));
+        Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this)));
         try {
             CompatUtil.setInstance((CompatUtil) Class.forName("com.github.beelzebu.matrix.util.CompatUtil15").newInstance());
         } catch (ReflectiveOperationException e) {
@@ -117,6 +120,9 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             }
         }
         api.setup();
+
+        scheduler = new BukkitSchedulerAdapter(this);
+
         if (Objects.equals(api.getServerInfo().getServerName(), "lobby")) {
             getLogger().warning("Invalid server name in config, lobby servers must be enumerated.");
             Bukkit.shutdown();
@@ -247,6 +253,11 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     public BukkitConfiguration getConfiguration() {
         return configuration;
+    }
+
+    @Override
+    public SchedulerAdapter getScheduler() {
+        return scheduler;
     }
 
     public MatrixPluginBukkit getMatrixPlugin() {

@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
+import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.channels.Channel;
 import com.github.beelzebu.matrix.command.BasicCommands;
 import com.github.beelzebu.matrix.command.BungeeTPCommand;
@@ -24,6 +25,7 @@ import com.github.beelzebu.matrix.listener.ServerListListener;
 import com.github.beelzebu.matrix.listener.ServerRegisterListener;
 import com.github.beelzebu.matrix.listener.ServerUnregisterListener;
 import com.github.beelzebu.matrix.motd.MotdManager;
+import com.github.beelzebu.matrix.scheduler.BungeeSchedulerAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,6 +52,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     private MatrixPluginBungee matrixPlugin;
     private BungeeConfiguration config;
     private boolean maintenance;
+    private BungeeSchedulerAdapter scheduler;
 
     public static Channel getChannelFor(MatrixPlayer player) {
         return CHANNELS.get(player.getStaffChannel());
@@ -68,7 +71,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
             }
         }
         config = new BungeeConfiguration(configFile);
-        (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this), this)).setup();
+        (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this))).setup();
         Matrix.setAPI(api);
     }
 
@@ -106,6 +109,8 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         api.getMessaging().registerListener(new ServerRegisterListener());
         api.getMessaging().registerListener(new ServerUnregisterListener());
         new ServerRequestMessage().send();
+
+        scheduler = new BungeeSchedulerAdapter(this);
     }
 
     @Override
@@ -145,6 +150,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     public void setApi(MatrixAPIImpl api) {
         this.api = api;
+    }
+
+    @Override
+    public SchedulerAdapter getScheduler() {
+        return scheduler;
     }
 
     public MatrixPluginBungee getMatrixPlugin() {

@@ -36,9 +36,11 @@ public class PremiumCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
+            // TODO: deny for logged out users
+            // use translatable message
+            MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(sender.getName());
             if (players.containsKey(sender.getName())) {
-                MatrixPlayer mp = Matrix.getAPI().getPlayer(sender.getName());
-                mp.setPremium(true);
+                matrixPlayer.setPremium(true);
                 players.remove(sender.getName());
             } else {
                 players.put(sender.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5));

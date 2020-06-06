@@ -73,8 +73,6 @@ public class LoginTask implements Runnable {
                     player.saveToRedis();
                 }
             }
-            // TODO: check
-            //Matrix.getAPI().getPlayers().add(player);
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);

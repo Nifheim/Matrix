@@ -6,8 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -59,23 +57,6 @@ public class FileManager {
     }
 
     public void updateMessages() {
-        try {
-            List<String> lines = Files.readAllLines(messagesFile.toPath());
-            int index;
-            if (lines.contains("ChatControl:")) {
-                index = lines.indexOf("ChatControl:");
-                lines.set(index, "Chat:");
-            }
-            Files.write(messagesFile.toPath(), lines);
-            lines = Files.readAllLines(messages_esFile.toPath());
-            if (lines.contains("ChatControl:")) {
-                index = lines.indexOf("ChatControl:");
-                lines.set(index, "Chat:");
-            }
-            Files.write(messages_esFile.toPath(), lines);
-        } catch (IOException ex) {
-            Logger.getLogger(FileManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public File getMessagesFile() {

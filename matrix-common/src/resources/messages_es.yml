@@ -1,6 +1,6 @@
 version: 10
 
-ChatControl:
+Chat:
   GlobalMute:
     Mute: '%prefix% &eEl chat fue silenciado!'
     Unmute: '%prefix% &eYa puedes hablar nuevamente.'
@@ -25,41 +25,6 @@ Item Utils:
     Successful: '%prefix% &7El nuevo nombre de este ítem es &r%name%&7.'
   No Item: '%prefix% &c&lLo sentimos! &7Necesitas tener un ítem en tu mano para hacer esto.'
   No Number: '%prefix% &c&lLo sentimos! &6%arg% &7no es un número.'
-NetworkXP:
-  Help:
-    User:
-    - '&8&m+-------------------------------------------------+'
-    - '%prefix% Comandos disponibles:'
-    - '   &8[] &f= &7Obligatorio &8() &f= &7Opcional'
-    - ' '
-    - ' &a/matrix xp ? &f- &7Muestra este mensaje de ayuda.'
-    - ' &a/matrix xp get (player) &f- &7Muestra el nivel de experiencia.'
-    - '&8&m+-------------------------------------------------+'
-    Admin:
-    - '&8&m+-------------------------------------------------+'
-    - '%prefix% Comandos disponibles:'
-    - '   &8[] &f= &7Obligatorio &8() &f= &7Opcional'
-    - ' '
-    - ' &a/matrix xp admin &f- &7Muestra este mensaje de ayuda.'
-    - ' &a/matrix xp add [player] [cantidad](L) &f- &7Añade experiencia al usuario.'
-    - '&8&m+-------------------------------------------------+'
-  LevelUP:
-  - '&6&m-----------------------------------------------'
-  - ''
-  - '&7¡Felicitaciones &c%player%&7 has subido de nivel!'
-  - '&7Tu nuevo nivel es: %level%'
-  - '&7Necesitas &e%next%&7 puntos de xp para subir al siguiente nivel.'
-  - ''
-  - '&6&m-----------------------------------------------'
-  Get:
-    Self: '%prefix% Tu nivel es &a%level% &7y necesitas &a%xp% &7puntos de xp para alcanzar el siguiente nivel.'
-    Target: '%prefix% &a%player% &7tiene &a%level% &7niveles y necesita &a%xp% &7puntos de xp para alcanzar el siguiente nivel.'
-    No Target: '%prefix% &a%player% &7isn''t online.'
-  Add:
-    Help:
-    - '%prefix% &cPlease use &7/matrix xp add [player] [ammount](L)'
-    Sender: '%prefix% &7You added &a%level% &7level(s) and &a%xp%&7 xp point(s) to &a%player%&7!'
-    Target: '%prefix% &7You received &a%level% &7level(s) and &a%xp%&7 xp point(s)'
 Death Titles:
   Title: '&c¡Estás muert@! :('
   Subtitle: ''

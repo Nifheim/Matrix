@@ -13,6 +13,14 @@ server-info:
   game-type: 'none'
   server-type: 'lobby'
 
+mysql:
+  host: '172.20.0.2'
+  port: 3306
+  database: 'matrix'
+  user: 'plugins'
+  password: ''
+  pool: 12
+
 # World used as Lobby in MINIGAME_MULTIARENA
 Lobby World: Lobby
 

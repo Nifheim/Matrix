@@ -6,8 +6,10 @@ import com.github.beelzebu.matrix.api.server.GameType;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
@@ -202,5 +204,12 @@ public interface MatrixPlayer extends CommandSource {
      * @param json  Json value to set to this field.
      */
     void setField(String field, String json);
+
+    void saveStats(Map<Statistic, Long> stats);
+
+    void saveStat(Statistic stat, long value);
+
+    //<T extends Number> Future<T> getStat(Statistic statistic, Class<T> type);
+    Future<Long> getStat(Statistic statistic);
 
 }

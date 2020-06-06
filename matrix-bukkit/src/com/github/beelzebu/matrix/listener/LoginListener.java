@@ -26,7 +26,6 @@ public class LoginListener implements Listener {
         matrixPlayer.setLastGameType(gameType);
         matrixPlayer.addPlayedGame(gameType);
         playTime.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
-        //Matrix.getAPI().getPlayers().add(matrixPlayer);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
