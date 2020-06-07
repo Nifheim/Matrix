@@ -3,6 +3,7 @@ package com.github.beelzebu.matrix.api.player;
 import com.github.beelzebu.coins.api.CoinsAPI;
 import com.github.beelzebu.matrix.api.command.CommandSource;
 import com.github.beelzebu.matrix.api.server.GameType;
+import io.github.beelzebu.networklevels.api.NetworkLevelsAPI;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -124,12 +125,15 @@ public interface MatrixPlayer extends CommandSource {
     void setWatcher(boolean watcher);
 
     default long getExp() {
-        // TODO: use network levels
-        return 0;
+        return NetworkLevelsAPI.getExp(getUniqueId());
     }
 
-    default void setExp(long xp) {
-        // TODO: use network levels
+    default void setExp(int xp) {
+        NetworkLevelsAPI.setExp(getUniqueId(), xp);
+    }
+
+    default int getLevel() {
+        return NetworkLevelsAPI.getLevel(getUniqueId());
     }
 
     Set<PlayerOptionType> getOptions();

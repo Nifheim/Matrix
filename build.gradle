@@ -75,6 +75,7 @@ subprojects {
         compileOnly 'redis.clients:jedis:3.3.0'
         compileOnly 'com.google.code.gson:gson:2.8.5'
         compileOnly 'com.google.guava:guava:27.0.1-jre'
+        compileOnly 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
     }
 
     sourceCompatibility = '1.8'
