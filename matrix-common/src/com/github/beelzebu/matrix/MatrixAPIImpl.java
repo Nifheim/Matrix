@@ -16,9 +16,7 @@ import com.github.beelzebu.matrix.database.MongoStorage;
 import com.github.beelzebu.matrix.database.MySQLStorage;
 import com.github.beelzebu.matrix.util.FileManager;
 import java.io.File;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Stream;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
@@ -45,17 +43,15 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase())
         );
         mySQLStorage = new MySQLStorage(plugin, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
-        Stream.of(Objects.requireNonNull(plugin.getDataFolder().listFiles())).filter(file -> file.getName().startsWith("messages")).forEach(file -> messagesMap.put((file.getName().split("_").length == 2 ? file.getName().split("_")[1] : "default").split(".yml")[0], plugin.getFileAsConfig(file)));
+        messagesMap.put("default", plugin.getFileAsConfig(new File(plugin.getDataFolder(), "messages.yml")));
+        for (File file : plugin.getDataFolder().listFiles()) {
+            if (!file.getName().startsWith("messages_")) {
+                continue;
+            }
+            String locale = file.getName().split("_")[1].replaceFirst("\\.yml", "");
+            messagesMap.put(locale, plugin.getFileAsConfig(file));
+        }
         Matrix.getLogger().init(this);
-    }
-
-    /**
-     * The folder where the matrixPlugin data is stored.
-     *
-     * @return The File representing the folder.
-     */
-    public File getDataFolder() {
-        return plugin.getDataFolder();
     }
 
     public String getName(UUID uniqueId) {
@@ -110,10 +106,14 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     /**
      * Setup this api instance
      */
-    void setup() {
-        FileManager fileManager = new FileManager(this);
-        fileManager.generateFiles();
-        fileManager.updateMessages();
+    protected void setup() {
+        try {
+            FileManager fileManager = new FileManager(plugin);
+            fileManager.generateFiles();
+            fileManager.updateMessages();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         motd();
     }
 

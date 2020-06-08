@@ -1,10 +1,9 @@
 package com.github.beelzebu.matrix.api.plugin;
 
-import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.command.CommandSource;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.config.MatrixConfig;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.command.CommandSource;
 import java.io.File;
 import java.io.InputStream;
 import java.util.UUID;
@@ -40,16 +39,6 @@ public interface MatrixPlugin {
      */
     default void kickPlayer(MatrixPlayer matrixPlayer) {
         kickPlayer(matrixPlayer, "");
-    }
-
-    /**
-     * Envía un mensaje a la consola con el prefijo del log.
-     *
-     * @param message mensaje para enviar.
-     */
-    @Deprecated
-    default void log(String message) {
-        Matrix.getLogger().info(message);
     }
 
     MatrixConfig getConfig();

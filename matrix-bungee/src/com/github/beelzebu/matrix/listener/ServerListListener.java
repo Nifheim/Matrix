@@ -1,14 +1,13 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.motd.Motd;
-import com.github.beelzebu.matrix.motd.MotdManager;
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.motd.Motd;
+import com.github.beelzebu.matrix.motd.MotdManager;
 import java.util.UUID;
-import java.util.stream.Stream;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -52,12 +51,12 @@ public class ServerListListener implements Listener {
                 }
                 // select random motd
                 Motd motd = MotdManager.getRandomMotd();
-                if (motd != null) {
-                    String s = motd.getLines().get(0) + "\n" + motd.getLines().get(1);
-                    TextComponent tc = new TextComponent();
-                    Stream.of(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', s).replace("%countdown%", motd.getCountdown() != null ? motd.getCountdown().getCountdown() : ""))).forEach(tc::addExtra);
-                    e.getResponse().setDescriptionComponent(tc);
+                String s = motd.getLines().get(0) + "\n" + motd.getLines().get(1);
+                TextComponent tc = new TextComponent();
+                for (BaseComponent line : TextComponent.fromLegacyText(StringUtils.replace(s.replace("%countdown%", motd.getCountdown() != null ? motd.getCountdown().getCountdown() : "")))) {
+                    tc.addExtra(line);
                 }
+                e.getResponse().setDescriptionComponent(tc);
                 // set player hover
                 ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[playerHover.length];
                 for (int i = 0; i < playerHover.length; i++) {

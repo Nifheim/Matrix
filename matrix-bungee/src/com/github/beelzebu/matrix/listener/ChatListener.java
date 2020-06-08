@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -270,13 +269,11 @@ public class ChatListener implements Listener {
             if (matcher.find()) {
                 return matcher.group(0);
             }
-            String[] words = Stream.of(message.replace(".", " ").split(" ")).map(this::normalize).toArray(String[]::new);
-            if (words.length > 1) {
-                for (String w : words) {
-                    String cs = checkSpam(path, w);
-                    if (cs != null) {
-                        return cs;
-                    }
+            for (String dotSplit : message.replace(".", " ").split(" ")) {
+                dotSplit = normalize(dotSplit);
+                String cs = checkSpam(path, dotSplit);
+                if (cs != null) {
+                    return cs;
                 }
             }
         }

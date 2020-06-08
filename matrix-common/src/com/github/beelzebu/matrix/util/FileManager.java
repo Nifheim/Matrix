@@ -1,28 +1,29 @@
 package com.github.beelzebu.matrix.util;
 
-import com.github.beelzebu.matrix.MatrixAPIImpl;
+import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileManager {
 
-    private final MatrixAPIImpl core;
+    private final MatrixPlugin plugin;
     private final File messagesFile;
     private final File messages_esFile;
     private final File configFile;
     private final File dataFile;
 
-    public FileManager(MatrixAPIImpl u) {
-        core = u;
-        messagesFile = new File(core.getDataFolder(), "messages.yml");
-        messages_esFile = new File(core.getDataFolder(), "messages_es.yml");
-        configFile = new File(core.getDataFolder(), "config.yml");
-        dataFile = new File(core.getDataFolder(), "data.yml");
+    public FileManager(MatrixPlugin plugin) {
+        this.plugin = Objects.requireNonNull(plugin, "MatrixPlugin can't be null.");
+        messagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        messages_esFile = new File(plugin.getDataFolder(), "messages_es.yml");
+        configFile = new File(plugin.getDataFolder(), "config.yml");
+        dataFile = new File(plugin.getDataFolder(), "data.yml");
     }
 
     public void copy(InputStream in, File file) {
@@ -41,18 +42,18 @@ public class FileManager {
     }
 
     public void generateFiles() {
-        core.getDataFolder().mkdirs();
+        plugin.getDataFolder().mkdirs();
         if (!messagesFile.exists()) {
-            copy(core.getPlugin().getResource("messages.yml"), messagesFile);
+            copy(plugin.getResource("messages.yml"), messagesFile);
         }
         if (!messages_esFile.exists()) {
-            copy(core.getPlugin().getResource("messages_es.yml"), messages_esFile);
+            copy(plugin.getResource("messages_es.yml"), messages_esFile);
         }
         if (!configFile.exists()) {
-            copy(core.getPlugin().getResource("config.yml"), configFile);
+            copy(plugin.getResource("config.yml"), configFile);
         }
         if (!dataFile.exists()) {
-            copy(core.getPlugin().getResource("data.yml"), dataFile);
+            copy(plugin.getResource("data.yml"), dataFile);
         }
     }
 
