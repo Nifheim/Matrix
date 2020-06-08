@@ -36,16 +36,20 @@ public class PremiumCommand extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            // TODO: deny for logged out users
-            // use translatable message
             MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(sender.getName());
+            if (matrixPlayer.isRegistered() && !matrixPlayer.isLoggedIn()) {
+                sender.sendMessage(StringUtils.replace(Matrix.getAPI().getString("Premium.Error.Logged out", matrixPlayer.getLastLocale())));
+                return;
+            }
             if (players.containsKey(sender.getName())) {
                 matrixPlayer.setPremium(true);
                 players.remove(sender.getName());
+                ((ProxiedPlayer) sender).disconnect(StringUtils.replace(Matrix.getAPI().getString("Premium.Kick", matrixPlayer.getLastLocale())));
             } else {
                 players.put(sender.getName(), System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5));
-                sender.sendMessage(StringUtils.replace("&4&lAtención"));
-                sender.sendMessage(StringUtils.replace("&7Este comando borrará todos tus datos ligados a las modalidades, tienes 5 minutos para volver a usarlo y confirmar tu desición."));
+                for (String line : Matrix.getAPI().getMessages(matrixPlayer.getLastLocale()).getStringList("Premium.Warning")) {
+                    sender.sendMessage(StringUtils.replace(line));
+                }
             }
         }
     }

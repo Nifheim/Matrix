@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.command.staff.VanishCommand;
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.command.staff.VanishCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -23,9 +23,9 @@ public class VanishListener implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(matrixBukkitBootstrap, () -> Bukkit.getOnlinePlayers().stream().map(p -> matrixBukkitBootstrap.getApi().getPlayer(p.getUniqueId())).filter(MatrixPlayer::isVanished).forEach(matrixPlayer -> Bukkit.getOnlinePlayers().stream().filter(op -> op.getUniqueId() != matrixPlayer.getUniqueId()).filter(op -> op.canSee(Bukkit.getPlayer(matrixPlayer.getUniqueId()))).forEach(op -> op.hidePlayer(matrixBukkitBootstrap, Bukkit.getPlayer(matrixPlayer.getUniqueId())))), 0, 1);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        checkVanish(event.getPlayer());
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        checkVanish(e.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

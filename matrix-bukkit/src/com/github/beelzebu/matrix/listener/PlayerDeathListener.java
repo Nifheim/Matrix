@@ -25,9 +25,7 @@ public class PlayerDeathListener implements Listener {
         int stay = plugin.getConfig().getInt("Death Titles.Stay", 60);
         Player p = e.getEntity();
         try {
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                p.spigot().respawn();
-            }, 1L);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> p.spigot().respawn(), 1L);
         } catch (Exception ignore) { // Doesn't work in 1.8 or earlier
         }
         Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {

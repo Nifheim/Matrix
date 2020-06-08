@@ -84,7 +84,7 @@ Social:
     - ''
     - ' &4ᐅ&7 Rank: &6%vault_group%'
     - ' &4ᐅ&7 Clan: &6'
-    - ' &4ᐅ&7 Level: &6%ncore-stats_level%'
+    - ' &4ᐅ&7 Level: &6%networklevels_level%'
     - ' &4ᐅ&7 Coins: &6%coins_amount%'
     Items:
       Opciones:
@@ -149,5 +149,50 @@ Social:
     Lore:
     - ''
     - '&4Coming soon...'
+Basic Commands:
+  Twitter:
+  - '&8&m----------------------------------------'
+  - '&7Nos alegra que te intereses en nuestras redes sociales'
+  - '&7puedes visitar nuestro Twitter desde el siguiente enlace:'
+  - ''
+  - '&6https://twitter.com/NifheimNetwork'
+  - ''
+  - '&8&m----------------------------------------'
+  Facebook:
+  - '&8&m----------------------------------------'
+  - '&7Nos alegra que te intereses en nuestras redes sociales'
+  - '&7puedes visitar nuestro Facebook desde el siguiente enlace:'
+  - ''
+  - '&6https://www.facebook.com/NifheimNetwork'
+  - ''
+  - '&8&m----------------------------------------'
+  Instagram:
+  - '&8&m----------------------------------------'
+  - '&7Nos alegra que te intereses en nuestras redes sociales'
+  - '&7puedes visitar nuestro Instagram desde el siguiente enlace:'
+  - ''
+  - '&6https://www.instagram.com/NifheimNetwork'
+  - ''
+  - '&8&m----------------------------------------'
+  Discord:
+  - '&8&m----------------------------------------'
+  - '&7Nos alegra que te intereses en nuestro discord'
+  - '&7puedes unirte con el siguiente enlace:'
+  - ''
+  - '&6https://www.nifheim.net/discord'
+  - ''
+  - '&7Para obtener un código y verificar tu cuenta usa:'
+  - '&e/discord verify'
+  - '&8&m----------------------------------------'
+Premium:
+  Error:
+    Logged out: '&7You must be logged in to use this command.'
+  Warning:
+  - '&c&lWARNING!'
+  - '&7Since this server is &6&lcracked&7, we will need to &c&lerase&7 all your current data to use your mojang information,'
+  - '&7this will allow you to join &ewithout using /login command&7 and change your name in minecraft.net without loosing any data on this server.'
+  Kick: '&7Now we will try to validate your login with Mojang servers, please come back in 10 seconds.'
 No Console: '%prefix% &c&lSorry! &7This command can''t be executed from console :('
 No Permissions: '%prefix% &c&lSorry! &7You don''t have permissions do this :('
+Error:
+  Maintenance: '&cCurrently the server is in maintenance, we''ll be back soon!'

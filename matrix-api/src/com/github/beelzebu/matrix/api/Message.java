@@ -35,7 +35,7 @@ public enum Message {
 
     private final String path, defaults;
 
-    private Message(String path, String defaults) {
+    Message(String path, String defaults) {
         this.path = path;
         this.defaults = defaults;
     }

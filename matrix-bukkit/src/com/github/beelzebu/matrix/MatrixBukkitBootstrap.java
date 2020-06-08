@@ -35,12 +35,9 @@ import com.github.beelzebu.matrix.listener.InternalListener;
 import com.github.beelzebu.matrix.listener.LoginListener;
 import com.github.beelzebu.matrix.listener.PlayerCommandPreprocessListener;
 import com.github.beelzebu.matrix.listener.PlayerDeathListener;
-import com.github.beelzebu.matrix.listener.PlayerJoinListener;
-import com.github.beelzebu.matrix.listener.PlayerQuitListener;
 import com.github.beelzebu.matrix.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.listener.StatsListener;
 import com.github.beelzebu.matrix.listener.VanishListener;
-import com.github.beelzebu.matrix.listener.ViewDistanceListener;
 import com.github.beelzebu.matrix.listener.VotifierListener;
 import com.github.beelzebu.matrix.listener.lobby.ItemListener;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
@@ -139,18 +136,15 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         }
         registerEvents(new PlayerCommandPreprocessListener(this));
         registerEvents(new PlayerDeathListener(this));
-        registerEvents(new PlayerJoinListener(this));
-        registerEvents(new PlayerQuitListener(this));
         if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
             registerEvents(new StatsListener());
-            registerEvents(new ViewDistanceListener(this));
         }
         if (isVotifier()) {
             registerEvents(new VotifierListener(this));
         }
         registerEvents(new VanishListener(this));
-        registerEvents(new LoginListener());
+        registerEvents(new LoginListener(api, this));
         // Register commands
         CommandAPI.registerCommand(this, new CommandWatcherCommand());
         CommandAPI.registerCommand(this, new FreezeCommand());

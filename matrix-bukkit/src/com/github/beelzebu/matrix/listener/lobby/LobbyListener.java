@@ -100,14 +100,14 @@ public class LobbyListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onRain(WeatherChangeEvent e) {
         if (e.toWeatherState()) {
             e.setCancelled(true);
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent e) {
         MatrixPlayer matrixPlayer = api.getPlayer(e.getPlayer().getUniqueId());
         Player player = e.getPlayer();

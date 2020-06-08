@@ -77,7 +77,7 @@ Social:
     - ''
     - ' &4ᐅ&7 Rango: &6%vault_group%'
     - ' &4ᐅ&7 Clan: &6'
-    - ' &4ᐅ&7 Nivel: &6%ncore-stats_level%'
+    - ' &4ᐅ&7 Nivel: &6%networklevels_level%'
     - ' &4ᐅ&7 Coins: &6%coins_amount%'
     Items:
       Opciones:

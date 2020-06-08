@@ -1,17 +1,17 @@
 package com.github.beelzebu.matrix.api;
 
-import com.github.beelzebu.matrix.api.database.MatrixDatabase;
-import com.github.beelzebu.matrix.api.database.SQLDatabase;
-import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
-import com.google.gson.Gson;
 import com.github.beelzebu.matrix.api.cache.CacheProvider;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.config.MatrixConfig;
+import com.github.beelzebu.matrix.api.database.MatrixDatabase;
+import com.github.beelzebu.matrix.api.database.SQLDatabase;
+import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.util.MatrixPlayerSet;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -109,7 +109,7 @@ public abstract class MatrixAPI {
     }
 
     public final String getString(Message message, String lang, String... parameters) {
-        return rep(getMessages(lang).getString(message.getPath(), message.getDefaults()));
+        return StringUtils.replace(getMessages(lang).getString(message.getPath(), message.getDefaults()));
     }
 
     // Logging and debugging
