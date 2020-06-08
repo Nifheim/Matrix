@@ -1,8 +1,11 @@
 package com.github.beelzebu.matrix.command.staff;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 
+/**
+ * @author Beelzebu
+ */
 public class MatrixReloadCommand extends MatrixCommand {
 
     public MatrixReloadCommand() {

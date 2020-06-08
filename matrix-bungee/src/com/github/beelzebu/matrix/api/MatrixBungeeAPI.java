@@ -1,7 +1,8 @@
-package com.github.beelzebu.matrix;
+package com.github.beelzebu.matrix.api;
 
+import com.github.beelzebu.matrix.MatrixAPIImpl;
+import com.github.beelzebu.matrix.MatrixPluginBungee;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import net.md_5.bungee.api.ProxyServer;
 
 /**
@@ -9,7 +10,7 @@ import net.md_5.bungee.api.ProxyServer;
  */
 public class MatrixBungeeAPI extends MatrixAPIImpl {
 
-    MatrixBungeeAPI(MatrixPlugin plugin) {
+    public MatrixBungeeAPI(MatrixPluginBungee plugin) {
         super(plugin);
     }
 

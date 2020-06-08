@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.command.staff;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.stream.Stream;
 import org.bukkit.Bukkit;

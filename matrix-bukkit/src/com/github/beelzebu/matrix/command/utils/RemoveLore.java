@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.command.utils;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.List;
 import org.bukkit.command.CommandSender;
@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * @author Beelzebu
+ */
 public class RemoveLore extends MatrixCommand {
 
     public RemoveLore() {

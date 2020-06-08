@@ -5,7 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
 import com.comphenix.protocol.utility.MinecraftReflection;
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;

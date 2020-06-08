@@ -5,7 +5,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.SkullURL;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
-import com.github.beelzebu.matrix.api.menus.GUIManager;
+import com.github.beelzebu.matrix.api.menu.GUIManager;
 import com.github.beelzebu.matrix.util.placeholders.Placeholders;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.api.menus;
+package com.github.beelzebu.matrix.api.menu;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * @author Beelzebu
+ */
 public class ConfirmGUI extends GUIManager {
 
     private final MatrixAPI api = Matrix.getAPI();

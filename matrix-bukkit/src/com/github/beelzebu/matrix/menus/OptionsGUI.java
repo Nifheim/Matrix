@@ -3,7 +3,7 @@ package com.github.beelzebu.matrix.menus;
 import com.github.beelzebu.matrix.api.ItemBuilder;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.menus.GUIManager;
+import com.github.beelzebu.matrix.api.menu.GUIManager;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.ServerType;

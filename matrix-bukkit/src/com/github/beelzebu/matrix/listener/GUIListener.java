@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.api.menus.GUIManager;
+import com.github.beelzebu.matrix.api.menu.GUIManager;
 import java.util.Map;
 import java.util.UUID;
 import org.bukkit.Material;
@@ -13,6 +13,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+/**
+ * @author Beelzebu
+ */
 public class GUIListener implements Listener {
 
     @EventHandler

@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.api.commands;
+package com.github.beelzebu.matrix.api.command;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -11,6 +11,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 
+/**
+ * @author Beelzebu
+ */
 public class CommandAPI {
 
     private static WeakReference<SimpleCommandMap> simpleCommandMapWeakReference = null;

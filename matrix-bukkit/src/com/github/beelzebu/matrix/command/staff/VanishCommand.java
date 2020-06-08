@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;

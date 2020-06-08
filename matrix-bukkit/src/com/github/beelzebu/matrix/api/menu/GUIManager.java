@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.api.menus;
+package com.github.beelzebu.matrix.api.menu;
 
 import com.github.beelzebu.matrix.api.ItemBuilder;
 import com.github.beelzebu.matrix.api.MatrixAPI;

@@ -1,12 +1,15 @@
 package com.github.beelzebu.matrix.command.utils;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * @author Beelzebu
+ */
 public class RenameCommand extends MatrixCommand {
 
     public RenameCommand() {

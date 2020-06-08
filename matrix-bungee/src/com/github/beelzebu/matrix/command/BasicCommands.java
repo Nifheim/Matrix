@@ -15,6 +15,9 @@ import net.md_5.bungee.api.plugin.Command;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
+/**
+ * @author Beelzebu
+ */
 public class BasicCommands {
 
     private static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

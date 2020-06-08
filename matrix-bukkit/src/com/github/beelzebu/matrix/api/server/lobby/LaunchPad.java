@@ -4,6 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
 
+/**
+ * @author Beelzebu
+ */
 public class LaunchPad {
 
     private final Location location;
@@ -18,15 +21,15 @@ public class LaunchPad {
 
     public static LaunchPad fromString(String launchpad) {
         String[] args = launchpad.split(",");
-        if (args.length == 7) {
-            Location l = new Location(Bukkit.getWorld(args[0]), Double.valueOf(args[1]), Double.valueOf(args[2]), Double.valueOf(args[3]));
-            Vector v = new Vector(Double.valueOf(args[4]), Double.valueOf(args[5]), Double.valueOf(args[6]));
-            boolean e = false;
+        if (args.length == 8) {
+            Location location = new Location(Bukkit.getWorld(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]), Double.parseDouble(args[3]));
+            Vector vector = new Vector(Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]));
+            boolean effect = false;
             try {
-                e = Boolean.valueOf(args[7]);
+                effect = Boolean.parseBoolean(args[7]);
             } catch (Exception ex) {
             }
-            return new LaunchPad(l, v, e);
+            return new LaunchPad(location, vector, effect);
         }
         return null;
     }
@@ -40,7 +43,8 @@ public class LaunchPad {
         launchpad += location.getZ() + ",";
         launchpad += vector.getX() + ",";
         launchpad += vector.getY() + ",";
-        launchpad += vector.getZ();
+        launchpad += vector.getZ() + ",";
+        launchpad += effect;
         return launchpad;
     }
 

@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.command.staff;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.List;
@@ -11,6 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
+/**
+ * @author Beelzebu
+ */
 public class PowerupsCommand extends MatrixCommand {
 
     private final LobbyData data = LobbyData.getInstance();

@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.command.utils;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * @author Beelzebu
+ */
 public class AddLore extends MatrixCommand {
 
     public AddLore() {

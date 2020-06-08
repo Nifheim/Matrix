@@ -1,10 +1,13 @@
 package com.github.beelzebu.matrix.command.user;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.menus.OptionsGUI;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * @author Beelzebu
+ */
 public class OptionsCommand extends MatrixCommand {
 
     public OptionsCommand() {

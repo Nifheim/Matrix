@@ -2,8 +2,9 @@ package com.github.beelzebu.matrix;
 
 import com.destroystokyo.paper.PaperConfig;
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.commands.CommandAPI;
-import com.github.beelzebu.matrix.api.menus.GUIManager;
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
+import com.github.beelzebu.matrix.api.command.CommandAPI;
+import com.github.beelzebu.matrix.api.menu.GUIManager;
 import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
@@ -65,6 +66,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.spigotmc.SpigotConfig;
 
+/**
+ * @author Beelzebu
+ */
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
     private final String[] localAddresses = {"localhost", "127.0.0.1", "172.20.0.2", "172.20.0.3"};

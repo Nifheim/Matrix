@@ -1,7 +1,7 @@
-package com.github.beelzebu.matrix.api.commands;
+package com.github.beelzebu.matrix.api.command;
 
-import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.Message;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * @author Beelzebu
+ */
 public abstract class MatrixCommand extends Command {
 
     protected final MatrixAPI api = Matrix.getAPI();

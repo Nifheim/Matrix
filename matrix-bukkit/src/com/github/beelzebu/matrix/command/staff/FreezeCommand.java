@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.command.staff;
 
 import com.github.beelzebu.matrix.api.Titles;
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+/**
+ * @author Beelzebu
+ */
 public class FreezeCommand extends MatrixCommand {
 
     public static final Set<Player> FROZEN_PLAYERS = new HashSet<>();

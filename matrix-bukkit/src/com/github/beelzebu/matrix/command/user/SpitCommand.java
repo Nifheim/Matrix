@@ -1,10 +1,13 @@
 package com.github.beelzebu.matrix.command.user;
 
-import com.github.beelzebu.matrix.api.commands.MatrixCommand;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LlamaSpit;
 import org.bukkit.entity.Player;
 
+/**
+ * @author Beelzebu
+ */
 public class SpitCommand extends MatrixCommand {
 
     public SpitCommand() {
