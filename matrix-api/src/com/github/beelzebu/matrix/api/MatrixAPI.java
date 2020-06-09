@@ -11,18 +11,12 @@ import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.util.MatrixPlayerSet;
 import com.github.beelzebu.matrix.api.util.StringUtils;
-import com.google.gson.Gson;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import redis.clients.jedis.exceptions.JedisException;
 
 /**
  * TODO: add support for NTNBAN
@@ -41,28 +35,6 @@ public abstract class MatrixAPI {
      */
     public final MatrixConfig getConfig() {
         return getPlugin().getConfig();
-    }
-
-    /**
-     * Add colors to the message and replace default placeholders.
-     *
-     * @param message string to replace color codes and placeholders.
-     * @return message with colors and replaced placeholders.
-     */
-    @Deprecated
-    public final String rep(String message) {
-        return StringUtils.replace(message);
-    }
-
-    /**
-     * Remove colors from a message and "Debug: "
-     *
-     * @param message message to remove colors.
-     * @return a plain message without colors.
-     */
-    @Deprecated
-    public final String removeColor(String message) {
-        return StringUtils.removeColor(message);
     }
 
     public final boolean isBungee() {
@@ -112,62 +84,12 @@ public abstract class MatrixAPI {
         return StringUtils.replace(getMessages(lang).getString(message.getPath(), message.getDefaults()));
     }
 
-    // Logging and debugging
-    @Deprecated
-    public final void log(String message) {
-        Matrix.getLogger().info(rep(message));
-    }
-
-    @Deprecated
-    public final void debug(String message) {
-        Matrix.getLogger().debug(message);
-    }
-
-    @Deprecated
-    public final void debug(SQLException ex) {
-        log("SQLException: ");
-        log("   Database state: " + ex.getSQLState());
-        log("   Error code: " + ex.getErrorCode());
-        log("   Error message: " + ex.getLocalizedMessage());
-        log("   Stacktrace:\n" + getStacktrace(ex));
-    }
-
-    @Deprecated
-    public final void debug(JedisException ex) {
-        log("JedisException: ");
-        log("   Error message: " + ex.getLocalizedMessage());
-        log("   Stacktrace:\n" + getStacktrace(ex));
-    }
-
-    @Deprecated
-    public final void debug(Exception ex) {
-        log(ex.getClass().getName() + ": ");
-        log("   Error message: " + ex.getLocalizedMessage());
-        log("   Stacktrace:\n" + getStacktrace(ex));
-    }
-
-    @Deprecated
-    public Gson getGson() {
-        return Matrix.GSON;
-    }
-
     public Map<String, AbstractConfig> getMessagesMap() {
         return messagesMap;
     }
 
     public Set<MatrixPlayer> getPlayers() {
         return players;
-    }
-
-    @Deprecated
-    private String getStacktrace(Exception ex) {
-        try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
-            ex.printStackTrace(printWriter);
-            return stringWriter.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "Error getting the stacktrace";
     }
 
     public abstract RedisMessaging getMessaging();
