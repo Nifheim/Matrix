@@ -1,9 +1,12 @@
-package com.github.beelzebu.matrix.api.messaging;
+package com.github.beelzebu.matrix.messaging;
 
-import com.google.gson.JsonObject;
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.messaging.Messaging;
+import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessage;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
+import com.github.beelzebu.matrix.util.RedisManager;
+import com.google.gson.JsonObject;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -11,35 +14,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
  * @author Beelzebu
  */
-public class RedisMessaging {
+public class RedisMessaging implements Messaging {
 
-    public static final String MATRIX_CHANNEL = "matrix-messaging";
-    private final JedisPool pool;
-    private final PubSubListener pubSubListener;
     private final Set<UUID> messages = new HashSet<>();
     private final Set<RedisMessageListener<? extends RedisMessage>> listeners = new LinkedHashSet<>();
+    private final RedisManager redisManager;
+    private final PubSubListener pubSubListener;
 
-    public RedisMessaging(String host, int port, String password, Consumer<Runnable> runnableConsumer) {
-        JedisPoolConfig config = new JedisPoolConfig();
-        config.setMinIdle(1);
-        config.setMaxTotal(101);
-        config.setBlockWhenExhausted(true);
-        if (password == null || password.trim().isEmpty()) {
-            pool = new JedisPool(config, host, port, 0);
-        } else {
-            pool = new JedisPool(config, host, port, 0, password);
-        }
-        try (Jedis jedis = pool.getResource()) {
-            jedis.ping();
-        }
+    public RedisMessaging(RedisManager redisManager, Consumer<Runnable> runnableConsumer) {
+        this.redisManager = redisManager;
         runnableConsumer.accept(pubSubListener = new PubSubListener());
     }
 
@@ -54,7 +43,7 @@ public class RedisMessaging {
         Objects.requireNonNull(redisMessage.getUniqueId(), "Can't send a message with null id");
         messages.add(redisMessage.getUniqueId());
         String jsonMessage = Matrix.GSON.toJson(redisMessage);
-        sendMessage(MATRIX_CHANNEL, jsonMessage);
+        sendMessage(RedisManager.MATRIX_CHANNEL, jsonMessage);
         Matrix.getLogger().debug("&7Sent: " + jsonMessage);
     }
 
@@ -63,15 +52,11 @@ public class RedisMessaging {
     }
 
     public void sendMessage(String channel, String message) {
-        try (Jedis jedis = pool.getResource()) {
+        try (Jedis jedis = redisManager.getPool().getResource()) {
             jedis.publish(channel, message);
         } catch (JedisException ex) {
             Matrix.getLogger().debug(ex);
         }
-    }
-
-    public JedisPool getPool() {
-        return pool;
     }
 
     public PubSubListener getPubSubListener() {
@@ -85,10 +70,10 @@ public class RedisMessaging {
         @Override
         public void run() {
             boolean broken = false;
-            try (Jedis jedis = pool.getResource()) {
+            try (Jedis jedis = redisManager.getPool().getResource()) {
                 try {
                     jpsh = new JedisPubSubHandler();
-                    jedis.subscribe(jpsh, MATRIX_CHANNEL);
+                    jedis.subscribe(jpsh, RedisManager.MATRIX_CHANNEL);
                 } catch (Exception e) {
                     Matrix.getLogger().info("PubSub error, attempting to recover.");
                     Matrix.getLogger().debug(e);

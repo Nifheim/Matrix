@@ -3,7 +3,6 @@ package com.github.beelzebu.matrix;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.database.SQLDatabase;
-import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
@@ -14,7 +13,14 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.github.beelzebu.matrix.database.MongoStorage;
 import com.github.beelzebu.matrix.database.MySQLStorage;
+import com.github.beelzebu.matrix.dependency.DependencyManager;
+import com.github.beelzebu.matrix.dependency.DependencyRegistry;
+import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
+import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
+import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.util.FileManager;
+import com.github.beelzebu.matrix.util.MaintenanceManager;
+import com.github.beelzebu.matrix.util.RedisManager;
 import java.io.File;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -26,16 +32,20 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     private final MatrixPlugin plugin;
     private final MongoStorage database;
-    private final RedisMessaging redis;
+    private final RedisMessaging messaging;
     private final CacheProviderImpl cache;
     private final ServerInfo serverInfo;
     private final MySQLStorage mySQLStorage;
+    private final MaintenanceManager maintenanceManager;
 
     public MatrixAPIImpl(MatrixPlugin plugin) {
         this.plugin = plugin;
+        DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
+        dependencyManager.loadInternalDependencies();
         database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
-        redis = new RedisMessaging(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"), runnable -> getPlugin().runAsync(runnable));
-        cache = new CacheProviderImpl(redis.getPool());
+        RedisManager redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
+        messaging = new RedisMessaging(redisManager, plugin::runAsync);
+        cache = new CacheProviderImpl(redisManager);
         serverInfo = new ServerInfo(
                 plugin.getConfig().getString("server-info.group"),
                 plugin.getConfig().getString("server-info.name", plugin.getConfig().getString("Server Table")).replaceAll(" ", ""),
@@ -51,7 +61,8 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
             String locale = file.getName().split("_")[1].replaceFirst("\\.yml", "");
             messagesMap.put(locale, plugin.getFileAsConfig(file));
         }
-        Matrix.getLogger().init(this);
+        Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
+        maintenanceManager = new MaintenanceManager(redisManager);
     }
 
     public String getName(UUID uniqueId) {
@@ -60,6 +71,10 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public UUID getUniqueId(String name) {
         return getPlayer(name).getUniqueId();
+    }
+
+    public MaintenanceManager getMaintenanceManager() {
+        return maintenanceManager;
     }
 
     @Override
@@ -74,7 +89,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     }
 
     public RedisMessaging getMessaging() {
-        return redis;
+        return messaging;
     }
 
     public CacheProviderImpl getCache() {

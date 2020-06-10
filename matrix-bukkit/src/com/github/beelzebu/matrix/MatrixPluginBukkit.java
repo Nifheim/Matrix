@@ -138,7 +138,10 @@ public class MatrixPluginBukkit implements MatrixPlugin {
         Player player = Bukkit.getPlayer(uniqueId);
         if (player != null && player.isOnline()) {
             player.sendMessage(reason);
-            PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
+            if (getConfig().getLobby() != null) {
+                PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
+            }
+            player.kickPlayer(reason);
         } else {
             Matrix.getLogger().debug("Tried to kick " + uniqueId + ", but isn't online.");
         }
@@ -151,7 +154,10 @@ public class MatrixPluginBukkit implements MatrixPlugin {
         Player player = Bukkit.getPlayer(name);
         if (player != null && player.isOnline()) {
             player.sendMessage(reason);
-            PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
+            if (getConfig().getLobby() != null) {
+                PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
+            }
+            player.kickPlayer(reason);
         } else {
             Matrix.getLogger().debug("Tried to kick " + name + ", but isn't online.");
         }

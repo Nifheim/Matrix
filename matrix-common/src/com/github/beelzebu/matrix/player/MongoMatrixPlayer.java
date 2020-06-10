@@ -2,8 +2,6 @@ package com.github.beelzebu.matrix.player;
 
 import com.github.beelzebu.matrix.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
@@ -22,20 +20,16 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.IndexOptions;
 import org.mongodb.morphia.annotations.Indexed;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
 
 /**
  * @author Beelzebu
@@ -43,7 +37,7 @@ import redis.clients.jedis.Pipeline;
 @Entity(value = "players", noClassnameStored = true)
 public final class MongoMatrixPlayer implements MatrixPlayer {
 
-    private static final transient Map<String, Field> FIELDS = new HashMap<>();
+    public static final transient Map<String, Field> FIELDS = new HashMap<>();
     @Id
     private ObjectId id;
     @Indexed(options = @IndexOptions(unique = true))
@@ -94,8 +88,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     private MongoMatrixPlayer() {
-        Optional<MatrixAPI> apiOptional = Matrix.getAPISafe();
-        apiOptional.ifPresent(matrixAPI -> matrixAPI.getPlayers().add(this));
+        Matrix.getAPI().getPlayers().add(this);
     }
 
     public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
@@ -275,54 +268,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return this;
     }
 
-    @Override
     public void updateCached(String field) {
-        if (!Matrix.getAPI().getCache().isCached(getUniqueId())) {
-            return;
-        }
-        if (Objects.equals(field, "name") && getName() == null) {
-            Matrix.getLogger().debug("Trying to save a null name for " + getUniqueId());
-            return;
-        }
-        if (Objects.equals(field, "uniqueId") && getUniqueId() == null) {
-            Matrix.getLogger().debug("Trying to save a null uuid for " + getName());
-            return;
-        }
-        try (Jedis jedis = Matrix.getAPI().getMessaging().getPool().getResource()) {
-            Object value = FIELDS.get(field).get(this);
-            String jsonValue = Matrix.GSON.toJson(value);
-            Matrix.getLogger().debug("Updating " + getName() + " field `" + field + "' with value `" + jsonValue + "'");
-            if (value != null) {
-                jedis.hset(getRedisKey(), field, jsonValue);
-            } else {
-                jedis.hdel(getRedisKey(), field);
-            }
-            new FieldUpdate(getUniqueId(), field, jsonValue).send();
+        try {
+            Matrix.getAPI().getCache().updateCachedField(this, field, MongoMatrixPlayer.FIELDS.get(field).get(this));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void saveToRedis() {
-        Objects.requireNonNull(uniqueId, "UUID can't be null");
-        Objects.requireNonNull(name, "name can't be null");
-        if (Objects.isNull(lowercaseName)) {
-            lowercaseName = getName().toLowerCase();
-        }
-        try (Jedis jedis = Matrix.getAPI().getMessaging().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
-            FIELDS.forEach((id, field) -> {
-                try {
-                    if (field.get(this) != null) {
-                        pipeline.hset(getRedisKey(), id, Matrix.GSON.toJson(field.get(this)));
-                    } else {
-                        pipeline.hdel(getRedisKey(), id);
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            });
-            pipeline.sync();
         }
     }
 
@@ -382,7 +332,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(this.name, name)) {
             return;
         }
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name can't be null.");
         lowercaseName = name.toLowerCase();
         knownNames.add(name);
         Matrix.getAPI().getCache().update(name, uniqueId);
@@ -586,7 +536,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setDiscordId(@Nonnull String discordId) {
+    public void setDiscordId(String discordId) {
         if (Objects.equals(this.discordId, discordId)) {
             return;
         }

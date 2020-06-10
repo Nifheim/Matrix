@@ -1,23 +1,23 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.MatrixAPIImpl;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
 
 public class MaintenanceCommand extends Command {
 
-    private final MatrixBungeeBootstrap plugin;
+    private final MatrixAPIImpl api;
 
-    public MaintenanceCommand(MatrixBungeeBootstrap plugin) {
+    public MaintenanceCommand(MatrixAPIImpl api) {
         super("maintenance", "matrix.admin");
-        this.plugin = plugin;
+        this.api = api;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        boolean status = !plugin.isMaintenance();
+        boolean status = !api.getMaintenanceManager().isMaintenance();
         sender.sendMessage(TextComponent.fromLegacyText("§4§lEl estado de mantenimiento fue cambiado a:§a " + status));
-        plugin.setMaintenance(status);
+        api.getMaintenanceManager().setMaintenance(status);
     }
 }

@@ -54,4 +54,10 @@ public interface CacheProvider {
     void addServer(String group, String[] servers);
 
     void removeServer(String name);
+
+    void updateCachedField(MatrixPlayer matrixPlayer, String field, Object value);
+
+    void saveToCache(MatrixPlayer matrixPlayer);
+
+    void setDiscordVerificationCode(String name, String code);
 }

@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.tasks;
 
-import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import com.github.beelzebu.matrix.util.ErrorCodes;
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
+import com.github.beelzebu.matrix.util.ErrorCodes;
 import java.util.Date;
 import java.util.Objects;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -55,7 +55,7 @@ public class LoginTask implements Runnable {
                     return;
                 }
             }
-            if (plugin.isMaintenance() && !player.isAdmin()) {
+            if (plugin.getApi().getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
                 event.setCancelReason(TextComponent.fromLegacyText(Matrix.getAPI().getString(Message.MAINTENANCE, player.getLastLocale())));
                 return;
@@ -70,7 +70,7 @@ public class LoginTask implements Runnable {
                 }
                 player.setLastLogin(new Date());
                 if (!Matrix.getAPI().getCache().isCached(player.getUniqueId())) {
-                    player.saveToRedis();
+                    plugin.getApi().getCache().saveToCache(player);
                 }
             }
         } catch (Exception e) {

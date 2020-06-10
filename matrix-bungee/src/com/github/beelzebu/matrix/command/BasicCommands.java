@@ -12,8 +12,6 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Pipeline;
 
 /**
  * @author Beelzebu
@@ -83,15 +81,10 @@ public class BasicCommands {
                         }
                     }
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("verify")) {
-                    String key = "discord:";
-                    String random;
-                    try (Jedis jedis = api.getMessaging().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
-                        random = randomAlphaNumeric(6);
-                        pipeline.expire(key + random, 360).setDependency(pipeline.set(key + random, sender.getName()));
-                        pipeline.sync();
-                        sender.sendMessage(StringUtils.replace("&fTu código de verificación es: &a" + random));
-                        sender.sendMessage(StringUtils.replace("&fEl código expira en &a5&f minutos."));
-                    }
+                    String random = randomAlphaNumeric(6);
+                    api.getCache().setDiscordVerificationCode(sender.getName(), random);
+                    sender.sendMessage(StringUtils.replace("&fTu código de verificación es: &a" + random));
+                    sender.sendMessage(StringUtils.replace("&fEl código expira en &a5&f minutos."));
                 }
             }
         });

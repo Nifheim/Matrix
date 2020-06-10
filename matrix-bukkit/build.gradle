@@ -3,14 +3,13 @@ plugins {
 }
 
 dependencies {
-    compile project(':matrix-api')
     compile project(':matrix-common')
-    compile 'redis.clients:jedis:3.3.0'
-    compile 'org.apache.commons:commons-pool2:2.4.2'
-    compile 'org.mongodb:mongo-java-driver:3.7.0'
-    compile 'org.mongodb.morphia:morphia:1.3.2'
-    compile 'commons-codec:commons-codec:1.14'
-    compile 'com.zaxxer:HikariCP:3.4.5'
+    compileOnly 'redis.clients:jedis:3.3.0'
+    compileOnly 'com.github.ben-manes.caffeine:caffeine:2.8.4'
+    compileOnly 'org.apache.commons:commons-pool2:2.6.2'
+    compileOnly 'org.mongodb:mongo-java-driver:3.12.5'
+    compileOnly 'org.mongodb.morphia:morphia:1.3.2'
+    compileOnly 'com.zaxxer:HikariCP:3.4.5'
     compileOnly 'com.destroystokyo.paper:paper-api:1.12.2-R0.1-SNAPSHOT'
     compileOnly 'com.destroystokyo.paper:paper:1.12.2-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.10.6'
@@ -24,9 +23,16 @@ artifacts {
 }
 
 shadowJar {
-    getArchiveBaseName().set('Matrix-Bukkit')
     getArchiveClassifier().set(null)
     getArchiveVersion().set(null)
+
+    relocate 'com.github.benmanes.caffeine', 'com.github.beelzebu.lib.caffeine'
+    relocate 'org.mariadb.jdbc', 'com.github.beelzebu.lib.mariadb'
+    relocate 'com.zaxxer.hikari', 'com.github.beelzebu.lib.hikari'
+    relocate 'com.mongodb', 'com.github.beelzebu.lib.mongodb'
+    relocate 'org.bson', 'com.github.beelzebu.lib.bson'
+    relocate 'redis.clients.jedis', 'com.github.beelzebu.lib.jedis'
+    relocate 'org.apache.commons.pool2', 'com.github.beelzebu.lib.commonspool2'
 }
 
 processResources {

@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.motd.Motd;
@@ -45,7 +45,7 @@ public class ServerListListener implements Listener {
                     }
                 }
                  */
-                if (((MatrixBungeeBootstrap) Matrix.getAPI().getPlugin().getBootstrap()).isMaintenance()) {
+                if (((MatrixAPIImpl) Matrix.getAPI()).getMaintenanceManager().isMaintenance()) {
                     e.getResponse().getVersion().setProtocol(-1);
                     e.getResponse().getVersion().setName("§cEn mantenimiento");
                 }

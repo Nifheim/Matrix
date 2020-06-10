@@ -8,38 +8,40 @@ public class ServerInfo {
 
     private final String groupName;
     private final String serverName;
+    private final String lobbyServer;
     private final GameType gameType;
     private final ServerType serverType;
 
-    public ServerInfo(String groupName, String serverName, GameType gameType, ServerType serverType) {
+    public ServerInfo(String groupName, String serverName, String lobbyServer, GameType gameType, ServerType serverType) {
         this.groupName = Objects.requireNonNull(groupName != null ? groupName : serverName, "groupName can't be null");
         this.serverName = Objects.requireNonNull(serverName, "serverName can't be null");
+        this.lobbyServer = lobbyServer;
         this.gameType = Objects.requireNonNull(gameType, "gameType can't be null");
         this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
+    }
+
+    public ServerInfo(String groupName, String serverName, GameType gameType, ServerType serverType) {
+        this(groupName, serverName, null, gameType, serverType);
     }
 
     public ServerInfo(String serverName, GameType gameType, ServerType serverType) {
         this(serverName, serverName, gameType, serverType);
     }
 
-    /**
-     * Get lobby name for this server.
-     *
-     * @return Lobby server name from the config or null if this server isn't a minigame server.
-     */
-    public String getLobby() {
-        if (serverType.isMinigame() && Matrix.getAPISafe().isPresent()) {
-            return Matrix.getAPI().getConfig().getLobby();
-        }
-        return null;
-    }
-
     public GameMode getDefaultGameMode() {
         return GameMode.valueOf(Matrix.getAPI().getConfig().getString("default.game-mode", "ADVENTURE"));
     }
 
+    public String getGroupName() {
+        return groupName;
+    }
+
     public String getServerName() {
         return serverName;
+    }
+
+    public String getLobbyServer() {
+        return lobbyServer;
     }
 
     public GameType getGameType() {
@@ -54,7 +56,5 @@ public class ServerInfo {
         return "ServerInfo(serverName=" + serverName + ", gameType=" + gameType + ", serverType=" + serverType + ")";
     }
 
-    public String getGroupName() {
-        return groupName;
-    }
+
 }

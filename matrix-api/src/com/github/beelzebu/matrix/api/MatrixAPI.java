@@ -5,7 +5,7 @@ import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.config.MatrixConfig;
 import com.github.beelzebu.matrix.api.database.MatrixDatabase;
 import com.github.beelzebu.matrix.api.database.SQLDatabase;
-import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
+import com.github.beelzebu.matrix.api.messaging.Messaging;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
@@ -92,7 +92,7 @@ public abstract class MatrixAPI {
         return players;
     }
 
-    public abstract RedisMessaging getMessaging();
+    public abstract Messaging getMessaging();
 
     public abstract CacheProvider getCache();
 

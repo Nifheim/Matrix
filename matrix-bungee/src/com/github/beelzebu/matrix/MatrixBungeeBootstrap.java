@@ -38,7 +38,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
-import redis.clients.jedis.Jedis;
 
 /**
  * @author Beelzebu
@@ -48,11 +47,9 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     //public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Nifheim&7!\n&7IP: &amc.nifheim.net\n"));
     //public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &enifheim.net/tienda &7Twitter: &e@NifheimNetwork\n&7Discord: &enifheim.net/discord &7Web: &enifheim.net"));
     private static final Map<String, Channel> CHANNELS = new HashMap<>();
-    private static final String MAINTENANCE_KEY = "matrix:maintenance";
     private MatrixAPIImpl api;
     private MatrixPluginBungee matrixPlugin;
     private BungeeConfiguration config;
-    private boolean maintenance;
     private BungeeSchedulerAdapter scheduler;
 
     public static Channel getChannelFor(MatrixPlayer player) {
@@ -85,7 +82,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerListener(new LanguageListener());
         registerCommand(new HelpOpCommand(this));
         registerCommand(new PlayerInfoCommand(this));
-        registerCommand(new MaintenanceCommand(this));
+        registerCommand(new MaintenanceCommand(api));
         registerCommand(new ReplyCommand(this));
         registerCommand(new PluginsCommand());
         registerCommand(new CountdownCommand());
@@ -121,30 +118,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         api.getPlayers().clear();
     }
 
-    public boolean isMaintenance() {
-        try (Jedis jedis = api.getMessaging().getPool().getResource()) {
-            return (maintenance = jedis.exists(MAINTENANCE_KEY));
-        } catch (Exception e) {
-            Matrix.getLogger().debug(e);
-        }
-        return maintenance;
-    }
-
-    public void setMaintenance(boolean maintenance) {
-        try (Jedis jedis = api.getMessaging().getPool().getResource()) {
-            if (maintenance) {
-                jedis.set(MAINTENANCE_KEY, "0");
-            } else {
-                jedis.del(MAINTENANCE_KEY);
-            }
-        } catch (Exception e) {
-            Matrix.getLogger().debug(e);
-            setMaintenance(maintenance);
-            return;
-        }
-        this.maintenance = maintenance;
-    }
-
     public MatrixAPIImpl getApi() {
         return api;
     }
@@ -168,10 +141,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     public BungeeConfiguration getConfig() {
         return config;
-    }
-
-    public void setConfig(BungeeConfiguration config) {
-        this.config = config;
     }
 
     private void loadManagers() {

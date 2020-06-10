@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import redis.clients.jedis.Jedis;
 
 /**
  * @author Beelzebu
@@ -36,14 +35,17 @@ public final class MotdManager {
         if (cachedCountdown != null) {
             return cachedCountdown;
         }
-        try (Jedis jedis = Matrix.getAPI().getMessaging().getPool().getResource()) {
+        return null;
+        // TODO: enable
+        /*
+        try (Jedis jedis = RedisManager.getInstance().getPool().getResource()) {
             if (!jedis.exists("countdown:" + id)) {
                 return null;
             }
             Countdown countdown = Matrix.GSON.fromJson(jedis.get("countdown:" + id), Countdown.class);
             COUNTDOWN_CACHE.put(id, countdown);
             return countdown;
-        }
+        }*/
     }
 
     public static Motd getRandomMotd() {

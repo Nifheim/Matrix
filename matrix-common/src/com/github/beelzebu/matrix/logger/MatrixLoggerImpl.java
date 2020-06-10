@@ -1,6 +1,6 @@
-package com.github.beelzebu.matrix.api.logging;
+package com.github.beelzebu.matrix.logger;
 
-import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.command.CommandSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -12,42 +12,47 @@ import redis.clients.jedis.exceptions.JedisException;
 /**
  * @author Beelzebu
  */
-public class MatrixLogger {
+public final class MatrixLoggerImpl implements MatrixLogger {
 
     private static final String PREFIX = "&8[&cMatrix&8] &7";
-    private MatrixAPI matrixAPI;
+    private final CommandSource console;
+    private final boolean debug;
 
-    public void init(MatrixAPI matrixAPI) {
-        if (this.matrixAPI == null) {
-            this.matrixAPI = matrixAPI;
-        }
+    public MatrixLoggerImpl(CommandSource console, boolean debug) {
+        this.console = Objects.requireNonNull(console, "Console can't be null.");
+        this.debug = debug;
     }
 
+    @Override
     public void log(Level level, String msg) {
         Objects.requireNonNull(msg);
         if (level.intValue() <= Level.FINE.intValue()) {
-            if (!matrixAPI.getConfig().getBoolean("Debug", true)) {
+            if (!debug) {
                 return;
             }
-            matrixAPI.getPlugin().getConsole().sendMessage(PREFIX + "&cDebug: &7" + msg);
+            console.sendMessage(PREFIX + "&cDebug: &7" + msg);
         } else {
-            matrixAPI.getPlugin().getConsole().sendMessage(PREFIX + msg);
+            console.sendMessage(PREFIX + msg);
         }
     }
 
+    @Override
     public void log(String msg) {
         log(Level.INFO, msg);
     }
 
+    @Override
     public void info(String msg) {
         log(Level.INFO, msg);
     }
 
+    @Override
     public void debug(String msg) {
         log(Level.FINEST, msg);
     }
 
-    public final void debug(SQLException ex) {
+    @Override
+    public void debug(SQLException ex) {
         log("SQLException: ");
         log("   Database state: " + ex.getSQLState());
         log("   Error code: " + ex.getErrorCode());
@@ -55,13 +60,14 @@ public class MatrixLogger {
         log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
-    public final void debug(JedisException ex) {
+    public void debug(JedisException ex) {
         log("JedisException: ");
         log("   Error message: " + ex.getLocalizedMessage());
         log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
-    public final void debug(Exception ex) {
+    @Override
+    public void debug(Exception ex) {
         log(ex.getClass().getName() + ": ");
         log("   Error message: " + ex.getLocalizedMessage());
         log("   Stacktrace:\n" + getStacktrace(ex));
@@ -76,5 +82,4 @@ public class MatrixLogger {
         }
         return "Error getting the stacktrace";
     }
-
 }

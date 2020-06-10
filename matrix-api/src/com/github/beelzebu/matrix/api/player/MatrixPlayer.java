@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Future;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -154,10 +152,9 @@ public interface MatrixPlayer extends CommandSource {
 
     Date getRegistration();
 
-    @Nullable
     String getDiscordId();
 
-    void setDiscordId(@Nonnull String discordId);
+    void setDiscordId(String discordId);
 
     int getCensoringLevel();
 
@@ -196,10 +193,6 @@ public interface MatrixPlayer extends CommandSource {
     void addPlayedGame(GameType gameType);
 
     MatrixPlayer save();
-
-    void updateCached(String field);
-
-    void saveToRedis();
 
     /**
      * Set the field with the given name to the given value without publishing an update to redis.

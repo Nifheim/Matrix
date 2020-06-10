@@ -1,17 +1,17 @@
 package com.github.beelzebu.matrix.database;
 
-import com.github.beelzebu.matrix.database.mongo.ReportDAO;
-import com.github.beelzebu.matrix.database.mongo.UserDAO;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.database.MatrixDatabase;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.report.ReportManager;
+import com.github.beelzebu.matrix.database.mongo.ReportDAO;
+import com.github.beelzebu.matrix.database.mongo.UserDAO;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.report.MongoReport;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import java.util.UUID;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
@@ -48,18 +48,12 @@ public class MongoStorage implements MatrixDatabase {
 
     @Override
     public boolean isRegistered(UUID uniqueId) {
-        if (Matrix.getAPISafe().isPresent()) {
-            return Matrix.getAPI().getPlayer(uniqueId) != null;
-        }
-        return userDAO.getPlayer(uniqueId) != null;
+        return Matrix.getAPI().getCache().getPlayer(uniqueId).isPresent() || userDAO.getPlayer(uniqueId) != null;
     }
 
     @Override
     public boolean isRegistered(String name) {
-        if (Matrix.getAPISafe().isPresent()) {
-            return Matrix.getAPI().getPlayer(name) != null;
-        }
-        return userDAO.getPlayer(name) != null;
+        return Matrix.getAPI().getCache().getPlayer(name).isPresent() || userDAO.getPlayer(name) != null;
     }
 
     @Override

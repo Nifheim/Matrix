@@ -1,8 +1,7 @@
 package com.github.beelzebu.matrix.api;
 
+import com.github.beelzebu.matrix.logger.MatrixLogger;
 import com.google.gson.Gson;
-import com.github.beelzebu.matrix.api.logging.MatrixLogger;
-import java.util.Optional;
 
 /**
  * @author Beelzebu
@@ -11,13 +10,8 @@ public final class Matrix {
 
     public static final String IP = "mc.indiopikaro.cl";
     public static final Gson GSON = new Gson();
-    private static final MatrixLogger LOGGER = new MatrixLogger();
-
-    private static MatrixAPI API = null;
-
-    public static Optional<MatrixAPI> getAPISafe() {
-        return Optional.ofNullable(API);
-    }
+    private static MatrixLogger LOGGER;
+    private static MatrixAPI API;
 
     public static MatrixLogger getLogger() {
         return LOGGER;
@@ -27,7 +21,17 @@ public final class Matrix {
         return Matrix.API;
     }
 
-    public static void setAPI(MatrixAPI API) {
-        Matrix.API = API;
+    public static void setAPI(MatrixAPI api) {
+        if (API != null) {
+            throw new RuntimeException("API is already defined.");
+        }
+        API = api;
+    }
+
+    public static void setLogger(MatrixLogger logger) {
+        if (LOGGER != null) {
+            throw new RuntimeException("LOGGER is already defined.");
+        }
+        LOGGER = logger;
     }
 }

@@ -72,9 +72,7 @@ subprojects {
         compileOnly 'net.luckperms:api:5.1'
         compileOnly 'com.github.beelzebu:coins3-api:3.0'
         compileOnly 'net.md-5:bungeecord-chat:1.15-SNAPSHOT'
-        compileOnly 'redis.clients:jedis:3.3.0'
         compileOnly 'com.google.code.gson:gson:2.8.5'
-        compileOnly 'com.google.guava:guava:27.0.1-jre'
         compileOnly 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
     }
 
