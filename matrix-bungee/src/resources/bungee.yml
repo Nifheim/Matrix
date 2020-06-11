@@ -1,6 +1,6 @@
 name: Matrix
 main: com.github.beelzebu.matrix.MatrixBungeeBootstrap
-version: ${project.version}
+version: ${pluginVersion}
 author: Beelzebu
 depends: [Coins]
 softDepends: [LuckPerms, Coins]
