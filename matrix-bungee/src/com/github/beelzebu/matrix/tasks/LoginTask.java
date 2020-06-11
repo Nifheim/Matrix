@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
@@ -49,6 +50,7 @@ public class LoginTask implements Runnable {
                         }
                     } else {
                         player = new MongoMatrixPlayer(pc.getUniqueId(), pc.getName()).save();
+                        player.setOption(PlayerOptionType.SPEED, true);
                     }
                 } else {
                     event.setCancelled(true);
