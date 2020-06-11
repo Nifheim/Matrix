@@ -15,10 +15,12 @@ public class BungeeTPCommand extends Command {
     }
 
     @Override
-    public void execute(CommandSender commandSender, String[] strings) {
+    public void execute(CommandSender commandSender, String[] args) {
         if (commandSender instanceof ProxiedPlayer) {
-            ProxiedPlayer pp = (ProxiedPlayer) commandSender;
-            pp.connect(ProxyServer.getInstance().getServerInfo(strings[0]));
+            if (args.length == 1) {
+                ProxiedPlayer pp = (ProxiedPlayer) commandSender;
+                pp.connect(ProxyServer.getInstance().getServerInfo(args[0]));
+            }
         }
     }
 }

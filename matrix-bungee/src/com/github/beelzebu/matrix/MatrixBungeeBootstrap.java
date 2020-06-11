@@ -12,6 +12,7 @@ import com.github.beelzebu.matrix.command.BungeeTPCommand;
 import com.github.beelzebu.matrix.command.CountdownCommand;
 import com.github.beelzebu.matrix.command.HelpOpCommand;
 import com.github.beelzebu.matrix.command.MaintenanceCommand;
+import com.github.beelzebu.matrix.command.MatrixBungeeReload;
 import com.github.beelzebu.matrix.command.MatrixServersCommand;
 import com.github.beelzebu.matrix.command.PlayerInfoCommand;
 import com.github.beelzebu.matrix.command.PluginsCommand;
@@ -46,8 +47,8 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     //public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Nifheim&7!\n&7IP: &amc.nifheim.net\n"));
     //public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &enifheim.net/tienda &7Twitter: &e@NifheimNetwork\n&7Discord: &enifheim.net/discord &7Web: &enifheim.net"));
-    private static final Map<String, Channel> CHANNELS = new HashMap<>();
-    private MatrixAPIImpl api;
+    public static final Map<String, Channel> CHANNELS = new HashMap<>();
+    private MatrixBungeeAPI api;
     private MatrixPluginBungee matrixPlugin;
     private BungeeConfiguration config;
     private BungeeSchedulerAdapter scheduler;
@@ -89,6 +90,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new PremiumCommand(this));
         registerCommand(new BungeeTPCommand());
         registerCommand(new MatrixServersCommand());
+        registerCommand(new MatrixBungeeReload(api));
         new PermissionListener();
         MotdManager.onEnable();
         new BasicCommands(this);
@@ -119,10 +121,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     public MatrixAPIImpl getApi() {
         return api;
-    }
-
-    public void setApi(MatrixAPIImpl api) {
-        this.api = api;
     }
 
     @Override

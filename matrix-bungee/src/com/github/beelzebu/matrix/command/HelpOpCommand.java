@@ -20,6 +20,7 @@ public class HelpOpCommand extends Command {
         this.bootstrap = bootstrap;
     }
 
+    // TODO: translatable
     @Override
     public void execute(CommandSender sender, String[] args) {
         bootstrap.getApi().getPlugin().runAsync(() -> {
@@ -27,13 +28,13 @@ public class HelpOpCommand extends Command {
                 return;
             }
             if (args.length == 1 && args[0].length() <= 2) {
-                sender.sendMessage("§a§lNifheim §8§l> §7Por favor escribe un mensaje válido.");
+                sender.sendMessage("§a§lIndioPikaro §8§l> §7Por favor escribe un mensaje válido.");
                 return;
             }
             ProxiedPlayer pp = (ProxiedPlayer) sender;
             UUID uniqueId = pp.getUniqueId();
             if (timer.containsKey(uniqueId) && timer.get(uniqueId) > System.currentTimeMillis()) {
-                sender.sendMessage("§a§lNifheim §8§l> §7Debes esperar " + (timer.get(uniqueId) - System.currentTimeMillis()) / 1000 + " segundos más para usar este comando.");
+                sender.sendMessage("§a§lIndioPikaro §8§l> §7Debes esperar " + (timer.get(uniqueId) - System.currentTimeMillis()) / 1000 + " segundos más para usar este comando.");
                 return;
             }
             StringBuilder message = new StringBuilder();
@@ -42,7 +43,7 @@ public class HelpOpCommand extends Command {
             }
             if (!timer.containsKey(uniqueId) || timer.get(uniqueId) <= System.currentTimeMillis()) {
                 MatrixPlayer matrixPlayer = bootstrap.getApi().getPlayer(uniqueId);
-                new StaffChatMessage("matrix.helper", "§4§l[Ayuda] §8[§a§o" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "§8] §c" + matrixPlayer.getDisplayName() + "§f: §e" + message.toString()).send();
+                new StaffChatMessage("matrix.helpop.read", "§4§l[Ayuda] §8[§a§o" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "§8] §c" + matrixPlayer.getDisplayName() + "§f: §e" + message.toString()).send();
                 sender.sendMessage("§4§l[Ayuda] §8[§a§o" + ((ProxiedPlayer) sender).getServer().getInfo().getName() + "§8] §c" + matrixPlayer.getDisplayName() + "§f: §e" + message.toString());
                 if (!sender.hasPermission("matrix.helper")) {
                     timer.put(uniqueId, System.currentTimeMillis() + 30000);

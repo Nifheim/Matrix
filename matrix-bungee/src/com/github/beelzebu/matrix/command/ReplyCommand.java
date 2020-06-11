@@ -14,7 +14,7 @@ public class ReplyCommand extends Command {
     private final MatrixBungeeBootstrap bootstrap;
 
     public ReplyCommand(MatrixBungeeBootstrap bootstrap) {
-        super("responder", "matrix.helper");
+        super("responder", "matrix.command.reply", "reply");
         this.bootstrap = bootstrap;
     }
 

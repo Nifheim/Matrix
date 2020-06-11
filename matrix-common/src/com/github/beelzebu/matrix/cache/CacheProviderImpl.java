@@ -206,7 +206,7 @@ public class CacheProviderImpl implements CacheProvider {
         try (Jedis jedis = redisManager.getPool().getResource()) {
             Set<String> groups = getGroups(jedis);
             for (String group : groups) {
-                Set<String> servers = ImmutableSet.copyOf(jedis.smembers(SERVER_GROUP_NAME_KEY_PREFIX + group));
+                Set<String> servers = ImmutableSet.copyOf(jedis.smembers(SERVER_GROUP_KEY_PREFIX + group));
                 serverGroups.put(group, servers);
             }
         }
