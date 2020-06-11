@@ -23,6 +23,7 @@ public final class MotdManager {
 
     public static void onEnable() {
         MatrixAPI api = Matrix.getAPI();
+        MOTD_LIST.clear();
         api.getConfig().getKeys("Motds").stream().map(key -> new Motd(key, api.getConfig().getStringList("Motds." + key + ".Lines"), api.getConfig().getString("Motds." + key + ".Countdown", null))).forEach(MOTD_LIST::add);
     }
 
