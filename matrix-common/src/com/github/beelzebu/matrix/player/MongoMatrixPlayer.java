@@ -35,6 +35,7 @@ import org.mongodb.morphia.annotations.Indexed;
 /**
  * @author Beelzebu
  */
+@SuppressWarnings("FieldMayBeFinal")
 @Entity(value = "players", noClassnameStored = true)
 public final class MongoMatrixPlayer implements MatrixPlayer {
 
@@ -102,9 +103,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                     Objects.requireNonNull(hash.get(id), id + " can't be null");
                 }
                 if (hash.containsKey(id)) { // hash contains field
-                    Object value = Matrix.GSON.fromJson(hash.get(id), field.getGenericType());
+                    Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
                     if (value != null) {
-                        field.set(mongoMatrixPlayer, value);
+                        if (field.getType().equals(Map.class)) {
+                            ((Map<?, ?>) field.get(mongoMatrixPlayer)).putAll((Map) value);
+                        } else {
+                            field.set(mongoMatrixPlayer, value);
+                        }
                     }
                 }
             } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
