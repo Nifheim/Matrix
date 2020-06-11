@@ -47,8 +47,8 @@ public class ProfileGUI extends GUIManager {
             perfil.setItemMeta(meta);
             inv.setItem(2, perfil);
         }
-        {
-            ItemStack amigos = SkullURL.getCustomSkull("http://textures.minecraft.net/texture/9c269351c0468a5ea6c52329b7eb5625beecdb377bd6e597e5be68fd61752");
+        {//TODO: fix base64 dependency
+            ItemStack amigos = CompatUtil.getInstance().getPlayerHead();//SkullURL.getCustomSkull("http://textures.minecraft.net/texture/9c269351c0468a5ea6c52329b7eb5625beecdb377bd6e597e5be68fd61752");
             ItemMeta meta = amigos.getItemMeta();
             meta.setDisplayName(core.getString("Social.Friends.Name", user.getLocale()));
             List<String> lore = new ArrayList<>();
@@ -58,7 +58,7 @@ public class ProfileGUI extends GUIManager {
             inv.setItem(3, amigos);
         }
         {
-            ItemStack party = SkullURL.getCustomSkull("http://textures.minecraft.net/texture/485b9c8bffe726a73a609db9953bce7b9cd9389f3dfdcbd6a31d7987dbd7b88");
+            ItemStack party = CompatUtil.getInstance().getPlayerHead();//SkullURL.getCustomSkull("http://textures.minecraft.net/texture/485b9c8bffe726a73a609db9953bce7b9cd9389f3dfdcbd6a31d7987dbd7b88");
             ItemMeta meta = party.getItemMeta();
             meta.setDisplayName(core.getString("Social.Party.Name", user.getLocale()));
             List<String> lore = new ArrayList<>();
@@ -70,7 +70,7 @@ public class ProfileGUI extends GUIManager {
             inv.setItem(4, party);
         }
         {
-            ItemStack clan = SkullURL.getCustomSkull("http://textures.minecraft.net/texture/c3f191fc90e193b3d6ac5dc50b614bd918dfec94bf29e9ddcc7eddf63a2a");
+            ItemStack clan = CompatUtil.getInstance().getPlayerHead();//SkullURL.getCustomSkull("http://textures.minecraft.net/texture/c3f191fc90e193b3d6ac5dc50b614bd918dfec94bf29e9ddcc7eddf63a2a");
             ItemMeta meta = clan.getItemMeta();
             meta.setDisplayName(core.getString("Social.Clan.Name", user.getLocale()));
             List<String> lore = new ArrayList<>();

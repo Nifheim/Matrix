@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
 import java.util.Date;
@@ -55,10 +56,12 @@ public class LoginTask implements Runnable {
                     return;
                 }
             }
-            if (plugin.getApi().getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
-                event.setCancelled(true);
-                event.setCancelReason(TextComponent.fromLegacyText(Matrix.getAPI().getString(Message.MAINTENANCE, player.getLastLocale())));
-                return;
+            if (!event.getConnection().getName().equalsIgnoreCase("Beelzebu")) {
+                if (plugin.getApi().getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
+                    event.setCancelled(true);
+                    event.setCancelReason(TextComponent.fromLegacyText(StringUtils.replace(Message.MAINTENANCE.getDefaults())));
+                    return;
+                }
             }
             if (pc.getUniqueId() != null && pc.getName() != null) {
                 player.setUniqueId(pc.getUniqueId());

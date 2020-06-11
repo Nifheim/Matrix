@@ -5,7 +5,6 @@ import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.SpamUtils;
-import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ArrayListMultimap;
@@ -13,16 +12,13 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonObject;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -51,6 +47,8 @@ public class ChatListener implements Listener {
         SpamUtils.WHITELIST.addAll(api.getConfig().getStringList("AntiSpam.Whitelist"));
     }
 
+    //TODO: re-enable
+/*
     @EventHandler(priority = 127)
     public void onChat(ChatEvent e) { // censoring
         if (e.isCancelled() || e.isCommand()) {
@@ -198,6 +196,7 @@ public class ChatListener implements Listener {
             broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), BroadcastType.SPAM);
         }
     }
+ */
 
     @EventHandler
     public void onMessage(PluginMessageEvent e) {

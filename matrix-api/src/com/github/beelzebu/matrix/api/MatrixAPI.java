@@ -57,6 +57,10 @@ public abstract class MatrixAPI {
 
     public MatrixPlayer getPlayer(String name) {
         for (MatrixPlayer matrixPlayer : players) {
+            if (matrixPlayer.getName() == null) {
+                Matrix.getLogger().info("Null name for: " + matrixPlayer.getUniqueId());
+                continue;
+            }
             if (Objects.equals(matrixPlayer.getName().toLowerCase(), name.toLowerCase())) {
                 return matrixPlayer;
             }

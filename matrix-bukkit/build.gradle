@@ -29,8 +29,6 @@ shadowJar {
     relocate 'com.github.benmanes.caffeine', 'com.github.beelzebu.lib.caffeine'
     relocate 'org.mariadb.jdbc', 'com.github.beelzebu.lib.mariadb'
     relocate 'com.zaxxer.hikari', 'com.github.beelzebu.lib.hikari'
-    relocate 'com.mongodb', 'com.github.beelzebu.lib.mongodb'
-    relocate 'org.bson', 'com.github.beelzebu.lib.bson'
     relocate 'redis.clients.jedis', 'com.github.beelzebu.lib.jedis'
     relocate 'org.apache.commons.pool2', 'com.github.beelzebu.lib.commonspool2'
 }

@@ -33,8 +33,8 @@ public class CacheProviderImpl implements CacheProvider {
     public static final String UUID_KEY_PREFIX = "matrixuuid:";
     public static final String NAME_KEY_PREFIX = "matrixname:";
     public static final String USER_KEY_PREFIX = "matrixuser:";
-    public static final String SERVER_GROUP_KEY_PREFIX = "matrix:group:";
-    public static final String SERVER_GROUP_NAME_KEY_PREFIX = "matrix:server:";
+    public static final String SERVER_GROUP_KEY_PREFIX = "matrix:group:"; // set
+    public static final String SERVER_GROUP_NAME_KEY_PREFIX = "matrix:server:"; // value
     public static final String DISCORD_CODE_KEY_PREFIX = "matrixdiscord:";
 
     private final RedisManager redisManager;
@@ -217,7 +217,7 @@ public class CacheProviderImpl implements CacheProvider {
     public Set<String> getServers(String group) {
         Set<String> servers;
         try (Jedis jedis = redisManager.getPool().getResource()) {
-            servers = ImmutableSet.copyOf(jedis.smembers(SERVER_GROUP_NAME_KEY_PREFIX + group));
+            servers = ImmutableSet.copyOf(jedis.smembers(SERVER_GROUP_KEY_PREFIX + group));
         }
         return servers;
     }
@@ -246,12 +246,15 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void registerGroup(String name) {
+        // TODO: check NOOP
+        /*
         try (Jedis jedis = redisManager.getPool().getResource()) {
             if (isGroupRegistered(jedis, name)) {
                 return;
             }
             jedis.sadd(SERVER_GROUP_KEY_PREFIX + name);
         }
+         */
     }
 
     @Override
@@ -285,6 +288,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void updateCachedField(MatrixPlayer matrixPlayer, String field, Object value) {
         if (!isCached(matrixPlayer.getUniqueId())) {
+            Matrix.getLogger().info("Trying to update cached field for a non cached player: " + matrixPlayer.getName());
             return;
         }
         if (Objects.equals(field, "name") && matrixPlayer.getName() == null) {
@@ -308,7 +312,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public void saveToCache(MatrixPlayer matrixPlayer) {
+    public MatrixPlayer saveToCache(MatrixPlayer matrixPlayer) {
         Objects.requireNonNull(matrixPlayer.getUniqueId(), "UUID can't be null");
         Objects.requireNonNull(matrixPlayer.getName(), "name can't be null");
         if (Objects.isNull(matrixPlayer.getLowercaseName())) {
@@ -328,6 +332,7 @@ public class CacheProviderImpl implements CacheProvider {
             });
             pipeline.sync();
         }
+        return matrixPlayer;
     }
 
     @Override

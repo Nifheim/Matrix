@@ -18,7 +18,6 @@
  */
 package com.github.beelzebu.matrix.dependency;
 
-import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.dependency.classloader.IsolatedClassLoader;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
@@ -40,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * @author Beelzebu
@@ -64,7 +64,9 @@ public final class DependencyManager {
                 Dependency.HIKARI,
                 Dependency.MARIADB_DRIVER,
                 Dependency.COMMONS_POOL_2,
-                Dependency.JEDIS
+                Dependency.JEDIS,
+                Dependency.MONGODB,
+                Dependency.MORPHIA
         );
         loadDependencies(dependencies);
     }
@@ -77,8 +79,8 @@ public final class DependencyManager {
                 Path file = downloadDependency(saveDirectory, dependency);
                 sources.add(new Source(dependency, file));
             } catch (Exception ex) {
-                Matrix.getLogger().info("Exception whilst downloading dependency " + dependency.name());
-                Matrix.getLogger().debug(ex);
+                Logger.getLogger(DependencyManager.class.getName()).info("Exception whilst downloading dependency " + dependency.name());
+                ex.printStackTrace();
             }
         });
         List<Source> remappedJars = new ArrayList<>(sources.size());
@@ -95,13 +97,13 @@ public final class DependencyManager {
                     remappedJars.add(new Source(source.getDependency(), output));
                     continue;
                 }
-                Matrix.getLogger().info("Attempting to apply relocations to " + input.getFileName().toString() + "...");
+                Logger.getLogger(DependencyManager.class.getName()).info("Attempting to apply relocations to " + input.getFileName().toString() + "...");
                 relocationHandler = new RelocationHandler(this);
                 relocationHandler.remap(input, output, relocations);
                 remappedJars.add(new Source(source.getDependency(), output));
             } catch (Exception ex) {
-                Matrix.getLogger().info("Unable to remap the source file '" + source.getDependency().name() + "'.");
-                Matrix.getLogger().debug(ex);
+                Logger.getLogger(DependencyManager.class.getName()).info("Unable to remap the source file '" + source.getDependency().name() + "'.");
+                ex.printStackTrace();
             }
         }
         remappedJars.forEach(jar -> {
@@ -112,8 +114,8 @@ public final class DependencyManager {
                     reflectionClassLoader.loadJar(jar.getFile());
                     loaded.put(jar.getDependency(), jar.getFile());
                 } catch (Throwable ex) {
-                    Matrix.getLogger().info("Failed to load dependency jar '" + jar.getFile().getFileName().toString() + "'.");
-                    Matrix.getLogger().debug(ex.getMessage());
+                    Logger.getLogger(DependencyManager.class.getName()).info("Failed to load dependency jar '" + jar.getFile().getFileName().toString() + "'.");
+                    ex.printStackTrace();
                 }
             }
         });
@@ -166,7 +168,7 @@ public final class DependencyManager {
             if (bytes.length == 0) {
                 throw new RuntimeException("Empty stream");
             }
-            Matrix.getLogger().info("Successfully downloaded '" + fileName + "'");
+            Logger.getLogger(DependencyManager.class.getName()).info("Successfully downloaded '" + fileName + "'");
             Files.write(file, bytes);
         }
         if (!Files.exists(file)) {

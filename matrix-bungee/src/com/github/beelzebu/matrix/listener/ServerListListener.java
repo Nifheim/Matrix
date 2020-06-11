@@ -5,6 +5,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.motd.Motd;
 import com.github.beelzebu.matrix.motd.MotdManager;
+import java.util.Objects;
 import java.util.UUID;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -31,8 +32,7 @@ public class ServerListListener implements Listener {
         e.registerIntent((Plugin) Matrix.getAPI().getPlugin().getBootstrap());
         Matrix.getAPI().getPlugin().runAsync(() -> {
             try {
-                // TODO: rehabilitar
-                /*if (e.getConnection().getVirtualHost() != null) {
+                if (e.getConnection().getVirtualHost() != null) {
                     String host = e.getConnection().getVirtualHost().getHostName();
                     if (!Objects.equals(host, Matrix.IP)) {
                         e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
@@ -44,7 +44,6 @@ public class ServerListListener implements Listener {
                         return;
                     }
                 }
-                 */
                 if (((MatrixAPIImpl) Matrix.getAPI()).getMaintenanceManager().isMaintenance()) {
                     e.getResponse().getVersion().setProtocol(-1);
                     e.getResponse().getVersion().setName("§cEn mantenimiento");

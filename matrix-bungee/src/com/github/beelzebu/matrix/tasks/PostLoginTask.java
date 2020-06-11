@@ -33,14 +33,12 @@ public class PostLoginTask implements Runnable {
                 player.setAdmin(false);
             }
             player.setIP(event.getPlayer().getPendingConnection().getAddress().getAddress().getHostAddress());
-            if (player.getLastLocale() == null) {
-                player.setLastLocale(event.getPlayer().getLocale());
-            }
             if (event.getPlayer().hasPermission("matrix.vip1")) {
                 new DiscordRankUpdateMessage(player.getUniqueId(), DiscordRankUpdateMessage.DiscordRankType.VIP, DiscordRankUpdateMessage.Action.ADD);
             } else {
                 new DiscordRankUpdateMessage(player.getUniqueId(), DiscordRankUpdateMessage.DiscordRankType.VIP, DiscordRankUpdateMessage.Action.REMOVE);
             }
+            Matrix.getAPI().getCache().saveToCache(player);
         } catch (Exception e) {
             event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
             Matrix.getLogger().debug(e);

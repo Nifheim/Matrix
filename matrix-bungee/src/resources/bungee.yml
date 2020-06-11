@@ -2,4 +2,5 @@ name: Matrix
 main: com.github.beelzebu.matrix.MatrixBungeeBootstrap
 version: ${project.version}
 author: Beelzebu
-softDepends: [LuckPerms]
+depends: [Coins]
+softDepends: [LuckPerms, Coins]

@@ -83,6 +83,12 @@ public class LobbyListener implements Listener {
     public void onPlayerPvP(EntityDamageByEntityEvent e) {
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
             if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
+                if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
+                    return;
+                }
+                if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
+                    return;
+                }
                 if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET && ((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET) {
                     return;
                 }
@@ -110,6 +116,7 @@ public class LobbyListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent e) {
         MatrixPlayer matrixPlayer = api.getPlayer(e.getPlayer().getUniqueId());
+        matrixPlayer.setLoggedIn(true);
         Player player = e.getPlayer();
         setNormalItems(player);
         Bukkit.getScheduler().runTaskLater(plugin, () -> player.teleport(LocationUtils.locationFromString(LobbyData.getInstance().getConfig().getString("spawn", LocationUtils.locationToString(Bukkit.getWorlds().get(0).getSpawnLocation())))), 2);

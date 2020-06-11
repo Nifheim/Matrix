@@ -18,9 +18,7 @@ import net.md_5.bungee.api.ChatColor;
  */
 public interface MatrixPlayer extends CommandSource {
 
-    default String getRedisKey() {
-        return "user:" + getUniqueId();
-    }
+    String getRedisKey();
 
     default double getCoins() {
         return CoinsAPI.getCoins(getUniqueId());

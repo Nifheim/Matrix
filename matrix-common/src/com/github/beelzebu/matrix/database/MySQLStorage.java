@@ -5,6 +5,7 @@ import com.github.beelzebu.matrix.api.database.SQLDatabase;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.database.sql.SQLQuery;
+import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.Throwing;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -191,5 +192,24 @@ public class MySQLStorage implements SQLDatabase {
             server = server.substring(0, 34);
         }
         return server;
+    }
+
+    public void migratePremium() {
+        plugin.runAsync(() -> {
+            try (Connection c = dataSource.getConnection(); ResultSet res = c.prepareStatement("SELECT * FROM minecraft_auth.premium").executeQuery()) {
+                while (res.next()) {
+                    UUID uuid = UUID.fromString(res.getString("uniqueId"));
+                    if (UUID.nameUUIDFromBytes(("OfflinePlayer:" + res.getString("name")).getBytes()).equals(uuid)) {
+                        continue;
+                    }
+                    MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer(uuid, res.getString("name"));
+                    mongoMatrixPlayer.setRegistered(true);
+                    mongoMatrixPlayer.setPremium(true);
+                    mongoMatrixPlayer.save();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

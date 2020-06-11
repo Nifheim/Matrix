@@ -57,7 +57,7 @@ public interface CacheProvider {
 
     void updateCachedField(MatrixPlayer matrixPlayer, String field, Object value);
 
-    void saveToCache(MatrixPlayer matrixPlayer);
+    MatrixPlayer saveToCache(MatrixPlayer matrixPlayer);
 
     void setDiscordVerificationCode(String name, String code);
 }

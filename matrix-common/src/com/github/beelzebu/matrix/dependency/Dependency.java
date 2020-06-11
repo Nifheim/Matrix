@@ -27,16 +27,24 @@ import java.util.List;
  */
 public enum Dependency {
 
-    ASM("org.ow2.asm", "asm", "6.1.1"),
-    ASM_COMMONS("org.ow2.asm", "asm-commons", "6.1.1"),
-    JAR_RELOCATOR("me.lucko", "jar-relocator", "1.3"),
+    ASM("org.ow2.asm", "asm", "7.1"),
+    ASM_COMMONS("org.ow2.asm", "asm-commons", "7.1"),
+    JAR_RELOCATOR("me.lucko", "jar-relocator", "1.4"),
     CAFFEINE("com{}github{}ben-manes{}caffeine", "caffeine", "2.8.4", Relocation.of("caffeine", "com{}github{}benmanes{}caffeine")),
     HIKARI("com{}zaxxer", "HikariCP", "3.4.5", Relocation.of("hikari", "com{}zaxxer{}hikari")),
     MARIADB_DRIVER("org{}mariadb{}jdbc", "mariadb-java-client", "2.2.3", Relocation.of("mariadb", "org{}mariadb{}jdbc")),
     COMMONS_POOL_2("org.apache.commons", "commons-pool2", "2.6.2", Relocation.of("commonspool2", "org{}apache{}commons{}pool2")),
     JEDIS("redis.clients", "jedis", "3.3.0", Relocation.allOf(Relocation.of("jedis", "redis{}clients{}jedis"), Relocation.of("jedisutil", "redis{}clients{}util"), Relocation.of("commonspool2", "org{}apache{}commons{}pool2"))),
-    MONGODB("com{}mongodb", "mongo-java-driver", "3.12.5"),
-    MORPHIA("com{}mongodb", "morphia", "1.3.2");
+    MONGODB(
+            "org.mongodb",
+            "mongo-java-driver",
+            "3.12.2"
+    ),
+    MORPHIA(
+            "org.mongodb.morphia",
+            "morphia",
+            "1.3.2"
+    );
 
     private static final String MAVEN_CENTRAL_FORMAT = "https://repo1.maven.org/maven2/%s/%s/%s/%s-%s.jar";
     private final String url;

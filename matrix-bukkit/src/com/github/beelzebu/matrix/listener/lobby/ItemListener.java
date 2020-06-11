@@ -28,7 +28,8 @@ public class ItemListener implements Listener {
         if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (core.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName())))) {
             Player p = e.getPlayer();
             if (e.getItem().getType().equals(Material.COMPASS)) {
-                Bukkit.dispatchCommand(p, "minigames");
+                //Bukkit.dispatchCommand(p, "servidores");
+                p.chat("/servidores");
             } else if (e.getItem().getType().equals(CompatUtil.getInstance().getRedstoneComparator())) {
                 new OptionsGUI(p, core.getString("Options.Title", p.getLocale())).open(p);
             } else if (e.getItem().getType().equals(CompatUtil.getInstance().getPlayerHeadItem().getType())) {

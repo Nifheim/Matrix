@@ -1,22 +1,7 @@
 package com.github.beelzebu.matrix.api;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.github.beelzebu.matrix.util.CompatUtil;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Random;
-import java.util.UUID;
-import org.apache.commons.codec.binary.Base64;
-import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
-import org.bukkit.block.Skull;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 public class SkullURL {
-
+    /*
     private static final Random random = new Random();
     private static final String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static Method getWorldHandle;
@@ -121,4 +106,5 @@ public class SkullURL {
         }
         return clazz;
     }
+     */
 }

@@ -19,7 +19,7 @@ public class Motd {
             throw new IllegalArgumentException("Can't create a motd without lines.");
         }
         this.id = Objects.requireNonNull(id, "id can't be null.");
-        this.lines = lines.subList(0, lines.size() >= 2 ? 1 : 0);
+        this.lines = lines;
         this.countdown = countdown;
         if (getCountdown() == null) {
             Matrix.getLogger().debug("&7Countdown &6" + countdown + "&7 for motd &6" + id + "&7 doesn't exists.");

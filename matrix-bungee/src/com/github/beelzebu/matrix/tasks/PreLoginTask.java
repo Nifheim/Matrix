@@ -3,6 +3,7 @@ package com.github.beelzebu.matrix.tasks;
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import java.util.Objects;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
@@ -18,14 +19,21 @@ public class PreLoginTask implements Runnable {
     public PreLoginTask(MatrixBungeeBootstrap plugin, PreLoginEvent event, MatrixPlayer player) {
         this.plugin = plugin;
         this.event = event;
-        this.player = player;
+        if (player == null) {
+            // connection name can be null
+            if (event.getConnection().getName() != null) {
+                this.player = Matrix.getAPI().getPlayer(event.getConnection().getName());
+            } else {
+                this.player = null;
+            }
+        } else {
+            this.player = player;
+        }
     }
 
     @Override
     public void run() {
         try {
-            // TODO: rehabilitar
-            /*
             String host = event.getConnection().getVirtualHost().getHostName();
             if (!Objects.equals(host, Matrix.IP)) {
                 event.setCancelled(true);
@@ -43,7 +51,6 @@ public class PreLoginTask implements Runnable {
                         "Por favor ingresa usando " + Matrix.IP));
                 return;
             }
-             */
             if (event.getConnection().getName() == null || !event.getConnection().getName().matches("^\\w{3,16}$")) {
                 String goodName = event.getConnection().getName().replaceAll("[^\\w]", "");
                 event.setCancelReason(new TextComponent("\n" +

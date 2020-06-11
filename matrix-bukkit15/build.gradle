@@ -14,6 +14,12 @@ artifacts {
 shadowJar {
     classifier = null
     version = null
+
+    relocate 'com.github.benmanes.caffeine', 'com.github.beelzebu.lib.caffeine'
+    relocate 'org.mariadb.jdbc', 'com.github.beelzebu.lib.mariadb'
+    relocate 'com.zaxxer.hikari', 'com.github.beelzebu.lib.hikari'
+    relocate 'redis.clients.jedis', 'com.github.beelzebu.lib.jedis'
+    relocate 'org.apache.commons.pool2', 'com.github.beelzebu.lib.commonspool2'
 }
 
 description = 'Matrix Bukkit15'

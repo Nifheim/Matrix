@@ -9,6 +9,7 @@ import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.google.common.collect.ImmutableSet;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -94,19 +95,17 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
         MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer();
         for (Map.Entry<String, Field> ent : FIELDS.entrySet()) {
-            String id = ent.getKey();
-            Field field = ent.getValue();
+            String id = ent.getKey(); // field id
+            Field field = ent.getValue(); // field object
             try {
                 if (Objects.equals(id, "name") || Objects.equals(id, "uniqueId")) {
                     Objects.requireNonNull(hash.get(id), id + " can't be null");
                 }
-                if (hash.get(id) != null) {
+                if (hash.containsKey(id)) { // hash contains field
                     Object value = Matrix.GSON.fromJson(hash.get(id), field.getGenericType());
                     if (value != null) {
                         field.set(mongoMatrixPlayer, value);
                     }
-                } else {
-                    field.set(id, null);
                 }
             } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
                 e.printStackTrace();
@@ -305,6 +304,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     public ObjectId getId() {
         return id;
+    }
+
+    @Override
+    public String getRedisKey() {
+        return CacheProviderImpl.USER_KEY_PREFIX + getUniqueId();
     }
 
     @Override

@@ -40,6 +40,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public MatrixAPIImpl(MatrixPlugin plugin) {
         this.plugin = plugin;
+        plugin.getDataFolder().mkdirs();
         DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
         dependencyManager.loadInternalDependencies();
         database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
@@ -140,7 +141,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     }
 
     @Override
-    public SQLDatabase getSQLDatabase() {
+    public MySQLStorage getSQLDatabase() {
         return mySQLStorage;
     }
 
