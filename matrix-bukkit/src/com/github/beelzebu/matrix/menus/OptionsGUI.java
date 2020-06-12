@@ -49,8 +49,9 @@ public class OptionsGUI extends GUIManager {
             if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
                 p.sendMessage("§cAl parecer esta función no está disponible en este servidor.");
+            } else {
+                matrixPlayer.setOption(PlayerOptionType.SPEED, status);
             }
-            matrixPlayer.setOption(PlayerOptionType.SPEED, status);
             p.closeInventory();
         });
 
@@ -63,8 +64,9 @@ public class OptionsGUI extends GUIManager {
                 if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                     p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
                     p.sendMessage("§cAl parecer esta función no está disponible en este servidor.");
+                } else {
+                    matrixPlayer.setOption(PlayerOptionType.FLY, status);
                 }
-                matrixPlayer.setOption(PlayerOptionType.FLY, status);
             } else {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
                 p.sendMessage(StringUtils.replace("&c&lLo sentimos!&7 no tienes permisos suficientes para usar esto."));
