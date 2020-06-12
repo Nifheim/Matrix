@@ -2,6 +2,7 @@ package com.github.beelzebu.matrix.api;
 
 import com.github.beelzebu.matrix.logger.MatrixLogger;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author Beelzebu
@@ -9,7 +10,7 @@ import com.google.gson.Gson;
 public final class Matrix {
 
     public static final String IP = "mc.indiopikaro.cl";
-    public static final Gson GSON = new Gson();
+    public static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().create();
     private static MatrixLogger LOGGER;
     private static MatrixAPI API;
 
