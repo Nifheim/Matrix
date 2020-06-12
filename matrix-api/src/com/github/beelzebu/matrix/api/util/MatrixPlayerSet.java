@@ -11,6 +11,12 @@ public class MatrixPlayerSet <T extends MatrixPlayer> extends HashSet<T> {
 
     @Override
     public boolean add(T t) {
+        if (t.getUniqueId() == null) {
+            return false;
+        }
+        if (t.getName() == null) {
+            return false;
+        }
         for (MatrixPlayer matrixPlayer : this) {
             if (matrixPlayer.getUniqueId() == t.getUniqueId()) {
                 // debug player removing
