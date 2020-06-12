@@ -20,6 +20,7 @@ import com.github.beelzebu.matrix.command.PremiumCommand;
 import com.github.beelzebu.matrix.command.ReplyCommand;
 import com.github.beelzebu.matrix.command.StaffListCommand;
 import com.github.beelzebu.matrix.config.BungeeConfiguration;
+import com.github.beelzebu.matrix.influencer.InfluencerManager;
 import com.github.beelzebu.matrix.listener.AuthListener;
 import com.github.beelzebu.matrix.listener.ChatListener;
 import com.github.beelzebu.matrix.listener.LoginListener;
@@ -53,6 +54,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     private MatrixPluginBungee matrixPlugin;
     private BungeeConfiguration config;
     private BungeeSchedulerAdapter scheduler;
+    private InfluencerManager influencerManager;
 
     public static Channel getChannelFor(MatrixPlayer player) {
         return CHANNELS.get(player.getStaffChannel());
@@ -91,7 +93,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new PremiumCommand(this));
         registerCommand(new BungeeTPCommand());
         registerCommand(new MatrixServersCommand());
-        registerCommand(new MatrixBungeeReload(api));
+        registerCommand(new MatrixBungeeReload(this));
         registerCommand(new StaffListCommand());
         new PermissionListener();
         MotdManager.onEnable();
@@ -112,6 +114,9 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         new ServerRequestMessage().send();
 
         scheduler = new BungeeSchedulerAdapter(this);
+
+        influencerManager = new InfluencerManager(this);
+        influencerManager.loadInfluencers();
     }
 
     @Override
@@ -154,5 +159,9 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     private void registerCommand(Command command) {
         ProxyServer.getInstance().getPluginManager().registerCommand(this, command);
+    }
+
+    public InfluencerManager getInfluencerManager() {
+        return influencerManager;
     }
 }
