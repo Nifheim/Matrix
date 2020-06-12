@@ -23,6 +23,7 @@ import com.github.beelzebu.matrix.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.influencer.InfluencerManager;
 import com.github.beelzebu.matrix.listener.AuthListener;
 import com.github.beelzebu.matrix.listener.ChatListener;
+import com.github.beelzebu.matrix.listener.LoginFieldUpdateListener;
 import com.github.beelzebu.matrix.listener.LoginListener;
 import com.github.beelzebu.matrix.listener.PermissionListener;
 import com.github.beelzebu.matrix.listener.ServerListListener;
@@ -111,6 +112,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
         api.getMessaging().registerListener(new ServerRegisterListener());
         api.getMessaging().registerListener(new ServerUnregisterListener());
+        api.getMessaging().registerListener(new LoginFieldUpdateListener(this));
         new ServerRequestMessage().send();
 
         scheduler = new BungeeSchedulerAdapter(this);

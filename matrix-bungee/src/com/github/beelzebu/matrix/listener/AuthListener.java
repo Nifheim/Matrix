@@ -2,6 +2,7 @@ package com.github.beelzebu.matrix.listener;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -42,7 +43,7 @@ public class AuthListener implements Listener {
         }
         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(e.getPlayer().getUniqueId());
         if (!matrixPlayer.isLoggedIn()) {
-            e.setCancelled(true);
+            e.setTarget(ProxyServer.getInstance().getServerInfo("auth1"));
         }
     }
 }
