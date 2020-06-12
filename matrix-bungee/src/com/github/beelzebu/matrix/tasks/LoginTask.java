@@ -22,6 +22,7 @@ public class LoginTask implements Runnable {
     private final MatrixBungeeBootstrap plugin;
     private final LoginEvent event;
     private MatrixPlayer player;
+    private boolean firstJoin = false;
 
     public LoginTask(MatrixBungeeBootstrap plugin, LoginEvent event, MatrixPlayer player) {
         this.plugin = plugin;
@@ -32,15 +33,15 @@ public class LoginTask implements Runnable {
     @Override
     public void run() {
         try {
-            PendingConnection pc = event.getConnection();
+            PendingConnection pendingConnection = event.getConnection();
             if (player == null) {
-                if (pc.getUniqueId() != null && pc.getName() != null) {
-                    MatrixPlayer playerByName = Matrix.getAPI().getPlayer(pc.getName());
+                if (pendingConnection.getUniqueId() != null && pendingConnection.getName() != null) {
+                    MatrixPlayer playerByName = Matrix.getAPI().getPlayer(pendingConnection.getName());
                     if (playerByName != null) {
-                        if (pc.isOnlineMode()) {
-                            playerByName.setUniqueId(pc.getUniqueId());
+                        if (pendingConnection.isOnlineMode()) {
+                            playerByName.setUniqueId(pendingConnection.getUniqueId());
                             player = playerByName;
-                        } else if (!Objects.equals(playerByName.getUniqueId(), pc.getUniqueId())) {
+                        } else if (!Objects.equals(playerByName.getUniqueId(), pendingConnection.getUniqueId())) {
                             event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n" +
                                     "\n" +
                                     "Your UUID doesn't match with the UUID associated to your name in our database.\n" +
@@ -49,8 +50,8 @@ public class LoginTask implements Runnable {
                             return;
                         }
                     } else {
-                        player = new MongoMatrixPlayer(pc.getUniqueId(), pc.getName()).save();
-                        player.setOption(PlayerOptionType.SPEED, true);
+                        player = new MongoMatrixPlayer(pendingConnection.getUniqueId(), pendingConnection.getName()).save();
+                        firstJoin = true;
                     }
                 } else {
                     event.setCancelled(true);
@@ -65,18 +66,21 @@ public class LoginTask implements Runnable {
                     return;
                 }
             }
-            if (pc.getUniqueId() != null && pc.getName() != null) {
-                player.setUniqueId(pc.getUniqueId());
-                player.setName(pc.getName());
-                if (pc.isOnlineMode()) {
+            if (pendingConnection.getUniqueId() != null && pendingConnection.getName() != null) {
+                player.setUniqueId(pendingConnection.getUniqueId());
+                player.setName(pendingConnection.getName());
+                if (pendingConnection.isOnlineMode()) {
                     player.setPremium(true);
                     player.setRegistered(true);
                     player.setLoggedIn(true);
                 }
-                player.setLastLogin(new Date());
                 if (!Matrix.getAPI().getCache().isCached(player.getUniqueId())) {
                     plugin.getApi().getCache().saveToCache(player);
                 }
+                if (firstJoin) {
+                    player.setOption(PlayerOptionType.SPEED, true);
+                }
+                player.setLastLogin(new Date());
             }
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
