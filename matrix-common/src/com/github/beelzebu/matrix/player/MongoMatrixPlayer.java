@@ -11,6 +11,7 @@ import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -70,11 +71,18 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private int censoringLevel;
     private int spammingLevel;
     private boolean vanished;
-    private Map<GameType, GameMode> gameModeByGame = new HashMap<>();
     private GameType lastGameType;
+    private Map<GameType, GameMode> gameModeByGame = new HashMap<>();
     private Map<GameType, Long> totalPlayTimeByGame = new HashMap<>();
     private Map<GameType, Long> playTimeByGame = new HashMap<>();
     private Map<GameType, Long> playedGamesMap = new HashMap<>();
+
+    private void clearData() {
+        gameModeByGame.clear();
+        totalPlayTimeByGame.clear();
+        playTimeByGame.clear();
+        playedGamesMap.clear();
+    }
 
     static {
         Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).peek(field -> field.setAccessible(true)).forEach(field -> FIELDS.put(field.getName(), field));
@@ -103,16 +111,41 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                     Objects.requireNonNull(hash.get(id), id + " can't be null");
                 }
                 if (hash.containsKey(id)) { // hash contains field
-                    Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
-                    if (value != null) {
-                        if (field.getType().equals(Map.class)) {
+                    if (Objects.equals(id, "gameModeByGame")) {
+                        mongoMatrixPlayer.clearData();
+                        continue;
+                    }
+                    if (Objects.equals(id, "totalPlayTimeByGame")) {
+                        mongoMatrixPlayer.clearData();
+                        continue;
+                    }
+                    if (Objects.equals(id, "playTimeByGame")) {
+                        mongoMatrixPlayer.clearData();
+                        continue;
+                    }
+                    if (Objects.equals(id, "playedGamesMap")) {
+                        mongoMatrixPlayer.clearData();
+                        continue;
+                    }
+                    Object value;
+                    switch (id) {
+                        case "gameModeByGame":
+                        case "totalPlayTimeByGame":
+                        case "playTimeByGame":
+                        case "playedGamesMap":
+                            value = Matrix.GSON.fromJson(hash.get(id), HashMap.class);
                             ((Map<?, ?>) field.get(mongoMatrixPlayer)).putAll((Map) value);
-                        } else {
-                            field.set(mongoMatrixPlayer, value);
-                        }
+                            break;
+                        default:
+                            value = Matrix.GSON.fromJson(hash.get(id), field.getType());
+                            break;
+                    }
+                    if (value != null) {
+                        field.set(mongoMatrixPlayer, value);
                     }
                 }
-            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
+            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException | JsonSyntaxException e) {
+                mongoMatrixPlayer.clearData();
                 e.printStackTrace();
                 return null;
             }
@@ -229,6 +262,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setLastPlayTime(GameType gameType, long playTime) {
+        if (gameType == GameType.NONE) {
+            return;
+        }
         if (playTime <= 0) {
             throw new IllegalArgumentException("playTime can't be equal or less than zero.");
         }
@@ -253,6 +289,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void addPlayedGame(GameType gameType) {
+        if (gameType == GameType.NONE) {
+            return;
+        }
         playedGamesMap.put(gameType, playedGamesMap.getOrDefault(gameType, 0L) + 1);
         updateCached("playedGamesMap");
     }
