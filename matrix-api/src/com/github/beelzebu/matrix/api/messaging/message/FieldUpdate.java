@@ -1,5 +1,7 @@
 package com.github.beelzebu.matrix.api.messaging.message;
 
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.util.UUID;
 
 /**
@@ -32,9 +34,15 @@ public class FieldUpdate extends RedisMessage {
 
     @Override
     public void read() {
-        if (api.getPlugin().isOnline(getPlayer(), true)) {
-            api.getPlayer(getPlayer()).setField(getField(), getJsonValue());
+        if (!api.getPlugin().isOnline(getPlayer(), true)) {
+            return;
         }
+        MatrixPlayer matrixPlayer = api.getPlayer(getPlayer());
+        if (matrixPlayer == null) {
+            Matrix.getLogger().info("Player with uuid '" + getPlayer() + "' is online but there is no MatrixPlayer associated to his uuid.");
+            return;
+        }
+        matrixPlayer.setField(getField(), getJsonValue());
     }
 
     @Override
