@@ -19,7 +19,7 @@ public class FreezeCommand extends MatrixCommand {
     public static final Set<Player> FROZEN_PLAYERS = new HashSet<>();
 
     public FreezeCommand() {
-        super("freeze", "matrix.mod", false);
+        super("freeze", "matrix.command.freeze", false);
     }
 
     @Override
@@ -35,6 +35,8 @@ public class FreezeCommand extends MatrixCommand {
                 target.setWalkSpeed(0.2f);
                 target.setFlySpeed(0.1f);
                 target.removePotionEffect(PotionEffectType.JUMP);
+                target.removePotionEffect(PotionEffectType.SPEED);
+                target.removePotionEffect(PotionEffectType.SLOW);
                 //target.setViewDistance(ViewDistanceListener.getViewDistance(target));
                 target.sendMessage(StringUtils.replace("%prefix% &fFuiste descongelado, puedes volver a jugar :)"));
                 sender.sendMessage(StringUtils.replace("%prefix% &aUsuario descongelado."));
