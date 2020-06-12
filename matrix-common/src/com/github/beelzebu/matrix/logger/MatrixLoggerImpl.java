@@ -16,7 +16,7 @@ public final class MatrixLoggerImpl implements MatrixLogger {
 
     private static final String PREFIX = "&8[&cMatrix&8] &7";
     private final CommandSource console;
-    private final boolean debug;
+    private boolean debug;
 
     public MatrixLoggerImpl(CommandSource console, boolean debug) {
         this.console = Objects.requireNonNull(console, "Console can't be null.");
@@ -81,5 +81,9 @@ public final class MatrixLoggerImpl implements MatrixLogger {
             e.printStackTrace();
         }
         return "Error getting the stacktrace";
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 }

@@ -2,7 +2,6 @@ package com.github.beelzebu.matrix;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.database.SQLDatabase;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
@@ -32,6 +31,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     private final MatrixPlugin plugin;
     private final MongoStorage database;
+    private final RedisManager redisManager;
     private final RedisMessaging messaging;
     private final CacheProviderImpl cache;
     private final ServerInfo serverInfo;
@@ -44,7 +44,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
         dependencyManager.loadInternalDependencies();
         database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
-        RedisManager redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
+        redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
         messaging = new RedisMessaging(redisManager, plugin::runAsync);
         cache = new CacheProviderImpl(redisManager);
         serverInfo = new ServerInfo(
@@ -147,5 +147,9 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public final SchedulerAdapter getScheduler() {
         return plugin.getBootstrap().getScheduler();
+    }
+
+    public RedisManager getRedisManager() {
+        return redisManager;
     }
 }

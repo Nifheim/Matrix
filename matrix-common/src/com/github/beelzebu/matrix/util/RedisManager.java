@@ -17,6 +17,7 @@ public class RedisManager {
         config.setMinIdle(1);
         config.setMaxTotal(101);
         config.setBlockWhenExhausted(true);
+        config.setTestOnBorrow(true);
         if (password == null || password.trim().isEmpty()) {
             pool = new JedisPool(config, host, port, 0);
         } else {
