@@ -36,10 +36,11 @@ public class MatrixServersCommand extends Command {
                     continue;
                 }
                 ComponentBuilder componentBuilder = new ComponentBuilder()
-                        .appendLegacy(StringUtils.replace("  &f- &e")).appendLegacy(StringUtils.replace(server + " &8(&a" + playerCount + "&8)"))
+                        .appendLegacy(StringUtils.replace("  &f- &e")).appendLegacy(server)
                         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                 TextComponent.fromLegacyText(StringUtils.replace("&7Click para ir a &6" + server))))
-                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "btp " + server));
+                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/btp " + server))
+                        .appendLegacy(StringUtils.replace(" &8(&a" + playerCount + "&8)"));
                 components.add(componentBuilder.create());
             }
         }
