@@ -288,7 +288,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void updateCachedField(MatrixPlayer matrixPlayer, String field, Object value) {
         if (!isCached(matrixPlayer.getUniqueId())) {
-            Matrix.getLogger().info("Trying to update cached field for a non cached player: " + matrixPlayer.getName());
+            Matrix.getLogger().info("Trying to update cached field for a non cached player: " + matrixPlayer.getName() + " field: " + field + " value: " + value);
             return;
         }
         if (Objects.equals(field, "name") && matrixPlayer.getName() == null) {
