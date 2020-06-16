@@ -1,6 +1,6 @@
 allprojects {
     group = 'com.github.beelzebu'
-    version = '1.0.0'
+    version = '1.0.1'
 }
 
 subprojects {
@@ -65,6 +65,10 @@ subprojects {
 
         maven {
             url = 'https://dl.bintray.com/ichbinjoe/public/'
+        }
+
+        maven {
+            url = 'https://dl.bintray.com/deanveloper/SkullCreator'
         }
     }
 

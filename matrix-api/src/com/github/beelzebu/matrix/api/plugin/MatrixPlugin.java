@@ -156,14 +156,6 @@ public interface MatrixPlugin {
     boolean isOnline(UUID uuid, boolean here);
 
     /**
-     * Obtiene el idioma del juego del usuario.
-     *
-     * @param uuid usuario para revisar
-     * @return idioma del usuario en ISO code.
-     */
-    String getLocale(UUID uuid);
-
-    /**
      * Banea a un usuario del servidor.
      *
      * @param name

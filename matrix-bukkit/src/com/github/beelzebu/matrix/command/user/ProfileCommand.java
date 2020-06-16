@@ -18,7 +18,7 @@ public class ProfileCommand extends MatrixCommand {
     public void onCommand(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            new ProfileGUI(player, api.getString("Social.Profile.Name", player.getLocale())).open(player);
+            new ProfileGUI(api.getPlayer(player.getUniqueId())).open(player);
         }
     }
 }

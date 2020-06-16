@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.api.util;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -27,7 +26,23 @@ public final class StringUtils {
      * @return messages with colors and replaced placeholders.
      */
     public static List<String> replace(List<String> messages) {
-        return messages.stream().map(StringUtils::replace).collect(Collectors.toList());
+        for (int i = 0; i < messages.size(); i++) {
+            messages.set(i, replace(messages.get(i)));
+        }
+        return messages;
+    }
+
+    /**
+     * Add colors to the messages and replace default placeholders.
+     *
+     * @param messages strings to replace color codes and placeholders.
+     * @return messages with colors and replaced placeholders.
+     */
+    public static String[] replace(String[] messages) {
+        for (int i = 0; i < messages.length; i++) {
+            messages[i] = replace(messages[i]);
+        }
+        return messages;
     }
 
     /**

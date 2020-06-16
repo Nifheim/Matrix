@@ -17,7 +17,7 @@ public class OptionsCommand extends MatrixCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
-            new OptionsGUI((Player) sender, api.getString("Options.Title", ((Player) sender).getLocale())).open((Player) sender);
+            new OptionsGUI(api.getPlayer(((Player) sender).getUniqueId())).open((Player) sender);
         }
     }
 }

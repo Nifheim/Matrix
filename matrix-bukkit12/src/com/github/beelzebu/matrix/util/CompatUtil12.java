@@ -37,6 +37,11 @@ public class CompatUtil12 extends CompatUtil {
     }
 
     @Override
+    public ItemStack getPurpleGlassPane() {
+        return new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte) 10);
+    }
+
+    @Override
     public Material getRedstoneComparator() {
         return Material.REDSTONE_COMPARATOR_OFF;
     }

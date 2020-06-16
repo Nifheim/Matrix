@@ -2,6 +2,8 @@ package com.github.beelzebu.matrix;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
@@ -21,6 +23,9 @@ import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
 import com.github.beelzebu.matrix.util.RedisManager;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -51,19 +56,15 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
                 plugin.getConfig().getString("server-info.group"),
                 plugin.getConfig().getString("server-info.name", plugin.getConfig().getString("Server Table")).replaceAll(" ", ""),
                 GameType.valueOf(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
-                ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase())
+                ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
+                GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode", "ADVENTURE").toUpperCase())
         );
         mySQLStorage = new MySQLStorage(plugin, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
-        messagesMap.put("default", plugin.getFileAsConfig(new File(plugin.getDataFolder(), "messages.yml")));
-        for (File file : plugin.getDataFolder().listFiles()) {
-            if (!file.getName().startsWith("messages_")) {
-                continue;
-            }
-            String locale = file.getName().split("_")[1].replaceFirst("\\.yml", "");
-            messagesMap.put(locale, plugin.getFileAsConfig(file));
-        }
         Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
         maintenanceManager = new MaintenanceManager(redisManager);
+        if (plugin.getConfig().getString("server-info.game-mode") == null) {
+            Matrix.getLogger().info("server-info.game-mode config option is missing, please add it to config.yml");
+        }
     }
 
     public String getName(UUID uniqueId) {
@@ -127,6 +128,34 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
             FileManager fileManager = new FileManager(plugin);
             fileManager.generateFiles();
             fileManager.updateMessages();
+            // move messages files to right folder
+            File messagesFolder = new File(plugin.getDataFolder(), "messages");
+            if (!messagesFolder.exists()) {
+                messagesFolder.mkdirs();
+            }
+            if (!messagesFolder.isDirectory()) {
+                messagesFolder.delete();
+                messagesFolder.mkdirs();
+            }
+            for (File file : plugin.getDataFolder().listFiles()) {
+                if (!file.getName().startsWith("messages_")) {
+                    continue;
+                }
+                try {
+                    Files.move(file.toPath(), new File(messagesFolder, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            // load messages translations
+            for (File file : messagesFolder.listFiles()) {
+                if (!file.getName().startsWith("messages_")) {
+                    continue;
+                }
+                String locale = file.getName().split("_")[1].replaceFirst("\\.yml", "");
+                messagesMap.put(locale, plugin.getFileAsConfig(file));
+            }
+            initI18n();
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
@@ -151,5 +180,10 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public RedisManager getRedisManager() {
         return redisManager;
+    }
+
+    @Override
+    protected void initI18n() {
+        new I18n(messagesMap);
     }
 }

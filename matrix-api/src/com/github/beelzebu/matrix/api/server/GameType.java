@@ -18,5 +18,6 @@ public enum GameType {
     TNTRUN,
     BUILDBATTLE,
     UHC,
+    INFLUENCER,
     NONE
 }

@@ -4,6 +4,8 @@ import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.ItemBuilder;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.ServerType;
@@ -120,7 +122,7 @@ public class LobbyListener implements Listener {
         Player player = e.getPlayer();
         setNormalItems(player);
         Bukkit.getScheduler().runTaskLater(plugin, () -> player.teleport(LocationUtils.locationFromString(LobbyData.getInstance().getConfig().getString("spawn", LocationUtils.locationToString(Bukkit.getWorlds().get(0).getSpawnLocation())))), 2);
-        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || player.getLocation().getWorld().getName().equalsIgnoreCase(api.getConfig().getString("Lobby World"))) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 // Set the level and xp to 0 for security reasons
                 player.setLevel(0);
@@ -133,17 +135,15 @@ public class LobbyListener implements Listener {
             Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
                 player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
                 player.setGameMode(GameMode.ADVENTURE);
-                if (matrixPlayer.getOption(PlayerOptionType.SPEED)) {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 1, false, false));
-                }
-                if (matrixPlayer.getOption(PlayerOptionType.FLY)) {
-                    player.setAllowFlight(true);
-                    player.setFlying(true);
+                for (PlayerOptionType optionType : matrixPlayer.getOptions()) {
+                    if (optionType.equals(PlayerOptionType.SPEED)) {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 1, false, false));
+                    } else if (optionType.equals(PlayerOptionType.FLY)) {
+                        player.setAllowFlight(true);
+                        player.setFlying(true);
+                    }
                 }
             }, 10);
-        } else {
-            playerOptions.put(matrixPlayer, matrixPlayer.getOptions());
-            matrixPlayer.getOptions().forEach(option -> matrixPlayer.setOption(option, false));
         }
     }
 
@@ -201,16 +201,17 @@ public class LobbyListener implements Listener {
         p.getInventory().setItem(EquipmentSlot.CHEST, new ItemStack(Material.AIR));
         p.getInventory().setItem(EquipmentSlot.LEGS, new ItemStack(Material.AIR));
         p.getInventory().setItem(EquipmentSlot.FEET, new ItemStack(Material.AIR));
+        String locale = api.getPlayer(p.getUniqueId()).getLastLocale();
         {
-            ItemStack is = new ItemBuilder(Material.COMPASS, 1, api.getString("Lobby items.Server selector.Name", p.getLocale())).build();
+            ItemStack is = new ItemBuilder(Material.COMPASS, 1, I18n.tl(Message.LOBBY_ITEMS_SERVER_SELECTOR, locale)).build();
             p.getInventory().setItem(0, is);
         }
         {
-            ItemStack is = new ItemBuilder(CompatUtil.getInstance().getRedstoneComparator(), 1, api.getString("Lobby items.Options.Name", p.getLocale())).build();
+            ItemStack is = new ItemBuilder(CompatUtil.getInstance().getRedstoneComparator(), 1, I18n.tl(Message.LOBBY_ITEMS_OPTIONS, locale)).build();
             p.getInventory().setItem(1, is);
         }
         {
-            ItemStack is = new ItemBuilder(CompatUtil.getInstance().getPlayerHeadItem()).amount(1).displayname(api.getString("Lobby items.Profile.Name", p.getLocale())).build();
+            ItemStack is = new ItemBuilder(CompatUtil.getInstance().getPlayerHeadItem()).amount(1).displayname(I18n.tl(Message.LOBBY_ITEMS_PROFILE, locale)).build();
             SkullMeta meta = (SkullMeta) is.getItemMeta();
             meta.setOwningPlayer(p);
             is.setItemMeta(meta);

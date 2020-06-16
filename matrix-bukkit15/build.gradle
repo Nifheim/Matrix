@@ -22,4 +22,11 @@ shadowJar {
     relocate 'org.apache.commons.pool2', 'com.github.beelzebu.lib.commonspool2'
 }
 
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        expand 'pluginVersion': project.version
+        include 'plugin.yml'
+    }
+}
+
 description = 'Matrix Bukkit15'

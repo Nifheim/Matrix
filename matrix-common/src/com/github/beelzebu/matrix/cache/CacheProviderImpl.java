@@ -121,6 +121,7 @@ public class CacheProviderImpl implements CacheProvider {
                 jedis.del(USER_KEY_PREFIX + uniqueId);
             }
         } catch (JedisDataException e) {
+            Matrix.getLogger().debug(e);
             return getPlayer(uniqueId);
         } catch (JedisException | JsonParseException e) {
             Matrix.getLogger().debug(e);
@@ -246,15 +247,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void registerGroup(String name) {
-        // TODO: check NOOP
-        /*
-        try (Jedis jedis = redisManager.getPool().getResource()) {
-            if (isGroupRegistered(jedis, name)) {
-                return;
-            }
-            jedis.sadd(SERVER_GROUP_KEY_PREFIX + name);
-        }
-         */
+        // NOOP
     }
 
     @Override

@@ -14,6 +14,8 @@ import net.md_5.bungee.event.EventHandler;
  */
 public class AuthListener implements Listener {
 
+    private final String[] allowedCommands = {"login", "register", "premium"};
+
     @EventHandler(priority = 127)
     public void onChat(ChatEvent e) {
         if (!(e.getSender() instanceof ProxiedPlayer)) {
@@ -27,8 +29,10 @@ public class AuthListener implements Listener {
         if (matrixPlayer.isLoggedIn()) {
             return;
         }
-        if (e.getMessage().replaceFirst("/", "").startsWith("login") || e.getMessage().replaceFirst("/", "").startsWith("register")) {
-            return;
+        for (String command : allowedCommands) {
+            if (e.getMessage().replaceFirst("/", "").startsWith(command)) {
+                return;
+            }
         }
         e.setCancelled(true);
     }

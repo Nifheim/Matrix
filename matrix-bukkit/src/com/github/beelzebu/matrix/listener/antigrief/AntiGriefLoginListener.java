@@ -58,7 +58,6 @@ public class AntiGriefLoginListener implements Listener {
             premiumPlayer.remove(player.getUniqueId());
             player.kickPlayer("Se ha detectado un acceso no autorizado.");
             api.getSQLDatabase().addFailedLogin(player.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on PlayerJoinEvent", player.getName(), player.getAddress().getAddress().getHostAddress()));
-            return;
         }
     }
 }

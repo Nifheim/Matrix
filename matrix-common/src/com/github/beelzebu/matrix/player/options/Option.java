@@ -2,6 +2,8 @@ package com.github.beelzebu.matrix.player.options;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 
 public abstract class Option {
@@ -16,7 +18,7 @@ public abstract class Option {
     }
 
     public final String getStatus() {
-        return enabled ? api.getString("Options.Status.Enabled", api.getPlugin().getLocale(p.getUniqueId())) : api.getString("Options.Status.Disabled", api.getPlugin().getLocale(p.getUniqueId()));
+        return enabled ? I18n.tl(Message.MENU_OPTIONS_STATUS_ENABLED, p.getLastLocale()) : I18n.tl(Message.MENU_OPTIONS_STATUS_DISABLED, p.getLastLocale());
     }
 
     public boolean isEnabled() {

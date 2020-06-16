@@ -18,20 +18,20 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ItemListener implements Listener {
 
-    private final MatrixAPI core = Matrix.getAPI();
+    private final MatrixAPI api = Matrix.getAPI();
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         if (e.getItem() == null || e.getItem().getType() == Material.AIR) {
             return;
         }
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (core.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName())))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName())))) {
             Player p = e.getPlayer();
             if (e.getItem().getType().equals(Material.COMPASS)) {
                 //Bukkit.dispatchCommand(p, "servidores");
                 p.chat("/servidores");
             } else if (e.getItem().getType().equals(CompatUtil.getInstance().getRedstoneComparator())) {
-                new OptionsGUI(p, core.getString("Options.Title", p.getLocale())).open(p);
+                new OptionsGUI(api.getPlayer(p.getUniqueId())).open(p);
             } else if (e.getItem().getType().equals(CompatUtil.getInstance().getPlayerHeadItem().getType())) {
                 Bukkit.dispatchCommand(p, "perfil");
             }
@@ -40,7 +40,7 @@ public class ItemListener implements Listener {
 
     @EventHandler
     public void inventoryMoveEvent(InventoryMoveItemEvent e) {
-        if (!core.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
+        if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             return;
         }
         e.setCancelled(true);
@@ -48,21 +48,21 @@ public class ItemListener implements Listener {
 
     @EventHandler
     public void inventoryClick(InventoryClickEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (core.getConfig().getString("Lobby World") == null ? e.getWhoClicked().getWorld().getName() == null : core.getConfig().getString("Lobby World").equals(e.getWhoClicked().getWorld().getName())))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (api.getConfig().getString("Lobby World") == null ? e.getWhoClicked().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getWhoClicked().getWorld().getName())))) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onItemDropEvent(PlayerDropItemEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && e.getPlayer().getWorld().getName().equals(core.getConfig().getString("Lobby World")))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && e.getPlayer().getWorld().getName().equals(api.getConfig().getString("Lobby World")))) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler
     public void onItemChange(PlayerSwapHandItemsEvent e) {
-        if (core.getServerInfo().getServerType().equals(ServerType.LOBBY) || (core.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && e.getPlayer().getWorld().getName().equals(core.getConfig().getString("Lobby World")))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && e.getPlayer().getWorld().getName().equals(api.getConfig().getString("Lobby World")))) {
             e.setCancelled(true);
         }
     }

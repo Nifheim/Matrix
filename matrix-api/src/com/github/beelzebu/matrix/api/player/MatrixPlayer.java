@@ -195,10 +195,10 @@ public interface MatrixPlayer extends CommandSource {
     /**
      * Set the field with the given name to the given value without publishing an update to redis.
      *
-     * @param field Field to update.
-     * @param json  Json value to set to this field.
+     * @param fieldName Field to update.
+     * @param json      Json value to set to this field.
      */
-    void setField(String field, String json);
+    void setField(String fieldName, String json);
 
     void saveStats(Map<Statistic, Long> stats);
 

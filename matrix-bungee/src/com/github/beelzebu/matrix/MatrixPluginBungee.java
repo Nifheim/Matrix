@@ -131,14 +131,6 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public String getLocale(UUID uuid) {
-        if (ProxyServer.getInstance().getPlayer(uuid) != null) {
-            return ProxyServer.getInstance().getPlayer(uuid).getLocale().getLanguage();
-        }
-        return "";
-    }
-
-    @Override
     public void ban(String name) {
         ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "ban " + name + " nope :p");
     }

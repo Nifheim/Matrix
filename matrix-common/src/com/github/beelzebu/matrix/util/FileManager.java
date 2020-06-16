@@ -20,7 +20,7 @@ public class FileManager {
 
     public FileManager(MatrixPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin, "MatrixPlugin can't be null.");
-        messagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        messagesFile = new File(plugin.getDataFolder(), "messages_en.yml");
         messages_esFile = new File(plugin.getDataFolder(), "messages_es.yml");
         configFile = new File(plugin.getDataFolder(), "config.yml");
         dataFile = new File(plugin.getDataFolder(), "data.yml");
@@ -43,8 +43,12 @@ public class FileManager {
 
     public void generateFiles() {
         plugin.getDataFolder().mkdirs();
+        File oldMessagesFile = new File(plugin.getDataFolder(), "messages.yml");
+        if (oldMessagesFile.exists()) {
+            oldMessagesFile.renameTo(messagesFile);
+        }
         if (!messagesFile.exists()) {
-            copy(plugin.getResource("messages.yml"), messagesFile);
+            copy(plugin.getResource("messages_en.yml"), messagesFile);
         }
         if (!messages_esFile.exists()) {
             copy(plugin.getResource("messages_es.yml"), messages_esFile);

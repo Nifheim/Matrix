@@ -114,14 +114,6 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public String getLocale(UUID uuid) {
-        if (isOnline(uuid, true)) {
-            return Bukkit.getPlayer(uuid).getLocale();
-        }
-        return "";
-    }
-
-    @Override
     public void ban(String name) {
         Bukkit.getBanList(BanList.Type.NAME).addBan(name, "nope :p", null, null);
     }

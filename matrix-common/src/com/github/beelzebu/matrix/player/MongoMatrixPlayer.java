@@ -12,6 +12,7 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -61,7 +62,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private String lastLocale;
     private String staffChannel;
     private boolean watcher;
-    private Set<PlayerOptionType> options = new HashSet<>();
+    private HashSet<PlayerOptionType> options = new HashSet<>();
     @Indexed
     private String IP;
     private Set<String> ipHistory = new LinkedHashSet<>();
@@ -72,17 +73,10 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private int spammingLevel;
     private boolean vanished;
     private GameType lastGameType;
-    private Map<GameType, GameMode> gameModeByGame = new HashMap<>();
-    private Map<GameType, Long> totalPlayTimeByGame = new HashMap<>();
-    private Map<GameType, Long> playTimeByGame = new HashMap<>();
-    private Map<GameType, Long> playedGamesMap = new HashMap<>();
-
-    private void clearData() {
-        gameModeByGame.clear();
-        totalPlayTimeByGame.clear();
-        playTimeByGame.clear();
-        playedGamesMap.clear();
-    }
+    private HashMap<GameType, GameMode> gameModeByGame = new HashMap<>();
+    private HashMap<GameType, Long> totalPlayTimeByGame = new HashMap<>();
+    private HashMap<GameType, Long> playTimeByGame = new HashMap<>();
+    private HashMap<GameType, Long> playedGamesMap = new HashMap<>();
 
     static {
         Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).peek(field -> field.setAccessible(true)).forEach(field -> FIELDS.put(field.getName(), field));
@@ -98,7 +92,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     private MongoMatrixPlayer() {
-        Matrix.getAPI().getPlayers().add(this);
     }
 
     public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
@@ -111,41 +104,24 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                     Objects.requireNonNull(hash.get(id), id + " can't be null");
                 }
                 if (hash.containsKey(id)) { // hash contains field
-                    if (Objects.equals(id, "gameModeByGame")) {
-                        mongoMatrixPlayer.clearData();
-                        continue;
-                    }
-                    if (Objects.equals(id, "totalPlayTimeByGame")) {
-                        mongoMatrixPlayer.clearData();
-                        continue;
-                    }
-                    if (Objects.equals(id, "playTimeByGame")) {
-                        mongoMatrixPlayer.clearData();
-                        continue;
-                    }
-                    if (Objects.equals(id, "playedGamesMap")) {
-                        mongoMatrixPlayer.clearData();
-                        continue;
-                    }
-                    Object value;
-                    switch (id) {
-                        case "gameModeByGame":
-                        case "totalPlayTimeByGame":
-                        case "playTimeByGame":
-                        case "playedGamesMap":
-                            value = Matrix.GSON.fromJson(hash.get(id), HashMap.class);
-                            ((Map<?, ?>) field.get(mongoMatrixPlayer)).putAll((Map) value);
-                            break;
-                        default:
-                            value = Matrix.GSON.fromJson(hash.get(id), field.getType());
-                            break;
-                    }
-                    if (value != null) {
-                        field.set(mongoMatrixPlayer, value);
+                    if (id.equals("gameModeByGame") || id.equals("totalPlayTimeByGame") || id.equals("playTimeByGame") || id.equals("playedGamesMap")) {
+                        HashMap<GameType, ?> map = (HashMap<GameType, ?>) field.get(mongoMatrixPlayer);
+                        map.putAll(Matrix.GSON.fromJson(hash.get(id), HashMap.class));
+                        map.remove(GameType.NONE);
+                    } else if (id.equals("options")) {
+                        Object value = Matrix.GSON.fromJson(hash.get(id), new TypeToken<HashSet<PlayerOptionType>>() {
+                        }.getType());
+                        if (value != null) {
+                            field.set(mongoMatrixPlayer, value);
+                        }
+                    } else {
+                        Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
+                        if (value != null) {
+                            field.set(mongoMatrixPlayer, value);
+                        }
                     }
                 }
             } catch (IllegalArgumentException | IllegalAccessException | NullPointerException | JsonSyntaxException e) {
-                mongoMatrixPlayer.clearData();
                 e.printStackTrace();
                 return null;
             }
@@ -225,6 +201,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setGameMode(GameMode gameMode, GameType gameType) {
+        if (gameType == GameType.NONE) {
+            return;
+        }
         if (Objects.equals(gameModeByGame.get(gameType), gameMode)) {
             return;
         }
@@ -320,11 +299,24 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setField(String field, String json) {
+    public void setField(String fieldName, String json) {
         try {
-            Field f = FIELDS.get(field);
-            if (f != null) {
-                f.set(this, Matrix.GSON.fromJson(json, f.getType()));
+            Field field = FIELDS.get(fieldName);
+            if (fieldName.equals("gameModeByGame") || fieldName.equals("totalPlayTimeByGame") || fieldName.equals("playTimeByGame") || fieldName.equals("playedGamesMap")) {
+                HashMap<GameType, ?> map = (HashMap<GameType, ?>) field.get(this);
+                map.putAll(Matrix.GSON.fromJson(json, HashMap.class));
+                map.remove(GameType.NONE);
+            } else if (fieldName.equals("options")) {
+                Object value = Matrix.GSON.fromJson(json, new TypeToken<HashSet<PlayerOptionType>>() {
+                }.getType());
+                if (value != null) {
+                    field.set(this, value);
+                }
+            } else {
+                Object value = Matrix.GSON.fromJson(json, field.getType());
+                if (value != null) {
+                    field.set(this, value);
+                }
             }
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
@@ -370,7 +362,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("uniqueId");
     }
 
-
+    @Override
     public String getName() {
         return name;
     }
@@ -389,10 +381,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("knownNames");
     }
 
+
     public Set<String> getKnownNames() {
         return knownNames;
     }
 
+    @Override
     public boolean isPremium() {
         return premium;
     }
@@ -406,6 +400,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("premium");
     }
 
+    @Override
     public boolean isRegistered() {
         return registered;
     }
@@ -419,6 +414,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("registered");
     }
 
+    @Override
     public boolean isAdmin() {
         return admin;
     }
@@ -432,6 +428,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("admin");
     }
 
+    @Override
     public String getSecret() {
         return secret;
     }
@@ -445,6 +442,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("secret");
     }
 
+    @Override
     public String getHashedPassword() {
         return hashedPassword;
     }
@@ -458,6 +456,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("hashedPassword");
     }
 
+    @Override
     public boolean isLoggedIn() {
         return loggedIn;
     }
@@ -471,6 +470,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("loggedIn");
     }
 
+    @Override
     public ChatColor getChatColor() {
         return chatColor;
     }
@@ -484,6 +484,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("chatColor");
     }
 
+    @Override
     public String getLastLocale() {
         return lastLocale;
     }
@@ -505,6 +506,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("lastLocale");
     }
 
+    @Override
     public String getStaffChannel() {
         return staffChannel;
     }
@@ -518,6 +520,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("staffChannel");
     }
 
+    @Override
     public boolean isWatcher() {
         return watcher;
     }
@@ -531,10 +534,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("watcher");
     }
 
+    @Override
     public Set<PlayerOptionType> getOptions() {
         return options;
     }
 
+    @Override
     public String getIP() {
         return IP;
     }

@@ -11,7 +11,7 @@ import org.bukkit.command.ConsoleCommandSender;
 public class StopCommand extends MatrixCommand {
 
     public StopCommand() {
-        super("stop", "matrix.admin", "minecraft:stop", "bukkit:stop", "spigot:stop", "restart", "spigot:restart");
+        super("stop", "matrix.admin", false, "minecraft:stop", "bukkit:stop", "spigot:stop", "restart", "spigot:restart");
     }
 
     @Override

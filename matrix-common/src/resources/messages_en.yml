@@ -192,6 +192,7 @@ Premium:
   - '&7Since this server is &6&lcracked&7, we will need to &c&lerase&7 all your current data to use your mojang information,'
   - '&7this will allow you to join &ewithout using /login command&7 and change your name in minecraft.net without loosing any data on this server.'
   Kick: '&7Now we will try to validate your login with Mojang servers, please come back in 10 seconds.'
+  Suggestion: '&7Hey, if you''re joining with a premium account, you can use &6/premium&7 to skip login.'
 No Console: '%prefix% &c&lSorry! &7This command can''t be executed from console :('
 No Permissions: '%prefix% &c&lSorry! &7You don''t have permissions do this :('
 Error:

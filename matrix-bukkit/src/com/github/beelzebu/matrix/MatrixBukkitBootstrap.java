@@ -24,9 +24,9 @@ import com.github.beelzebu.matrix.command.staff.VanishCommand;
 import com.github.beelzebu.matrix.command.user.OptionsCommand;
 import com.github.beelzebu.matrix.command.user.ProfileCommand;
 import com.github.beelzebu.matrix.command.user.SpitCommand;
-import com.github.beelzebu.matrix.command.utils.AddLore;
+import com.github.beelzebu.matrix.command.utils.AddLoreCommand;
 import com.github.beelzebu.matrix.command.utils.MatrixManagerCommand;
-import com.github.beelzebu.matrix.command.utils.RemoveLore;
+import com.github.beelzebu.matrix.command.utils.RemoveLoreCommand;
 import com.github.beelzebu.matrix.command.utils.RenameCommand;
 import com.github.beelzebu.matrix.command.utils.SyncCommand;
 import com.github.beelzebu.matrix.config.BukkitConfiguration;
@@ -90,6 +90,10 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             getLogger().warning("Bungee is disabled in spigot config, forcing it to true.");
             SpigotConfig.bungee = true;
         }
+        if (SpigotConfig.debug) {
+            getLogger().warning("Debug is enabled in spigot config, forcing it to false.");
+            SpigotConfig.debug = false;
+        }
         saveResource("config.yml", false);
         configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
     }
@@ -102,8 +106,9 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 p.closeInventory();
             }
         });
-        api.shutdown();
         new ServerUnregisterMessage().send();
+        api.shutdown();
+        Bukkit.getScheduler().cancelTasks(this);
     }
 
     @Override
@@ -156,8 +161,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new OptionsCommand());
         CommandAPI.registerCommand(this, new PowerupsCommand());
         CommandAPI.registerCommand(this, new LaunchPadsCommand());
-        CommandAPI.registerCommand(this, new RemoveLore());
-        CommandAPI.registerCommand(this, new AddLore());
+        CommandAPI.registerCommand(this, new RemoveLoreCommand());
+        CommandAPI.registerCommand(this, new AddLoreCommand());
         CommandAPI.registerCommand(this, new RenameCommand());
         CommandAPI.registerCommand(this, new MatrixManagerCommand());
         CommandAPI.registerCommand(this, new SpitCommand());

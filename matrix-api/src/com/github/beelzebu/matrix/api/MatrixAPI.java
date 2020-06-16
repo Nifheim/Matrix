@@ -5,6 +5,8 @@ import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.config.MatrixConfig;
 import com.github.beelzebu.matrix.api.database.MatrixDatabase;
 import com.github.beelzebu.matrix.api.database.SQLDatabase;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.messaging.Messaging;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
@@ -14,7 +16,6 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,7 +53,9 @@ public abstract class MatrixAPI {
                 return matrixPlayer;
             }
         }
-        return getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId));
+        MatrixPlayer matrixPlayer = getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId));
+        players.add(matrixPlayer);
+        return matrixPlayer;
     }
 
     public MatrixPlayer getPlayer(String name) {
@@ -65,7 +68,9 @@ public abstract class MatrixAPI {
                 return matrixPlayer;
             }
         }
-        return getCache().getPlayer(name).orElse(getDatabase().getPlayer(name));
+        MatrixPlayer matrixPlayer = getCache().getPlayer(name).orElse(getDatabase().getPlayer(name));
+        players.add(matrixPlayer);
+        return matrixPlayer;
     }
 
     /**
@@ -74,20 +79,33 @@ public abstract class MatrixAPI {
      * @param locale locale for the messages file.
      * @return messages file for the requested lang, if the file doesn't exists,
      * return the default messages file.
+     * @deprecated Use {@link com.github.beelzebu.matrix.api.i18n.I18n}
      */
+    @Deprecated
     public final AbstractConfig getMessages(String locale) {
-        return Optional.ofNullable(messagesMap.get(locale.split("_")[0])).orElse(messagesMap.get("default"));
+        return I18n.getMessagesFile(locale.split("_")[0]);
     }
 
-
+    /**
+     * @deprecated Use {@link com.github.beelzebu.matrix.api.i18n.I18n}
+     */
+    @Deprecated
     public final String getString(String path, String locale) {
-        return StringUtils.replace(getMessages(locale).getString(path, StringUtils.replace(getMessages("").getString(path, ""))));
+        return StringUtils.replace(getMessages(locale.split("_")[0]).getString(path, StringUtils.replace(getMessages(I18n.DEFAULT_LOCALE).getString(path, ""))));
     }
 
+    /**
+     * @deprecated Use {@link com.github.beelzebu.matrix.api.i18n.I18n}
+     */
+    @Deprecated
     public final String getString(Message message, String lang, String... parameters) {
-        return StringUtils.replace(getMessages(lang).getString(message.getPath(), message.getDefaults()));
+        return I18n.tl(message, lang);
     }
 
+    /**
+     * @deprecated Use {@link com.github.beelzebu.matrix.api.i18n.I18n}
+     */
+    @Deprecated
     public Map<String, AbstractConfig> getMessagesMap() {
         return messagesMap;
     }
@@ -109,4 +127,6 @@ public abstract class MatrixAPI {
     public abstract ServerInfo getServerInfo();
 
     public abstract boolean hasPermission(MatrixPlayer player, String permission);
+
+    protected abstract void initI18n();
 }

@@ -12,6 +12,7 @@ server-info:
   name: 'lobby1'
   game-type: 'none'
   server-type: 'lobby'
+  game-mode: 'adventure'
 
 mysql:
   host: '172.20.0.2'

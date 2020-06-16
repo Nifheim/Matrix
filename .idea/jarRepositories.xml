@@ -106,5 +106,10 @@
       <option name="name" value="maven2" />
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven15" />
+      <option name="name" value="maven15" />
+      <option name="url" value="https://dl.bintray.com/deanveloper/SkullCreator" />
+    </remote-repository>
   </component>
 </project>

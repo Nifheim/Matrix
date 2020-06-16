@@ -4,6 +4,8 @@ import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.Titles;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,13 +31,15 @@ public class PlayerDeathListener implements Listener {
         } catch (Exception ignore) { // Doesn't work in 1.8 or earlier
         }
         Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-            if (!plugin.getConfig().getString("Death Titles.Mode", "Disabled").equalsIgnoreCase("disabled")) {
-                if (plugin.getConfig().getString("Death Titles.Mode").equalsIgnoreCase("pvp") && p.getKiller() != null) {
-                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.getLocale()), core.getString("Death Titles.Subtitle", p.getLocale()));
-                } else {
-                    Titles.sendTitle(p, 30, stay, 30, core.getString("Death Titles.Title", p.getLocale()), core.getString("Death Titles.Subtitle", p.getLocale()));
+            if (plugin.getConfig().getString("Death Titles.Mode", "Disabled").equalsIgnoreCase("disabled")) {
+                return;
+            }
+            if (plugin.getConfig().getString("Death Titles.Mode").equalsIgnoreCase("pvp")) {
+                if (p.getKiller() == null) {
+                    return;
                 }
             }
+            Titles.sendTitle(p, 30, stay, 30, I18n.tl(Message.DEATH_TITLES_TITLE, core.getPlayer(p.getUniqueId()).getLastLocale()), I18n.tl(Message.DEATH_TITLES_SUBTITLE, core.getPlayer(p.getUniqueId()).getLastLocale()));
         }, 10L);
     }
 }

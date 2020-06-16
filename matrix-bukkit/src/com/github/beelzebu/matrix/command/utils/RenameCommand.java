@@ -1,6 +1,8 @@
 package com.github.beelzebu.matrix.command.utils;
 
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,14 +21,14 @@ public class RenameCommand extends MatrixCommand {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(api.getString("No Console", ""));
+            sender.sendMessage(I18n.tl(Message.GENERAL_NO_CONSOLE, I18n.DEFAULT_LOCALE));
             return;
         }
-        String locale = ((Player) sender).getLocale();
+        String locale = api.getPlayer(((Player) sender).getUniqueId()).getLastLocale();
         Player p = (Player) sender;
         if (args.length > 0) {
             if (p.getInventory().getItemInMainHand() == null) {
-                p.sendMessage(api.getString("Item Utils.No Item", locale));
+                p.sendMessage(I18n.tl(Message.ITEM_UTILS_NO_ITEM, locale));
                 return;
             }
             StringBuilder name = new StringBuilder();
@@ -38,9 +40,9 @@ public class RenameCommand extends MatrixCommand {
             meta.setDisplayName(StringUtils.replace(name.substring(0, name.length() - 1)));
             item.setItemMeta(meta);
             p.getInventory().setItemInMainHand(item);
-            p.sendMessage(api.getString("Item Utils.Rename.Successful", locale).replace("%name%", name.toString()));
+            p.sendMessage(I18n.tl(Message.ITEM_UTILS_RENAME, locale).replace("%name%", name.toString()));
             return;
         }
-        p.sendMessage(api.getString("Item Utils.Rename.Help", locale));
+        p.sendMessage(I18n.tl(Message.ITEM_UTILS_RENAME_USAGE, locale));
     }
 }

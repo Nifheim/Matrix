@@ -4,12 +4,15 @@ import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.CentredMessage;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
@@ -42,8 +45,8 @@ public class BasicCommands {
             public void execute(CommandSender sender, String[] arg1) {
                 if (sender instanceof ProxiedPlayer) {
                     MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                    for (String line : Matrix.getAPI().getMessages(matrixPlayer.getLastLocale()).getStringList("Basic Commands.Twitter")) {
-                        sender.sendMessage(StringUtils.replace(CentredMessage.generate(line)));
+                    for (String line : I18n.tls(Message.COMMAND_SOCIAL_TWITTER, matrixPlayer.getLastLocale())) {
+                        sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
                     }
                 }
             }
@@ -53,8 +56,8 @@ public class BasicCommands {
             public void execute(CommandSender sender, String[] arg1) {
                 if (sender instanceof ProxiedPlayer) {
                     MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                    for (String line : Matrix.getAPI().getMessages(matrixPlayer.getLastLocale()).getStringList("Basic Commands.Facebook")) {
-                        sender.sendMessage(StringUtils.replace(CentredMessage.generate(line)));
+                    for (String line : I18n.tls(Message.COMMAND_SOCIAL_FACEBOOK, matrixPlayer.getLastLocale())) {
+                        sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
                     }
                 }
             }
@@ -64,8 +67,8 @@ public class BasicCommands {
             public void execute(CommandSender sender, String[] arg1) {
                 if (sender instanceof ProxiedPlayer) {
                     MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                    for (String line : Matrix.getAPI().getMessages(matrixPlayer.getLastLocale()).getStringList("Basic Commands.Instagram")) {
-                        sender.sendMessage(StringUtils.replace(CentredMessage.generate(line)));
+                    for (String line : I18n.tls(Message.COMMAND_SOCIAL_INSTAGRAM, matrixPlayer.getLastLocale())) {
+                        sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
                     }
                 }
             }
@@ -76,8 +79,8 @@ public class BasicCommands {
                 if (args.length == 0) {
                     if (sender instanceof ProxiedPlayer) {
                         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                        for (String line : Matrix.getAPI().getMessages(matrixPlayer.getLastLocale()).getStringList("Basic Commands.Discord")) {
-                            sender.sendMessage(StringUtils.replace(CentredMessage.generate(line)));
+                        for (String line : I18n.tls(Message.COMMAND_SOCIAL_DISCORD, matrixPlayer.getLastLocale())) {
+                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
                         }
                     }
                 } else if (args.length == 1 && args[0].equalsIgnoreCase("verify")) {

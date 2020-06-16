@@ -1,6 +1,8 @@
 package com.github.beelzebu.matrix.tasks;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.messaging.message.DiscordRankUpdateMessage;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
@@ -37,6 +39,9 @@ public class PostLoginTask implements Runnable {
                 new DiscordRankUpdateMessage(player.getUniqueId(), DiscordRankUpdateMessage.DiscordRankType.VIP, DiscordRankUpdateMessage.Action.ADD);
             } else {
                 new DiscordRankUpdateMessage(player.getUniqueId(), DiscordRankUpdateMessage.DiscordRankType.VIP, DiscordRankUpdateMessage.Action.REMOVE);
+            }
+            if (!player.isPremium()) {
+                player.sendMessage(I18n.tl(Message.PREMIUM_SUGGESTION, player.getLastLocale()));
             }
             Matrix.getAPI().getCache().saveToCache(player);
         } catch (Exception e) {

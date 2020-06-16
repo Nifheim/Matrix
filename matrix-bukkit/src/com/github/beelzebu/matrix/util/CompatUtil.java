@@ -30,6 +30,8 @@ public abstract class CompatUtil {
 
     public abstract ItemStack getPurpleGlass();
 
+    public abstract ItemStack getPurpleGlassPane();
+
     public abstract Material getRedstoneComparator();
 
     public abstract ItemStack getGreenDye();

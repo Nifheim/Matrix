@@ -32,7 +32,7 @@ public class MatrixManagerCommand extends MatrixCommand {
     private final LobbyData data = LobbyData.getInstance();
 
     public MatrixManagerCommand() {
-        super("matrix", "matrix.mod");
+        super("matrix", "matrix.command.matrix");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class MatrixManagerCommand extends MatrixCommand {
         } else if (args[0].equalsIgnoreCase("newsbook")) {
             _book(sender, args);
         } else if (args[0].equalsIgnoreCase("profile")) {
-            new ProfileGUI(((Player) sender), api.getString("Social.Profile.Name", ((Player) sender).getLocale())).open((Player) sender);
+            new ProfileGUI(api.getPlayer(((Player) sender).getUniqueId())).open((Player) sender);
         } else if (args[0].equalsIgnoreCase("editmode")) {
             if (sender.hasPermission("matrix.staff.admin") && sender instanceof Player && api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                 LobbyListener.getEditMode().add((Player) sender);
@@ -58,7 +58,7 @@ public class MatrixManagerCommand extends MatrixCommand {
                 if (args[1].contains(".")) {
                     args[1] = args[1].replaceAll("\\.", "_");
                 }
-                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.valueOf(args[1].toUpperCase()), Integer.valueOf(args[2]), Integer.valueOf(args[3]));
+                ((Player) sender).playSound(((Player) sender).getLocation(), Sound.valueOf(args[1].toUpperCase()), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
             }
         }
         return true;

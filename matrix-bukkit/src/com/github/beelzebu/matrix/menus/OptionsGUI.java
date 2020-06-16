@@ -3,6 +3,8 @@ package com.github.beelzebu.matrix.menus;
 import com.github.beelzebu.matrix.api.ItemBuilder;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.menu.GUIManager;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
@@ -12,11 +14,8 @@ import com.github.beelzebu.matrix.player.options.FlyOption;
 import com.github.beelzebu.matrix.player.options.Option;
 import com.github.beelzebu.matrix.player.options.SpeedOption;
 import com.github.beelzebu.matrix.util.CompatUtil;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -29,22 +28,23 @@ import org.bukkit.inventory.ItemFlag;
 public class OptionsGUI extends GUIManager {
 
     private final MatrixAPI api = Matrix.getAPI();
-    private final Player player;
+    private final MatrixPlayer matrixPlayer;
+    private final String locale;
 
-    public OptionsGUI(Player p, String name) {
-        super(27, name);
-        player = p;
+    public OptionsGUI(MatrixPlayer matrixPlayer) {
+        super(27, I18n.tl(Message.MENU_OPTIONS_TITLE, matrixPlayer.getLastLocale()));
+        this.matrixPlayer = matrixPlayer;
+        locale = matrixPlayer.getLastLocale();
         setItems();
     }
 
     private void setItems() {
-        MatrixPlayer matrixPlayer = api.getPlayer(player.getUniqueId());
-        String lang = player.getLocale();
+        List<String> speedLore = new ArrayList<>();
+        for (String line : I18n.tls(Message.MENU_OPTIONS_SPEED_LORE, locale)) {
+            speedLore.add(rep(line, new SpeedOption(matrixPlayer)));
+        }
 
-        List<String> speedlore = new ArrayList<>();
-        api.getMessages(lang).getStringList("Options.Speed.Lore").forEach(line -> speedlore.add(rep(line, new SpeedOption(matrixPlayer))));
-
-        setItem(10, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(api.getString("Options.Speed.Name", lang)).color(Color.RED).lore(speedlore).build(), p -> {
+        setItem(10, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(I18n.tl(Message.MENU_OPTIONS_SPEED_NAME, locale)).color(Color.RED).lore(speedLore).build(), p -> {
             boolean status = !matrixPlayer.getOption(PlayerOptionType.SPEED);
             if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
@@ -55,11 +55,13 @@ public class OptionsGUI extends GUIManager {
             p.closeInventory();
         });
 
-        List<String> flylore = new ArrayList<>();
-        api.getMessages(lang).getStringList("Options.Fly.Lore").forEach(line -> flylore.add(rep(line, new FlyOption(matrixPlayer))));
+        List<String> flyLore = new ArrayList<>();
+        for (String line : I18n.tls(Message.MENU_OPTIONS_FLY_LORE, locale)) {
+            flyLore.add(rep(line, new FlyOption(matrixPlayer)));
+        }
 
-        setItem(12, new ItemBuilder(Material.FEATHER).displayname(api.getString("Options.Fly.Name", lang)).lore(flylore).build(), p -> {
-            if (p.hasPermission("matrix.vip2")) {
+        setItem(12, new ItemBuilder(Material.FEATHER).displayname(I18n.tl(Message.MENU_OPTIONS_FLY_NAME, locale)).lore(flyLore).build(), p -> {
+            if (p.hasPermission("matrix.command.fly")) {
                 boolean status = !matrixPlayer.getOption(PlayerOptionType.FLY);
                 if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                     p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
@@ -74,7 +76,12 @@ public class OptionsGUI extends GUIManager {
             p.closeInventory();
         });
 
-        setItem(14, new ItemBuilder(CompatUtil.getInstance().getGreenDye()).displayname(api.getString("Options.Hide.Name", lang)).lore(api.getMessages(lang).getStringList("Options.Hide.Lore")).build(), p -> {
+        List<String> hideLore = new ArrayList<>();
+        for (String line : I18n.tls(Message.MENU_OPTIONS_HIDE_LORE, locale)) {
+            hideLore.add(line);
+        }
+
+        setItem(14, new ItemBuilder(CompatUtil.getInstance().getGreenDye()).displayname(I18n.tl(Message.MENU_OPTIONS_HIDE_NAME, locale)).lore(hideLore).build(), p -> {
             boolean fail = false;
             try {
                 if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
@@ -82,7 +89,7 @@ public class OptionsGUI extends GUIManager {
                 } else {
                     Class.forName("de.simonsator.partyandfriendsgui.api.PartyFriendsAPI").getMethod("openHideInventory", Player.class).invoke(null, p);
                 }
-            } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            } catch (ReflectiveOperationException ex) {
                 fail = true;
             }
             if (fail) {
@@ -92,6 +99,8 @@ public class OptionsGUI extends GUIManager {
             }
         });
 
+        // TODO: check implementation
+        /*
         setItem(16, new ItemBuilder(CompatUtil.getInstance().getBookAndQuill()).displayname(StringUtils.replace("&8Nick")).lore(Arrays.asList("", StringUtils.replace("&7Haz click para cambiar"), StringUtils.replace("&7el color de tu nick."))).build(), p -> {
             if (p.hasPermission("matrix.command.nick")) {
                 Bukkit.dispatchCommand(p, "nick");
@@ -101,13 +110,7 @@ public class OptionsGUI extends GUIManager {
                 p.closeInventory();
             }
         });
-        if (player.hasPermission("matrix.command.vanish")) {
-            setItem(26, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(StringUtils.replace("&8Ocultar nick")).lore(matrixPlayer.getOption(PlayerOptionType.NICKNAME) + "").build(), p -> {
-                boolean status = !matrixPlayer.getOption(PlayerOptionType.NICKNAME);
-                matrixPlayer.setOption(PlayerOptionType.NICKNAME, status);
-                p.closeInventory();
-            });
-        }
+         */
     }
 
     private String rep(String str, Option opt) {

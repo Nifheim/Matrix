@@ -1,19 +1,23 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import com.github.beelzebu.matrix.util.PermsUtils;
-import com.google.gson.GsonBuilder;
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
+import com.github.beelzebu.matrix.util.PermsUtils;
+import com.google.gson.GsonBuilder;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.stream.Collectors;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class PlayerInfoCommand extends Command {
+public class PlayerInfoCommand extends Command implements TabExecutor {
 
     private final MatrixBungeeBootstrap bootstrap;
 
@@ -38,7 +42,7 @@ public class PlayerInfoCommand extends Command {
                                         + " \n"
                                         + " &cUUID &8• &7" + player.getUniqueId() + "&r\n"
                                         + " &cDisplay name &8• &7" + player.getDisplayName() + "&r\n"
-                                        //+ " &cLevel &8• &7" + NetworkXP.getLevelForXP(player.getExp()) + "&r\n"
+                                        + " &cLevel &8• &7" + player.getLevel() + "&r\n"
                                         + " &cExperience &8• &7" + player.getExp() + "&r\n"
                                         + " &cCoins &8• &7" + player.getCoins() + "&r\n"
                                         + " &cRank &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "default" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"
@@ -66,6 +70,11 @@ public class PlayerInfoCommand extends Command {
                 }
             }
         });
+    }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        return ProxyServer.getInstance().getPlayers().stream().filter(proxiedPlayer -> proxiedPlayer.getName().toLowerCase().startsWith(args.length >= 1 ? args[0] : "")).map(ProxiedPlayer::getName).collect(Collectors.toSet());
     }
 
     private String createList(Collection<String> collection) {

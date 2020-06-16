@@ -2,7 +2,8 @@ package com.github.beelzebu.matrix.api.command;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.Message;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.bukkit.Bukkit;
@@ -43,7 +44,7 @@ public abstract class MatrixCommand extends Command {
                 onCommand(sender, args);
             }
         } else {
-            sender.sendMessage(api.getString(Message.GENERAL_NO_PERMS, sender instanceof Player ? ((Player) sender).getLocale() : ""));
+            sender.sendMessage(I18n.tl(Message.GENERAL_NO_PERMS, sender instanceof Player ? api.getPlayer(((Player) sender).getUniqueId()).getLastLocale() : I18n.DEFAULT_LOCALE));
         }
         return true;
     }

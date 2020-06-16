@@ -48,7 +48,7 @@ public class MongoStorage implements MatrixDatabase {
 
     @Override
     public boolean isRegistered(UUID uniqueId) {
-        return Matrix.getAPI().getCache().getPlayer(uniqueId).isPresent() || userDAO.getPlayer(uniqueId) != null;
+        return Matrix.getAPI().getCache().isCached(uniqueId) || userDAO.getPlayer(uniqueId) != null;
     }
 
     @Override
