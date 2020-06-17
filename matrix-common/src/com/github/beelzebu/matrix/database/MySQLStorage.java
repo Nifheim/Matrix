@@ -151,7 +151,7 @@ public class MySQLStorage implements SQLDatabase {
             return CompletableFuture.completedFuture(true);
         }
         return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
+            try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.UPDATE_STATS_UUID.getQuery())) {
                 callableStatement.setString(1, oldUniqueId.toString());
                 callableStatement.setString(2, newUniqueId.toString());
                 callableStatement.executeUpdate();

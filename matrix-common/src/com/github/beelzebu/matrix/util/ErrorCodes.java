@@ -11,7 +11,7 @@ public enum ErrorCodes {
 
     private final int id;
 
-    private ErrorCodes(int id) {
+    ErrorCodes(int id) {
         this.id = id;
     }
 
