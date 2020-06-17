@@ -14,7 +14,6 @@ public class MatrixReloadCommand extends MatrixCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        api.getConfig().reload();
-        api.getMessagesMap().forEach((key, value) -> value.reload());
+        api.reload();
     }
 }

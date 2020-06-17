@@ -5,7 +5,6 @@ import com.github.beelzebu.matrix.api.database.SQLDatabase;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.database.sql.SQLQuery;
-import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.Throwing;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -146,6 +145,24 @@ public class MySQLStorage implements SQLDatabase {
         });
     }
 
+    @Override
+    public Future<Boolean> updateUniqueId(UUID oldUniqueId, UUID newUniqueId) {
+        if (oldUniqueId == null) { // if the player has a null uuid we shouldn't have any stats associated to his account.
+            return CompletableFuture.completedFuture(true);
+        }
+        return makeFuture(() -> {
+            try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
+                callableStatement.setString(1, oldUniqueId.toString());
+                callableStatement.setString(2, newUniqueId.toString());
+                callableStatement.executeUpdate();
+                return true;
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            return false;
+        });
+    }
+
     private void setDefaultStatsParams(CallableStatement callableStatement, UUID uniqueId, String server) throws SQLException {
         callableStatement.setString(1, uniqueId.toString());
         callableStatement.setString(2, trimServerName(server));
@@ -192,24 +209,5 @@ public class MySQLStorage implements SQLDatabase {
             server = server.substring(0, 34);
         }
         return server;
-    }
-
-    public void migratePremium() {
-        plugin.runAsync(() -> {
-            try (Connection c = dataSource.getConnection(); ResultSet res = c.prepareStatement("SELECT * FROM minecraft_auth.premium").executeQuery()) {
-                while (res.next()) {
-                    UUID uuid = UUID.fromString(res.getString("uniqueId"));
-                    if (UUID.nameUUIDFromBytes(("OfflinePlayer:" + res.getString("name")).getBytes()).equals(uuid)) {
-                        continue;
-                    }
-                    MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer(uuid, res.getString("name"));
-                    mongoMatrixPlayer.setRegistered(true);
-                    mongoMatrixPlayer.setPremium(true);
-                    mongoMatrixPlayer.save();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
     }
 }

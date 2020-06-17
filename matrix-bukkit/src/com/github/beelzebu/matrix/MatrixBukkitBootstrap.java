@@ -37,11 +37,11 @@ import com.github.beelzebu.matrix.listener.LoginListener;
 import com.github.beelzebu.matrix.listener.PlayerCommandPreprocessListener;
 import com.github.beelzebu.matrix.listener.PlayerDeathListener;
 import com.github.beelzebu.matrix.listener.ServerRequestListener;
-import com.github.beelzebu.matrix.listener.StatsListener;
 import com.github.beelzebu.matrix.listener.VanishListener;
 import com.github.beelzebu.matrix.listener.VotifierListener;
 import com.github.beelzebu.matrix.listener.lobby.ItemListener;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
+import com.github.beelzebu.matrix.listener.stats.StatsListener;
 import com.github.beelzebu.matrix.scheduler.BukkitSchedulerAdapter;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.PluginsUtility;
@@ -147,7 +147,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         registerEvents(new PlayerDeathListener(this));
         if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
-            registerEvents(new StatsListener());
+            registerEvents(new StatsListener(api));
         }
         if (isVotifier()) {
             registerEvents(new VotifierListener(this));

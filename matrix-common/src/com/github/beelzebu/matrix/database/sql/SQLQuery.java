@@ -17,6 +17,7 @@ public enum SQLQuery {
      * </ol>
      */
     INSERT_STATS("{CALL insert_stats(?, ?, ?, ? ,?, ?, ?)}"),
+    UPDATE_STATS_UUID("{CALL update_stats_uuid(?, ?)}"),
     /**
      * Params:
      * <ol>

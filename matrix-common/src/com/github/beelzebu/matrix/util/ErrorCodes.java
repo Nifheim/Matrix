@@ -6,7 +6,8 @@ package com.github.beelzebu.matrix.util;
 public enum ErrorCodes {
 
     NULL_PLAYER(1),
-    UUID_DONTMATCH(2);
+    UUID_DONTMATCH(2),
+    CANT_UPDATE_UUID(3);
 
     private final int id;
 

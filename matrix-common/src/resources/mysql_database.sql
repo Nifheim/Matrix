@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS matrix_stats_monthly;
 DROP TABLE IF EXISTS matrix_stats_weekly;
 DROP TABLE IF EXISTS matrix_failed_login;
 DROP PROCEDURE IF EXISTS insert_stats;
+DROP PROCEDURE IF EXISTS update_stats_uuid;
 DROP EVENT IF EXISTS drop_monthly_stats;
 DROP EVENT IF EXISTS drop_weekly_stats;
 
@@ -75,6 +76,13 @@ BEGIN
         INSERT INTO matrix_stats_total(uniqueId, server, kills, mobKills, blocksBroken, blocksPlaced)
         VALUES (v_uniqueId, v_server, v_kills, v_mobKills, v_blocksBroken, v_blocksPlaced);
     END IF;
+END;
+
+CREATE OR REPLACE PROCEDURE update_stats_uuid(v_old_uniqueId CHAR(36), v_new_uniqueId CHAR(36))
+BEGIN
+    UPDATE matrix_stats_weekly SET uniqueId = v_new_uniqueId WHERE uniqueId = v_old_uniqueId;
+    UPDATE matrix_stats_monthly SET uniqueId = v_new_uniqueId WHERE uniqueId = v_old_uniqueId;
+    UPDATE matrix_stats_total SET uniqueId = v_new_uniqueId WHERE uniqueId = v_old_uniqueId;
 END;
 
 CREATE EVENT drop_monthly_stats ON SCHEDULE EVERY 1 MONTH

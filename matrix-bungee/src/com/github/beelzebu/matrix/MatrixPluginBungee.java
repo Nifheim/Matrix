@@ -118,8 +118,8 @@ public class MatrixPluginBungee implements MatrixPlugin {
     @Override
     public boolean isOnline(UUID uuid, boolean here) {
         try {
-            return ProxyServer.getInstance().getPlayer(uuid) != null;
-
+            ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
+            return proxiedPlayer != null && proxiedPlayer.isConnected();
         } catch (Exception e) {
             return false;
         }/*

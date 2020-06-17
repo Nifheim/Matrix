@@ -18,4 +18,6 @@ public interface SQLDatabase {
     Future<Void> incrStats(UUID uuid, String server, Map<Statistic, Long> stats);
 
     Future<Long> getStat(UUID uuid, String server, Statistic statistic);
+
+    Future<Boolean> updateUniqueId(UUID oldUniqueId, UUID newUniqueId);
 }

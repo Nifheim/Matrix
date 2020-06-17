@@ -11,6 +11,9 @@ public class MatrixPlayerSet <T extends MatrixPlayer> extends HashSet<T> {
 
     @Override
     public boolean add(T t) {
+        if (t == null) {
+            return false;
+        }
         if (t.getUniqueId() == null) {
             return false;
         }

@@ -237,7 +237,7 @@ public class ChatListener implements Listener {
         if (Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getName()).isAdmin()) {
             return;
         }
-        String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 1)[0];
+        String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
         if (command.split(":").length > 1) {
             e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));
             command = command.split(":")[1];

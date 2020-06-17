@@ -20,8 +20,6 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * TODO: add support for NTNBAN
- *
  * @author Beelzebu
  */
 public abstract class MatrixAPI {
@@ -54,7 +52,9 @@ public abstract class MatrixAPI {
             }
         }
         MatrixPlayer matrixPlayer = getCache().getPlayer(uniqueId).orElse(getDatabase().getPlayer(uniqueId));
-        players.add(matrixPlayer);
+        if (matrixPlayer != null) {
+            players.add(matrixPlayer);
+        }
         return matrixPlayer;
     }
 
@@ -129,4 +129,6 @@ public abstract class MatrixAPI {
     public abstract boolean hasPermission(MatrixPlayer player, String permission);
 
     protected abstract void initI18n();
+
+    public abstract void reload();
 }

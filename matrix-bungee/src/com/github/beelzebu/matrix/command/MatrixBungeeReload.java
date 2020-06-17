@@ -22,11 +22,11 @@ public class MatrixBungeeReload extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        bungeeBootstrap.getConfig().reload();
         MatrixBungeeBootstrap.CHANNELS.clear();
         MatrixConfig config = bungeeBootstrap.getConfig();
         config.getKeys("Channels").forEach((channel) -> MatrixBungeeBootstrap.CHANNELS.put(channel, new Channel(channel, channel, config.getString("Channels." + channel + ".Permission"), ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register()));
         MotdManager.onEnable();
         bungeeBootstrap.getInfluencerManager().reloadInfluencers();
+        bungeeBootstrap.getApi().reload();
     }
 }

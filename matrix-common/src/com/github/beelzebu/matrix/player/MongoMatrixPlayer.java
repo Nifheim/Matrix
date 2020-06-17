@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
@@ -335,7 +336,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public Future<Long> getStat(Statistic statistic) {
-        return Matrix.getAPI().getSQLDatabase().getStat(uniqueId, Matrix.getAPI().getServerInfo().getGroupName(), statistic);
+        return getStat(Matrix.getAPI().getServerInfo().getGroupName(), statistic);
+    }
+
+    @Override
+    public Future<Long> getStat(String serverGroup, Statistic statistic) {
+        return Matrix.getAPI().getSQLDatabase().getStat(uniqueId, serverGroup, statistic);
     }
 
     public ObjectId getId() {
@@ -353,13 +359,25 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setUniqueId(UUID uniqueId) {
+    public boolean setUniqueId(UUID uniqueId) {
         if (Objects.equals(this.uniqueId, uniqueId)) {
-            return;
+            return true;
         }
-        this.uniqueId = uniqueId;
-        Matrix.getAPI().getCache().update(name, uniqueId);
-        updateCached("uniqueId");
+        Boolean updated = null;
+        try {
+            updated = Matrix.getAPI().getSQLDatabase().updateUniqueId(this.uniqueId, uniqueId).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        if (updated != null && updated) {
+            Matrix.getAPI().getCache().update(name, uniqueId);
+            this.uniqueId = uniqueId;
+            updateCached("uniqueId");
+            return true;
+        } else {
+            Matrix.getLogger().info("Error migrating stats for '" + this.uniqueId + "' (" + getName() + ")" + " skipping UUID update. (" + uniqueId + ")");
+        }
+        return false;
     }
 
     @Override
@@ -555,10 +573,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("ipHistory");
     }
 
+    @Override
     public Set<String> getIpHistory() {
         return ipHistory;
     }
 
+    @Override
     public Date getLastLogin() {
         return lastLogin;
     }
@@ -572,6 +592,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("lastLogin");
     }
 
+    @Override
     public Date getRegistration() {
         return registration;
     }
@@ -584,6 +605,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("registration");
     }
 
+    @Override
     public String getDiscordId() {
         return discordId;
     }
@@ -597,14 +619,17 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         updateCached("discordId");
     }
 
+    @Override
     public int getCensoringLevel() {
         return censoringLevel;
     }
 
+    @Override
     public int getSpammingLevel() {
         return spammingLevel;
     }
 
+    @Override
     public boolean isVanished() {
         return vanished;
     }
@@ -619,6 +644,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return gameModeByGame;
     }
 
+    @Override
     public GameType getLastGameType() {
         return lastGameType;
     }

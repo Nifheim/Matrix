@@ -53,6 +53,19 @@ public class PremiumCommand extends Command {
                     sender.sendMessage(TextComponent.fromLegacyText(line));
                 }
             }
+        } else {
+            if (args.length != 1) {
+                sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.GENERAL_NO_TARGET, I18n.DEFAULT_LOCALE)));
+                return;
+            }
+            String name = args[0];
+            MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(name);
+            if (matrixPlayer == null) {
+                sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.GENERAL_NO_TARGET, I18n.DEFAULT_LOCALE).replace("%target%", name)));
+                return;
+            }
+            matrixPlayer.setPremium(true);
+            sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.PREMIUM_KICK, I18n.DEFAULT_LOCALE)));
         }
     }
 }

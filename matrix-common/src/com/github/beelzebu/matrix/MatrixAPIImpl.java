@@ -124,6 +124,12 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
      * Setup this api instance
      */
     protected void setup() {
+        loadMessages();
+        motd();
+    }
+
+    private void loadMessages() {
+        messagesMap.clear();
         try {
             FileManager fileManager = new FileManager(plugin);
             fileManager.generateFiles();
@@ -159,7 +165,6 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        motd();
     }
 
     /**
@@ -185,5 +190,13 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     @Override
     protected void initI18n() {
         new I18n(messagesMap);
+    }
+
+    @Override
+    public void reload() {
+        getConfig().reload();
+        loadMessages();
+        ((MatrixLoggerImpl) Matrix.getLogger()).setDebug(getConfig().getBoolean("Debug"));
+        Matrix.getLogger().info("Reloaded config and messages.");
     }
 }

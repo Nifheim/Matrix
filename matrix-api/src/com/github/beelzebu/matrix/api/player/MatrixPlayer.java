@@ -44,7 +44,7 @@ public interface MatrixPlayer extends CommandSource {
      *
      * @param uniqueId New UUID to set.
      */
-    void setUniqueId(UUID uniqueId);
+    boolean setUniqueId(UUID uniqueId);
 
     /**
      * Get the real name of this user.
@@ -206,5 +206,7 @@ public interface MatrixPlayer extends CommandSource {
 
     //<T extends Number> Future<T> getStat(Statistic statistic, Class<T> type);
     Future<Long> getStat(Statistic statistic);
+
+    Future<Long> getStat(String serverGroup, Statistic statistic);
 
 }
