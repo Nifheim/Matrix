@@ -115,15 +115,11 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     public void onEnable() {
         Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this)));
         try {
-            CompatUtil.setInstance((CompatUtil) Class.forName("com.github.beelzebu.matrix.util.CompatUtil15").newInstance());
-        } catch (ReflectiveOperationException e) {
-            try {
-                CompatUtil.setInstance((CompatUtil) Class.forName("com.github.beelzebu.matrix.util.CompatUtil12").newInstance());
-            } catch (ReflectiveOperationException e2) {
-                e2.printStackTrace();
-                getLogger().warning("Can't find a compat util implementation.");
-                Bukkit.shutdown();
-            }
+            CompatUtil.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+            getLogger().warning("Can't init a CompatUtil instance.");
+            Bukkit.shutdown();
         }
         api.setup();
 

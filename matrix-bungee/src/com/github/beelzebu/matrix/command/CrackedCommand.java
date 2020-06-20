@@ -4,7 +4,6 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import java.util.UUID;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
@@ -31,6 +30,6 @@ public class CrackedCommand extends Command {
             return;
         }
         matrixPlayer.setPremium(false);
-        sender.sendMessage(TextComponent.fromLegacyText("" + matrixPlayer.setUniqueId(UUID.nameUUIDFromBytes(("OfflinePlayer:" + matrixPlayer.getUniqueId()).getBytes()))));
+        sender.sendMessage("cracked");
     }
 }

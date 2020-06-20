@@ -4,3 +4,4 @@ description: 'Network management plugin'
 version: ${pluginVersion}
 author: Beelzebu
 softdepend: [PlaceholderAPI, Votifier, LuckPerms]
+api-version: 1.15

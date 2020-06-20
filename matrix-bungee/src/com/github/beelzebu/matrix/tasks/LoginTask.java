@@ -39,15 +39,7 @@ public class LoginTask implements Runnable {
                     MatrixPlayer playerByName = Matrix.getAPI().getPlayer(pendingConnection.getName());
                     if (playerByName != null) {
                         if (pendingConnection.isOnlineMode()) {
-                            if (playerByName.setUniqueId(pendingConnection.getUniqueId())) {
-                                player = playerByName;
-                            } else {
-                                event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.CANT_UPDATE_UUID.getId() + "\n" +
-                                        "\n" +
-                                        "There was a problem updating your information, please contact server staff."));
-                                event.setCancelled(true);
-                                return;
-                            }
+                            player = playerByName;
                         } else if (!Objects.equals(playerByName.getUniqueId(), pendingConnection.getUniqueId())) {
                             event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n" +
                                     "\n" +
@@ -75,12 +67,7 @@ public class LoginTask implements Runnable {
             }
             if (pendingConnection.getUniqueId() != null && pendingConnection.getName() != null) {
                 if (player.getUniqueId() == null || player.getUniqueId() != pendingConnection.getUniqueId()) {
-                    if (!player.setUniqueId(pendingConnection.getUniqueId())) {
-                        event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.CANT_UPDATE_UUID.getId() + "\n" +
-                                "\n" +
-                                "There was a problem updating your information, please contact server staff."));
-                        event.setCancelled(true);
-                    }
+                    player.setUniqueId(pendingConnection.getUniqueId());
                 }
                 player.setName(pendingConnection.getName());
                 if (pendingConnection.isOnlineMode()) {

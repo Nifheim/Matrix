@@ -13,7 +13,9 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.JsonObject;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -39,12 +41,19 @@ public class ChatListener implements Listener {
     private final Cache<UUID, Boolean> messageCooldown = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
     private final ListMultimap<Integer, String> punishments = ArrayListMultimap.create();
     private final ListMultimap<Integer, String> spamPunishments = ArrayListMultimap.create();
+    private final Set<String> loggedCommands = new HashSet<>();
 
     public ChatListener(MatrixAPI api) {
         this.api = api;
         api.getConfig().getStringList("Censoring.command").forEach(k -> punishments.put(Integer.parseInt(k.split(";", 2)[0]), k.split(";", 2)[1]));
         api.getConfig().getStringList("AntiSpam.Commands").forEach(k -> spamPunishments.put(Integer.parseInt(k.split(";", 2)[0]), k.split(";", 2)[1]));
         SpamUtils.WHITELIST.addAll(api.getConfig().getStringList("AntiSpam.Whitelist"));
+        for (String command : api.getConfig().getStringList("logged-commands")) {
+            if (command.startsWith("/")) {
+                command = command.replaceFirst("/", "");
+            }
+            loggedCommands.add(command.split(" ", 2)[0]);
+        }
     }
 
     //TODO: re-enable
@@ -234,13 +243,18 @@ public class ChatListener implements Listener {
         if (!(e.getSender() instanceof ProxiedPlayer)) {
             return;
         }
-        if (Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getName()).isAdmin()) {
-            return;
-        }
         String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
         if (command.split(":").length > 1) {
             e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));
             command = command.split(":")[1];
+        }
+        for (String loggedCommand : loggedCommands) {
+            if (command.equals(loggedCommand)) {
+                api.getSQLDatabase().insertCommandLogEntry(((ProxiedPlayer) e.getSender()).getUniqueId(), api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId()).getLastServerName(), e.getMessage());
+            }
+        }
+        if (Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getName()).isAdmin()) {
+            return;
         }
         if (Arrays.asList(blockedCommands).contains(command)) {
             e.setCancelled(true);

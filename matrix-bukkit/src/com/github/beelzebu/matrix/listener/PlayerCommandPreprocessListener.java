@@ -24,7 +24,7 @@ public class PlayerCommandPreprocessListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCommand(PlayerCommandPreprocessEvent e) {
-        if (!e.getPlayer().hasPermission("matrix.admin")) {
+        if (e.getPlayer().hasPermission("matrix.admin")) {
             return;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {

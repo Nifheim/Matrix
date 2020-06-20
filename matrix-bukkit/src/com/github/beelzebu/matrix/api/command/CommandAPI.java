@@ -1,11 +1,10 @@
 package com.github.beelzebu.matrix.api.command;
 
-import java.lang.ref.WeakReference;
+import com.github.beelzebu.matrix.util.CompatUtil;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nullable;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
@@ -16,7 +15,7 @@ import org.bukkit.plugin.Plugin;
  */
 public class CommandAPI {
 
-    private static WeakReference<SimpleCommandMap> simpleCommandMapWeakReference = null;
+    private static SimpleCommandMap commandMap;
 
     private CommandAPI() {
     }
@@ -26,7 +25,7 @@ public class CommandAPI {
         getCommandMap().register(/*fallback prefix*/plugin.getName(), command);
     }
 
-    public static void unregisterCommand(Plugin plugin, @Nullable MatrixCommand command) {
+    public static void unregisterCommand(Plugin plugin, MatrixCommand command) {
         if (command == null) {
             return;
         }
@@ -48,24 +47,23 @@ public class CommandAPI {
         return objectField.get(object);
     }
 
-    public static SimpleCommandMap getCommandMap() {
-        if (simpleCommandMapWeakReference != null) {
-            SimpleCommandMap simpleCommandMap = simpleCommandMapWeakReference.get();
-            if (simpleCommandMap != null) {
-                return simpleCommandMap;
-            }
+    private static SimpleCommandMap getCommandMap() {
+        if (commandMap != null) {
+            return commandMap;
         }
         try {
-            return (simpleCommandMapWeakReference = new WeakReference<>((SimpleCommandMap) getPrivateField(Bukkit.getPluginManager(), "commandMap"))).get();
+            return (commandMap = (SimpleCommandMap) getPrivateField(Bukkit.getPluginManager(), "commandMap"));
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
             return new SimpleCommandMap(Bukkit.getServer());
         }
     }
 
-    public static Map<String, Command> getKnownCommandsMap() {
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Command> getKnownCommandsMap() {
         try {
-            return (Map<String, Command>) getPrivateField(getCommandMap(), "knownCommands", true);
+            return (Map<String, Command>) getPrivateField(getCommandMap(), "knownCommands", CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_13));
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
             return new HashMap<>();

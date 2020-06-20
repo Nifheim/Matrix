@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
@@ -74,10 +73,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private int spammingLevel;
     private boolean vanished;
     private GameType lastGameType;
+    private String lastServerGroup;
+    private String lastServerName;
     private HashMap<GameType, GameMode> gameModeByGame = new HashMap<>();
-    private HashMap<GameType, Long> totalPlayTimeByGame = new HashMap<>();
-    private HashMap<GameType, Long> playTimeByGame = new HashMap<>();
-    private HashMap<GameType, Long> playedGamesMap = new HashMap<>();
 
     static {
         Stream.of(MongoMatrixPlayer.class.getDeclaredFields()).filter(field -> !Modifier.isTransient(field.getModifiers())).peek(field -> field.setAccessible(true)).forEach(field -> FIELDS.put(field.getName(), field));
@@ -95,6 +93,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private MongoMatrixPlayer() {
     }
 
+    public String getId() {
+        if (id == null) {
+            return null;
+        }
+        return id.toHexString();
+    }
+
     public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
         MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer();
         for (Map.Entry<String, Field> ent : FIELDS.entrySet()) {
@@ -105,24 +110,10 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                     Objects.requireNonNull(hash.get(id), id + " can't be null");
                 }
                 if (hash.containsKey(id)) { // hash contains field
-                    if (id.equals("gameModeByGame") || id.equals("totalPlayTimeByGame") || id.equals("playTimeByGame") || id.equals("playedGamesMap")) {
-                        HashMap<GameType, ?> map = (HashMap<GameType, ?>) field.get(mongoMatrixPlayer);
-                        map.putAll(Matrix.GSON.fromJson(hash.get(id), HashMap.class));
-                        map.remove(GameType.NONE);
-                    } else if (id.equals("options")) {
-                        Object value = Matrix.GSON.fromJson(hash.get(id), new TypeToken<HashSet<PlayerOptionType>>() {
-                        }.getType());
-                        if (value != null) {
-                            field.set(mongoMatrixPlayer, value);
-                        }
-                    } else {
-                        Object value = Matrix.GSON.fromJson(hash.get(id), field.getType());
-                        if (value != null) {
-                            field.set(mongoMatrixPlayer, value);
-                        }
-                    }
+                    mongoMatrixPlayer.setField(field, hash.get(id));
                 }
-            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException | JsonSyntaxException e) {
+            } catch (IllegalArgumentException | NullPointerException | JsonSyntaxException e) {
+                Matrix.getLogger().debug(e);
                 e.printStackTrace();
                 return null;
             }
@@ -214,34 +205,39 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public long getTotalPlayTime(GameType gameType) {
-        return totalPlayTimeByGame.getOrDefault(gameType, 0L);
+        return 0;//totalPlayTimeByGame.getOrDefault(gameType, 0L);
     }
 
     @Override
     public long getGlobalTotalPlayTime() {
         long total = 0;
+        /*
         for (long i : totalPlayTimeByGame.values()) {
             total += i;
         }
+         */
         return total;
     }
 
     @Override
     public long getLastPlayTime(GameType gameType) {
-        return playTimeByGame.getOrDefault(gameType, 0L);
+        return 0;//playTimeByGame.getOrDefault(gameType, 0L);
     }
 
     @Override
     public long getGlobalLastPlayTime() {
         long total = 0;
+        /*
         for (long i : playTimeByGame.values()) {
             total += i;
         }
+        */
         return total;
     }
 
     @Override
     public void setLastPlayTime(GameType gameType, long playTime) {
+        /*
         if (gameType == GameType.NONE) {
             return;
         }
@@ -255,25 +251,28 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         totalPlayTimeByGame.put(gameType, getTotalPlayTime(gameType) + playTime);
         updateCached("playTimeByGame");
         updateCached("totalPlayTimeByGame");
+         */
     }
 
     @Override
     public Collection<GameType> getPlayedGames() {
-        return ImmutableSet.copyOf(playedGamesMap.keySet());
+        return ImmutableSet.of();//ImmutableSet.copyOf(playedGamesMap.keySet());
     }
 
     @Override
     public long getJoins(GameType gameType) {
-        return playedGamesMap.getOrDefault(gameType, 0L);
+        return 0;//playedGamesMap.getOrDefault(gameType, 0L);
     }
 
     @Override
     public void addPlayedGame(GameType gameType) {
+        /*
         if (gameType == GameType.NONE) {
             return;
         }
         playedGamesMap.put(gameType, playedGamesMap.getOrDefault(gameType, 0L) + 1);
         updateCached("playedGamesMap");
+         */
     }
 
     @Override
@@ -301,20 +300,34 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setField(String fieldName, String json) {
+        Field field = FIELDS.get(fieldName);
+        if (field == null) {
+            Matrix.getLogger().info("Trying to update null field for " + getName() + " field: '" + fieldName + "' value: '" + json + "'");
+            return;
+        }
+        setField(field, json);
+    }
+
+    private void setField(Field field, String json) {
         try {
-            Field field = FIELDS.get(fieldName);
-            if (fieldName.equals("gameModeByGame") || fieldName.equals("totalPlayTimeByGame") || fieldName.equals("playTimeByGame") || fieldName.equals("playedGamesMap")) {
-                HashMap<GameType, ?> map = (HashMap<GameType, ?>) field.get(this);
-                map.putAll(Matrix.GSON.fromJson(json, HashMap.class));
+            if (field.getName().equals("gameModeByGame")) {
+                HashMap<GameType, GameMode> map = (HashMap<GameType, GameMode>) field.get(this);
                 map.remove(GameType.NONE);
-            } else if (fieldName.equals("options")) {
+                HashMap<GameType, GameMode> jsonMap = Matrix.GSON.fromJson(json, new TypeToken<HashMap<GameType, GameMode>>() {
+                }.getType());
+                Matrix.getLogger().info("Updating json map for " + name + " json: '" + json + "'");
+                for (Map.Entry<GameType, GameMode> ent : jsonMap.entrySet()) {
+                    map.put(ent.getKey(), ent.getValue());
+                }
+                map.remove(GameType.NONE);
+            } else if (field.getName().equals("options")) {
                 Object value = Matrix.GSON.fromJson(json, new TypeToken<HashSet<PlayerOptionType>>() {
                 }.getType());
                 if (value != null) {
                     field.set(this, value);
                 }
             } else {
-                Object value = Matrix.GSON.fromJson(json, field.getType());
+                Object value = Matrix.GSON.fromJson(json, field.getGenericType());
                 if (value != null) {
                     field.set(this, value);
                 }
@@ -344,10 +357,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return Matrix.getAPI().getSQLDatabase().getStat(uniqueId, serverGroup, statistic);
     }
 
-    public ObjectId getId() {
-        return id;
-    }
-
     @Override
     public String getRedisKey() {
         return CacheProviderImpl.USER_KEY_PREFIX + getUniqueId();
@@ -359,25 +368,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public boolean setUniqueId(UUID uniqueId) {
+    public void setUniqueId(UUID uniqueId) {
         if (Objects.equals(this.uniqueId, uniqueId)) {
-            return true;
+            return;
         }
-        Boolean updated = null;
-        try {
-            updated = Matrix.getAPI().getSQLDatabase().updateUniqueId(this.uniqueId, uniqueId).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        if (updated != null && updated) {
-            Matrix.getAPI().getCache().update(name, uniqueId);
-            this.uniqueId = uniqueId;
-            updateCached("uniqueId");
-            return true;
-        } else {
-            Matrix.getLogger().info("Error migrating stats for '" + this.uniqueId + "' (" + getName() + ")" + " skipping UUID update. (" + uniqueId + ")");
-        }
-        return false;
+        Matrix.getAPI().getCache().update(name, uniqueId);
+        this.uniqueId = uniqueId;
+        updateCached("uniqueId");
     }
 
     @Override
@@ -650,23 +647,39 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public String getLastServerGroup() {
+        return lastServerGroup;
+    }
+
+    @Override
+    public void setLastServerGroup(String serverGroup) {
+        if (Objects.equals(this.lastServerGroup, serverGroup)) {
+            return;
+        }
+        this.lastServerGroup = serverGroup;
+        updateCached("lastServerGroup");
+    }
+
+    @Override
+    public String getLastServerName() {
+        return lastServerName;
+    }
+
+    @Override
+    public void setLastServerName(String serverName) {
+        if (Objects.equals(this.lastServerName, serverName)) {
+            return;
+        }
+        this.lastServerName = serverName;
+        updateCached("lastServerName");
+    }
+
+    @Override
     public void setLastGameType(GameType lastGameType) {
         if (Objects.equals(this.lastGameType, lastGameType)) {
             return;
         }
         this.lastGameType = lastGameType;
         updateCached("lastGameType");
-    }
-
-    public Map<GameType, Long> getTotalPlayTimeByGame() {
-        return totalPlayTimeByGame;
-    }
-
-    public Map<GameType, Long> getPlayTimeByGame() {
-        return playTimeByGame;
-    }
-
-    public Map<GameType, Long> getPlayedGamesMap() {
-        return playedGamesMap;
     }
 }

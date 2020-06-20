@@ -42,51 +42,32 @@ Channels:
     Color: 'DARK_RED'
 
 Motd Hover:
-  - '&4&lNifheim &c&lMinecraft'
-  - '&8&m-----------------------------------&f'
-  - '&f ¡Entra a divertirte con nosotros!'
-  - '&f'
-  - '&f Web: &awww.nifheim.net'
-  - '&f Discord: &awww.nifheim.net/discord'
-  - '&f Tienda: &awww.nifheim.net/tienda'
-  - '&f Twitter: &a@NifheimNetwork'
-  - '&f Facebook: &awww.facebook.com/NifheimNetwork'
-  - '&8&m-----------------------------------&f'
+- '&4&lNifheim &c&lMinecraft'
+- '&8&m-----------------------------------&f'
+- '&f ¡Entra a divertirte con nosotros!'
+- '&f'
+- '&f Web: &awww.nifheim.net'
+- '&f Discord: &awww.nifheim.net/discord'
+- '&f Tienda: &awww.nifheim.net/tienda'
+- '&f Twitter: &a@NifheimNetwork'
+- '&f Facebook: &awww.facebook.com/NifheimNetwork'
+- '&8&m-----------------------------------&f'
 
 Motds: # estos motds se muestran de forma aleatoria al usuario al hacer ping.
   default:
     Lines:
-      - '&4           Nifheim Network &8| &awww.nifheim.net'
-      - '&f           &6&k!&e&k!&6&k!&f&l ABIERTO PROXIMAMENTE!! &6&k!&e&k!&6&k!'
+    - '&4           Nifheim Network &8| &awww.nifheim.net'
+    - '&f           &6&k!&e&k!&6&k!&f&l ABIERTO PROXIMAMENTE!! &6&k!&e&k!&6&k!'
   '1':
     Lines:
-      - '&4           Nifheim Network &8| &awww.nifheim.net'
-      - '    &7Aún queda &a%countdown%&7 para aprovechar el &6&l70%&7 de descuento'
+    - '&4           Nifheim Network &8| &awww.nifheim.net'
+    - '    &7Aún queda &a%countdown%&7 para aprovechar el &6&l70%&7 de descuento'
     Countdown: '70' # si el countdown no existe el countdown el motd no se muestra.
   '2':
     Lines:
-      - '&4           Nifheim Network &8| &awww.nifheim.net'
-      - '&f   &6&l70%&a de descuento en nuestra tienda &6www.nifheim.net/tienda'
+    - '&4           Nifheim Network &8| &awww.nifheim.net'
+    - '&f   &6&l70%&a de descuento en nuestra tienda &6www.nifheim.net/tienda'
     Countdown: '70' # dos o más motd pueden usar el mismo countdown, estos se crean con el comando /countdown.
-
-# Server aliases for tablist
-lobby#1: Lobby
-lobby#2: Lobby
-
-# List of youtubers for the /yt command
-Youtubers:
-#  YoutuberName:
-#    Canal: youtubechannel.com
-#    Twitter: twitter.com/youtuber
-Censoring:
-  command:
-    - '1;mute %name% 5m Sanción automática #1 por decir: %word%'
-    - '2;mute %name% 10m Sanción automática #2 por decir: %word%'
-    - '2;warn %name% Sanción automática por decir: %word%'
-    - '3;mute %name% 30m Sanción automática #3 por decir: %word%'
-  words:
-    - 'put((o|0)|(a|4))'
-    - 'm(i|1)(e|3)rd(a|4)'
 Staff list:
   Groups:
     Owner:
@@ -98,39 +79,55 @@ Staff list:
     Mod:
       Permission: 'matrix.mod'
       Display: '&a&lMod &f>> '
+Censoring:
+  command:
+  - '1;mute %name% 5m Sanción automática #1 por decir: %word%'
+  - '2;mute %name% 10m Sanción automática #2 por decir: %word%'
+  - '2;warn %name% Sanción automática por decir: %word%'
+  - '3;mute %name% 30m Sanción automática #3 por decir: %word%'
+  words:
+  - 'put[o0a4]'
+  - 'm(i|1)(e|3)rd(a|4)'
 AntiSpam:
   Commands:
-    - '1;kick %name% Sanción automática #1 por spam: %message%'
-    - '2;mute %name% 30m Sanción automática #2 por spam: %message%'
-    - '3;ban %name% Sanción automática por spam: %message%'
+  - '1;kick %name% Sanción automática #1 por spam: %message%'
+  - '2;mute %name% 30m Sanción automática #2 por spam: %message%'
+  - '3;ban %name% Sanción automática por spam: %message%'
   Censored:
-    - 'mc.minebox.es'
-    - 'mc.omegacraft.cl'
-    - 'omegacraft.cl'
+  - 'mc.minebox.es'
+  - 'mc.omegacraft.cl'
+  - 'omegacraft.cl'
   Whitelist:
-    - 'youtu(|.)be'
-    - 'g(o|oo)gle'
-    - 'goo.gl'
-    - 'indiopikaro'
-    - 'facebook'
-    - 'minecraft'
-    - 'mojang'
-    - 'buycraft'
+  - 'youtu(|.)be'
+  - 'g(o|oo)gle'
+  - 'goo.gl'
+  - 'indiopikaro'
+  - 'facebook'
+  - 'minecraft'
+  - 'mojang'
+  - 'buycraft'
   Command Whitelist:
-    - '//set'
-    - '//replace'
-    - '//cyl'
-    - '//hcyl'
-    - '//walls'
+  - '//set'
+  - '//replace'
+  - '//cyl'
+  - '//hcyl'
+  - '//walls'
 Messages:
   Censored:
-    - '&cNo uses palabras malsonantes: &7%word%'
+  - '&cNo uses palabras malsonantes: &7%word%'
   StaffList:
     Server: '&fActualmente está en el servidor &e'
   Spam:
     Similar Message:
-      - '&cEste mensaje es muy similar a tu mensaje anterior.'
+    - '&cEste mensaje es muy similar a tu mensaje anterior.'
     Too Fast:
-      - '&cEstás escribiendo muy rápido! detente.'
+    - '&cEstás escribiendo muy rápido! detente.'
     Detected:
-      - 'Spam detectado %word%'
+    - 'Spam detectado %word%'
+logged-commands:
+- lp
+- lpb
+- perms
+- luckperms
+- gmc
+- gamemode

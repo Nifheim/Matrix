@@ -18,6 +18,8 @@ import net.md_5.bungee.api.ChatColor;
  */
 public interface MatrixPlayer extends CommandSource {
 
+    String getId();
+
     String getRedisKey();
 
     default double getCoins() {
@@ -44,7 +46,7 @@ public interface MatrixPlayer extends CommandSource {
      *
      * @param uniqueId New UUID to set.
      */
-    boolean setUniqueId(UUID uniqueId);
+    void setUniqueId(UUID uniqueId);
 
     /**
      * Get the real name of this user.
@@ -171,6 +173,14 @@ public interface MatrixPlayer extends CommandSource {
     void setGameMode(GameMode gameMode, GameType gameType);
 
     GameType getLastGameType();
+
+    String getLastServerGroup();
+
+    void setLastServerGroup(String serverGroup);
+
+    String getLastServerName();
+
+    void setLastServerName(String serverName);
 
     void setLastGameType(GameType lastGameType);
 

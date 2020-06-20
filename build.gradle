@@ -1,6 +1,6 @@
 allprojects {
     group = 'com.github.beelzebu'
-    version = '1.0.3'
+    version = '1.0.4'
 }
 
 subprojects {
@@ -88,6 +88,10 @@ subprojects {
 
     tasks.withType(Jar) {
         destinationDir = file("$rootDir/out")
+    }
+
+    clean {
+        delete(file("$rootDir/out"))
     }
 
     sourceSets {

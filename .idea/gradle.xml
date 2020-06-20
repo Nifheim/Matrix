@@ -12,8 +12,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/matrix-api" />
             <option value="$PROJECT_DIR$/matrix-bukkit" />
-            <option value="$PROJECT_DIR$/matrix-bukkit12" />
-            <option value="$PROJECT_DIR$/matrix-bukkit15" />
             <option value="$PROJECT_DIR$/matrix-bungee" />
             <option value="$PROJECT_DIR$/matrix-common" />
           </set>

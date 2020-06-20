@@ -32,7 +32,11 @@ public final class MatrixLoggerImpl implements MatrixLogger {
             }
             console.sendMessage(PREFIX + "&cDebug: &7" + msg);
         } else {
-            console.sendMessage(PREFIX + msg);
+            if (level.intValue() == Level.WARNING.intValue()) {
+                console.sendMessage(PREFIX + "&4" + msg);
+            } else {
+                console.sendMessage(PREFIX + msg);
+            }
         }
     }
 
@@ -44,6 +48,11 @@ public final class MatrixLoggerImpl implements MatrixLogger {
     @Override
     public void info(String msg) {
         log(Level.INFO, msg);
+    }
+
+    @Override
+    public void warn(String msg) {
+        log(Level.WARNING, msg);
     }
 
     @Override

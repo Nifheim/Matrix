@@ -37,10 +37,9 @@ public class StaffListCommand extends Command {
             List<ProxiedPlayer> group = ProxyServer.getInstance().getPlayers().stream().filter(pp -> !counted.contains(pp) && pp.hasPermission(Matrix.getAPI().getConfig().getString("Staff list.Groups." + groupName + ".Permission"))).collect(Collectors.toList());
             List<BaseComponent> tc = new ArrayList<>(Arrays.asList(TextComponent.fromLegacyText(StringUtils.replace(Matrix.getAPI().getConfig().getString("Staff list.Groups." + groupName + ".Display")))));
             group.forEach(proxiedPlayer -> tc.addAll(Arrays.asList(
-                    new ComponentBuilder(proxiedPlayer.getName())
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("").append(TextComponent.fromLegacyText(StringUtils.replace("&7Click para ir a &e" + proxiedPlayer.getServer().getInfo().getName()))).create()))
+                    new ComponentBuilder().color(ChatColor.YELLOW).append(proxiedPlayer.getName())
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(StringUtils.replace("&7Click para ir a &e" + proxiedPlayer.getServer().getInfo().getName()))))
                             .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/btp " + proxiedPlayer.getServer().getInfo().getName()))
-                            .color(ChatColor.YELLOW)
                             .reset().append(group.indexOf(proxiedPlayer) == group.size() - 1 ? "" : ", ").create())));
             counted.addAll(group);
             if (!group.isEmpty()) {

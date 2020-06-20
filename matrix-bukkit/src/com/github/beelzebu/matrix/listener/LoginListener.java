@@ -8,6 +8,7 @@ import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.PermsUtils;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.util.HashMap;
@@ -46,6 +47,8 @@ public class LoginListener implements Listener {
         Player player = e.getPlayer();
         MatrixPlayer matrixPlayer = api.getPlayer(player.getUniqueId());
         matrixPlayer.setLastGameType(gameType);
+        matrixPlayer.setLastServerName(api.getServerInfo().getServerName());
+        matrixPlayer.setLastServerGroup(api.getServerInfo().getGroupName());
         matrixPlayer.addPlayedGame(gameType);
         playTime.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
         ServerType type = api.getServerInfo().getServerType();
@@ -67,7 +70,7 @@ public class LoginListener implements Listener {
                 }
             }
         });
-        matrixPlayer.setLastLocale(e.getPlayer().getLocale().split("_")[0]);
+        matrixPlayer.setLastLocale(CompatUtil.getInstance().getLocale(e.getPlayer()).split("_")[0]);
         // Later task
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (firstjoin) {

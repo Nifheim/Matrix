@@ -393,7 +393,7 @@ public class ItemBuilder {
     @Deprecated
     public ItemBuilder owner(String user) {
         Validate.notNull(user, "The Username is null.");
-        if ((material == CompatUtil.getInstance().getPlayerHeadItem().getType()) || (material == CompatUtil.getInstance().getPlayerHeadWall().getType()) || (material == CompatUtil.getInstance().getPlayerHeadItem().getType())) {
+        if ((material == CompatUtil.getInstance().getPlayerHeadItem().getType()) || (material == CompatUtil.getInstance().getPlayerHeadBlock().getType()) || (material == CompatUtil.getInstance().getPlayerHeadItem().getType())) {
             SkullMeta smeta = (SkullMeta) meta;
             smeta.setOwner(user);
             meta = smeta;

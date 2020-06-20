@@ -14,6 +14,8 @@ public interface MatrixLogger {
 
     void info(String msg);
 
+    void warn(String msg);
+
     void debug(String msg);
 
     void debug(SQLException ex);
