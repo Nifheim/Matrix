@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.command;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,10 @@ public class MatrixServersCommand extends Command {
 
     @Override
     public void execute(CommandSender commandSender, String[] args) {
+        if (args.length == 4) {
+            new ServerRegisterMessage(args[0], args[1], args[2], Integer.parseInt(args[3])).send();
+            return;
+        }
         Map<String, Set<String>> servers = Matrix.getAPI().getCache().getAllServers();
         List<BaseComponent[]> components = new ArrayList<>();
         for (Map.Entry<String, Set<String>> ent : servers.entrySet()) {

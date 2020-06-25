@@ -1,6 +1,6 @@
 allprojects {
     group = 'com.github.beelzebu'
-    version = '1.0.4'
+    version = '1.0.5'
 }
 
 subprojects {
@@ -24,11 +24,11 @@ subprojects {
         }
 
         maven {
-            url = 'http://repo.md-5.net/content/repositories/snapshots/'
+            url = 'https://repo.md-5.net/content/repositories/snapshots/'
         }
 
         maven {
-            url = 'http://repo.extendedclip.com/content/repositories/placeholderapi/'
+            url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
         }
 
         maven {
@@ -36,19 +36,19 @@ subprojects {
         }
 
         maven {
-            url = 'http://maven.sk89q.com/artifactory/repo'
+            url = 'https://maven.sk89q.com/artifactory/repo'
         }
 
         maven {
-            url = 'http://repo.dmulloy2.net/nexus/repository/public/'
+            url = 'https://repo.dmulloy2.net/nexus/repository/public/'
         }
 
         maven {
-            url = 'http://nexus.ghac.de/content/repositories/snapshots/'
+            url = 'https://nexus.ghac.de/content/repositories/snapshots/'
         }
 
         maven {
-            url = 'http://simonsator.de/repo/'
+            url = 'https://simonsator.de/repo/'
         }
 
         maven {
@@ -60,7 +60,7 @@ subprojects {
         }
 
         maven {
-            url = 'http://maven.elmakers.com/repository/'
+            url = 'https://maven.elmakers.com/repository/'
         }
 
         maven {
@@ -75,7 +75,7 @@ subprojects {
     dependencies {
         compileOnly 'net.luckperms:api:5.1'
         compileOnly 'com.github.beelzebu:coins3-api:3.0'
-        compileOnly 'net.md-5:bungeecord-chat:1.15-SNAPSHOT'
+        compileOnly 'io.github.waterfallmc:waterfall-chat:1.16-R0.1-SNAPSHOT'
         compileOnly 'com.google.code.gson:gson:2.8.5'
         compileOnly 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
     }
@@ -87,7 +87,7 @@ subprojects {
     }
 
     tasks.withType(Jar) {
-        destinationDir = file("$rootDir/out")
+        destinationDirectory = file("$rootDir/out")
     }
 
     clean {

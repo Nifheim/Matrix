@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
@@ -308,6 +308,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         setField(field, json);
     }
 
+    @SuppressWarnings("unchecked")
     private void setField(Field field, String json) {
         try {
             if (field.getName().equals("gameModeByGame")) {
@@ -315,9 +316,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                 map.remove(GameType.NONE);
                 HashMap<GameType, GameMode> jsonMap = Matrix.GSON.fromJson(json, new TypeToken<HashMap<GameType, GameMode>>() {
                 }.getType());
-                Matrix.getLogger().info("Updating json map for " + name + " json: '" + json + "'");
-                for (Map.Entry<GameType, GameMode> ent : jsonMap.entrySet()) {
-                    map.put(ent.getKey(), ent.getValue());
+                if (!json.isEmpty()) {
+                    Matrix.getLogger().info("Updating json map for " + getName() + " json: '" + json + "'");
+                    for (Map.Entry<GameType, GameMode> ent : jsonMap.entrySet()) {
+                        map.put(ent.getKey(), ent.getValue());
+                    }
                 }
                 map.remove(GameType.NONE);
             } else if (field.getName().equals("options")) {
@@ -327,9 +330,14 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                     field.set(this, value);
                 }
             } else {
-                Object value = Matrix.GSON.fromJson(json, field.getGenericType());
-                if (value != null) {
-                    field.set(this, value);
+                try {
+                    Object value = Matrix.GSON.fromJson(json, field.getGenericType());
+                    if (value != null) {
+                        field.set(this, value);
+                    }
+                } catch (JsonSyntaxException | IllegalStateException e) {
+                    Matrix.getLogger().warn("Field: " + field.getName() + " Json: " + json);
+                    e.printStackTrace();
                 }
             }
         } catch (ReflectiveOperationException e) {
@@ -339,22 +347,22 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void saveStats(Map<Statistic, Long> stats) {
-        Matrix.getAPI().getSQLDatabase().incrStats(uniqueId, /* using group name here because actual server name may be just an arena server*/Matrix.getAPI().getServerInfo().getGroupName(), stats);
+        Matrix.getAPI().getSQLDatabase().incrStats(this, /* using group name here because actual server name may be just an arena server*/Matrix.getAPI().getServerInfo().getGroupName(), stats);
     }
 
     @Override
     public void saveStat(Statistic stat, long value) {
-        Matrix.getAPI().getSQLDatabase().incrStat(uniqueId, Matrix.getAPI().getServerInfo().getGroupName(), stat, value);
+        Matrix.getAPI().getSQLDatabase().incrStat(this, Matrix.getAPI().getServerInfo().getGroupName(), stat, value);
     }
 
     @Override
-    public Future<Long> getStat(Statistic statistic) {
+    public CompletableFuture<Long> getStat(Statistic statistic) {
         return getStat(Matrix.getAPI().getServerInfo().getGroupName(), statistic);
     }
 
     @Override
-    public Future<Long> getStat(String serverGroup, Statistic statistic) {
-        return Matrix.getAPI().getSQLDatabase().getStat(uniqueId, serverGroup, statistic);
+    public CompletableFuture<Long> getStat(String serverGroup, Statistic statistic) {
+        return Matrix.getAPI().getSQLDatabase().getStat(this, serverGroup, statistic);
     }
 
     @Override

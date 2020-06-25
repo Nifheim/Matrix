@@ -80,7 +80,7 @@ public final class CompatUtil {
         if (VERSION.isAfterOrEq(MinecraftVersion.MINECRAFT_1_13)) {
             return Material.COMPARATOR;
         }
-        return Material.valueOf("REDSTONE_COMPARATOR_OFF");
+        return Material.valueOf("REDSTONE_COMPARATOR");
     }
 
     public ItemStack getGreenDye() {

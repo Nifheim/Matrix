@@ -1,16 +1,17 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
 dependencies {
-    compile project(':matrix-common')
+    compileOnly project(':matrix-api')
+    compileOnly project(':matrix-common')
     compileOnly 'redis.clients:jedis:3.3.0'
     compileOnly 'com.github.ben-manes.caffeine:caffeine:2.8.4'
     compileOnly 'org.apache.commons:commons-pool2:2.6.2'
     compileOnly 'org.mongodb:mongo-java-driver:3.12.5'
     compileOnly 'org.mongodb.morphia:morphia:1.3.2'
     compileOnly 'com.zaxxer:HikariCP:3.4.5'
-    compileOnly 'net.md-5:bungeecord-api:1.15-SNAPSHOT'
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.16-R0.1-SNAPSHOT'
 }
 
 artifacts {
@@ -18,8 +19,14 @@ artifacts {
 }
 
 shadowJar {
-    classifier = null
-    version = null
+    getArchiveClassifier().set(null)
+    getArchiveVersion().set(null)
+
+    configurations = [project.configurations.compileOnly]
+    dependencies {
+        include(project(':matrix-api'))
+        include(project(':matrix-common'))
+    }
 
     relocate 'com.github.benmanes.caffeine', 'com.github.beelzebu.lib.caffeine'
     relocate 'org.mariadb.jdbc', 'com.github.beelzebu.lib.mariadb'
@@ -29,6 +36,7 @@ shadowJar {
 }
 
 processResources {
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE)
     from(sourceSets.main.resources.srcDirs) {
         expand 'pluginVersion': project.version
         include 'bungee.yml'

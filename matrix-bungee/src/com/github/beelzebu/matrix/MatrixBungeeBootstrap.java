@@ -12,7 +12,7 @@ import com.github.beelzebu.matrix.command.BungeeTPCommand;
 import com.github.beelzebu.matrix.command.CountdownCommand;
 import com.github.beelzebu.matrix.command.HelpOpCommand;
 import com.github.beelzebu.matrix.command.MaintenanceCommand;
-import com.github.beelzebu.matrix.command.MatrixBungeeReload;
+import com.github.beelzebu.matrix.command.MatrixCommand;
 import com.github.beelzebu.matrix.command.MatrixServersCommand;
 import com.github.beelzebu.matrix.command.PlayerInfoCommand;
 import com.github.beelzebu.matrix.command.PluginsCommand;
@@ -94,7 +94,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new PremiumCommand(this));
         registerCommand(new BungeeTPCommand());
         registerCommand(new MatrixServersCommand());
-        registerCommand(new MatrixBungeeReload(this));
+        registerCommand(new MatrixCommand(this));
         registerCommand(new StaffListCommand());
         new PermissionListener();
         MotdManager.onEnable();

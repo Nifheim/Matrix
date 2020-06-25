@@ -25,7 +25,7 @@ public class Channel {
 
     public Channel(String name, String command, String permission, ChatColor color) {
         this.name = name;
-        this.command = command;
+        this.command = command.toLowerCase();
         this.permission = permission;
         this.color = color;
     }
@@ -34,10 +34,10 @@ public class Channel {
         ProxyServer.getInstance().getPluginManager().registerCommand(ProxyServer.getInstance().getPluginManager().getPlugin("Matrix"), new Command(name) {
             @Override
             public void execute(CommandSender sender, String[] args) {
+                if (!sender.hasPermission(permission)) {
+                    return;
+                }
                 Matrix.getAPI().getPlugin().runAsync(() -> {
-                    if (!sender.hasPermission(permission)) {
-                        return;
-                    }
                     String locale = I18n.DEFAULT_LOCALE;
                     if (sender instanceof ProxiedPlayer) {
                         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
@@ -54,20 +54,19 @@ public class Channel {
                         }
                     }
                     String channel = I18n.tl(Message.CHANNEL_MESSAGE_CHANNEL, locale);
-                    channel = channel.replace("%channel%", Channel.this.name);
                     String prefix = I18n.tl(Message.CHANNEL_MESSAGE_PREFIX, locale);
                     String name = I18n.tl(Message.CHANNEL_MESSAGE_NAME, locale);
                     String suffix = I18n.tl(Message.CHANNEL_MESSAGE_SUFFIX, locale);
                     String message = I18n.tl(Message.CHANNEL_MESSAGE_MESSAGE, locale);
                     if (sender instanceof ProxiedPlayer) {
-                        ProxiedPlayer pp = (ProxiedPlayer) sender;
-                        prefix = prefix.replace("%player_prefix%", PermsUtils.getPrefix(pp.getUniqueId()));
-                        name = name.replace("%player_name%", pp.getName());
-                        suffix = suffix.replace("%player_suffix%", "");
+                        ProxiedPlayer proxiedPlayer = (ProxiedPlayer) sender;
+                        channel = setPlaceholders(channel, proxiedPlayer, Channel.this);
+                        prefix = setPlaceholders(prefix, proxiedPlayer, Channel.this);
+                        name = setPlaceholders(name, proxiedPlayer, Channel.this);
                     } else {
                         prefix = prefix.replace("%player_prefix%", "");
+                        name = name.replace("%player_name%", sender.getName());
                     }
-                    name = name.replace("%player_name%", sender.getName());
                     suffix = suffix.replace("%player_suffix%", "");
                     StringBuilder msg = new StringBuilder();
                     for (String arg : args) {
@@ -103,4 +102,11 @@ public class Channel {
         return "Channel(name=" + name + ", command=" + command + ", permission=" + permission + ", color=" + color + ")";
     }
 
+    private String setPlaceholders(String string, ProxiedPlayer proxiedPlayer, Channel channel) {
+        return string.replace("%channel%", channel.getName().toUpperCase())
+                .replace("%player_name%", proxiedPlayer.getName())
+                .replace("%player_prefix%", PermsUtils.getPrefix(proxiedPlayer.getUniqueId()))
+                .replace("%player_suffix%", "")
+                .replace("%server_name%", proxiedPlayer.getServer().getInfo().getName());
+    }
 }

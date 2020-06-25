@@ -111,5 +111,40 @@
       <option name="name" value="maven15" />
       <option name="url" value="https://dl.bintray.com/deanveloper/SkullCreator" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven13" />
+      <option name="name" value="maven13" />
+      <option name="url" value="https://maven.elmakers.com/repository/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven10" />
+      <option name="name" value="maven10" />
+      <option name="url" value="https://simonsator.de/repo/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven9" />
+      <option name="name" value="maven9" />
+      <option name="url" value="https://nexus.ghac.de/content/repositories/snapshots/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven8" />
+      <option name="name" value="maven8" />
+      <option name="url" value="https://repo.dmulloy2.net/nexus/repository/public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven5" />
+      <option name="name" value="maven5" />
+      <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven4" />
+      <option name="name" value="maven4" />
+      <option name="url" value="https://repo.md-5.net/content/repositories/snapshots/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven7" />
+      <option name="name" value="maven7" />
+      <option name="url" value="https://maven.sk89q.com/artifactory/repo" />
+    </remote-repository>
   </component>
 </project>

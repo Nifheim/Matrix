@@ -1,19 +1,12 @@
 package com.github.beelzebu.matrix.command.utils;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.reflect.FieldAccessException;
-import com.comphenix.protocol.utility.MinecraftReflection;
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
 import com.github.beelzebu.matrix.menus.ProfileGUI;
+import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.LocationUtils;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -41,8 +34,6 @@ public class MatrixManagerCommand extends MatrixCommand {
             _sound(sender, args);
         } else if (args[0].equalsIgnoreCase("setspawn")) {
             _setspawn(sender, args);
-        } else if (args[0].equalsIgnoreCase("newsbook")) {
-            _book(sender, args);
         } else if (args[0].equalsIgnoreCase("profile")) {
             new ProfileGUI(api.getPlayer(((Player) sender).getUniqueId())).open((Player) sender);
         } else if (args[0].equalsIgnoreCase("editmode")) {
@@ -67,33 +58,10 @@ public class MatrixManagerCommand extends MatrixCommand {
     private boolean _setspawn(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Location loc = ((Entity) sender).getLocation();
-            loc.getWorld().setSpawnLocation(((Player) sender).getLocation());
             data.getConfig().set("spawn", LocationUtils.locationToString(loc));
             data.saveConfig();
-        }
-        return true;
-    }
-
-    private boolean _book(CommandSender sender, String[] args) {
-        if (sender instanceof Player) {
-            Player p = (Player) sender;
-            ItemStack old = p.getInventory().getItemInOffHand();
-            p.getInventory().setItemInOffHand(book("Noticias", "Network", (List<List<String>>) api.getConfig().getList("News Lines")));
-            try {
-                PacketContainer pc = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.CUSTOM_PAYLOAD);
-                pc.getModifier().writeDefaults();
-                ByteBuf bf = Unpooled.buffer(256);
-                bf.setByte(0, (byte) 1);
-                bf.writerIndex(1);
-                pc.getModifier().write(1, MinecraftReflection.getPacketDataSerializer(bf));
-                pc.getStrings().write(0, "MC|BOpen");
-                ProtocolLibrary.getProtocolManager().sendServerPacket(p, pc);
-            } catch (FieldAccessException | InvocationTargetException ex) {
-            }
-            if (old != null) {
-                p.getInventory().setItemInOffHand(old);
-            } else {
-                p.getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+                loc.getWorld().setSpawnLocation(((Player) sender).getLocation());
             }
         }
         return true;

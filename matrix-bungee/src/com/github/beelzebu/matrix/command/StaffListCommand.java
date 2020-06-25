@@ -40,7 +40,7 @@ public class StaffListCommand extends Command {
                     new ComponentBuilder().color(ChatColor.YELLOW).append(proxiedPlayer.getName())
                             .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(StringUtils.replace("&7Click para ir a &e" + proxiedPlayer.getServer().getInfo().getName()))))
                             .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/btp " + proxiedPlayer.getServer().getInfo().getName()))
-                            .reset().append(group.indexOf(proxiedPlayer) == group.size() - 1 ? "" : ", ").create())));
+                            .append(group.indexOf(proxiedPlayer) == group.size() - 1 ? "" : ", ").reset().create())));
             counted.addAll(group);
             if (!group.isEmpty()) {
                 sender.sendMessage(tc.toArray(new BaseComponent[0]));

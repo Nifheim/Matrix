@@ -10,7 +10,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import net.md_5.bungee.api.ChatColor;
 
 /**
@@ -214,9 +214,9 @@ public interface MatrixPlayer extends CommandSource {
 
     void saveStat(Statistic stat, long value);
 
-    //<T extends Number> Future<T> getStat(Statistic statistic, Class<T> type);
-    Future<Long> getStat(Statistic statistic);
+    //<T extends Number> CompletableFuture<T> getStat(Statistic statistic, Class<T> type);
+    CompletableFuture<Long> getStat(Statistic statistic);
 
-    Future<Long> getStat(String serverGroup, Statistic statistic);
+    CompletableFuture<Long> getStat(String serverGroup, Statistic statistic);
 
 }

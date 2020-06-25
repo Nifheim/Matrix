@@ -15,11 +15,11 @@ CREATE TABLE IF NOT EXISTS matrix_stats_total
 (
     id           CHAR(24) PRIMARY KEY NOT NULL,
     server       VARCHAR(35)          NOT NULL,
-    kills        LONG                 NOT NULL DEFAULT 0,
-    mobKills     LONG                 NOT NULL DEFAULT 0,
-    deaths       LONG                 NOT NULL DEFAULT 0,
-    blocksBroken LONG                 NOT NULL DEFAULT 0,
-    blocksPlaced LONG                 NOT NULL DEFAULT 0,
+    kills        BIGINT               NOT NULL DEFAULT 0,
+    mobKills     BIGINT               NOT NULL DEFAULT 0,
+    deaths       BIGINT               NOT NULL DEFAULT 0,
+    blocksBroken BIGINT               NOT NULL DEFAULT 0,
+    blocksPlaced BIGINT               NOT NULL DEFAULT 0,
     UNIQUE KEY user_server_uq (id, server)
 );
 
@@ -115,7 +115,7 @@ CREATE EVENT drop_monthly_stats ON SCHEDULE EVERY 1 MONTH
 
 CREATE EVENT drop_weekly_stats ON SCHEDULE EVERY 1 WEEK
     STARTS date(
-            concat(year(curdate()), '-', month(curdate()) + 1, '-',
+            concat(year(curdate()), '-', month(curdate()), '-',
                    day(curdate()) + 1 + (7 - (weekday(curdate()) + 1)))) DO
     BEGIN
         DELETE

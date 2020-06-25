@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':matrix-api')
+    compileOnly project(':matrix-api')
     compileOnly 'redis.clients:jedis:3.3.0'
     compileOnly 'com.github.ben-manes.caffeine:caffeine:2.8.4'
     compileOnly 'org.apache.commons:commons-pool2:2.6.2'

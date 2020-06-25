@@ -60,4 +60,6 @@ public interface CacheProvider {
     MatrixPlayer saveToCache(MatrixPlayer matrixPlayer);
 
     void setDiscordVerificationCode(String name, String code);
+
+    void purgeForAllPlayers(String field);
 }

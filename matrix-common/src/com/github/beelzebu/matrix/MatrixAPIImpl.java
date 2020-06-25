@@ -59,7 +59,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
                 GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode", "ADVENTURE").toUpperCase())
         );
-        mySQLStorage = new MySQLStorage(plugin, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
+        mySQLStorage = new MySQLStorage(this, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
         Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
         maintenanceManager = new MaintenanceManager(redisManager);
         if (plugin.getConfig().getString("server-info.game-mode") == null) {

@@ -43,7 +43,7 @@ public enum Message {
     MAINTENANCE("Error.Maintenance", "&cCurrently the server is in maintenance, we'll be back soon!"),
     CHANNEL_JOIN("Channel.Join", "&7Now all your messages will be sent to &6%channel%&7."),
     CHANNEL_LEAVE("Channel.Leave", "&7Your chat is back to normal."),
-    CHANNEL_MESSAGE_CHANNEL("Channel.Message.Channel", "&f[&6%channel%&f] "),
+    CHANNEL_MESSAGE_CHANNEL("Channel.Message.Channel", "&f[&6%channel%&f] &f[&a%server_name%&f] "),
     CHANNEL_MESSAGE_PREFIX("Channel.Message.Prefix", "%player_prefix%"),
     CHANNEL_MESSAGE_NAME("Channel.Message.Name", "&7%player_name%"),
     CHANNEL_MESSAGE_SUFFIX("Channel.Message.Suffix", "%player_suffix%&f: "),

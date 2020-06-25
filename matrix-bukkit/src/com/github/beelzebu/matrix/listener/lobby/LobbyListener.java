@@ -132,18 +132,20 @@ public class LobbyListener implements Listener {
                 player.getActivePotionEffects().forEach(pe -> player.removePotionEffect(pe.getType()));
                 player.getInventory().setHeldItemSlot(4);
             }, 2);
-            Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
-                player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
-                player.setGameMode(GameMode.ADVENTURE);
-                for (PlayerOptionType optionType : matrixPlayer.getOptions()) {
-                    if (optionType.equals(PlayerOptionType.SPEED)) {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 1, false, false));
-                    } else if (optionType.equals(PlayerOptionType.FLY)) {
-                        player.setAllowFlight(true);
-                        player.setFlying(true);
+            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
+                Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
+                    player.setGameMode(GameMode.ADVENTURE);
+                    for (PlayerOptionType optionType : matrixPlayer.getOptions()) {
+                        if (optionType.equals(PlayerOptionType.SPEED)) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 1, false, false));
+                        } else if (optionType.equals(PlayerOptionType.FLY)) {
+                            player.setAllowFlight(true);
+                            player.setFlying(true);
+                        }
                     }
-                }
-            }, 10);
+                }, 10);
+            }
         }
     }
 
@@ -197,10 +199,12 @@ public class LobbyListener implements Listener {
     }
 
     private void setNormalItems(Player p) {
-        p.getInventory().setItem(EquipmentSlot.HEAD, new ItemStack(Material.AIR));
-        p.getInventory().setItem(EquipmentSlot.CHEST, new ItemStack(Material.AIR));
-        p.getInventory().setItem(EquipmentSlot.LEGS, new ItemStack(Material.AIR));
-        p.getInventory().setItem(EquipmentSlot.FEET, new ItemStack(Material.AIR));
+        if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+            p.getInventory().setItem(EquipmentSlot.HEAD, new ItemStack(Material.AIR));
+            p.getInventory().setItem(EquipmentSlot.CHEST, new ItemStack(Material.AIR));
+            p.getInventory().setItem(EquipmentSlot.LEGS, new ItemStack(Material.AIR));
+            p.getInventory().setItem(EquipmentSlot.FEET, new ItemStack(Material.AIR));
+        }
         String locale = api.getPlayer(p.getUniqueId()).getLastLocale();
         {
             ItemStack is = new ItemBuilder(Material.COMPASS, 1, I18n.tl(Message.LOBBY_ITEMS_SERVER_SELECTOR, locale)).build();
@@ -213,7 +217,11 @@ public class LobbyListener implements Listener {
         {
             ItemStack is = new ItemBuilder(CompatUtil.getInstance().getPlayerHeadItem()).amount(1).displayname(I18n.tl(Message.LOBBY_ITEMS_PROFILE, locale)).build();
             SkullMeta meta = (SkullMeta) is.getItemMeta();
-            meta.setOwningPlayer(p);
+            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+                meta.setOwningPlayer(p);
+            } else {
+                meta.setOwner(p.getName());
+            }
             is.setItemMeta(meta);
             p.getInventory().setItem(8, is);
         }

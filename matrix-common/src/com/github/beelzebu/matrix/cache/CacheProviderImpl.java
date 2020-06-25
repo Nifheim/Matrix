@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonParseException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -332,6 +333,30 @@ public class CacheProviderImpl implements CacheProvider {
     public void setDiscordVerificationCode(String name, String code) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
             jedis.setex(DISCORD_CODE_KEY_PREFIX + code, 360, name);
+        }
+    }
+
+    @Override
+    public void purgeForAllPlayers(String field) {
+        Set<UUID> playerUUIDs = new HashSet<>();
+        try (Jedis jedis = redisManager.getPool().getResource()) {
+            String cursor = ScanParams.SCAN_POINTER_START;
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            do {
+                for (String playerKey : scan.getResult()) {
+                    playerUUIDs.add(UUID.fromString(playerKey.split(":")[1]));
+                }
+                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+            Iterator<UUID> it = playerUUIDs.iterator();
+            while (it.hasNext()) {
+                UUID uuid = it.next();
+                jedis.hdel(USER_KEY_PREFIX + uuid, field);
+                it.remove();
+            }
+        } catch (JedisException ex) {
+            Matrix.getLogger().log("An error has occurred deleting field for players on cache.");
+            Matrix.getLogger().debug(ex);
         }
     }
 }

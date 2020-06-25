@@ -198,13 +198,15 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         BungeeServerTracker.startTask(5);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BungeeCleanupTask(), 600, 600);
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
-            if (PaperConfig.savePlayerData) {
-                getLogger().warning("SavePlayerData is enabled in paper config, forcing it to false.");
-                PaperConfig.savePlayerData = false;
-            }
-            if (PaperConfig.enablePlayerCollisions) {
-                getLogger().warning("EnablePlayerCollisions is enabled in paper config, forcing it to false.");
-                PaperConfig.enablePlayerCollisions = false;
+            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+                if (PaperConfig.savePlayerData) {
+                    getLogger().warning("SavePlayerData is enabled in paper config, forcing it to false.");
+                    PaperConfig.savePlayerData = false;
+                }
+                if (PaperConfig.enablePlayerCollisions) {
+                    getLogger().warning("EnablePlayerCollisions is enabled in paper config, forcing it to false.");
+                    PaperConfig.enablePlayerCollisions = false;
+                }
             }
         } else {
             Bukkit.getScheduler().runTaskTimer(this, new PowerupSpawnTask(), 0, 1200);

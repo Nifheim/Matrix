@@ -52,12 +52,14 @@ public class LoginListener implements Listener {
         matrixPlayer.addPlayedGame(gameType);
         playTime.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
         ServerType type = api.getServerInfo().getServerType();
-        if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL))) {
+        if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL) || type.equals(ServerType.MINIGAME_MULTIARENA))) {
             if (!matrixPlayer.isVanished()) {
                 if (player.hasPermission("matrix.joinmessage")) {
                     e.setJoinMessage(StringUtils.replace(" &8[&a+&8] &f" + PermsUtils.getPrefix(player.getUniqueId()) + api.getPlayer(player.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
                 }
-                Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
+                if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+                    Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
+                }
             }
         }
         // Async task
