@@ -34,7 +34,7 @@ public class ServerListListener implements Listener {
             try {
                 if (e.getConnection().getVirtualHost() != null) {
                     String host = e.getConnection().getVirtualHost().getHostName();
-                    if (!Objects.equals(host, Matrix.IP)) {
+                    if (host == null || !host.endsWith(Matrix.DOMAIN)) {
                         e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
                         return;
                     }

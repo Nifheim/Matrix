@@ -146,5 +146,25 @@
       <option name="name" value="maven7" />
       <option name="url" value="https://maven.sk89q.com/artifactory/repo" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="indiopikaro-repo" />
+      <option name="name" value="indiopikaro-repo" />
+      <option name="url" value="http://venus.indiopikaro.cl/nexus/repository/maven-public/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="indiopikaro-repo2" />
+      <option name="name" value="indiopikaro-repo2" />
+      <option name="url" value="http://venus.indiopikaro.cl/nexus/repository/maven-snapshots/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven16" />
+      <option name="name" value="maven16" />
+      <option name="url" value="https://plugins.gradle.org/m2/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven11" />
+      <option name="name" value="maven11" />
+      <option name="url" value="https://jitpack.io/" />
+    </remote-repository>
   </component>
 </project>

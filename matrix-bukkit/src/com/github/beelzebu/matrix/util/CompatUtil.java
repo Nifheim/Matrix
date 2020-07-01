@@ -166,6 +166,9 @@ public final class CompatUtil {
             case 15:
                 VERSION = MinecraftVersion.MINECRAFT_1_15;
                 break;
+            case 16:
+                VERSION = MinecraftVersion.MINECRAFT_1_16;
+                break;
             default:
                 Matrix.getLogger().info("We don't have official support for: " + getRawVersion() + " using support for 1.15");
                 VERSION = MinecraftVersion.MINECRAFT_1_15;

@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools {
-        jdk 'Default'
+        jdk 'jdk8'
     }
     options {
         buildDiscarder(logRotator(artifactNumToKeepStr: '5'))
@@ -10,14 +10,14 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'chmod +x gradlew'
-                sh './gradlew build'
+                sh './gradlew clean build publish'
             }
             post {
                 success {
-                    archiveArtifacts artifacts: 'out/Matrix-*.jar', fingerprint: true
+                    archiveArtifacts artifacts: 'out/matrix-*.jar', fingerprint: true
                 }
                 always {
-                    discordSend description: 'Matrix Pipeline Build', link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: 'https://discordapp.com/api/webhooks/459174129162125312/Tb7yNBLwcJwFLz0hQGpDvKcwl697cHc9-JxekhQGGVpE3TQEKEo0VVXpl37v0ndUeQmv'
+                    discordSend description: 'Matrix Pipeline Build', link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: 'https://discordapp.com/api/webhooks/720836731393540109/mx1TEQu0KhOTeS8HA8z_3ezR6D7gbdHejnGvtS1BWMUVjwBELCHQNDNt0ODWARm0rDDv'
                 }
             }
         }

@@ -68,6 +68,10 @@ public final class DependencyManager {
                 Dependency.MONGODB,
                 Dependency.MORPHIA
         );
+        if (!classExists("org.slf4j.Logger") || !classExists("org.slf4j.LoggerFactory")) {
+            dependencies.add(Dependency.SLF4J_API);
+            dependencies.add(Dependency.SLF4J_SIMPLE);
+        }
         loadDependencies(dependencies);
     }
 
@@ -194,6 +198,15 @@ public final class DependencyManager {
 
         public Path getFile() {
             return file;
+        }
+    }
+
+    private boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException ex) {
+            return false;
         }
     }
 }

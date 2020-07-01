@@ -179,9 +179,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 break;
             }
         }
-        if (serverRegisterMessage != null) {
-            serverRegisterMessage.send();
-        }
 
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             pluginsUtility.checkForPluginsToRemove();
@@ -194,6 +191,9 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                     Logger.getLogger(MatrixBukkitBootstrap.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", p.getName());
                 }
             });
+            if (serverRegisterMessage != null) {
+                serverRegisterMessage.send();
+            }
         });
         BungeeServerTracker.startTask(5);
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BungeeCleanupTask(), 600, 600);
@@ -208,7 +208,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                     PaperConfig.enablePlayerCollisions = false;
                 }
             }
-        } else {
             Bukkit.getScheduler().runTaskTimer(this, new PowerupSpawnTask(), 0, 1200);
         }
         api.getMessaging().registerListener(new ServerRequestListener(this));

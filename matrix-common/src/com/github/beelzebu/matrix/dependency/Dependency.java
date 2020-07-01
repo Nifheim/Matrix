@@ -34,6 +34,8 @@ public enum Dependency {
     HIKARI("com{}zaxxer", "HikariCP", "3.4.5", Relocation.of("hikari", "com{}zaxxer{}hikari")),
     MARIADB_DRIVER("org{}mariadb{}jdbc", "mariadb-java-client", "2.2.3", Relocation.of("mariadb", "org{}mariadb{}jdbc")),
     COMMONS_POOL_2("org.apache.commons", "commons-pool2", "2.6.2", Relocation.of("commonspool2", "org{}apache{}commons{}pool2")),
+    SLF4J_SIMPLE("org.slf4j", "slf4j-simple", "1.7.25"),
+    SLF4J_API("org.slf4j", "slf4j-api", "1.7.25"),
     JEDIS("redis.clients", "jedis", "3.3.0", Relocation.allOf(Relocation.of("jedis", "redis{}clients{}jedis"), Relocation.of("jedisutil", "redis{}clients{}util"), Relocation.of("commonspool2", "org{}apache{}commons{}pool2"))),
     MONGODB(
             "org.mongodb",

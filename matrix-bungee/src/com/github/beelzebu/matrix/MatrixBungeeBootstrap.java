@@ -10,6 +10,7 @@ import com.github.beelzebu.matrix.channels.Channel;
 import com.github.beelzebu.matrix.command.BasicCommands;
 import com.github.beelzebu.matrix.command.BungeeTPCommand;
 import com.github.beelzebu.matrix.command.CountdownCommand;
+import com.github.beelzebu.matrix.command.CrackedCommand;
 import com.github.beelzebu.matrix.command.HelpOpCommand;
 import com.github.beelzebu.matrix.command.MaintenanceCommand;
 import com.github.beelzebu.matrix.command.MatrixCommand;
@@ -92,6 +93,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new PluginsCommand());
         registerCommand(new CountdownCommand());
         registerCommand(new PremiumCommand(this));
+        registerCommand(new CrackedCommand());
         registerCommand(new BungeeTPCommand());
         registerCommand(new MatrixServersCommand());
         registerCommand(new MatrixCommand(this));

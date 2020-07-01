@@ -15,6 +15,7 @@ import net.md_5.bungee.api.ChatColor;
 @SuppressWarnings("deprecation")
 public final class Matrix {
 
+    public static final String DOMAIN = "indiopikaro.cl";
     public static final String IP = "mc.indiopikaro.cl";
     public static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(ChatColor.class, new TypeAdapter<ChatColor>() {
         @Override

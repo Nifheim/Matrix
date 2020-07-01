@@ -7,9 +7,11 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,13 +20,16 @@ import java.util.concurrent.TimeUnit;
 public final class MotdManager {
 
     private static final Random RANDOM = new Random();
+    private static final Set<Motd> FORCED_MOTD = new HashSet<>();
     private static final List<Motd> MOTD_LIST = new ArrayList<>();
     private static final Cache<String, Countdown> COUNTDOWN_CACHE = CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.SECONDS).build();
 
     public static void onEnable() {
         MatrixAPI api = Matrix.getAPI();
         MOTD_LIST.clear();
+        FORCED_MOTD.clear();
         api.getConfig().getKeys("Motds").stream().map(key -> new Motd(key, api.getConfig().getStringList("Motds." + key + ".Lines"), api.getConfig().getString("Motds." + key + ".Countdown", null))).forEach(MOTD_LIST::add);
+        api.getConfig().getKeys("Forced Motds").stream().map(key -> new Motd(key, api.getConfig().getStringList("Forced Motds." + key + ".Lines"), null)).forEach(FORCED_MOTD::add);
     }
 
     public static List<Motd> getMotdList() {
@@ -51,6 +56,15 @@ public final class MotdManager {
 
     public static Motd getRandomMotd() {
         return getRandomMotd(true);
+    }
+
+    public static Motd getForcedMotd(String host) {
+        for (Motd motd : FORCED_MOTD) {
+            if (Objects.equals(motd.getId(), host)) {
+                return motd;
+            }
+        }
+        return null;
     }
 
     public static Motd getRandomMotd(boolean firstAttempt) {

@@ -2,8 +2,22 @@ apply plugin: 'maven-publish'
 
 publishing {
     publications {
-        maven(MavenPublication) {
-            from(components.java)
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            def baseUrl = 'http://venus.indiopikaro.cl/nexus/repository/maven-'
+            def releasesRepoUrl = baseUrl + 'releases/'
+            def snapshotsRepoUrl = baseUrl + 'snapshots/'
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+            credentials {
+                username "${mavenUser}"
+                password "${mavenPassword}"
+            }
         }
     }
 }

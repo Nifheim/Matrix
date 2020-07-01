@@ -35,7 +35,7 @@ public class PreLoginTask implements Runnable {
     public void run() {
         try {
             String host = event.getConnection().getVirtualHost().getHostName();
-            if (!Objects.equals(host, Matrix.IP)) {
+            if (host == null || !host.endsWith(Matrix.DOMAIN)) {
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("\n" +
                         "Please join using " + Matrix.IP + "\n" +
@@ -61,6 +61,14 @@ public class PreLoginTask implements Runnable {
                         "Intenta usando: " + goodName));
                 event.setCancelled(true);
                 return;
+            }
+            if (host.equals("premium." + Matrix.DOMAIN)) {
+                event.getConnection().setOnlineMode(true);
+                if (player != null) {
+                    if (!player.isPremium()) {
+                        player.setPremium(true);
+                    }
+                }
             }
             if (player != null) {
                 if (player.isPremium()) {

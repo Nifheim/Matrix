@@ -1,101 +1,88 @@
-allprojects {
-    group = 'com.github.beelzebu'
-    version = '1.0.5'
-}
-
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-
-    repositories {
-        mavenCentral()
-        mavenLocal()
-
-        maven {
-            url = 'https://repo.lucko.me/'
-        }
-
-        maven {
-            url = 'https://repo.maven.apache.org/maven2'
-        }
-
-        maven {
-            url = 'https://oss.sonatype.org/content/repositories/snapshots'
-        }
-
-        maven {
-            url = 'https://repo.md-5.net/content/repositories/snapshots/'
-        }
-
-        maven {
-            url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
-        }
-
-        maven {
-            url = 'https://repo.destroystokyo.com/repository/maven-snapshots/'
-        }
-
-        maven {
-            url = 'https://maven.sk89q.com/artifactory/repo'
-        }
-
-        maven {
-            url = 'https://repo.dmulloy2.net/nexus/repository/public/'
-        }
-
-        maven {
-            url = 'https://nexus.ghac.de/content/repositories/snapshots/'
-        }
-
-        maven {
-            url = 'https://simonsator.de/repo/'
-        }
-
-        maven {
-            url = 'https://ci.filoghost.me/plugin/repository/everything/'
-        }
-
-        maven {
-            url = 'https://repo.parallelblock.com/repository/maven-public/'
-        }
-
-        maven {
-            url = 'https://maven.elmakers.com/repository/'
-        }
-
-        maven {
-            url = 'https://dl.bintray.com/ichbinjoe/public/'
-        }
-
-        maven {
-            url = 'https://dl.bintray.com/deanveloper/SkullCreator'
-        }
+buildscript {
+    allprojects {
+        group = 'com.github.beelzebu'
+        version = '1.0.6'
     }
 
-    dependencies {
-        compileOnly 'net.luckperms:api:5.1'
-        compileOnly 'com.github.beelzebu:coins3-api:3.0'
-        compileOnly 'io.github.waterfallmc:waterfall-chat:1.16-R0.1-SNAPSHOT'
-        compileOnly 'com.google.code.gson:gson:2.8.5'
-        compileOnly 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
-    }
+    subprojects {
+        apply plugin: 'java'
+        apply plugin: 'maven-publish'
 
-    sourceCompatibility = '1.8'
+        repositories {
+            mavenCentral()
+            mavenLocal()
 
-    tasks.withType(JavaCompile) {
-        options.encoding = 'UTF-8'
-    }
+            maven {
+                url = 'http://venus.indiopikaro.cl/nexus/repository/maven-public/'
 
-    tasks.withType(Jar) {
-        destinationDirectory = file("$rootDir/out")
-    }
+                credentials {
+                    username "${mavenUser}"
+                    password "${mavenPassword}"
+                }
+            }
 
-    clean {
-        delete(file("$rootDir/out"))
-    }
+            maven {
+                url = 'https://repo.lucko.me/'
+            }
 
-    sourceSets {
-        main.java.srcDirs = ['src/']
-        main.resources.srcDirs = ['src/resources']
+            maven {
+                url = 'https://repo.maven.apache.org/maven2'
+            }
+
+            maven {
+                url = 'https://oss.sonatype.org/content/repositories/snapshots'
+            }
+
+            maven {
+                url = 'https://repo.md-5.net/content/repositories/snapshots/'
+            }
+
+            maven {
+                url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+            }
+
+            maven {
+                url = 'https://repo.destroystokyo.com/repository/maven-snapshots/'
+            }
+
+            maven {
+                url = 'https://repo.dmulloy2.net/nexus/repository/public/'
+            }
+
+            maven {
+                url = 'https://dl.bintray.com/ichbinjoe/public/'
+            }
+
+            maven {
+                url = 'https://jitpack.io/'
+            }
+        }
+
+        dependencies {
+            compileOnly 'net.luckperms:api:5.1'
+            compileOnly 'com.github.beelzebu:coins3-api:3.0'
+            compileOnly 'io.github.waterfallmc:waterfall-chat:1.16-R0.1-SNAPSHOT'
+            compileOnly 'com.google.code.gson:gson:2.8.5'
+            compileOnly 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
+        }
+
+        sourceCompatibility = '1.8'
+
+        tasks.withType(JavaCompile) {
+            options.encoding = 'UTF-8'
+        }
+
+        tasks.withType(Jar) {
+            destinationDirectory = file("$rootDir/out")
+        }
+
+        clean {
+            delete(file("$rootDir/out"))
+        }
+
+        sourceSets {
+            main.java.srcDirs = ['src/']
+            main.resources.srcDirs = ['src/resources']
+        }
     }
 }
