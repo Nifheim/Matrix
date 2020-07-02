@@ -32,9 +32,9 @@ public class ServerListListener implements Listener {
         e.registerIntent((Plugin) Matrix.getAPI().getPlugin().getBootstrap());
         Matrix.getAPI().getPlugin().runAsync(() -> {
             try {
+                String host = e.getConnection().getVirtualHost().getHostName();
                 if (e.getConnection().getVirtualHost() != null) {
-                    String host = e.getConnection().getVirtualHost().getHostName();
-                    if (host == null || !host.endsWith(Matrix.DOMAIN)) {
+                    if (host == null || (!host.endsWith(Matrix.DOMAIN) && MotdManager.getForcedMotd(host) == null)) {
                         e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
                         return;
                     }
@@ -49,7 +49,10 @@ public class ServerListListener implements Listener {
                     e.getResponse().getVersion().setName("§cEn mantenimiento");
                 }
                 // select random motd
-                Motd motd = MotdManager.getRandomMotd();
+                Motd motd = MotdManager.getForcedMotd(host);
+                if (motd == null) {
+                    motd = MotdManager.getRandomMotd();
+                }
                 String s = motd.getLines().get(0) + "\n" + motd.getLines().get(1);
                 TextComponent tc = new TextComponent();
                 for (BaseComponent line : TextComponent.fromLegacyText(StringUtils.replace(s.replace("%countdown%", motd.getCountdown() != null ? motd.getCountdown().getCountdown() : "")))) {
