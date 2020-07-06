@@ -32,6 +32,10 @@ public class ServerListListener implements Listener {
         e.registerIntent((Plugin) Matrix.getAPI().getPlugin().getBootstrap());
         Matrix.getAPI().getPlugin().runAsync(() -> {
             try {
+                if (e.getConnection().getVirtualHost() == null) {
+                    e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
+                    return;
+                }
                 String host = e.getConnection().getVirtualHost().getHostName();
                 if (e.getConnection().getVirtualHost() != null) {
                     if (host == null || (!host.endsWith(Matrix.DOMAIN) && MotdManager.getForcedMotd(host) == null)) {

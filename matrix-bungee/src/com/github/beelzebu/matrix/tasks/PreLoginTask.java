@@ -35,7 +35,7 @@ public class PreLoginTask implements Runnable {
     public void run() {
         try {
             String host = event.getConnection().getVirtualHost().getHostName();
-            if (host == null || !host.endsWith(Matrix.DOMAIN)) {
+            if (host == null || (!host.endsWith(Matrix.DOMAIN) && !host.equals("play.pixelnetwork.net"))) {
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("\n" +
                         "Please join using " + Matrix.IP + "\n" +

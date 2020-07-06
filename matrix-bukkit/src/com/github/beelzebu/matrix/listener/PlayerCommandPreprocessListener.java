@@ -33,6 +33,9 @@ public class PlayerCommandPreprocessListener implements Listener {
                 if (!matrixPlayer.isWatcher()) {
                     continue;
                 }
+                if (!matrixPlayer.isLoggedIn()) {
+                    continue;
+                }
                 player.sendMessage(I18n.tl(Message.CHAT_COMMAND_WATCHER_FORMAT, matrixPlayer.getLastLocale()).replace("%player%", e.getPlayer().getName()).replace("%msg%", e.getMessage()));
             }
         });

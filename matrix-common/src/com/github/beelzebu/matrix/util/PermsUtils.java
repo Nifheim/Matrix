@@ -5,6 +5,7 @@ import java.util.UUID;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
+import net.md_5.bungee.api.ChatColor;
 
 public final class PermsUtils {
 
@@ -23,25 +24,18 @@ public final class PermsUtils {
         if (Matrix.getAPI().getPlayer(uniqueId).getDisplayName().contains(" ")) {
             return Matrix.getAPI().getPlayer(uniqueId).getDisplayName().split(" ")[0];
         }
-        try {
-
-            User user = permsAPI.getUserManager().getUser(uniqueId);
+        User user = permsAPI.getUserManager().loadUser(uniqueId).join();
+        if (user != null) {
             try {
-                if (user == null) {
-                    user = permsAPI.getUserManager().loadUser(uniqueId).join();
+                String prefix = user.getCachedData().getMetaData().getPrefix();
+                if (prefix != null) {
+                    return ChatColor.translateAlternateColorCodes('&', prefix);
                 }
-                if (user != null) {
-                    String prefix = user.getCachedData().getMetaData().getPrefix();
-                    if (prefix != null) {
-                        return prefix.replaceAll("&", "§");
-                    }
-                }
-            } catch (Exception ignore) {
             } finally {
-                permsAPI.getUserManager().cleanupUser(user);
+                if (!Matrix.getAPI().getPlugin().isOnline(uniqueId, true)) {
+                    permsAPI.getUserManager().cleanupUser(user);
+                }
             }
-        } catch (NoSuchMethodError e) {
-            return "Unsupported LuckPerms version";
         }
         return "none";
     }

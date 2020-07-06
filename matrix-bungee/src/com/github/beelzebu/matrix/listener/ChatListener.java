@@ -11,9 +11,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonObject;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -29,6 +29,8 @@ import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
+import net.md_5.bungee.api.event.TabCompleteEvent;
+import net.md_5.bungee.api.event.TabCompleteResponseEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -125,6 +127,7 @@ public class ChatListener implements Listener {
             messageEquals.put(pp.getUniqueId(), e.getMessage());
         }
     }
+    */
 
     @EventHandler(priority = 125)
     public void onChat3(ChatEvent e) { // lowercase
@@ -163,7 +166,7 @@ public class ChatListener implements Listener {
             }
         }
     }
-
+/*
     @EventHandler(priority = 120)
     public void onChat4(ChatEvent e) { // spam
         if (!(e.getSender() instanceof ProxiedPlayer)) {
@@ -248,16 +251,70 @@ public class ChatListener implements Listener {
             e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));
             command = command.split(":")[1];
         }
+        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
         for (String loggedCommand : loggedCommands) {
             if (command.equals(loggedCommand)) {
-                api.getSQLDatabase().insertCommandLogEntry(((ProxiedPlayer) e.getSender()).getUniqueId(), api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId()).getLastServerName(), e.getMessage());
+                api.getSQLDatabase().insertCommandLogEntry(matrixPlayer, api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId()).getLastServerName(), e.getMessage());
             }
         }
-        if (Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getName()).isAdmin()) {
+        if (matrixPlayer.isAdmin()) {
             return;
         }
-        if (Arrays.asList(blockedCommands).contains(command)) {
-            e.setCancelled(true);
+        for (String blockedCommand : blockedCommands) {
+            if (blockedCommand.equals(command)) {
+                e.setMessage("/"); // send unknown command message
+            }
+        }
+    }
+
+    @EventHandler(priority = 127)
+    public void onBlockedCommand(TabCompleteEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getReceiver()).getUniqueId());
+        if (matrixPlayer.isAdmin()) {
+            return;
+        }
+        String command = e.getCursor().replaceFirst("/", "").split(":", 2)[0].toLowerCase();
+        for (String blockedCommand : blockedCommands) {
+            if (blockedCommand.equals(command)) {
+                e.getSuggestions().clear(); // send unknown command message
+                return;
+            }
+        }
+        Iterator<String> it = e.getSuggestions().iterator();
+        while (it.hasNext()) {
+            String suggestion = it.next().replaceFirst("/", "").split(":", 2)[0].toLowerCase();
+            if (suggestion.split(":").length > 1) {
+                it.remove();
+                continue;
+            }
+            for (String blockedCommand : blockedCommands) {
+                if (suggestion.equals(blockedCommand)) {
+                    it.remove();
+                    break;
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = 127)
+    public void onBlockedCommand(TabCompleteResponseEvent e) {
+        if (e.isCancelled()) {
+            return;
+        }
+        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getReceiver()).getUniqueId());
+        if (matrixPlayer.isAdmin()) {
+            return;
+        }
+        Iterator<String> it = e.getSuggestions().iterator();
+        while (it.hasNext()) {
+            String suggestion = it.next();
+            String command = suggestion.toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
+            if (command.split(":").length > 1) {
+                it.remove();
+            }
         }
     }
 

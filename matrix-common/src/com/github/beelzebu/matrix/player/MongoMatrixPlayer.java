@@ -316,7 +316,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                 map.remove(GameType.NONE);
                 HashMap<GameType, GameMode> jsonMap = Matrix.GSON.fromJson(json, new TypeToken<HashMap<GameType, GameMode>>() {
                 }.getType());
-                if (!json.isEmpty()) {
+                if (!jsonMap.isEmpty()) {
                     Matrix.getLogger().info("Updating json map for " + getName() + " json: '" + json + "'");
                     for (Map.Entry<GameType, GameMode> ent : jsonMap.entrySet()) {
                         map.put(ent.getKey(), ent.getValue());

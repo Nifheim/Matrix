@@ -32,6 +32,7 @@ import com.github.beelzebu.matrix.listener.ServerRegisterListener;
 import com.github.beelzebu.matrix.listener.ServerUnregisterListener;
 import com.github.beelzebu.matrix.motd.MotdManager;
 import com.github.beelzebu.matrix.scheduler.BungeeSchedulerAdapter;
+import com.github.beelzebu.matrix.tablist.TablistManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,6 +41,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -49,8 +51,6 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
-    //public final static BaseComponent[] TAB_HEADER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&7¡Jugando en &6Nifheim&7!\n&7IP: &amc.nifheim.net\n"));
-    //public final static BaseComponent[] TAB_FOOTER = TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "\n&7Tienda: &enifheim.net/tienda &7Twitter: &e@NifheimNetwork\n&7Discord: &enifheim.net/discord &7Web: &enifheim.net"));
     public static final Map<String, Channel> CHANNELS = new HashMap<>();
     private MatrixBungeeAPI api;
     private MatrixPluginBungee matrixPlugin;
@@ -102,11 +102,19 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         MotdManager.onEnable();
         new BasicCommands(this);
         config.getKeys("Channels").forEach((channel) -> CHANNELS.put(channel, new Channel(channel, channel, config.getString("Channels." + channel + ".Permission"), ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register()));
-        ProxyServer.getInstance().getScheduler().schedule(this, () -> api.getCache().getPlayers().stream().filter(matrixPlayer -> !api.getPlugin().isOnline(matrixPlayer.getUniqueId(), false)).forEach(matrixPlayer -> {
-            if (!matrixPlugin.isOnline(matrixPlayer.getUniqueId(), false)) { // player may be logged in again.
-                api.getCache().removePlayer(matrixPlayer);
+        ProxyServer.getInstance().getScheduler().schedule(this, () -> {
+            for (MatrixPlayer matrixPlayer : api.getCache().getPlayers()) {
+                if (api.getPlugin().isOnline(matrixPlayer.getUniqueId(), false) || matrixPlayer.isLoggedIn()) {
+                    continue;
+                }
+                try {
+                    api.getCache().removePlayer(matrixPlayer);
+                } catch (Exception e) {
+                    Matrix.getLogger().warn("Error removing " + matrixPlayer.getName() + " from cache.");
+                    e.printStackTrace();
+                }
             }
-        }), 0, 1, TimeUnit.HOURS);
+        }, 0, 1, TimeUnit.HOURS);
 
         // set default listener
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().set(0, "lobby"));
@@ -120,6 +128,10 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
         influencerManager = new InfluencerManager(this);
         influencerManager.loadInfluencers();
+
+        for (ProxiedPlayer proxiedPlayer : getProxy().getPlayers()) {
+            proxiedPlayer.setTabHeader(TablistManager.TAB_HEADER, TablistManager.TAB_FOOTER);
+        }
     }
 
     @Override

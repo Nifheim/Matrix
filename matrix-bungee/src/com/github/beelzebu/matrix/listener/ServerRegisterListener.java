@@ -25,10 +25,12 @@ public class ServerRegisterListener implements RedisMessageListener<ServerRegist
         ProxyServer.getInstance().getServers().remove("lobby");
         Matrix.getAPI().getCache().registerGroup(message.getGroup());
         Matrix.getAPI().getCache().addServer(message.getGroup(), message.getName());
-        Collection<ListenerInfo> listenerInfos = ProxyServer.getInstance().getConfig().getListeners();
-        for (ListenerInfo listenerInfo : listenerInfos) {
-            listenerInfo.getServerPriority().add(message.getName());
-            listenerInfo.getServerPriority().removeIf(server -> !server.toLowerCase().contains("auth"));
+        if (message.getName().startsWith("auth")) {
+            Collection<ListenerInfo> listenerInfos = ProxyServer.getInstance().getConfig().getListeners();
+            for (ListenerInfo listenerInfo : listenerInfos) {
+                listenerInfo.getServerPriority().add(message.getName());
+                listenerInfo.getServerPriority().removeIf(server -> !server.toLowerCase().contains("auth"));
+            }
         }
     }
 

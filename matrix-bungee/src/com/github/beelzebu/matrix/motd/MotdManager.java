@@ -29,7 +29,7 @@ public final class MotdManager {
         MOTD_LIST.clear();
         FORCED_MOTD.clear();
         api.getConfig().getKeys("Motds").stream().map(key -> new Motd(key, api.getConfig().getStringList("Motds." + key + ".Lines"), api.getConfig().getString("Motds." + key + ".Countdown", null))).forEach(MOTD_LIST::add);
-        api.getConfig().getKeys("Forced Motds").stream().map(key -> new Motd(key, api.getConfig().getStringList("Forced Motds." + key + ".Lines"), null)).forEach(FORCED_MOTD::add);
+        api.getConfig().getKeys("Forced Motds").stream().map(key -> new Motd(key.replace(',', '.'), api.getConfig().getStringList("Forced Motds." + key + ".Lines"), null)).forEach(FORCED_MOTD::add);
     }
 
     public static List<Motd> getMotdList() {
@@ -70,14 +70,14 @@ public final class MotdManager {
     public static Motd getRandomMotd(boolean firstAttempt) {
         Motd motd = null;
         for (Motd value : MOTD_LIST) {
-            if (value.getCountdown() != null) {
-                if (!value.getCountdown().isOver() && RANDOM.nextBoolean()) {
-                    motd = value;
-                    break;
+            if (RANDOM.nextBoolean()) {
+                if (value.getCountdown() != null) {
+                    if (!value.getCountdown().isOver()) {
+                        motd = value;
+                        break;
+                    }
                 }
-            }
-            if (Objects.equals(value.getId(), "default")) {
-                if (firstAttempt) {
+                if (firstAttempt && Objects.equals(value.getId(), "default")) {
                     continue;
                 }
                 motd = value;

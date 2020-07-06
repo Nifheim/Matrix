@@ -5,9 +5,10 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
-import java.util.Objects;
+import com.github.beelzebu.matrix.util.ServerUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ServerConnectEvent;
 
 /**
  * @author Beelzebu
@@ -26,7 +27,7 @@ public class LoginFieldUpdateListener implements RedisMessageListener<FieldUpdat
                 return;
             }
             if (proxiedPlayer != null && proxiedPlayer.isConnected()) {
-                proxiedPlayer.connect(ProxyServer.getInstance().getServerInfo(getRandomLobby()));
+                proxiedPlayer.connect(ServerUtil.getRandomLobby(), ServerConnectEvent.Reason.LOBBY_FALLBACK);
             }
         }
     }
@@ -34,15 +35,5 @@ public class LoginFieldUpdateListener implements RedisMessageListener<FieldUpdat
     @Override
     public RedisMessageType getType() {
         return RedisMessageType.FIELD_UPDATE;
-    }
-
-    private String getRandomLobby() {
-        for (String serverName : ProxyServer.getInstance().getServers().keySet()) {
-            serverName = serverName.toLowerCase();
-            if (!Objects.equals(serverName, "lobby") && serverName.startsWith("lobby")) {
-                return serverName;
-            }
-        }
-        return null;
     }
 }

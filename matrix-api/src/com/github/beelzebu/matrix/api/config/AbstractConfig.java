@@ -57,7 +57,7 @@ public abstract class AbstractConfig {
     }
 
     public List<String> getStringList(String path) {
-        return getList(path).get(0) instanceof String ? (List<String>) getList(path) : new ArrayList<>();
+        return getList(path).size() > 0 && getList(path).get(0) instanceof String ? (List<String>) getList(path) : new ArrayList<>();
     }
 
     public abstract Object get(String path);
