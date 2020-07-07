@@ -3,6 +3,7 @@ package com.github.beelzebu.matrix.listener;
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.command.staff.VanishCommand;
+import com.github.beelzebu.matrix.util.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -30,12 +31,20 @@ public class VanishListener implements Listener {
                         continue;
                     }
                     if (matrixPlayer.isVanished() && player2.canSee(player)) {
-                        Bukkit.getScheduler().runTask(plugin, () ->
-                                player2.hidePlayer(plugin, player));
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
+                                player2.hidePlayer(plugin, player);
+                            } else {
+                                player2.hidePlayer(player);
+                            }
+                        });
                     }
                     if (!matrixPlayer.isVanished() && !player2.canSee(player)) {
-                        Bukkit.getScheduler().runTask(plugin, () ->
-                                player2.showPlayer(plugin, player));
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
+                                player2.showPlayer(plugin, player);
+                            }
+                        });
                     }
                 }
             }
