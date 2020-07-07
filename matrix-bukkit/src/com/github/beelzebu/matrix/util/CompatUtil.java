@@ -183,7 +183,7 @@ public final class CompatUtil {
         } else { // this doesn't exists in 1.8
             if (localeMethod != null) {
                 try {
-                    return (String) localeMethod.invoke(player);
+                    return (String) localeMethod.invoke(player.spigot());
                 } catch (ReflectiveOperationException e) {
                     e.printStackTrace();
                 }
