@@ -44,7 +44,7 @@ public class AuthListener implements Listener {
 
     @EventHandler(priority = 127)
     public void onChat(TabCompleteEvent e) {
-        removeSuggestionsFromTabComplete(e.getReceiver(), e.getSuggestions());
+        removeSuggestionsFromTabComplete(e.getSender(), e.getSuggestions());
     }
 
     @EventHandler(priority = 127)

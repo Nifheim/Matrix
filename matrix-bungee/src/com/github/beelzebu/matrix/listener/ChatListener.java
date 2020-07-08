@@ -272,7 +272,7 @@ public class ChatListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getReceiver()).getUniqueId());
+        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
         if (matrixPlayer.isAdmin()) {
             return;
         }
