@@ -75,7 +75,7 @@ public class Channel {
                     msg.substring(0, msg.length() - 1);
                     msg.append("&r");
                     message = message.replace("%message%", msg);
-                    new StaffChatMessage(permission, channel + prefix + name + suffix + message).send();
+                    new StaffChatMessage(permission, channel + prefix + name + suffix + color + message).send();
                 });
             }
         });
