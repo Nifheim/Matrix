@@ -132,20 +132,20 @@ public class LobbyListener implements Listener {
                 player.getActivePotionEffects().forEach(pe -> player.removePotionEffect(pe.getType()));
                 player.getInventory().setHeldItemSlot(4);
             }, 2);
-            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
-                Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
+            Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
+                if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
                     player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);
-                    player.setGameMode(GameMode.ADVENTURE);
-                    for (PlayerOptionType optionType : matrixPlayer.getOptions()) {
-                        if (optionType.equals(PlayerOptionType.SPEED)) {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 1, false, false));
-                        } else if (optionType.equals(PlayerOptionType.FLY)) {
-                            player.setAllowFlight(true);
-                            player.setFlying(true);
-                        }
+                }
+                player.setGameMode(GameMode.ADVENTURE);
+                for (PlayerOptionType optionType : matrixPlayer.getOptions()) {
+                    if (optionType.equals(PlayerOptionType.SPEED)) {
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1000000, 1, false, false));
+                    } else if (optionType.equals(PlayerOptionType.FLY)) {
+                        player.setAllowFlight(true);
+                        player.setFlying(true);
                     }
-                }, 10);
-            }
+                }
+            }, 10);
         }
     }
 
