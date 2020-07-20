@@ -143,8 +143,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         registerEvents(new PlayerDeathListener(this));
         if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
-            registerEvents(new StatsListener(api));
         }
+        registerEvents(new StatsListener(api));
         if (isVotifier()) {
             registerEvents(new VotifierListener(this));
         }

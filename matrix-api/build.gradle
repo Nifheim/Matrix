@@ -9,6 +9,7 @@ publishing {
 
     repositories {
         maven {
+            name = 'indiopikaro-repo'
             def baseUrl = 'http://venus.indiopikaro.cl/nexus/repository/maven-'
             def releasesRepoUrl = baseUrl + 'releases/'
             def snapshotsRepoUrl = baseUrl + 'snapshots/'

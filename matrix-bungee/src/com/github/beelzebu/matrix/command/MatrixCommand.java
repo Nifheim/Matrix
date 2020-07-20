@@ -29,6 +29,7 @@ public class MatrixCommand extends Command {
         if (args.length >= 1) {
             switch (args[0]) {
                 case "reload":
+                    MatrixBungeeBootstrap.CHANNELS.values().forEach(Channel::unregister);
                     MatrixBungeeBootstrap.CHANNELS.clear();
                     MatrixConfig config = bungeeBootstrap.getConfig();
                     config.getKeys("Channels").forEach((channel) -> MatrixBungeeBootstrap.CHANNELS.put(channel, new Channel(channel, channel, config.getString("Channels." + channel + ".Permission"), ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register()));

@@ -20,8 +20,10 @@ public class ServerUnregisterListener implements RedisMessageListener<ServerUnre
         Matrix.getLogger().info("Received unregister message for server: " + message.getName());
         if (!message.getName().startsWith("auth")) {
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(message.getName());
-            for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
-                proxiedPlayer.connect(ServerUtil.getRandomLobby(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+            if (serverInfo != null) {
+                for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
+                    proxiedPlayer.connect(ServerUtil.getRandomLobby(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+                }
             }
         }
         ProxyServer.getInstance().getServers().remove(message.getName());

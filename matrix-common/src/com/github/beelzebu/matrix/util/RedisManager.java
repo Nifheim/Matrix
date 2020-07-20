@@ -31,4 +31,9 @@ public class RedisManager {
     public JedisPool getPool() {
         return pool;
     }
+
+    public void shutdown() {
+        pool.destroy();
+        pool.close();
+    }
 }

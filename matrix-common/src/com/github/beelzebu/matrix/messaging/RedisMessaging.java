@@ -51,6 +51,14 @@ public class RedisMessaging implements Messaging {
         listeners.add(redisMessageListener);
     }
 
+    @Override
+    public void shutdown() {
+        listeners.clear();
+        if (getPubSubListener().jpsh != null) {
+            getPubSubListener().jpsh.unsubscribe();
+        }
+    }
+
     public void sendMessage(String channel, String message) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
             jedis.publish(channel, message);

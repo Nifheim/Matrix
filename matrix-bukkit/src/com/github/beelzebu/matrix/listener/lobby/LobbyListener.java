@@ -85,14 +85,16 @@ public class LobbyListener implements Listener {
     public void onPlayerPvP(EntityDamageByEntityEvent e) {
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
             if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
-                if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
-                    return;
-                }
-                if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
-                    return;
-                }
-                if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET && ((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET) {
-                    return;
+                if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+                    if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
+                        return;
+                    }
+                    if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
+                        return;
+                    }
+                    if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET && ((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET) {
+                        return;
+                    }
                 }
                 e.setCancelled(true);
             }
@@ -121,7 +123,7 @@ public class LobbyListener implements Listener {
         matrixPlayer.setLoggedIn(true);
         Player player = e.getPlayer();
         setNormalItems(player);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> player.teleport(LocationUtils.locationFromString(LobbyData.getInstance().getConfig().getString("spawn", LocationUtils.locationToString(Bukkit.getWorlds().get(0).getSpawnLocation())))), 2);
+        player.teleport(LocationUtils.locationFromString(LobbyData.getInstance().getConfig().getString("spawn", LocationUtils.locationToString(Bukkit.getWorlds().get(0).getSpawnLocation()))));
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || player.getLocation().getWorld().getName().equalsIgnoreCase(api.getConfig().getString("Lobby World"))) {
             Bukkit.getServer().getScheduler().runTaskLaterAsynchronously(plugin, () -> {
                 // Set the level and xp to 0 for security reasons
@@ -131,7 +133,7 @@ public class LobbyListener implements Listener {
                 player.setSaturation(20);
                 player.getActivePotionEffects().forEach(pe -> player.removePotionEffect(pe.getType()));
                 player.getInventory().setHeldItemSlot(4);
-            }, 2);
+            }, 1);
             Bukkit.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
                     player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16);

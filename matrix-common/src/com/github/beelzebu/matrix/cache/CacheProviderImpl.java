@@ -359,4 +359,8 @@ public class CacheProviderImpl implements CacheProvider {
             Matrix.getLogger().debug(ex);
         }
     }
+
+    @Override
+    public void shutdown() {
+    }
 }

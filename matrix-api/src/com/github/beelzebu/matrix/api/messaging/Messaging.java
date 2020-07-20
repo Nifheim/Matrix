@@ -17,4 +17,6 @@ public interface Messaging {
     void sendMessage(RedisMessage redisMessage);
 
     void registerListener(RedisMessageListener<? extends RedisMessage> redisMessageListener);
+
+    void shutdown();
 }

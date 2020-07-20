@@ -62,4 +62,6 @@ public interface CacheProvider {
     void setDiscordVerificationCode(String name, String code);
 
     void purgeForAllPlayers(String field);
+
+    void shutdown();
 }

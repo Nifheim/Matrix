@@ -22,6 +22,7 @@ public class Channel {
     private final String command;
     private final String permission;
     private final ChatColor color;
+    private Command bungeeCommand;
 
     public Channel(String name, String command, String permission, ChatColor color) {
         this.name = name;
@@ -31,7 +32,7 @@ public class Channel {
     }
 
     public Channel register() {
-        ProxyServer.getInstance().getPluginManager().registerCommand(ProxyServer.getInstance().getPluginManager().getPlugin("Matrix"), new Command(name) {
+        ProxyServer.getInstance().getPluginManager().registerCommand(ProxyServer.getInstance().getPluginManager().getPlugin("Matrix"), bungeeCommand = new Command(name) {
             @Override
             public void execute(CommandSender sender, String[] args) {
                 if (!sender.hasPermission(permission)) {
@@ -80,6 +81,12 @@ public class Channel {
             }
         });
         return this;
+    }
+
+    public void unregister() {
+        if (bungeeCommand != null) {
+            ProxyServer.getInstance().getPluginManager().unregisterCommand(bungeeCommand);
+        }
     }
 
     public String getName() {

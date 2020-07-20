@@ -139,6 +139,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().set(0, "lobby"));
         api.getPlayers().forEach(MatrixPlayer::save);
         api.getPlayers().clear();
+        api.getCache().shutdown();
+        api.getMessaging().shutdown();
+        api.getRedisManager().shutdown();
+        api.getScheduler().shutdownExecutor();
+        api.getScheduler().shutdownScheduler();
     }
 
     public MatrixAPIImpl getApi() {
