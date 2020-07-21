@@ -19,5 +19,9 @@ public enum GameType {
     BUILDBATTLE,
     UHC,
     INFLUENCER,
+    THE_PIT,
+    ONE_BLOCK,
+    MODS,
+    ARCADE,
     NONE
 }

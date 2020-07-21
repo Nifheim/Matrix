@@ -63,7 +63,7 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockBreak(BlockBreakEvent e) {
-        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") != null && api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
             if (editMode.contains(e.getPlayer())) {
                 return;
             }
@@ -73,7 +73,7 @@ public class LobbyListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockPlace(BlockPlaceEvent e) {
-        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
+        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") != null && api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName()))) {
             if (editMode.contains(e.getPlayer())) {
                 return;
             }
@@ -86,12 +86,6 @@ public class LobbyListener implements Listener {
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
             if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
                 if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
-                    if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
-                        return;
-                    }
-                    if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD) == null) {
-                        return;
-                    }
                     if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET && ((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET) {
                         return;
                     }
