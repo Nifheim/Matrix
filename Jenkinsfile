@@ -23,7 +23,6 @@ pipeline {
         }
         stage('Publish') {
             when {
-                // Only say hello if a "greeting" is requested
                 expression { env.JOB_NAME.endsWith("/master") }
             }
             steps {

@@ -3,18 +3,17 @@ plugins {
 }
 
 dependencies {
-    compileOnly project(':matrix-api')
-    compileOnly project(':matrix-common')
-    compileOnly 'redis.clients:jedis:3.3.0'
-    compileOnly 'com.github.ben-manes.caffeine:caffeine:2.8.4'
-    compileOnly 'org.apache.commons:commons-pool2:2.6.2'
-    compileOnly 'org.mongodb:mongo-java-driver:3.12.5'
-    compileOnly 'org.mongodb.morphia:morphia:1.3.2'
-    compileOnly 'com.zaxxer:HikariCP:3.4.5'
-    compileOnly 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
-    compileOnly 'com.destroystokyo.paper:paper:1.15.2-R0.1-SNAPSHOT'
-    compileOnly 'me.clip:placeholderapi:2.10.6'
-    compileOnly 'com.vexsoftware:nuvotifier-universal:2.6.0'
+    api project(':matrix-common')
+    implementation 'redis.clients:jedis:3.3.0'
+    implementation 'com.github.ben-manes.caffeine:caffeine:2.8.4'
+    implementation 'org.apache.commons:commons-pool2:2.6.2'
+    implementation 'org.mongodb:mongo-java-driver:3.12.5'
+    implementation 'org.mongodb.morphia:morphia:1.3.2'
+    implementation 'com.zaxxer:HikariCP:3.4.5'
+    implementation 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
+    implementation 'com.destroystokyo.paper:paper:1.15.2-R0.1-SNAPSHOT'
+    implementation 'me.clip:placeholderapi:2.10.6'
+    implementation 'com.vexsoftware:nuvotifier-universal:2.6.0'
 }
 
 artifacts {
@@ -25,7 +24,6 @@ shadowJar {
     getArchiveClassifier().set(null)
     getArchiveVersion().set(null)
 
-    configurations = [project.configurations.compileOnly]
     dependencies {
         include(project(':matrix-api'))
         include(project(':matrix-common'))

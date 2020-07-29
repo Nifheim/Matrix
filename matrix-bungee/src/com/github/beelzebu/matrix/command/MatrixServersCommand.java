@@ -33,10 +33,11 @@ public class MatrixServersCommand extends Command {
         }
         Map<String, Set<String>> servers = Matrix.getAPI().getCache().getAllServers();
         List<BaseComponent[]> components = new ArrayList<>();
+        components.add(TextComponent.fromLegacyText(StringUtils.replace("&6Jugadores en linea: &a" + ProxyServer.getInstance().getPlayers().size())));
         for (Map.Entry<String, Set<String>> ent : servers.entrySet()) {
-            components.add(TextComponent.fromLegacyText(StringUtils.replace("&7Grupo: &6" + ent.getKey())));
             for (String server : ent.getValue()) {
                 long playerCount = ProxyServer.getInstance().getPlayers().stream().filter(proxiedPlayer -> proxiedPlayer.getServer().getInfo().getName().equals(server)).count();
+                components.add(TextComponent.fromLegacyText(StringUtils.replace("&7Grupo: &6" + ent.getKey() + " &7(&a" + playerCount + "&7)")));
                 if (playerCount == 0 && (args.length != 1 || !args[0].equalsIgnoreCase("all"))) {
                     continue;
                 }

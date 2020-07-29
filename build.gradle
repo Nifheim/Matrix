@@ -1,11 +1,11 @@
 buildscript {
     allprojects {
         group = 'com.github.beelzebu'
-        version = '1.0.11'
+        version = '1.0.12'
     }
 
     subprojects {
-        apply plugin: 'java'
+        apply plugin: 'java-library'
         apply plugin: 'maven-publish'
 
         repositories {
@@ -13,7 +13,7 @@ buildscript {
             mavenLocal()
 
             maven {
-                url = 'http://venus.indiopikaro.cl/nexus/repository/maven-public/'
+                url = 'https://venus.indiopikaro.cl/nexus/repository/maven-public/'
 
                 credentials {
                     username "${mavenUser}"
@@ -59,11 +59,11 @@ buildscript {
         }
 
         dependencies {
-            compileOnly 'net.luckperms:api:5.1'
-            compileOnly 'com.github.beelzebu:coins3-api:3.0'
-            compileOnly 'io.github.waterfallmc:waterfall-chat:1.16-R0.2-SNAPSHOT'
-            compileOnly 'com.google.code.gson:gson:2.8.5'
-            compileOnly 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
+            api 'net.luckperms:api:5.1'
+            api 'com.github.beelzebu:coins3-api:3.0'
+            implementation 'cl.indiopikaro:indiofall-chat:1.16-R0.4-SNAPSHOT'
+            implementation 'com.google.code.gson:gson:2.8.5'
+            implementation 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
         }
 
         sourceCompatibility = '1.8'
