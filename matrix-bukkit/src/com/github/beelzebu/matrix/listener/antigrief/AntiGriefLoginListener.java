@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.listener.antigrief;
 
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;

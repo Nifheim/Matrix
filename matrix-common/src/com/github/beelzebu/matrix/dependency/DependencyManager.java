@@ -18,7 +18,7 @@
  */
 package com.github.beelzebu.matrix.dependency;
 
-import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import cl.indiopikaro.jmatrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.dependency.classloader.IsolatedClassLoader;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.dependency.relodaction.Relocation;

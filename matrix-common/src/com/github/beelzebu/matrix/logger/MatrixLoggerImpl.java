@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.logger;
 
-import com.github.beelzebu.matrix.api.command.CommandSource;
+import cl.indiopikaro.jmatrix.api.command.CommandSource;
+import cl.indiopikaro.jmatrix.logger.MatrixLogger;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;

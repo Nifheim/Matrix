@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.cache;
 
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.cache.CacheProvider;
+import cl.indiopikaro.jmatrix.api.messaging.message.FieldUpdate;
+import cl.indiopikaro.jmatrix.api.messaging.message.NameUpdatedMessage;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import com.github.beelzebu.coins.api.CoinsAPI;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.cache.CacheProvider;
-import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
-import com.github.beelzebu.matrix.api.messaging.message.NameUpdatedMessage;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.google.common.collect.ImmutableMap;

@@ -1,13 +1,13 @@
 package com.github.beelzebu.matrix.database;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.database.SQLDatabase;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.player.PlayStats;
-import com.github.beelzebu.matrix.api.player.Statistic;
-import com.github.beelzebu.matrix.api.player.TopEntry;
-import com.github.beelzebu.matrix.api.server.GameType;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.database.SQLDatabase;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.player.PlayStats;
+import cl.indiopikaro.jmatrix.api.player.Statistic;
+import cl.indiopikaro.jmatrix.api.player.TopEntry;
+import cl.indiopikaro.jmatrix.api.server.GameType;
 import com.github.beelzebu.matrix.database.sql.SQLQuery;
 import com.github.beelzebu.matrix.util.Throwing;
 import com.github.benmanes.caffeine.cache.Cache;

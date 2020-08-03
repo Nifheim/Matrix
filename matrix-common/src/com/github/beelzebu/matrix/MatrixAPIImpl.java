@@ -1,16 +1,16 @@
 package com.github.beelzebu.matrix;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.i18n.I18n;
-import com.github.beelzebu.matrix.api.player.GameMode;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
-import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
-import com.github.beelzebu.matrix.api.server.GameType;
-import com.github.beelzebu.matrix.api.server.ServerInfo;
-import com.github.beelzebu.matrix.api.server.ServerType;
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.i18n.I18n;
+import cl.indiopikaro.jmatrix.api.player.GameMode;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.plugin.MatrixPlugin;
+import cl.indiopikaro.jmatrix.api.scheduler.SchedulerAdapter;
+import cl.indiopikaro.jmatrix.api.server.GameType;
+import cl.indiopikaro.jmatrix.api.server.ServerInfo;
+import cl.indiopikaro.jmatrix.api.server.ServerType;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.github.beelzebu.matrix.database.MongoStorage;
 import com.github.beelzebu.matrix.database.MySQLStorage;

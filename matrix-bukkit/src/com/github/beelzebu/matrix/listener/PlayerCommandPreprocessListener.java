@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.listener;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.i18n.I18n;
-import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.i18n.I18n;
+import cl.indiopikaro.jmatrix.api.i18n.Message;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

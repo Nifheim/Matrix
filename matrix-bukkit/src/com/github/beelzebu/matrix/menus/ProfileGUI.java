@@ -1,14 +1,14 @@
 package com.github.beelzebu.matrix.menus;
 
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.config.AbstractConfig;
+import cl.indiopikaro.jmatrix.api.i18n.I18n;
+import cl.indiopikaro.jmatrix.api.i18n.Message;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import com.deanveloper.skullcreator.SkullCreator;
 import com.github.beelzebu.matrix.api.ItemBuilder;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.config.AbstractConfig;
-import com.github.beelzebu.matrix.api.i18n.I18n;
-import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.menu.GUIManager;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.placeholders.Placeholders;
 import java.util.ArrayList;

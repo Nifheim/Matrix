@@ -10,13 +10,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/matrix-api" />
             <option value="$PROJECT_DIR$/matrix-bukkit" />
             <option value="$PROJECT_DIR$/matrix-bungee" />
             <option value="$PROJECT_DIR$/matrix-common" />
           </set>
         </option>
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

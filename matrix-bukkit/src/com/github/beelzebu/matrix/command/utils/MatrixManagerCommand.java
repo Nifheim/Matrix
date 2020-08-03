@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.command.utils;
 
+import cl.indiopikaro.jmatrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
-import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
 import com.github.beelzebu.matrix.menus.ProfileGUI;

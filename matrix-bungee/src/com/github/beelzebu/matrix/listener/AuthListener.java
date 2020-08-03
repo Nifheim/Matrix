@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import java.util.Iterator;
 import java.util.List;
 import net.md_5.bungee.api.ProxyServer;

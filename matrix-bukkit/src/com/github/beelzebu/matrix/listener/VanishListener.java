@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.listener;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.command.staff.VanishCommand;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import org.bukkit.Bukkit;
@@ -77,7 +77,7 @@ public class VanishListener implements Listener {
                     return;
                 }
             }
-            matrixPlayer.setGameMode(com.github.beelzebu.matrix.api.player.GameMode.valueOf(event.getNewGameMode().toString()), plugin.getApi().getServerInfo().getGameType());
+            matrixPlayer.setGameMode(cl.indiopikaro.jmatrix.api.player.GameMode.valueOf(event.getNewGameMode().toString()), plugin.getApi().getServerInfo().getGameType());
         }
     }
 

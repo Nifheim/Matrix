@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.api.command;
 
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.command.CommandSource;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 

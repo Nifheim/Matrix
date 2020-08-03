@@ -2,7 +2,7 @@ package com.github.beelzebu.matrix.api;
 
 import com.github.beelzebu.matrix.MatrixAPIImpl;
 import com.github.beelzebu.matrix.MatrixPluginBungee;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import net.md_5.bungee.api.ProxyServer;
 
 /**

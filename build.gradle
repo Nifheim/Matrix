@@ -1,12 +1,11 @@
 buildscript {
     allprojects {
         group = 'com.github.beelzebu'
-        version = '1.0.13'
+        version = '1.0.14'
     }
 
     subprojects {
         apply plugin: 'java-library'
-        apply plugin: 'maven-publish'
 
         repositories {
             mavenCentral()

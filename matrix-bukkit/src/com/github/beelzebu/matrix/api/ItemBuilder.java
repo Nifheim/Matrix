@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.api;
 
 import com.google.gson.Gson;
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -118,9 +118,7 @@ public class ItemBuilder {
             lore = item.getItemMeta().getLore();
         }
         if (item.hasItemMeta()) {
-            for (ItemFlag f : item.getItemMeta().getItemFlags()) {
-                flags.add(f);
-            }
+            flags.addAll(item.getItemMeta().getItemFlags());
         }
     }
 
@@ -652,7 +650,7 @@ public class ItemBuilder {
     /**
      * Contains NBT Tags Methods
      */
-    public class Unsafe {
+    public static class Unsafe {
 
         /**
          * Do not access using this Field

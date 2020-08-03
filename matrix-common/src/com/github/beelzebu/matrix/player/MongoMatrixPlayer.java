@@ -1,14 +1,14 @@
 package com.github.beelzebu.matrix.player;
 
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.player.GameMode;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.player.PlayerOptionChangeEvent;
+import cl.indiopikaro.jmatrix.api.player.PlayerOptionType;
+import cl.indiopikaro.jmatrix.api.player.Statistic;
+import cl.indiopikaro.jmatrix.api.server.GameType;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.MatrixAPIImpl;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.player.GameMode;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
-import com.github.beelzebu.matrix.api.player.PlayerOptionType;
-import com.github.beelzebu.matrix.api.player.Statistic;
-import com.github.beelzebu.matrix.api.server.GameType;
-import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;

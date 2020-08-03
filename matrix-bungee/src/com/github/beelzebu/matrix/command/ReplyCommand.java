@@ -2,9 +2,9 @@ package com.github.beelzebu.matrix.command;
 
 import com.github.beelzebu.matrix.util.PermsUtils;
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
-import com.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.messaging.message.TargetedMessage;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;

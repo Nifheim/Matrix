@@ -28,7 +28,6 @@ public class Powerup {
      *
      * @param string the String to generate the powerup in the format:
      *               world;x;y;z;title;material;data;potioneffecttype;duration;amplifier;chance
-     * @param effect The effect to use.
      * @return a new Powerup.
      */
     public static Powerup fromString(String string) {

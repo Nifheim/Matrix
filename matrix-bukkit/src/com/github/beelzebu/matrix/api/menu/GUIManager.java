@@ -1,10 +1,10 @@
 package com.github.beelzebu.matrix.api.menu;
 
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.config.AbstractConfig;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.api.ItemBuilder;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.config.AbstractConfig;
-import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -155,7 +155,7 @@ public abstract class GUIManager {
         void click(Player p);
     }
 
-    public class Item {
+    public static class Item {
 
         private final ItemStack itemStack;
         private final int slot;

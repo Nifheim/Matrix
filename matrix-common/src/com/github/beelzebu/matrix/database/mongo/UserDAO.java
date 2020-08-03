@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.database.mongo;
 
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Optional;
 import java.util.UUID;

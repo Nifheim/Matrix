@@ -1,5 +1,4 @@
 rootProject.name = 'matrix'
-include(':matrix-api')
 include(':matrix-common')
 include(':matrix-bungee')
 include(':matrix-bukkit')

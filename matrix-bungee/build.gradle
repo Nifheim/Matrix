@@ -22,7 +22,7 @@ shadowJar {
     getArchiveVersion().set(null)
 
     dependencies {
-        include(project(':matrix-api'))
+        include(dependency('cl.indiopikaro:jMatrix'))
         include(project(':matrix-common'))
     }
 

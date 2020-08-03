@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.listener.lobby;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.server.ServerType;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.server.ServerType;
 import com.github.beelzebu.matrix.menus.OptionsGUI;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import org.bukkit.Bukkit;

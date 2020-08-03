@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.command;
 
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
-import com.github.beelzebu.matrix.api.config.MatrixConfig;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.config.MatrixConfig;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.channels.Channel;
 import com.github.beelzebu.matrix.motd.MotdManager;
 import java.util.Optional;

@@ -1,10 +1,10 @@
 package com.github.beelzebu.matrix.messaging;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.messaging.Messaging;
-import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
-import com.github.beelzebu.matrix.api.messaging.message.RedisMessage;
-import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.messaging.Messaging;
+import cl.indiopikaro.jmatrix.api.messaging.RedisMessageListener;
+import cl.indiopikaro.jmatrix.api.messaging.message.RedisMessage;
+import cl.indiopikaro.jmatrix.api.messaging.message.RedisMessageType;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.google.gson.JsonObject;
 import java.util.HashSet;

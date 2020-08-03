@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.i18n.I18n;
-import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.i18n.I18n;
+import cl.indiopikaro.jmatrix.api.i18n.Message;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import java.util.UUID;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;

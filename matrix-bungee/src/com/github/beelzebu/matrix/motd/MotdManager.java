@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.motd;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.countdown.Countdown;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

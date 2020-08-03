@@ -15,7 +15,7 @@ public class DupepatchListener implements Listener {
         plugin = matrixBukkitBootstrap;
     }
 
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPortal(EntityPortalEvent e) {
         if (!e.isCancelled()) {
             if (plugin.getConfig().getBoolean("PortalFix.Strict Mode")) {

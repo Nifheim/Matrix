@@ -1,13 +1,13 @@
 package com.github.beelzebu.matrix;
 
-import com.github.beelzebu.matrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.command.CommandSource;
+import cl.indiopikaro.jmatrix.api.config.AbstractConfig;
+import cl.indiopikaro.jmatrix.api.config.MatrixConfig;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.plugin.MatrixPlugin;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.api.command.BungeeCommandSource;
-import com.github.beelzebu.matrix.api.command.CommandSource;
-import com.github.beelzebu.matrix.api.config.AbstractConfig;
-import com.github.beelzebu.matrix.api.config.MatrixConfig;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
-import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.config.BungeeConfiguration;
 import java.io.File;
 import java.io.InputStream;

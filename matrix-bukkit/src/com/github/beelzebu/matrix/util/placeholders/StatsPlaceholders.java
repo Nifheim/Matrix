@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.util.placeholders;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;

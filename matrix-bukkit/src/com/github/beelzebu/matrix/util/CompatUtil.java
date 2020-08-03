@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.util;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import com.github.beelzebu.matrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.Matrix;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.stream.Stream;

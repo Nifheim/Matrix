@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.util;
 
-import com.github.beelzebu.matrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.Matrix;
 import java.util.concurrent.TimeUnit;
 import redis.clients.jedis.Jedis;
 

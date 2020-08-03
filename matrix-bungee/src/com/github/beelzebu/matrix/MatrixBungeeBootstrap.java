@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix;
 
-import com.github.beelzebu.matrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.messaging.message.ServerRequestMessage;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.plugin.MatrixBootstrap;
+import cl.indiopikaro.jmatrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
-import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
-import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.channels.Channel;
 import com.github.beelzebu.matrix.command.BasicCommands;
 import com.github.beelzebu.matrix.command.BungeeTPCommand;

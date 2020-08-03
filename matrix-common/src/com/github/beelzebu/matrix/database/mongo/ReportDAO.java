@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.database.mongo;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.report.Report;
-import com.github.beelzebu.matrix.api.report.ReportManager;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.report.Report;
+import cl.indiopikaro.jmatrix.api.report.ReportManager;
 import com.github.beelzebu.matrix.report.MongoReport;
 import java.util.Optional;
 import org.mongodb.morphia.Datastore;

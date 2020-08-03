@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.listener;
 
 import com.github.beelzebu.matrix.MatrixAPIImpl;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.motd.Motd;
 import com.github.beelzebu.matrix.motd.MotdManager;
 import java.util.Objects;

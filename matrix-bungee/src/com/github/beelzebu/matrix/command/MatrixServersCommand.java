@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.Matrix;
+import cl.indiopikaro.jmatrix.api.messaging.message.ServerRegisterMessage;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

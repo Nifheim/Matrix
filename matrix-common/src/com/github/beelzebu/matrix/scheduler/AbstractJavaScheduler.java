@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.scheduler;
 
-import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
-import com.github.beelzebu.matrix.api.scheduler.SchedulerTask;
+import cl.indiopikaro.jmatrix.api.scheduler.SchedulerAdapter;
+import cl.indiopikaro.jmatrix.api.scheduler.SchedulerTask;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;

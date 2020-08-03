@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.config;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import com.github.beelzebu.matrix.api.config.MatrixConfig;
+import cl.indiopikaro.jmatrix.api.config.MatrixConfig;
 import java.io.File;
 import java.util.Collection;
 import org.bukkit.configuration.file.FileConfiguration;

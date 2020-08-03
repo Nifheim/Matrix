@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.command;
 
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.util.StringUtils;
+import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.PermsUtils;
 import com.google.gson.GsonBuilder;
