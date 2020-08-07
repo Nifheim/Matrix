@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.report;
 
-import cl.indiopikaro.jmatrix.api.report.Report;
+import com.github.beelzebu.matrix.api.report.Report;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;

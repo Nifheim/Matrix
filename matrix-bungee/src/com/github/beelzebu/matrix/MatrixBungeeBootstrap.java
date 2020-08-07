@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.messaging.message.ServerRequestMessage;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.plugin.MatrixBootstrap;
-import cl.indiopikaro.jmatrix.api.scheduler.SchedulerAdapter;
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
+import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
+import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.channels.Channel;
 import com.github.beelzebu.matrix.command.BasicCommands;
 import com.github.beelzebu.matrix.command.BungeeTPCommand;
@@ -32,7 +32,6 @@ import com.github.beelzebu.matrix.listener.ServerUnregisterListener;
 import com.github.beelzebu.matrix.motd.MotdManager;
 import com.github.beelzebu.matrix.scheduler.BungeeSchedulerAdapter;
 import com.github.beelzebu.matrix.tablist.TablistManager;
-import com.mongodb.DuplicateKeyException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -166,6 +165,10 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         return config;
     }
 
+    public InfluencerManager getInfluencerManager() {
+        return influencerManager;
+    }
+
     private void loadManagers() {
         if (ProxyServer.getInstance().getPluginManager().getPlugin("LuckPerms") != null) {
             Matrix.getLogger().info("LuckPerms found, hooking into it.");
@@ -178,9 +181,5 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     private void registerCommand(Command command) {
         ProxyServer.getInstance().getPluginManager().registerCommand(this, command);
-    }
-
-    public InfluencerManager getInfluencerManager() {
-        return influencerManager;
     }
 }

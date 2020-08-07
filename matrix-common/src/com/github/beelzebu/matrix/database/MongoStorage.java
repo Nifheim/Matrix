@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.database;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.database.MatrixDatabase;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.report.ReportManager;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.database.MatrixDatabase;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.report.ReportManager;
 import com.github.beelzebu.matrix.database.mongo.ChatColorConverter;
 import com.github.beelzebu.matrix.database.mongo.ReportDAO;
 import com.github.beelzebu.matrix.database.mongo.UserDAO;

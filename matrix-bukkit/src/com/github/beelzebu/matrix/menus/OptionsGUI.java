@@ -1,15 +1,15 @@
 package com.github.beelzebu.matrix.menus;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.MatrixAPI;
-import cl.indiopikaro.jmatrix.api.i18n.I18n;
-import cl.indiopikaro.jmatrix.api.i18n.Message;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.player.PlayerOptionType;
-import cl.indiopikaro.jmatrix.api.server.ServerType;
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.api.ItemBuilder;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.menu.GUIManager;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.player.PlayerOptionType;
+import com.github.beelzebu.matrix.api.server.ServerType;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.player.options.FlyOption;
 import com.github.beelzebu.matrix.player.options.Option;
 import com.github.beelzebu.matrix.player.options.SpeedOption;

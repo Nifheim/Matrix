@@ -1,10 +1,10 @@
 package com.github.beelzebu.matrix.listener;
 
+import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.util.ReadURL;
 import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import cl.indiopikaro.jmatrix.api.Matrix;
-import com.github.beelzebu.matrix.util.ReadURL;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

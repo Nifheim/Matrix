@@ -18,7 +18,7 @@
  */
 package com.github.beelzebu.matrix.dependency;
 
-import cl.indiopikaro.jmatrix.api.plugin.MatrixPlugin;
+import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.dependency.classloader.IsolatedClassLoader;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.dependency.relodaction.Relocation;
@@ -182,6 +182,15 @@ public final class DependencyManager {
         }
     }
 
+    private boolean classExists(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
+
     private static final class Source {
 
         private final Dependency dependency;
@@ -198,15 +207,6 @@ public final class DependencyManager {
 
         public Path getFile() {
             return file;
-        }
-    }
-
-    private boolean classExists(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException ex) {
-            return false;
         }
     }
 }

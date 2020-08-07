@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.listener;
 
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.MatrixAPI;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.tablist.TablistManager;
 import com.github.beelzebu.matrix.tasks.DisconnectTask;
 import com.github.beelzebu.matrix.tasks.LoginTask;

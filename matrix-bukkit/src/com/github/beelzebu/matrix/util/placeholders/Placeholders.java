@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.util.placeholders;
 
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.entity.Player;
 

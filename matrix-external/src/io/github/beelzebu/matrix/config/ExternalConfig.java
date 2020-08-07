@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.config;
 
 import com.github.beelzebu.matrix.Main;
-import cl.indiopikaro.jmatrix.api.config.AbstractConfig;
+import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import java.io.File;
 import java.util.Collection;
 

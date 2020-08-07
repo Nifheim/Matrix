@@ -1,13 +1,13 @@
 package com.github.beelzebu.matrix.database;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.MatrixAPI;
-import cl.indiopikaro.jmatrix.api.database.SQLDatabase;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.player.PlayStats;
-import cl.indiopikaro.jmatrix.api.player.Statistic;
-import cl.indiopikaro.jmatrix.api.player.TopEntry;
-import cl.indiopikaro.jmatrix.api.server.GameType;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.database.SQLDatabase;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.player.PlayStats;
+import com.github.beelzebu.matrix.api.player.Statistic;
+import com.github.beelzebu.matrix.api.player.TopEntry;
+import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.database.sql.SQLQuery;
 import com.github.beelzebu.matrix.util.Throwing;
 import com.github.benmanes.caffeine.cache.Cache;
@@ -361,26 +361,6 @@ public class MySQLStorage implements SQLDatabase {
         }));
     }
 
-    private void fillTopEntries(String server, TopEntry[] topEntries, PreparedStatement preparedStatement) throws SQLException {
-        if (preparedStatement != null) {
-            preparedStatement.setString(1, trimServerName(server));
-            ResultSet res = preparedStatement.executeQuery();
-            for (int i = 0; i < TOP_SIZE; i++) {
-                if (res.next()) {
-                    String id = res.getString("id");
-                    MatrixPlayer matrixPlayer = api.getDatabase().getPlayerById(id);
-                    if (matrixPlayer == null) {
-                        Matrix.getLogger().warn("Player with '" + id + "' can not be found on database.");
-                        continue;
-                    }
-                    topEntries[i] = new TopEntry(id, matrixPlayer.getName(), res.getInt(1), i);
-                    continue;
-                }
-                break;
-            }
-        }
-    }
-
     @Override
     public CompletableFuture<Void> insertPlayStats(MatrixPlayer matrixPlayer, GameType gameType, long playTime) {
         Objects.requireNonNull(matrixPlayer, "matrixPlayer can't be null");
@@ -419,6 +399,26 @@ public class MySQLStorage implements SQLDatabase {
             }
             return playStats;
         });
+    }
+
+    private void fillTopEntries(String server, TopEntry[] topEntries, PreparedStatement preparedStatement) throws SQLException {
+        if (preparedStatement != null) {
+            preparedStatement.setString(1, trimServerName(server));
+            ResultSet res = preparedStatement.executeQuery();
+            for (int i = 0; i < TOP_SIZE; i++) {
+                if (res.next()) {
+                    String id = res.getString("id");
+                    MatrixPlayer matrixPlayer = api.getDatabase().getPlayerById(id);
+                    if (matrixPlayer == null) {
+                        Matrix.getLogger().warn("Player with '" + id + "' can not be found on database.");
+                        continue;
+                    }
+                    topEntries[i] = new TopEntry(id, matrixPlayer.getName(), res.getInt(1), i);
+                    continue;
+                }
+                break;
+            }
+        }
     }
 
     private void setDefaultStatsParams(CallableStatement callableStatement, String id, String server) throws SQLException {

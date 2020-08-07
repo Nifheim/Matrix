@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.logger;
 
-import cl.indiopikaro.jmatrix.api.command.CommandSource;
-import cl.indiopikaro.jmatrix.logger.MatrixLogger;
+import com.github.beelzebu.matrix.api.command.CommandSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -70,17 +69,21 @@ public final class MatrixLoggerImpl implements MatrixLogger {
         log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
+    @Override
+    public void debug(Exception ex) {
+        log(ex.getClass().getName() + ": ");
+        log("   Error message: " + ex.getLocalizedMessage());
+        log("   Stacktrace:\n" + getStacktrace(ex));
+    }
+
     public void debug(JedisException ex) {
         log("JedisException: ");
         log("   Error message: " + ex.getLocalizedMessage());
         log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
-    @Override
-    public void debug(Exception ex) {
-        log(ex.getClass().getName() + ": ");
-        log("   Error message: " + ex.getLocalizedMessage());
-        log("   Stacktrace:\n" + getStacktrace(ex));
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
     private String getStacktrace(Exception ex) {
@@ -91,9 +94,5 @@ public final class MatrixLoggerImpl implements MatrixLogger {
             e.printStackTrace();
         }
         return "Error getting the stacktrace";
-    }
-
-    public void setDebug(boolean debug) {
-        this.debug = debug;
     }
 }

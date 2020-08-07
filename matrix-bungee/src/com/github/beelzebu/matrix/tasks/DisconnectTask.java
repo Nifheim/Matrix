@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.tasks;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Date;
 import net.md_5.bungee.api.chat.TextComponent;

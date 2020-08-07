@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.listener;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.messaging.RedisMessageListener;
-import cl.indiopikaro.jmatrix.api.messaging.message.RedisMessageType;
-import cl.indiopikaro.jmatrix.api.messaging.message.ServerUnregisterMessage;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
+import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
+import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.util.ServerUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;

@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.command;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;

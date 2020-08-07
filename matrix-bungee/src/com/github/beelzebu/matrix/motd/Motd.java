@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.motd;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.countdown.Countdown;
 import java.util.List;
 import java.util.Objects;

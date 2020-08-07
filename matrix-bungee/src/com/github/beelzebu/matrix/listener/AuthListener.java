@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.listener;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.util.ServerUtil;
 import java.util.Iterator;
 import java.util.List;
@@ -53,30 +53,6 @@ public class AuthListener implements Listener {
         removeSuggestionsFromTabComplete(e.getReceiver(), e.getSuggestions());
     }
 
-    private void removeSuggestionsFromTabComplete(Connection receiver, List<String> suggestions) {
-        if (!(receiver instanceof ProxiedPlayer)) {
-            return;
-        }
-        ProxiedPlayer proxiedPlayer = (ProxiedPlayer) receiver;
-        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(proxiedPlayer.getUniqueId());
-        if (matrixPlayer.isPremium()) {
-            return;
-        }
-        if (matrixPlayer.isLoggedIn()) {
-            return;
-        }
-        Iterator<String> it = suggestions.iterator();
-        while (it.hasNext()) {
-            String suggestion = it.next().replaceFirst("/", "").toLowerCase();
-            for (String command : allowedCommands) {
-                if (suggestion.startsWith(command)) {
-                    break;
-                }
-                it.remove();
-            }
-        }
-    }
-
     @EventHandler
     public void onServerSwitchLoggedOut(ServerConnectEvent e) {
         if (e.getTarget().getName().startsWith("auth")) {
@@ -100,6 +76,30 @@ public class AuthListener implements Listener {
         if (matrixPlayer.isLoggedIn()) {
             e.setTarget(ServerUtil.getRandomLobby());
             Matrix.getLogger().info("Server connect for: " + matrixPlayer.getName() + " old server: " + e.getPlayer().getServer().getInfo() + " reason: " + e.getReason());
+        }
+    }
+
+    private void removeSuggestionsFromTabComplete(Connection receiver, List<String> suggestions) {
+        if (!(receiver instanceof ProxiedPlayer)) {
+            return;
+        }
+        ProxiedPlayer proxiedPlayer = (ProxiedPlayer) receiver;
+        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(proxiedPlayer.getUniqueId());
+        if (matrixPlayer.isPremium()) {
+            return;
+        }
+        if (matrixPlayer.isLoggedIn()) {
+            return;
+        }
+        Iterator<String> it = suggestions.iterator();
+        while (it.hasNext()) {
+            String suggestion = it.next().replaceFirst("/", "").toLowerCase();
+            for (String command : allowedCommands) {
+                if (suggestion.startsWith(command)) {
+                    break;
+                }
+                it.remove();
+            }
         }
     }
 }

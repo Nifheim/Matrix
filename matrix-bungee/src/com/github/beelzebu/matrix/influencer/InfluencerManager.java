@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.influencer;
 
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
-import cl.indiopikaro.jmatrix.api.Matrix;
+import com.github.beelzebu.matrix.api.Matrix;
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;
 import java.util.HashSet;

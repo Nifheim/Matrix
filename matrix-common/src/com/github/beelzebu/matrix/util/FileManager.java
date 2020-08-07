@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.util;
 
-import cl.indiopikaro.jmatrix.api.plugin.MatrixPlugin;
+import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

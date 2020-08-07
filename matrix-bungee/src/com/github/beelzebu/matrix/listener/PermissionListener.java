@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.listener;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.util.UUID;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;

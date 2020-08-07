@@ -26,7 +26,7 @@ public class DupepatchListener implements Listener {
             } else {
                 switch (e.getEntityType()) {
                     case EXPERIENCE_ORB:
-                        
+
                 }
             }
         }

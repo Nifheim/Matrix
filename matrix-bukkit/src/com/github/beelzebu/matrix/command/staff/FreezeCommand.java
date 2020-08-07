@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.command.staff;
 
-import cl.indiopikaro.jmatrix.api.i18n.I18n;
-import cl.indiopikaro.jmatrix.api.i18n.Message;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.api.Titles;
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.Bukkit;

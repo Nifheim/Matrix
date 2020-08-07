@@ -1,13 +1,13 @@
 package com.github.beelzebu.matrix.listener;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.MatrixAPI;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.player.PlayerOptionType;
-import cl.indiopikaro.jmatrix.api.server.GameType;
-import cl.indiopikaro.jmatrix.api.server.ServerType;
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.player.PlayerOptionType;
+import com.github.beelzebu.matrix.api.server.GameType;
+import com.github.beelzebu.matrix.api.server.ServerType;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.PermsUtils;
 import com.github.beelzebu.matrix.util.ReadURL;
@@ -32,9 +32,9 @@ public class LoginListener implements Listener {
 
     private final MatrixBukkitBootstrap plugin;
     private final MatrixAPI api;
-    private boolean firstjoin = true;
     private final GameType gameType = Matrix.getAPI().getServerInfo().getGameType();
     private final Map<UUID, Long> playTime = new HashMap<>();
+    private boolean firstjoin = true;
 
     public LoginListener(MatrixAPI api, MatrixBukkitBootstrap plugin) {
         this.api = api;

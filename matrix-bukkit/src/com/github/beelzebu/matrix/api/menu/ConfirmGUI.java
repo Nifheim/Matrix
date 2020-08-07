@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.api.menu;
 
-import cl.indiopikaro.jmatrix.api.i18n.I18n;
-import cl.indiopikaro.jmatrix.api.i18n.Message;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import java.util.Arrays;
 import java.util.List;

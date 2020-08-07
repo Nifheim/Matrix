@@ -1,16 +1,16 @@
 package com.github.beelzebu.matrix;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.messaging.message.ServerRegisterMessage;
-import cl.indiopikaro.jmatrix.api.messaging.message.ServerUnregisterMessage;
-import cl.indiopikaro.jmatrix.api.player.PlayerOptionChangeEvent;
-import cl.indiopikaro.jmatrix.api.plugin.MatrixBootstrap;
-import cl.indiopikaro.jmatrix.api.scheduler.SchedulerAdapter;
-import cl.indiopikaro.jmatrix.api.server.ServerType;
 import com.destroystokyo.paper.PaperConfig;
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.command.CommandAPI;
 import com.github.beelzebu.matrix.api.menu.GUIManager;
+import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
+import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
+import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
+import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
+import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
+import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.server.powerup.tasks.PowerupSpawnTask;
 import com.github.beelzebu.matrix.command.staff.CommandWatcherCommand;
 import com.github.beelzebu.matrix.command.staff.FreezeCommand;
@@ -270,6 +270,10 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         return matrixPlugin;
     }
 
+    public ServerRegisterMessage getServerRegisterMessage() {
+        return serverRegisterMessage;
+    }
+
     private void loadManagers() {
         if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
             if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
@@ -288,9 +292,5 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     private void registerEvents(Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, this);
-    }
-
-    public ServerRegisterMessage getServerRegisterMessage() {
-        return serverRegisterMessage;
     }
 }

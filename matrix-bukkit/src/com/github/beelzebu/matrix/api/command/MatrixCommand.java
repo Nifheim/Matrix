@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.api.command;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.MatrixAPI;
-import cl.indiopikaro.jmatrix.api.i18n.I18n;
-import cl.indiopikaro.jmatrix.api.i18n.Message;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
 import java.util.ArrayList;
 import java.util.Arrays;
 import org.bukkit.Bukkit;

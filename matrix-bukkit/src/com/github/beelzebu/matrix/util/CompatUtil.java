@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.util;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
-import cl.indiopikaro.jmatrix.api.Matrix;
+import com.github.beelzebu.matrix.api.Matrix;
 import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -21,7 +21,13 @@ import org.bukkit.potion.PotionType;
  */
 public final class CompatUtil {
 
+    public static MinecraftVersion VERSION;
     private static CompatUtil INSTANCE;
+    private Method localeMethod;
+
+    public CompatUtil() {
+        setup();
+    }
 
     public static CompatUtil getInstance() {
         return INSTANCE == null ? (INSTANCE = new CompatUtil()) : INSTANCE;
@@ -110,35 +116,6 @@ public final class CompatUtil {
         itemStack.setItemMeta(meta);
     }
 
-    public CompatUtil() {
-        setup();
-    }
-
-    public enum MinecraftVersion {
-        MINECRAFT_1_8(1),
-        MINECRAFT_1_9(2),
-        MINECRAFT_1_10(3),
-        MINECRAFT_1_11(4),
-        MINECRAFT_1_12(5),
-        MINECRAFT_1_13(6),
-        MINECRAFT_1_14(7),
-        MINECRAFT_1_15(8),
-        MINECRAFT_1_16(9);
-
-        private final int id;
-
-        MinecraftVersion(int id) {
-            this.id = id;
-        }
-
-        public boolean isAfterOrEq(MinecraftVersion another) {
-            return id >= another.id;
-        }
-    }
-
-    public static MinecraftVersion VERSION;
-    private Method localeMethod;
-
     public void setup() {
         Matrix.getLogger().info("Detected " + getRawVersion() + " server version.");
         switch (getMinorVersion()) {
@@ -175,7 +152,6 @@ public final class CompatUtil {
                 break;
         }
     }
-
 
     public String getLocale(Player player) {
         if (VERSION.isAfterOrEq(MinecraftVersion.MINECRAFT_1_12)) {
@@ -221,7 +197,6 @@ public final class CompatUtil {
         return null;
     }
 
-
     public ItemStack setDamage(ItemStack itemStack, int damage) {
         if (VERSION.isAfterOrEq(MinecraftVersion.MINECRAFT_1_13)) {
             if (itemStack.getItemMeta() instanceof Damageable) {
@@ -234,7 +209,6 @@ public final class CompatUtil {
         }
         return itemStack;
     }
-
 
     private String getRawVersion() {
         return Bukkit.getServer().getClass().getPackage().getName().substring(Bukkit.getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
@@ -252,5 +226,27 @@ public final class CompatUtil {
             });
         }
         return verInt;
+    }
+
+    public enum MinecraftVersion {
+        MINECRAFT_1_8(1),
+        MINECRAFT_1_9(2),
+        MINECRAFT_1_10(3),
+        MINECRAFT_1_11(4),
+        MINECRAFT_1_12(5),
+        MINECRAFT_1_13(6),
+        MINECRAFT_1_14(7),
+        MINECRAFT_1_15(8),
+        MINECRAFT_1_16(9);
+
+        private final int id;
+
+        MinecraftVersion(int id) {
+            this.id = id;
+        }
+
+        public boolean isAfterOrEq(MinecraftVersion another) {
+            return id >= another.id;
+        }
     }
 }

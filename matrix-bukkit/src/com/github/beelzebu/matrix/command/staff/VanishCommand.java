@@ -1,10 +1,10 @@
 package com.github.beelzebu.matrix.command.staff;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.i18n.I18n;
-import cl.indiopikaro.jmatrix.api.i18n.Message;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
+import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,7 +27,7 @@ public class VanishCommand extends MatrixCommand {
             MatrixPlayer matrixPlayer = api.getPlayer(player.getUniqueId());
             boolean vanished = !matrixPlayer.isVanished();
             matrixPlayer.setVanished(vanished);
-            matrixPlayer.setGameMode(cl.indiopikaro.jmatrix.api.player.GameMode.valueOf(player.getGameMode().toString()), Matrix.getAPI().getServerInfo().getGameType());
+            matrixPlayer.setGameMode(com.github.beelzebu.matrix.api.player.GameMode.valueOf(player.getGameMode().toString()), Matrix.getAPI().getServerInfo().getGameType());
             if (vanished) {
                 matrixPlayer.sendMessage(I18n.tl(Message.ESSENTIALS_VANISH_ENABLED, matrixPlayer.getLastLocale()));
             } else {

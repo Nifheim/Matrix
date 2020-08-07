@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.listener.stats;
 
-import cl.indiopikaro.jmatrix.api.MatrixAPI;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.player.Statistic;
-import cl.indiopikaro.jmatrix.api.server.GameType;
+import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.player.Statistic;
+import com.github.beelzebu.matrix.api.server.GameType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

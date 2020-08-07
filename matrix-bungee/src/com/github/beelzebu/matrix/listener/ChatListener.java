@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.listener;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.MatrixAPI;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.SpamUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

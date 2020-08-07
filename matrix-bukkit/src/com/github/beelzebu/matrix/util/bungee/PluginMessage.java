@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.util.bungee;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.Matrix;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import cl.indiopikaro.jmatrix.api.Matrix;
 import java.util.Collections;
 import java.util.List;
 import org.bukkit.Bukkit;

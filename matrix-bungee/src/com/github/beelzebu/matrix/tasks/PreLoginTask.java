@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.tasks;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.MatrixAPIImpl;
 import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 

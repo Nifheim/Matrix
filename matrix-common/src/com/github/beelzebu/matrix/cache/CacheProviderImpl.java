@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.cache;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
-import cl.indiopikaro.jmatrix.api.cache.CacheProvider;
-import cl.indiopikaro.jmatrix.api.messaging.message.FieldUpdate;
-import cl.indiopikaro.jmatrix.api.messaging.message.NameUpdatedMessage;
-import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import com.github.beelzebu.coins.api.CoinsAPI;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.cache.CacheProvider;
+import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
+import com.github.beelzebu.matrix.api.messaging.message.NameUpdatedMessage;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.google.common.collect.ImmutableMap;
@@ -199,24 +199,6 @@ public class CacheProviderImpl implements CacheProvider {
         }
     }
 
-    public Set<String> getGroups(Jedis jedis) {
-        Set<String> groups = new HashSet<>();
-        try {
-            String cursor = ScanParams.SCAN_POINTER_START;
-            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_GROUP_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
-            do {
-                for (String groupKey : scan.getResult()) {
-                    groups.add(groupKey.split(":")[2]);
-                }
-                scan = jedis.scan(cursor, new ScanParams().match(SERVER_GROUP_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
-            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
-        } catch (JedisException ex) {
-            Matrix.getLogger().log("An error has occurred getting all server groups from cache.");
-            Matrix.getLogger().debug(ex);
-        }
-        return ImmutableSet.copyOf(groups);
-    }
-
     @Override
     public Map<String, Set<String>> getAllServers() {
         Map<String, Set<String>> serverGroups = new HashMap<>();
@@ -244,21 +226,6 @@ public class CacheProviderImpl implements CacheProvider {
         try (Jedis jedis = redisManager.getPool().getResource()) {
             return isGroupRegistered(jedis, group);
         }
-    }
-
-    private boolean isGroupRegistered(Jedis jedis, String group) {
-        try {
-            Boolean result = jedis.exists(SERVER_GROUP_KEY_PREFIX + group);
-            if (result != null) {
-                return result;
-            } else {
-                throw new NullPointerException("Result returned from redis server is null.");
-            }
-        } catch (JedisException | NullPointerException e) {
-            Matrix.getLogger().info("An error occurred while checking if group '" + group + "' is registered in cache.");
-            Matrix.getLogger().debug(e);
-        }
-        return false;
     }
 
     @Override
@@ -377,5 +344,38 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void shutdown() {
+    }
+
+    public Set<String> getGroups(Jedis jedis) {
+        Set<String> groups = new HashSet<>();
+        try {
+            String cursor = ScanParams.SCAN_POINTER_START;
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_GROUP_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            do {
+                for (String groupKey : scan.getResult()) {
+                    groups.add(groupKey.split(":")[2]);
+                }
+                scan = jedis.scan(cursor, new ScanParams().match(SERVER_GROUP_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+        } catch (JedisException ex) {
+            Matrix.getLogger().log("An error has occurred getting all server groups from cache.");
+            Matrix.getLogger().debug(ex);
+        }
+        return ImmutableSet.copyOf(groups);
+    }
+
+    private boolean isGroupRegistered(Jedis jedis, String group) {
+        try {
+            Boolean result = jedis.exists(SERVER_GROUP_KEY_PREFIX + group);
+            if (result != null) {
+                return result;
+            } else {
+                throw new NullPointerException("Result returned from redis server is null.");
+            }
+        } catch (JedisException | NullPointerException e) {
+            Matrix.getLogger().info("An error occurred while checking if group '" + group + "' is registered in cache.");
+            Matrix.getLogger().debug(e);
+        }
+        return false;
     }
 }

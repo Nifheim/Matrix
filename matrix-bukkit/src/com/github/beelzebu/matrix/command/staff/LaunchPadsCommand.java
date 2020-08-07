@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.command.staff;
 
-import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.server.lobby.LobbyData;
+import com.github.beelzebu.matrix.api.util.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
