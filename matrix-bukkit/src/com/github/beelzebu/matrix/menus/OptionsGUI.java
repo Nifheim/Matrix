@@ -22,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * @author Beelzebu
@@ -44,8 +45,13 @@ public class OptionsGUI extends GUIManager {
         for (String line : I18n.tls(Message.MENU_OPTIONS_SPEED_LORE, locale)) {
             speedLore.add(rep(line, new SpeedOption(matrixPlayer)));
         }
-
-        setItem(10, new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(I18n.tl(Message.MENU_OPTIONS_SPEED_NAME, locale)).color(Color.RED).lore(speedLore).build(), p -> {
+        ItemBuilder speedItem = new ItemBuilder(Material.POTION).flag(ItemFlag.HIDE_POTION_EFFECTS).displayname(I18n.tl(Message.MENU_OPTIONS_SPEED_NAME, locale)).lore(speedLore);
+        if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_10)) {
+            speedItem.color(Color.RED);
+        } else {
+            speedItem.potionType(PotionEffectType.HEAL);
+        }
+        setItem(10, speedItem.build(), p -> {
             boolean status = !matrixPlayer.getOption(PlayerOptionType.SPEED);
             if (!api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                 p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);

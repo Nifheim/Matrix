@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
 import cl.indiopikaro.jmatrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.PermsUtils;
 import com.google.gson.GsonBuilder;
@@ -22,7 +22,7 @@ public class PlayerInfoCommand extends Command implements TabExecutor {
     private final MatrixBungeeBootstrap bootstrap;
 
     public PlayerInfoCommand(MatrixBungeeBootstrap bootstrap) {
-        super("playerinfo", "matrix.modp", "pinfo", "lookup");
+        super("playerinfo", "matrix.command.pinfo", "pinfo", "lookup");
         this.bootstrap = bootstrap;
     }
 

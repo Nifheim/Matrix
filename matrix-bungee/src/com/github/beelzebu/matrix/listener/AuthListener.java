@@ -2,6 +2,7 @@ package com.github.beelzebu.matrix.listener;
 
 import cl.indiopikaro.jmatrix.api.Matrix;
 import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.util.ServerUtil;
 import java.util.Iterator;
 import java.util.List;
 import net.md_5.bungee.api.ProxyServer;
@@ -77,7 +78,7 @@ public class AuthListener implements Listener {
     }
 
     @EventHandler
-    public void onServerSwitch(ServerConnectEvent e) {
+    public void onServerSwitchLoggedOut(ServerConnectEvent e) {
         if (e.getTarget().getName().startsWith("auth")) {
             return;
         }
@@ -87,6 +88,18 @@ public class AuthListener implements Listener {
         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(e.getPlayer().getUniqueId());
         if (!matrixPlayer.isLoggedIn()) {
             e.setTarget(ProxyServer.getInstance().getServerInfo("auth1"));
+        }
+    }
+
+    @EventHandler
+    public void onServerSwitchLoggedIn(ServerConnectEvent e) {
+        if (!e.getTarget().getName().startsWith("auth")) {
+            return;
+        }
+        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(e.getPlayer().getUniqueId());
+        if (matrixPlayer.isLoggedIn()) {
+            e.setTarget(ServerUtil.getRandomLobby());
+            Matrix.getLogger().info("Server connect for: " + matrixPlayer.getName() + " old server: " + e.getPlayer().getServer().getInfo() + " reason: " + e.getReason());
         }
     }
 }

@@ -22,7 +22,7 @@ public class ServerUnregisterListener implements RedisMessageListener<ServerUnre
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(message.getName());
             if (serverInfo != null) {
                 for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
-                    proxiedPlayer.connect(ServerUtil.getRandomLobby(), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+                    proxiedPlayer.connect(ServerUtil.getRandomLobby(serverInfo.getName()), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
                 }
             }
         }

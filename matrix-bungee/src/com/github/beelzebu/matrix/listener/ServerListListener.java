@@ -1,11 +1,10 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.MatrixAPIImpl;
 import cl.indiopikaro.jmatrix.api.Matrix;
 import cl.indiopikaro.jmatrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.MatrixAPIImpl;
 import com.github.beelzebu.matrix.motd.Motd;
 import com.github.beelzebu.matrix.motd.MotdManager;
-import java.util.Objects;
 import java.util.UUID;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -33,20 +32,24 @@ public class ServerListListener implements Listener {
         Matrix.getAPI().getPlugin().runAsync(() -> {
             try {
                 if (e.getConnection().getVirtualHost() == null) {
-                    e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
+                    e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\nPor favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
                     return;
                 }
                 String host = e.getConnection().getVirtualHost().getHostName();
-                if (e.getConnection().getVirtualHost() != null) {
-                    if (host == null || (!host.endsWith(Matrix.DOMAIN) && MotdManager.getForcedMotd(host) == null)) {
-                        e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
-                        return;
+                if (host == null) {
+                    e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\nPor favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
+                    return;
+                }
+                boolean badDomain = true;
+                for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
+                    if (host.endsWith(domain)) {
+                        badDomain = false;
+                        break;
                     }
-                    int port = e.getConnection().getVirtualHost().getPort();
-                    if (!Objects.equals(port, 25565)) {
-                        e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + Matrix.IP + "\nPor favor ingresa usando " + Matrix.IP));
-                        return;
-                    }
+                }
+                if (badDomain) {
+                    e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\nPor favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
+                    return;
                 }
                 if (((MatrixAPIImpl) Matrix.getAPI()).getMaintenanceManager().isMaintenance()) {
                     e.getResponse().getVersion().setProtocol(-1);

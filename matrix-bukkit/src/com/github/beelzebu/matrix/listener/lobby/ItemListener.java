@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.listener.lobby;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
 import cl.indiopikaro.jmatrix.api.MatrixAPI;
 import cl.indiopikaro.jmatrix.api.server.ServerType;
+import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.menus.OptionsGUI;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import org.bukkit.Bukkit;
@@ -18,11 +18,28 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ItemListener implements Listener {
 
-    private final MatrixAPI api = Matrix.getAPI();
+    private final MatrixAPI api;
+
+    public ItemListener(MatrixBukkitBootstrap plugin) {
+        api = plugin.getApi();
+        if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
+            Bukkit.getPluginManager().registerEvents(new Listener() {
+                @EventHandler
+                public void onItemChange(PlayerSwapHandItemsEvent e) {
+                    if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && e.getPlayer().getWorld().getName().equals(api.getConfig().getString("Lobby World")))) {
+                        e.setCancelled(true);
+                    }
+                }
+            }, plugin);
+        }
+    }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        if (e.getItem() == null || e.getItem().getType() == Material.AIR) {
+        if (e.getItem() == null) {
+            return;
+        }
+        if (e.getItem().getType() == Material.AIR) {
             return;
         }
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName())))) {
@@ -55,13 +72,6 @@ public class ItemListener implements Listener {
 
     @EventHandler
     public void onItemDropEvent(PlayerDropItemEvent e) {
-        if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && e.getPlayer().getWorld().getName().equals(api.getConfig().getString("Lobby World")))) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onItemChange(PlayerSwapHandItemsEvent e) {
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && e.getPlayer().getWorld().getName().equals(api.getConfig().getString("Lobby World")))) {
             e.setCancelled(true);
         }

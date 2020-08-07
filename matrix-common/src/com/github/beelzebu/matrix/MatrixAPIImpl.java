@@ -22,10 +22,12 @@ import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
 import com.github.beelzebu.matrix.util.RedisManager;
+import com.google.common.collect.ImmutableSet;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Set;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -34,6 +36,8 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public abstract class MatrixAPIImpl extends MatrixAPI {
 
+    public static final String DOMAIN_NAME = "mc.indiopikaro.net";
+    public static final Set<String> DOMAIN_NAMES = ImmutableSet.of("indiopikaro.cl", "indiopikaro.net", "indiopikaro.com", "mineperu.net", "mineperu.com", "pixelnetwork.net");
     private final MatrixPlugin plugin;
     private final MongoStorage database;
     private final RedisManager redisManager;

@@ -32,6 +32,7 @@ import com.github.beelzebu.matrix.listener.ServerUnregisterListener;
 import com.github.beelzebu.matrix.motd.MotdManager;
 import com.github.beelzebu.matrix.scheduler.BungeeSchedulerAdapter;
 import com.github.beelzebu.matrix.tablist.TablistManager;
+import com.mongodb.DuplicateKeyException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

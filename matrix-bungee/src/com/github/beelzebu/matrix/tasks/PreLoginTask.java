@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.tasks;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import cl.indiopikaro.jmatrix.api.Matrix;
 import cl.indiopikaro.jmatrix.api.player.MatrixPlayer;
-import java.util.Objects;
+import com.github.beelzebu.matrix.MatrixAPIImpl;
+import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
@@ -35,20 +35,27 @@ public class PreLoginTask implements Runnable {
     public void run() {
         try {
             String host = event.getConnection().getVirtualHost().getHostName();
-            if (host == null || (!host.endsWith(Matrix.DOMAIN) && !host.equals("play.pixelnetwork.net"))) {
+            if (host == null) {
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("\n" +
-                        "Please join using " + Matrix.IP + "\n" +
+                        "Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\n" +
                         "\n" +
-                        "Por favor ingresa usando " + Matrix.IP));
+                        "Por favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
                 return;
             }
-            if (!Objects.equals(event.getConnection().getVirtualHost().getPort(), 25565)) {
+            boolean badDomain = true;
+            for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
+                if (host.endsWith(domain)) {
+                    badDomain = false;
+                    break;
+                }
+            }
+            if (badDomain) {
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("\n" +
-                        "Please join using " + Matrix.IP + "\n" +
+                        "Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\n" +
                         "\n" +
-                        "Por favor ingresa usando " + Matrix.IP));
+                        "Por favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
                 return;
             }
             if (event.getConnection().getName() == null || !event.getConnection().getName().matches("^\\w{3,16}$")) {
@@ -62,12 +69,15 @@ public class PreLoginTask implements Runnable {
                 event.setCancelled(true);
                 return;
             }
-            if (host.equals("premium." + Matrix.DOMAIN)) {
-                event.getConnection().setOnlineMode(true);
-                if (player != null) {
-                    if (!player.isPremium()) {
-                        player.setPremium(true);
+            for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
+                if (host.equals("premium." + domain)) {
+                    event.getConnection().setOnlineMode(true);
+                    if (player != null) {
+                        if (!player.isPremium()) {
+                            player.setPremium(true);
+                        }
                     }
+                    break;
                 }
             }
             if (player != null) {

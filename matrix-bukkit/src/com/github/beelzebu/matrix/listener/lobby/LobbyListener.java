@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.listener.lobby;
 
-import cl.indiopikaro.jmatrix.api.Matrix;
 import cl.indiopikaro.jmatrix.api.MatrixAPI;
 import cl.indiopikaro.jmatrix.api.i18n.I18n;
 import cl.indiopikaro.jmatrix.api.i18n.Message;
@@ -50,11 +49,12 @@ public class LobbyListener implements Listener {
 
     private static final Set<Player> editMode = new HashSet<>();
     private final MatrixBukkitBootstrap plugin;
-    private final MatrixAPI api = Matrix.getAPI();
+    private final MatrixAPI api;
     private final Map<MatrixPlayer, Set<PlayerOptionType>> playerOptions = new HashMap<>();
 
-    public LobbyListener(MatrixBukkitBootstrap matrixBukkitBootstrap) {
-        plugin = matrixBukkitBootstrap;
+    public LobbyListener(MatrixBukkitBootstrap plugin) {
+        api = plugin.getApi();
+        this.plugin = plugin;
     }
 
     public static Set<Player> getEditMode() {
@@ -86,12 +86,20 @@ public class LobbyListener implements Listener {
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getConfig().getString("Lobby World") == null ? e.getEntity().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getEntity().getWorld().getName()))) {
             if (e.getDamager() instanceof Player && e.getEntity() instanceof Player) {
                 if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
-                    if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET && ((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET) {
+                    if (((Player) e.getDamager()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET && ((Player) e.getEntity()).getInventory().getItem(EquipmentSlot.HEAD).getType() == Material.DIAMOND_HELMET) {
                         return;
                     }
+                } else {
+                    Player damager = (Player) e.getDamager();
+                    Player damaged = (Player) e.getEntity();
+                    if (damager.getInventory().getHelmet() != null && damager.getInventory().getHelmet().getType() == Material.DIAMOND_HELMET) {
+                        if (damaged.getInventory().getHelmet() != null && damaged.getInventory().getHelmet().getType() == Material.DIAMOND_HELMET) {
+                            return;
+                        }
+                    }
                 }
-                e.setCancelled(true);
             }
+            e.setCancelled(true);
         }
     }
 

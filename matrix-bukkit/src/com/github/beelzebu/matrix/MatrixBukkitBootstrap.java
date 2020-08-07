@@ -82,7 +82,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     @Override
     public void onLoad() {
-        if (Bukkit.getIp().isEmpty() || Bukkit.getIp().equals("0.0.0.0")) {
+        if ((Bukkit.getIp().isEmpty() || Bukkit.getIp().equals("0.0.0.0")) && System.getProperty("ILiveOnTheEdge") != null) {
             getLogger().warning("Server must not run on a public address.");
             Bukkit.shutdown();
         }
@@ -136,7 +136,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         registerEvents(new GUIListener());
         registerEvents(new InternalListener());
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA)) {
-            registerEvents(new ItemListener());
+            registerEvents(new ItemListener(this));
             registerEvents(new LobbyListener(this));
         }
         registerEvents(new PlayerCommandPreprocessListener(this));

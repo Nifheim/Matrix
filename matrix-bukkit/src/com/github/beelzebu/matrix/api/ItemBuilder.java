@@ -1,15 +1,15 @@
 package com.github.beelzebu.matrix.api;
 
-import com.google.gson.Gson;
 import cl.indiopikaro.jmatrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.CompatUtil;
+import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.Validate;
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -22,6 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
+import org.bukkit.potion.PotionEffectType;
 
 public class ItemBuilder {
 
@@ -73,7 +74,7 @@ public class ItemBuilder {
         if (material == null) {
             material = Material.AIR;
         }
-        Validate.notNull(displayname, "The Displayname is null.");
+        Objects.requireNonNull(displayname, "The Displayname is null.");
         item = new ItemStack(material, amount);
         this.material = material;
         if (((amount > material.getMaxStackSize()) || (amount <= 0)) && (!unsafeStackSize)) {
@@ -91,7 +92,7 @@ public class ItemBuilder {
         if (material == null) {
             material = Material.AIR;
         }
-        Validate.notNull(displayname, "The Displayname is null.");
+        Objects.requireNonNull(displayname, "The Displayname is null.");
         item = new ItemStack(material);
         this.material = material;
         this.displayname = displayname;
@@ -101,7 +102,7 @@ public class ItemBuilder {
      * Initalizes the ItemBuilder with a {@link org.bukkit.inventory.ItemStack}
      */
     public ItemBuilder(ItemStack item) {
-        Validate.notNull(item, "The Item is null.");
+        Objects.requireNonNull(item, "The Item is null.");
         this.item = item;
         if (item.hasItemMeta()) {
             meta = item.getItemMeta();
@@ -139,7 +140,7 @@ public class ItemBuilder {
      */
     @Deprecated
     public ItemBuilder(ItemBuilder builder) {
-        Validate.notNull(builder, "The ItemBuilder is null.");
+        Objects.requireNonNull(builder, "The ItemBuilder is null.");
         item = builder.item;
         meta = builder.meta;
         material = builder.material;
@@ -202,7 +203,7 @@ public class ItemBuilder {
      * @param data MaterialData for the ItemStack
      */
     public ItemBuilder data(MaterialData data) {
-        Validate.notNull(data, "The Data is null.");
+        Objects.requireNonNull(data, "The Data is null.");
         this.data = data;
         return this;
     }
@@ -227,7 +228,7 @@ public class ItemBuilder {
      * @param material Material for the ItemStack
      */
     public ItemBuilder material(Material material) {
-        Validate.notNull(material, "The Material is null.");
+        Objects.requireNonNull(material, "The Material is null.");
         this.material = material;
         return this;
     }
@@ -238,7 +239,7 @@ public class ItemBuilder {
      * @param meta Meta for the ItemStack
      */
     public ItemBuilder meta(ItemMeta meta) {
-        Validate.notNull(meta, "The Meta is null.");
+        Objects.requireNonNull(meta, "The Meta is null.");
         this.meta = meta;
         return this;
     }
@@ -250,7 +251,7 @@ public class ItemBuilder {
      * @param level   Level of the Enchantment
      */
     public ItemBuilder enchant(Enchantment enchant, int level) {
-        Validate.notNull(enchant, "The Enchantment is null.");
+        Objects.requireNonNull(enchant, "The Enchantment is null.");
         enchantments.put(enchant, level);
         return this;
     }
@@ -263,7 +264,7 @@ public class ItemBuilder {
      *                     ItemStack
      */
     public ItemBuilder enchant(Map<Enchantment, Integer> enchantments) {
-        Validate.notNull(enchantments, "The Enchantments are null.");
+        Objects.requireNonNull(enchantments, "The Enchantments are null.");
         this.enchantments = enchantments;
         return this;
     }
@@ -274,7 +275,7 @@ public class ItemBuilder {
      * @param displayname Displayname for the ItemStack
      */
     public ItemBuilder displayname(String displayname) {
-        Validate.notNull(displayname, "The Displayname is null.");
+        Objects.requireNonNull(displayname, "The Displayname is null.");
         this.displayname = andSymbol ? ChatColor.translateAlternateColorCodes('&', displayname) : displayname;
         return this;
     }
@@ -285,7 +286,7 @@ public class ItemBuilder {
      * @param line Line of the Lore for the ItemStack
      */
     public ItemBuilder lore(String line) {
-        Validate.notNull(line, "The Line is null.");
+        Objects.requireNonNull(line, "The Line is null.");
         lore.add(line);
         return this;
     }
@@ -296,7 +297,7 @@ public class ItemBuilder {
      * @param lore List containing String as Lines for the ItemStack Lore
      */
     public ItemBuilder lore(List<String> lore) {
-        Validate.notNull(lore, "The Lores are null.");
+        Objects.requireNonNull(lore, "The Lores are null.");
         this.lore = lore;
         return this;
     }
@@ -309,7 +310,7 @@ public class ItemBuilder {
      */
     @Deprecated
     public ItemBuilder lores(String... lines) {
-        Validate.notNull(lines, "The Lines are null.");
+        Objects.requireNonNull(lines, "The Lines are null.");
         for (String line : lines) {
             lore(andSymbol ? ChatColor.translateAlternateColorCodes('&', line) : line);
         }
@@ -322,7 +323,7 @@ public class ItemBuilder {
      * @param lines One or more Strings for the ItemStack Lore
      */
     public ItemBuilder lore(String... lines) {
-        Validate.notNull(lines, "The Lines are null.");
+        Objects.requireNonNull(lines, "The Lines are null.");
         for (String line : lines) {
             lore(andSymbol ? ChatColor.translateAlternateColorCodes('&', line) : line);
         }
@@ -336,7 +337,7 @@ public class ItemBuilder {
      * @param index Position in the Lore for the ItemStack
      */
     public ItemBuilder lore(String line, int index) {
-        Validate.notNull(line, "The Line is null.");
+        Objects.requireNonNull(line, "The Line is null.");
         lore.set(index, andSymbol ? ChatColor.translateAlternateColorCodes('&', line) : line);
         return this;
     }
@@ -347,7 +348,7 @@ public class ItemBuilder {
      * @param flag ItemFlag for the ItemStack
      */
     public ItemBuilder flag(ItemFlag flag) {
-        Validate.notNull(flag, "The Flag is null.");
+        Objects.requireNonNull(flag, "The Flag is null.");
         flags.add(flag);
         return this;
     }
@@ -358,7 +359,7 @@ public class ItemBuilder {
      * @param flags List containing all ItemFlags
      */
     public ItemBuilder flag(List<ItemFlag> flags) {
-        Validate.notNull(flags, "The Flags are null.");
+        Objects.requireNonNull(flags, "The Flags are null.");
         this.flags = flags;
         return this;
     }
@@ -390,7 +391,7 @@ public class ItemBuilder {
      */
     @Deprecated
     public ItemBuilder owner(String user) {
-        Validate.notNull(user, "The Username is null.");
+        Objects.requireNonNull(user, "The Username is null.");
         if ((material == CompatUtil.getInstance().getPlayerHeadItem().getType()) || (material == CompatUtil.getInstance().getPlayerHeadBlock().getType()) || (material == CompatUtil.getInstance().getPlayerHeadItem().getType())) {
             SkullMeta smeta = (SkullMeta) meta;
             smeta.setOwner(user);
@@ -454,8 +455,14 @@ public class ItemBuilder {
     }
 
     public ItemBuilder color(Color color) {
-        Validate.notNull(color, "The color is null");
+        Objects.requireNonNull(color, "The color is null");
         ((PotionMeta) item.getItemMeta()).setColor(color);
+        return this;
+    }
+
+    public ItemBuilder potionType(PotionEffectType potionEffectType) {
+        Objects.requireNonNull(potionEffectType, "The color is null");
+        ((PotionMeta) item.getItemMeta()).setMainEffect(potionEffectType);
         return this;
     }
 

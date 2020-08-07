@@ -42,7 +42,11 @@ public class ProfileGUI extends GUIManager {
         ItemStack purpleGlassPane = new ItemBuilder(CompatUtil.getInstance().getPurpleGlassPane()).build();
         ItemStack profileItem = new ItemBuilder(CompatUtil.getInstance().getPlayerHead()).amount(1).displayname(I18n.tl(Message.MENU_SOCIAL_PROFILE_NAME, locale)).build();
         SkullMeta profileMeta = (SkullMeta) profileItem.getItemMeta();
-        profileMeta.setOwningPlayer(Bukkit.getPlayer(matrixPlayer.getUniqueId()));
+        if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+            profileMeta.setOwningPlayer(Bukkit.getPlayer(matrixPlayer.getUniqueId()));
+        } else {
+            profileMeta.setOwner(matrixPlayer.getName());
+        }
         List<String> profileLore = new ArrayList<>();
         for (String line : I18n.tls(Message.MENU_SOCIAL_PROFILE_LORE, locale)) {
             profileLore.add(Placeholders.rep(Bukkit.getPlayer(matrixPlayer.getUniqueId()), line));

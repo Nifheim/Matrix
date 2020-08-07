@@ -11,6 +11,7 @@ import com.github.beelzebu.matrix.util.RedisManager;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonParseException;
+import com.mongodb.DuplicateKeyException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -163,8 +164,22 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void removePlayer(MatrixPlayer player) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
-            getPlayer(player.getUniqueId()).orElse(player).save(); // save cached version to database
-            jedis.del(USER_KEY_PREFIX + player.getUniqueId()); // remove it from redis
+            MongoMatrixPlayer cachedPlayer = (MongoMatrixPlayer) getPlayer(player.getUniqueId()).orElse(player);
+            try {
+                if (player.isPremium()) {
+                    if (cachedPlayer.getUniqueId() != player.getUniqueId()) {
+                        cachedPlayer.setUniqueId(player.getUniqueId());
+                    }
+                    if (!Objects.equals(cachedPlayer.getName(), player.getName())) {
+                        cachedPlayer.setName(player.getName());
+                    }
+                }
+                cachedPlayer.save();
+                jedis.del(USER_KEY_PREFIX + player.getUniqueId()); // remove it from redis
+            } catch (DuplicateKeyException e) {
+                Matrix.getLogger().info("Cached: " + Matrix.GSON.toJson(cachedPlayer));
+                Matrix.getLogger().info("Player: " + Matrix.GSON.toJson(player));
+            }
         } catch (JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
         }
