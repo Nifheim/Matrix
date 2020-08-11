@@ -82,9 +82,11 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     @Override
     public void onLoad() {
-        if ((Bukkit.getIp().isEmpty() || Bukkit.getIp().equals("0.0.0.0")) && System.getProperty("ILiveOnTheEdge") != null) {
-            getLogger().warning("Server must not run on a public address.");
-            Bukkit.shutdown();
+        if (Bukkit.getIp().isEmpty() || Bukkit.getIp().equals("0.0.0.0")) {
+            if (System.getProperty("ILiveOnTheEdge") == null) {
+                getLogger().warning("Server must not run on a public address.");
+                Bukkit.shutdown();
+            }
         }
         if (!SpigotConfig.bungee) {
             getLogger().warning("Bungee is disabled in spigot config, forcing it to true.");
@@ -106,7 +108,9 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 p.closeInventory();
             }
         });
-        new ServerUnregisterMessage().send();
+        if (serverRegisterMessage != null) { // check if server was registered first
+            new ServerUnregisterMessage().send();
+        }
         api.shutdown();
         Bukkit.getScheduler().cancelTasks(this);
     }

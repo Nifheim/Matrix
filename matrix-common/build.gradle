@@ -1,5 +1,5 @@
 dependencies {
-    api 'cl.indiopikaro:jMatrix:1.1'
+    api 'cl.indiopikaro:jMatrix:1.1.1'
     implementation 'redis.clients:jedis:3.3.0'
     implementation 'com.github.ben-manes.caffeine:caffeine:2.8.4'
     implementation 'org.apache.commons:commons-pool2:2.6.2'

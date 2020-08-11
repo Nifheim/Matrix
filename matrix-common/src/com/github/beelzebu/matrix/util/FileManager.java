@@ -21,6 +21,9 @@ public class FileManager {
     public FileManager(MatrixPlugin plugin) {
         this.plugin = Objects.requireNonNull(plugin, "MatrixPlugin can't be null.");
         File messagesFolder = new File(plugin.getDataFolder(), "messages");
+        if (!messagesFolder.exists()) {
+            messagesFolder.mkdirs();
+        }
         messagesFile = new File(messagesFolder, "messages_en.yml");
         messages_esFile = new File(messagesFolder, "messages_es.yml");
         configFile = new File(plugin.getDataFolder(), "config.yml");
