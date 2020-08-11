@@ -73,7 +73,7 @@ public class AuthListener implements Listener {
             return;
         }
         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(e.getPlayer().getUniqueId());
-        if (matrixPlayer.isLoggedIn()) {
+        if (matrixPlayer.isLoggedIn() || matrixPlayer.isPremium()) {
             e.setTarget(ServerUtil.getRandomLobby());
             Matrix.getLogger().info("Server connect for: " + matrixPlayer.getName() + " old server: " + e.getPlayer().getServer().getInfo() + " reason: " + e.getReason());
         }
