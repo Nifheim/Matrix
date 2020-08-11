@@ -48,7 +48,7 @@ public abstract class AbstractJavaScheduler implements SchedulerAdapter {
 
     @Override
     public SchedulerTask asyncRepeating(Runnable task, long interval, TimeUnit unit) {
-        ScheduledFuture<?> future = this.scheduler.scheduleAtFixedRate(() -> this.schedulerWorkerPool.execute(task), interval, interval, unit);
+        ScheduledFuture<?> future = this.scheduler.scheduleAtFixedRate(() -> this.schedulerWorkerPool.execute(task), 0, interval, unit);
         return () -> future.cancel(false);
     }
 

@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.cache;
 
-import com.github.beelzebu.coins.api.CoinsAPI;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.cache.CacheProvider;
 import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
@@ -84,9 +83,6 @@ public class CacheProviderImpl implements CacheProvider {
                     // this is caused when player changed from cracked to premium
                     jedis.del(NAME_KEY_PREFIX + oldUniqueId);
                     jedis.set(uuidStoreKey, uniqueId.toString());
-                    CoinsAPI.createPlayer(name, uniqueId);
-                    CoinsAPI.setCoins(uniqueId, CoinsAPI.getCoins(oldUniqueId));
-                    CoinsAPI.resetCoins(oldUniqueId);
                 }
             } else { // store uuid because it doesn't exists.
                 jedis.set(uuidStoreKey, uniqueId.toString());

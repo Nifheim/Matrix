@@ -44,7 +44,6 @@ public class PlayerInfoCommand extends Command implements TabExecutor {
                                         + " &cDisplay name &8• &7" + player.getDisplayName() + "&r\n"
                                         + " &cLevel &8• &7" + player.getLevel() + "&r\n"
                                         + " &cExperience &8• &7" + player.getExp() + "&r\n"
-                                        + " &cCoins &8• &7" + player.getCoins() + "&r\n"
                                         + " &cRank &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "default" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"
                                         + " &cChatColor &8• &7" + player.getChatColor() + "&r\n"
                                         + " &cDiscord Id &8• &7" + (player.getDiscordId() != null ? player.getDiscordId() : "Not associated") + "&r\n"

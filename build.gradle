@@ -1,7 +1,7 @@
 buildscript {
     allprojects {
         group = 'com.github.beelzebu'
-        version = '1.0.18'
+        version = '1.0.19'
     }
 
     subprojects {
@@ -58,11 +58,8 @@ buildscript {
         }
 
         dependencies {
-            api 'net.luckperms:api:5.1'
-            api 'com.github.beelzebu:coins3-api:3.0'
-            implementation 'cl.indiopikaro:indiofall-chat:1.16-R0.4-SNAPSHOT'
-            implementation 'com.google.code.gson:gson:2.8.5'
-            implementation 'io.github.beelzebu:networklevels:1.0.0-SNAPSHOT'
+            api 'cl.indiopikaro:jMatrix:1.2.1'
+            implementation 'com.google.guava:guava:21.0'
         }
 
         sourceCompatibility = '1.8'
