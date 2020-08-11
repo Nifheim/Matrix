@@ -20,6 +20,7 @@ import com.github.beelzebu.matrix.command.staff.PowerupsCommand;
 import com.github.beelzebu.matrix.command.staff.ReloadCommand;
 import com.github.beelzebu.matrix.command.staff.StopCommand;
 import com.github.beelzebu.matrix.command.staff.VanishCommand;
+import com.github.beelzebu.matrix.command.user.LobbyCommand;
 import com.github.beelzebu.matrix.command.user.OptionsCommand;
 import com.github.beelzebu.matrix.command.user.ProfileCommand;
 import com.github.beelzebu.matrix.command.user.SpitCommand;
@@ -170,6 +171,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new StopCommand());
         CommandAPI.registerCommand(this, new VanishCommand());
         CommandAPI.registerCommand(this, new ProfileCommand());
+        CommandAPI.registerCommand(this, new LobbyCommand());
 
         pluginsUtility = new PluginsUtility();
 
