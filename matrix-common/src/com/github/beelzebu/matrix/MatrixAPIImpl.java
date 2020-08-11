@@ -57,10 +57,9 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         messaging = new RedisMessaging(redisManager, plugin::runAsync);
         cache = new CacheProviderImpl(redisManager);
         serverInfo = new ServerInfo(
-                plugin.getConfig().getString("server-info.group"),
-                plugin.getConfig().getString("server-info.name", plugin.getConfig().getString("Server Table")).replaceAll(" ", ""),
                 GameType.valueOf(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
+                plugin.getConfig().getString("server-info.group", null),
                 GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode", "ADVENTURE").toUpperCase())
         );
         mySQLStorage = new MySQLStorage(this, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
