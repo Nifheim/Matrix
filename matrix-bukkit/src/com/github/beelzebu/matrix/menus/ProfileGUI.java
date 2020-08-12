@@ -7,7 +7,7 @@ import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.menu.GUIManager;
+import com.github.beelzebu.matrix.api.menu.BaseGUI;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.placeholders.Placeholders;
@@ -24,7 +24,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 /**
  * @author Beelzebu
  */
-public class ProfileGUI extends GUIManager {
+public class ProfileGUI extends BaseGUI {
 
     private static final MatrixAPI api = Matrix.getAPI();
     private final MatrixPlayer matrixPlayer;

@@ -22,9 +22,9 @@ import org.bukkit.plugin.Plugin;
 /**
  * @author Beelzebu
  */
-public abstract class GUIManager {
+public abstract class BaseGUI {
 
-    private static final Map<UUID, GUIManager> inventoriesByUUID = new HashMap<>();
+    private static final Map<UUID, BaseGUI> inventoriesByUUID = new HashMap<>();
     private static final Map<UUID, UUID> openInventories = Collections.synchronizedMap(new HashMap<>());
     private final MatrixAPI api = Matrix.getAPI();
     private final Inventory inv;
@@ -32,11 +32,11 @@ public abstract class GUIManager {
     private final UUID uniqueId;
     private ItemStack opener;
 
-    public GUIManager(int size, String name) {
+    public BaseGUI(int size, String name) {
         this(size, name, null);
     }
 
-    public GUIManager(int size, String name, InventoryType type) {
+    public BaseGUI(int size, String name, InventoryType type) {
         if (size < 9) {
             size *= 9;
         }
@@ -57,12 +57,12 @@ public abstract class GUIManager {
         inventoriesByUUID.put(getUniqueId(), this);
     }
 
-    public static Map<UUID, GUIManager> getInventoriesByUUID() {
-        return GUIManager.inventoriesByUUID;
+    public static Map<UUID, BaseGUI> getInventoriesByUUID() {
+        return BaseGUI.inventoriesByUUID;
     }
 
     public static Map<UUID, UUID> getOpenInventories() {
-        return GUIManager.openInventories;
+        return BaseGUI.openInventories;
     }
 
     public final void setItem(Item item) {
@@ -161,7 +161,7 @@ public abstract class GUIManager {
         private final int slot;
         private final GUIAction guiAction;
 
-        public Item(ItemStack itemStack, int slot, GUIManager.GUIAction guiAction) {
+        public Item(ItemStack itemStack, int slot, BaseGUI.GUIAction guiAction) {
             this.itemStack = itemStack;
             this.slot = slot;
             this.guiAction = guiAction;
@@ -175,7 +175,7 @@ public abstract class GUIManager {
             return slot;
         }
 
-        public GUIManager.GUIAction getGuiAction() {
+        public BaseGUI.GUIAction getGuiAction() {
             return guiAction;
         }
     }

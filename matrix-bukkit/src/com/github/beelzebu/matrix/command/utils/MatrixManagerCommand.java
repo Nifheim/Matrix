@@ -4,7 +4,6 @@ import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
-import com.github.beelzebu.matrix.menus.ProfileGUI;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.LocationUtils;
 import java.util.List;
@@ -34,8 +33,6 @@ public class MatrixManagerCommand extends MatrixCommand {
             _sound(sender, args);
         } else if (args[0].equalsIgnoreCase("setspawn")) {
             _setspawn(sender, args);
-        } else if (args[0].equalsIgnoreCase("profile")) {
-            new ProfileGUI(api.getPlayer(((Player) sender).getUniqueId())).open((Player) sender);
         } else if (args[0].equalsIgnoreCase("editmode")) {
             if (sender.hasPermission("matrix.staff.admin") && sender instanceof Player && api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
                 LobbyListener.getEditMode().add((Player) sender);

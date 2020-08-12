@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 /**
  * @author Beelzebu
  */
-public class ConfirmGUI extends GUIManager {
+public class ConfirmGUI extends BaseGUI {
 
     private final ItemStack item;
     private final String name;

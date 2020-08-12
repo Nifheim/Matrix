@@ -5,7 +5,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.menu.GUIManager;
+import com.github.beelzebu.matrix.api.menu.BaseGUI;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.ServerType;
@@ -27,7 +27,7 @@ import org.bukkit.potion.PotionEffectType;
 /**
  * @author Beelzebu
  */
-public class OptionsGUI extends GUIManager {
+public class OptionsGUI extends BaseGUI {
 
     private final MatrixAPI api = Matrix.getAPI();
     private final MatrixPlayer matrixPlayer;

@@ -3,7 +3,9 @@ package com.github.beelzebu.matrix.listener.lobby;
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.server.ServerType;
+import com.github.beelzebu.matrix.menus.GUIManager;
 import com.github.beelzebu.matrix.menus.OptionsGUI;
+import com.github.beelzebu.matrix.menus.ProfileGUI;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -43,14 +45,13 @@ public class ItemListener implements Listener {
             return;
         }
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY) || (api.getServerInfo().getServerType().equals(ServerType.MINIGAME_MULTIARENA) && (api.getConfig().getString("Lobby World") == null ? e.getPlayer().getWorld().getName() == null : api.getConfig().getString("Lobby World").equals(e.getPlayer().getWorld().getName())))) {
-            Player p = e.getPlayer();
+            Player player = e.getPlayer();
             if (e.getItem().getType().equals(Material.COMPASS)) {
-                //Bukkit.dispatchCommand(p, "servidores");
-                p.chat("/servidores");
+                player.chat("/servidores");
             } else if (e.getItem().getType().equals(CompatUtil.getInstance().getRedstoneComparator())) {
-                new OptionsGUI(api.getPlayer(p.getUniqueId())).open(p);
+                GUIManager.getInstance().getGUI(player.getUniqueId(), OptionsGUI.class).open(player);
             } else if (e.getItem().getType().equals(CompatUtil.getInstance().getPlayerHeadItem().getType())) {
-                Bukkit.dispatchCommand(p, "perfil");
+                GUIManager.getInstance().getGUI(player.getUniqueId(), ProfileGUI.class).open(player);
             }
         }
     }

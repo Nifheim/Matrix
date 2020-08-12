@@ -4,7 +4,7 @@ import com.destroystokyo.paper.PaperConfig;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.command.CommandAPI;
-import com.github.beelzebu.matrix.api.menu.GUIManager;
+import com.github.beelzebu.matrix.api.menu.BaseGUI;
 import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
@@ -103,7 +103,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     @Override
     public void onDisable() {
         Bukkit.getOnlinePlayers().forEach(p -> {
-            UUID inv = GUIManager.getOpenInventories().get(p.getUniqueId());
+            UUID inv = BaseGUI.getOpenInventories().get(p.getUniqueId());
             if (inv != null) {
                 p.closeInventory();
             }

@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.api.menu.GUIManager;
+import com.github.beelzebu.matrix.api.menu.BaseGUI;
 import java.util.Map;
 import java.util.UUID;
 import org.bukkit.Material;
@@ -24,11 +24,11 @@ public class GUIListener implements Listener {
             return;
         }
         Player p = (Player) e.getWhoClicked();
-        UUID inventoryUUID = GUIManager.getOpenInventories().get(p.getUniqueId());
+        UUID inventoryUUID = BaseGUI.getOpenInventories().get(p.getUniqueId());
         if (inventoryUUID != null) {
             e.setCancelled(true);
-            GUIManager gui = GUIManager.getInventoriesByUUID().get(inventoryUUID);
-            GUIManager.GUIAction action = gui.getActions().get(e.getSlot());
+            BaseGUI gui = BaseGUI.getInventoriesByUUID().get(inventoryUUID);
+            BaseGUI.GUIAction action = gui.getActions().get(e.getSlot());
             if (action != null) {
                 action.click(p);
             }
@@ -39,14 +39,14 @@ public class GUIListener implements Listener {
     public void onClose(InventoryCloseEvent e) {
         Player player = (Player) e.getPlayer();
         UUID playerUUID = player.getUniqueId();
-        GUIManager.getOpenInventories().remove(playerUUID);
+        BaseGUI.getOpenInventories().remove(playerUUID);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
         UUID playerUUID = player.getUniqueId();
-        GUIManager.getOpenInventories().remove(playerUUID);
+        BaseGUI.getOpenInventories().remove(playerUUID);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -54,7 +54,7 @@ public class GUIListener implements Listener {
         if (e.getItem() == null || e.getItem().getType().equals(Material.AIR)) {
             return;
         }
-        for (Map.Entry<UUID, GUIManager> entry : GUIManager.getInventoriesByUUID().entrySet()) {
+        for (Map.Entry<UUID, BaseGUI> entry : BaseGUI.getInventoriesByUUID().entrySet()) {
             if (entry.getValue().getOpener() != null && e.getItem().getItemMeta().equals(entry.getValue().getOpener().getItemMeta())) {
                 entry.getValue().open(e.getPlayer());
                 break;
