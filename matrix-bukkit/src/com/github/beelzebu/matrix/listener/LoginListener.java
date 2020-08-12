@@ -72,7 +72,7 @@ public class LoginListener implements Listener {
                 }
             }
         });
-        matrixPlayer.setLastLocale(CompatUtil.getInstance().getLocale(e.getPlayer()).split("_")[0]);
+        matrixPlayer.setLastLocale(player.getLocale().split("_")[0]);
         // Later task
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (firstjoin) {

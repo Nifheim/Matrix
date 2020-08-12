@@ -2,13 +2,11 @@ package com.github.beelzebu.matrix.util;
 
 import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
-import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,7 +21,6 @@ public final class CompatUtil {
 
     public static MinecraftVersion VERSION;
     private static CompatUtil INSTANCE;
-    private Method localeMethod;
 
     public CompatUtil() {
         setup();
@@ -151,26 +148,6 @@ public final class CompatUtil {
                 VERSION = MinecraftVersion.MINECRAFT_1_15;
                 break;
         }
-    }
-
-    public String getLocale(Player player) {
-        if (VERSION.isAfterOrEq(MinecraftVersion.MINECRAFT_1_12)) {
-            return player.getLocale();
-        } else { // this doesn't exists in 1.8
-            if (localeMethod != null) {
-                try {
-                    return (String) localeMethod.invoke(player.spigot());
-                } catch (ReflectiveOperationException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                return (String) (localeMethod = Player.Spigot.class.getMethod("getLocale")).invoke(player.spigot());
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-            }
-        }
-        return "en";
     }
 
     public void setPotionType(PotionMeta meta, PotionType type) {
