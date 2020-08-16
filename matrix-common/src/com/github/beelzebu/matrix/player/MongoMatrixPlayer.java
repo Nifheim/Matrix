@@ -206,6 +206,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (this.premium == premium) {
             return;
         }
+        if (!premium) {
+            setUniqueId(UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes()));
+        }
         this.premium = premium;
         updateCached("premium");
     }

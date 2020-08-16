@@ -76,7 +76,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         }
         config = new BungeeConfiguration(configFile);
         (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this))).setup();
-        Matrix.setAPI(api);
     }
 
     @Override

@@ -56,18 +56,19 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
         messaging = new RedisMessaging(redisManager, plugin::runAsync);
         cache = new CacheProviderImpl(redisManager);
-        serverInfo = new ServerInfo(
-                GameType.valueOf(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
-                ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
-                plugin.getConfig().getString("server-info.group", null),
-                GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode", "ADVENTURE").toUpperCase())
-        );
         mySQLStorage = new MySQLStorage(this, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
         Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
         maintenanceManager = new MaintenanceManager(redisManager);
         if (plugin.getConfig().getString("server-info.game-mode") == null) {
             Matrix.getLogger().info("server-info.game-mode config option is missing, please add it to config.yml");
         }
+        Matrix.setAPI(this);
+        serverInfo = new ServerInfo(
+                GameType.valueOf(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
+                ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
+                plugin.getConfig().getString("server-info.group", null),
+                plugin.getConfig().get("server-info.game-mode") != null ? GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode")) : null
+        );
     }
 
     public String getName(UUID uniqueId) {

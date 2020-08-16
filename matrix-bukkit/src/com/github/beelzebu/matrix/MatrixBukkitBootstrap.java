@@ -117,7 +117,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     @Override
     public void onEnable() {
-        Matrix.setAPI(api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this)));
+        api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this));
         try {
             CompatUtil.getInstance();
         } catch (Exception e) {
