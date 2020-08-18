@@ -6,7 +6,6 @@ import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
-import com.github.beelzebu.matrix.channels.Channel;
 import com.github.beelzebu.matrix.command.BasicCommands;
 import com.github.beelzebu.matrix.command.BungeeTPCommand;
 import com.github.beelzebu.matrix.command.CountdownCommand;
@@ -36,10 +35,7 @@ import com.github.beelzebu.matrix.tablist.TablistManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -51,16 +47,11 @@ import net.md_5.bungee.api.plugin.Plugin;
  */
 public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
-    public static final Map<String, Channel> CHANNELS = new HashMap<>();
     private MatrixBungeeAPI api;
     private MatrixPluginBungee matrixPlugin;
     private BungeeConfiguration config;
     private BungeeSchedulerAdapter scheduler;
     private InfluencerManager influencerManager;
-
-    public static Channel getChannelFor(MatrixPlayer player) {
-        return CHANNELS.get(player.getStaffChannel());
-    }
 
     @Override
     public void onLoad() {
@@ -100,7 +91,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         new PermissionListener();
         MotdManager.onEnable();
         new BasicCommands(this);
-        config.getKeys("Channels").forEach((channel) -> CHANNELS.put(channel, new Channel(channel, channel, config.getString("Channels." + channel + ".Permission"), ChatColor.valueOf(config.getString("Channels." + channel + ".Color"))).register()));
         ProxyServer.getInstance().getScheduler().schedule(this, () -> {
             for (MatrixPlayer matrixPlayer : api.getCache().getPlayers()) {
                 if (api.getPlugin().isOnline(matrixPlayer.getUniqueId(), false) || matrixPlayer.isLoggedIn()) {

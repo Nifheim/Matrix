@@ -21,11 +21,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -217,21 +215,6 @@ public class ChatListener implements Listener {
             ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(message.get("player").getAsString());
             String spam = message.get("message").getAsString();
             broadcast(pp, spam, BroadcastType.SPAM);
-        }
-    }
-
-    @EventHandler
-    public void onChatEvent(ChatEvent e) {
-        if (e.isCommand()) {
-            return;
-        }
-        Connection sender = e.getSender();
-        if (sender instanceof ProxiedPlayer) {
-            MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-            if (matrixPlayer.getStaffChannel() != null) {
-                e.setCancelled(true);
-                ProxyServer.getInstance().getPluginManager().dispatchCommand((CommandSender) sender, matrixPlayer.getStaffChannel() + " " + e.getMessage());
-            }
         }
     }
 
