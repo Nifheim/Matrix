@@ -75,10 +75,5 @@ buildscript {
         clean {
             delete(file("$rootDir/out"))
         }
-
-        sourceSets {
-            main.java.srcDirs = ['src/']
-            main.resources.srcDirs = ['src/resources']
-        }
     }
 }

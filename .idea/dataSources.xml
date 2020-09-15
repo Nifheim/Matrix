@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="MariaDB - minecraft@venus.indiopikaro.cl" uuid="e9a850b9-4571-46ee-9297-adf820a51a2f">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://venus.indiopikaro.cl:3306/minecraft</jdbc-url>
+    </data-source>
+  </component>
+</project>
