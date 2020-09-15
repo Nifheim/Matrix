@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.bukkit.menus;
 
-import com.deanveloper.skullcreator.SkullCreator;
+import com.github.beelzebu.matrix.bukkit.util.SkullCreator;
 import com.github.beelzebu.matrix.api.ItemBuilder;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;

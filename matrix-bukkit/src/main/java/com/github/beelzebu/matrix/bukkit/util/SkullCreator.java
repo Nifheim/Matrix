@@ -1,4 +1,4 @@
-package com.deanveloper.skullcreator;
+package com.github.beelzebu.matrix.bukkit.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
