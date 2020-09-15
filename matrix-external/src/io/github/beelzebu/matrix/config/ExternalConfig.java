@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.config;
+package com.github.beelzebu.matrix.bukkit.config;
 
 import com.github.beelzebu.matrix.Main;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;

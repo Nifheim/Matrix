@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.api.command;
 
-import com.github.beelzebu.matrix.util.CompatUtil;
+import com.github.beelzebu.matrix.bukkit.util.CompatUtil;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Locale;

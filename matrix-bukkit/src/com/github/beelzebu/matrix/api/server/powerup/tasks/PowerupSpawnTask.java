@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.api.server.powerup.tasks;
 
-import com.github.beelzebu.matrix.manager.PowerupManager;
+import com.github.beelzebu.matrix.bukkit.manager.PowerupManager;
 
 public class PowerupSpawnTask implements Runnable {
 

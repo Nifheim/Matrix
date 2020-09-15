@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.api;
 
 import com.github.beelzebu.matrix.api.util.StringUtils;
-import com.github.beelzebu.matrix.util.CompatUtil;
+import com.github.beelzebu.matrix.bukkit.util.CompatUtil;
 import com.google.gson.Gson;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.api;
 
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.plugin.MatrixPluginBungee;
+import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import net.md_5.bungee.api.ProxyServer;
 
 /**
