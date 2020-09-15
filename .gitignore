@@ -8,8 +8,11 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .idea/libraries/
-workspace.xml
-uiDesigner.xml
+.idea/workspace.xml
+.idea/uiDesigner.xml
 out/
 .gradle/
 */build/
+.idea/dataSources.local.xml
+.idea/dataSources/
+.idea/shelf/
