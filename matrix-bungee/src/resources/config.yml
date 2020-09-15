@@ -1,28 +1,29 @@
-Database:
-  Host: '172.20.0.3'
-  Password: ''
-
-Redis:
-  Host: '172.20.0.2'
-  Port: 6379
-  Password: ''
-
+# server info, always updated
 server-info:
   group: 'proxy'
-  name: 'bungee1'
   game-type: 'none'
   server-type: 'proxy'
 
+# storage and caching settings
+Database:
+  Host: 172.20.0.3
+  Password: ''
+
 mysql:
-  host: '172.20.0.2'
+  host: '172.20.0.3'
   port: 3306
-  database: 'matrix'
+  database: 'minecraft'
   user: 'plugins'
   password: ''
   pool: 12
 
+Redis:
+  Host: 172.20.0.2
+  Port: 6379
+  Password: ''
+
 # Enabling this means that the plugin will send debug messages to the console.
-Debug: true
+Debug: false
 
 Channels:
   h:

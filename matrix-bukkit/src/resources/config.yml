@@ -1,26 +1,27 @@
+# server info, always updated
+server-info:
+  group: 'lobby'
+  game-type: 'none'
+  server-type: 'lobby' # lobby minigame_bungee minigame_multiarena survival
+  game-mode: 'adventure' # adventure, survival, creative, spectator
+
+# storage and caching settings
 Database:
   Host: 172.20.0.3
-  Password: jaime1xd2
+  Password: ''
+
+mysql:
+  host: '172.20.0.3'
+  port: 3306
+  database: 'minecraft'
+  user: 'plugins'
+  password: ''
+  pool: 12
 
 Redis:
   Host: 172.20.0.2
   Port: 6379
   Password: ''
-
-server-info:
-  group: 'lobby'
-  name: 'lobby1'
-  game-type: 'none'
-  server-type: 'lobby'
-  game-mode: 'adventure'
-
-mysql:
-  host: '172.20.0.2'
-  port: 3306
-  database: 'matrix'
-  user: 'plugins'
-  password: ''
-  pool: 12
 
 # World used as Lobby in MINIGAME_MULTIARENA
 Lobby World: Lobby
