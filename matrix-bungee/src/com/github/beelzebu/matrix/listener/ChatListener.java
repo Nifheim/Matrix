@@ -237,7 +237,7 @@ public class ChatListener implements Listener {
         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
         for (String loggedCommand : loggedCommands) {
             if (command.equals(loggedCommand)) {
-                api.getSQLDatabase().insertCommandLogEntry(matrixPlayer, api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId()).getLastServerName(), e.getMessage());
+                api.getDatabase().insertCommandLogEntry(matrixPlayer, api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId()).getLastServerName(), e.getMessage());
             }
         }
         if (matrixPlayer.isAdmin()) {

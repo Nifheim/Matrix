@@ -1,9 +1,8 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.tablist.TablistManager;
 import com.github.beelzebu.matrix.tasks.DisconnectTask;
 import com.github.beelzebu.matrix.tasks.LoginTask;
@@ -76,7 +75,7 @@ public class LoginListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerSwitch(ServerSwitchEvent e) {
         if (e.getPlayer().isConnected()) {
-            e.getPlayer().setTabHeader(TablistManager.TAB_HEADER, TablistManager.TAB_FOOTER);
+            e.getPlayer().setTabHeader(TablistManager.getTabHeader(e.getPlayer()), TablistManager.getTabFooter(e.getPlayer()));
         }
     }
 
@@ -86,18 +85,18 @@ public class LoginListener implements Listener {
             return;
         }
         e.registerIntent(plugin);
-        api.getPlugin().runAsync(new PreLoginTask(plugin, e, api.getPlayer(e.getConnection().getUniqueId())));
+        api.getPlugin().runAsync(new PreLoginTask(plugin, e));
     }
 
     @EventHandler(priority = 127)
     public void onLogin(LoginEvent e) {
         e.registerIntent(plugin);
-        api.getPlugin().runAsync(new LoginTask(plugin, e, api.getPlayer(e.getConnection().getUniqueId())));
+        api.getPlugin().runAsync(new LoginTask(plugin, e));
     }
 
     @EventHandler(priority = -128)
     public void onLogin(PostLoginEvent e) {
-        api.getPlugin().runAsync(new PostLoginTask(e, api.getPlayer(e.getPlayer().getUniqueId())));
+        api.getPlugin().runAsync(new PostLoginTask(e));
     }
 
     @EventHandler(priority = -128)
@@ -112,7 +111,6 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = 127)
     public void onDisconnect(PlayerDisconnectEvent e) {
-        MatrixPlayer player = api.getPlayer(e.getPlayer().getUniqueId());
-        api.getPlugin().runAsync(new DisconnectTask(e, player));
+        api.getPlugin().runAsync(new DisconnectTask(e));
     }
 }

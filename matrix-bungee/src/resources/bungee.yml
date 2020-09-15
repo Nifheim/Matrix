@@ -1,5 +1,5 @@
 name: Matrix
-main: com.github.beelzebu.matrix.MatrixBungeeBootstrap
+main: com.github.beelzebu.matrix.api.MatrixBungeeBootstrap
 version: ${pluginVersion}
 author: Beelzebu
 depends: [LuckPerms]

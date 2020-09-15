@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.util;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import java.util.Optional;
 import java.util.stream.Stream;

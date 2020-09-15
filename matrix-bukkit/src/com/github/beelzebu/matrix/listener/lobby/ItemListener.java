@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.listener.lobby;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.menus.GUIManager;

@@ -1,8 +1,7 @@
 package com.github.beelzebu.matrix.api;
 
-import com.github.beelzebu.matrix.MatrixAPIImpl;
-import com.github.beelzebu.matrix.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.plugin.MatrixPluginBukkit;
 import org.bukkit.Bukkit;
 
 /**

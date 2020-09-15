@@ -29,7 +29,7 @@ public class AntiGriefLoginListener implements Listener {
         MatrixPlayer matrixPlayer = api.getPlayer(e.getUniqueId());
         if (matrixPlayer == null) { // si el usuario aún no existe en la base de datos es porque no ha entrado por el proxy
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
-            api.getSQLDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(1)", e.getName(), e.getAddress().getHostAddress()));
+            api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(1)", e.getName(), e.getAddress().getHostAddress()));
             return;
         }
         if (!matrixPlayer.isLoggedIn() && !api.getServerInfo().getGroupName().equals("auth")) {
@@ -38,12 +38,12 @@ public class AntiGriefLoginListener implements Listener {
                 return;
             }
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
-            api.getSQLDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(2)", e.getName(), e.getAddress().getHostAddress()));
+            api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(2)", e.getName(), e.getAddress().getHostAddress()));
             return;
         }
         if (!api.getPlayer(e.getName()).getUniqueId().equals(e.getUniqueId())) {
             e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Tu UUID no coincide con la UUID que hay en nuestra base de datos\ntus datos fueron registrados por seguridad.");
-            api.getSQLDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(3)", e.getName(), e.getAddress().getHostAddress()));
+            api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(3)", e.getName(), e.getAddress().getHostAddress()));
         }
     }
 
@@ -57,7 +57,7 @@ public class AntiGriefLoginListener implements Listener {
         if (premiumPlayer.contains(player.getUniqueId())) {
             premiumPlayer.remove(player.getUniqueId());
             player.kickPlayer("Se ha detectado un acceso no autorizado.");
-            api.getSQLDatabase().addFailedLogin(player.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on PlayerJoinEvent", player.getName(), player.getAddress().getAddress().getHostAddress()));
+            api.getDatabase().addFailedLogin(player.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on PlayerJoinEvent", player.getName(), player.getAddress().getAddress().getHostAddress()));
         }
     }
 }

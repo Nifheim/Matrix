@@ -1,5 +1,5 @@
 name: Matrix-Bukkit
-main: com.github.beelzebu.matrix.MatrixBukkitBootstrap
+main: com.github.beelzebu.matrix.api.MatrixBukkitBootstrap
 description: 'Network management plugin'
 version: ${pluginVersion}
 author: Beelzebu

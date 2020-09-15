@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.util.placeholders;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.player.TopEntry;
-import com.github.beelzebu.matrix.database.MySQLStorage;
+import com.github.beelzebu.matrix.database.StorageImpl;
 import com.github.beelzebu.matrix.util.bungee.BungeeServerTracker;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -28,9 +28,9 @@ public class StatsPlaceholders extends PlaceholderExpansion {
     public StatsPlaceholders() {
         api.getPlugin().getBootstrap().getScheduler().asyncRepeating(() -> {
             for (Statistic statistic : Statistic.values()) {
-                api.getSQLDatabase().getTopStatWeekly(api.getServerInfo().getGameType().getGameName(), statistic).thenAccept(topEntries -> weekly.put(statistic, topEntries));
-                api.getSQLDatabase().getTopStatMonthly(api.getServerInfo().getGameType().getGameName(), statistic).thenAccept(topEntries -> monthly.put(statistic, topEntries));
-                api.getSQLDatabase().getTopStatTotal(api.getServerInfo().getGameType().getGameName(), statistic).thenAccept(topEntries -> total.put(statistic, topEntries));
+                api.getDatabase().getTopStatWeekly(api.getServerInfo().getGameType(), statistic).thenAccept(topEntries -> weekly.put(statistic, topEntries));
+                api.getDatabase().getTopStatMonthly(api.getServerInfo().getGameType(), statistic).thenAccept(topEntries -> monthly.put(statistic, topEntries));
+                api.getDatabase().getTopStatTotal(api.getServerInfo().getGameType(), statistic).thenAccept(topEntries -> total.put(statistic, topEntries));
             }
         }, 10, TimeUnit.MINUTES);
     }
@@ -45,7 +45,7 @@ public class StatsPlaceholders extends PlaceholderExpansion {
         }
         if (stat.startsWith("online")) {
             if (stat.matches("online_status_.*")) {
-                return BungeeServerTracker.isOnline(stat.split("_")[1]) ? "ONLINE" : "OFFLINE";
+                return BungeeServerTracker.isOnline(stat.split("online_status_")[1]) ? "ONLINE" : "OFFLINE";
             }
             if (stat.equals("onlinebungee")) {
                 return String.valueOf(BungeeServerTracker.getTotalOnline());
@@ -73,8 +73,8 @@ public class StatsPlaceholders extends PlaceholderExpansion {
                 if (topPosition < 1) {
                     topPosition = 1;
                 }
-                if (topPosition >= MySQLStorage.TOP_SIZE) {
-                    topPosition = MySQLStorage.TOP_SIZE;
+                if (topPosition >= StorageImpl.TOP_SIZE) {
+                    topPosition = StorageImpl.TOP_SIZE;
                 }
                 topPosition--; // we use array index here, so we need to start from 0
                 switch (statType) {
@@ -109,7 +109,7 @@ public class StatsPlaceholders extends PlaceholderExpansion {
                         for (String sType : sTypes) {
                             Map<Statistic, Long> values = new HashMap<>();
                             for (Statistic populatingStatistic : Statistic.values()) {
-                                api.getSQLDatabase().getStat(api.getPlayer(p.getUniqueId()), api.getServerInfo().getGameType().getGameName(), statistic).thenAccept(value -> values.put(populatingStatistic, value));
+                                api.getDatabase().getStat(api.getPlayer(p.getUniqueId()), api.getServerInfo().getGameType(), statistic).thenAccept(value -> values.put(populatingStatistic, value));
                             }
                             statsMap.put(sType, values);
                         }

@@ -15,9 +15,9 @@ public class DisconnectTask implements Runnable {
     private final PlayerDisconnectEvent event;
     private final MatrixPlayer player;
 
-    public DisconnectTask(PlayerDisconnectEvent event, MatrixPlayer player) {
+    public DisconnectTask(PlayerDisconnectEvent event) {
         this.event = event;
-        this.player = player;
+        this.player = Matrix.getAPI().getPlayer(event.getPlayer().getUniqueId());
     }
 
     @Override

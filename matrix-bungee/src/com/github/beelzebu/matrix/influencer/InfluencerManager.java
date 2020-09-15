@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.influencer;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.google.common.collect.ImmutableSet;
 import java.util.Arrays;

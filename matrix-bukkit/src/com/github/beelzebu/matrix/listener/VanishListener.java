@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.command.staff.VanishCommand;
 import org.bukkit.Bukkit;

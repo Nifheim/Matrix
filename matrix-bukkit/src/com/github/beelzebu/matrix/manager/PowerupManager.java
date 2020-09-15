@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.manager;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.server.lobby.LobbyData;
 import com.github.beelzebu.matrix.api.server.powerup.Powerup;
 import java.util.HashSet;

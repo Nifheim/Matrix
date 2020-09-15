@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.MatrixAPIImpl;
+import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;

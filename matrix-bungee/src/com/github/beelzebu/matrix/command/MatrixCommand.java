@@ -1,10 +1,11 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.config.MatrixConfig;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.motd.MotdManager;
+import com.github.beelzebu.matrix.tablist.TablistManager;
 import java.util.Optional;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -31,6 +32,7 @@ public class MatrixCommand extends Command {
                     MotdManager.onEnable();
                     bungeeBootstrap.getInfluencerManager().reloadInfluencers();
                     bungeeBootstrap.getApi().reload();
+                    TablistManager.init();
                     break;
                 case "purge":
                     if (args.length == 3) {

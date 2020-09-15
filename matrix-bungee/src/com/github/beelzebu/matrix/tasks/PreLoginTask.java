@@ -1,34 +1,51 @@
 package com.github.beelzebu.matrix.tasks;
 
-import com.github.beelzebu.matrix.MatrixAPIImpl;
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPIImpl;
+import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.games647.craftapi.model.Profile;
+import com.github.games647.craftapi.resolver.RateLimitException;
+import java.io.IOException;
+import java.util.Objects;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
 /**
  * @author Beelzebu
  */
-public class PreLoginTask implements Runnable {
+public class PreLoginTask implements IndioLoginTask {
 
     private final MatrixBungeeBootstrap plugin;
     private final PreLoginEvent event;
     private final MatrixPlayer player;
 
-    public PreLoginTask(MatrixBungeeBootstrap plugin, PreLoginEvent event, MatrixPlayer player) {
+    public PreLoginTask(MatrixBungeeBootstrap plugin, PreLoginEvent event) {
         this.plugin = plugin;
         this.event = event;
-        if (player == null) {
-            // connection name can be null
-            if (event.getConnection().getName() != null) {
-                this.player = Matrix.getAPI().getPlayer(event.getConnection().getName());
-            } else {
-                this.player = null;
-            }
-        } else {
-            this.player = player;
+        MatrixPlayer player = null;
+        Profile profile = null;
+        try {
+            profile = RESOLVER.findProfile(event.getConnection().getName()).orElse(null);
+        } catch (RateLimitException | IOException e) {
+            e.printStackTrace();
         }
+        if (profile != null) {
+            player = Matrix.getAPI().getPlayer(profile.getId());
+            if (player != null) {
+                Matrix.getLogger().info(event.getConnection().getName() + " is premium, stored name: " + player.getName());
+                if (event.getConnection().getName() != null && !Objects.equals(player.getName(), event.getConnection().getName())) {
+                    player.setName(event.getConnection().getName());
+                }
+            }
+        }
+        if (player == null) {
+            player = Matrix.getAPI().getPlayer(event.getConnection().getName());
+        }
+        if (player == null) {
+            Matrix.getLogger().info("Player null pre login name: " + event.getConnection().getName());
+        }
+        this.player = player;
     }
 
     @Override
@@ -72,18 +89,14 @@ public class PreLoginTask implements Runnable {
             for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
                 if (host.equals("premium." + domain)) {
                     event.getConnection().setOnlineMode(true);
-                    if (player != null) {
-                        if (!player.isPremium()) {
-                            player.setPremium(true);
-                        }
+                    if (player != null && !player.isPremium()) {
+                        player.setPremium(true);
                     }
                     break;
                 }
             }
-            if (player != null) {
-                if (player.isPremium()) {
-                    event.getConnection().setOnlineMode(true);
-                }
+            if (player != null && player.isPremium()) {
+                event.getConnection().setOnlineMode(true);
             }
             Matrix.getAPI().getCache().update(event.getConnection().getName(), event.getConnection().getUniqueId());
             /**
@@ -97,7 +110,7 @@ public class PreLoginTask implements Runnable {
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
         } finally {
-            event.completeIntent(plugin);
+            this.event.completeIntent(this.plugin);
         }
     }
 }

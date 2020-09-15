@@ -1,8 +1,6 @@
-package com.github.beelzebu.matrix;
+package com.github.beelzebu.matrix.api;
 
 import com.destroystokyo.paper.PaperConfig;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.command.CommandAPI;
 import com.github.beelzebu.matrix.api.menu.BaseGUI;
 import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
@@ -42,6 +40,7 @@ import com.github.beelzebu.matrix.listener.VotifierListener;
 import com.github.beelzebu.matrix.listener.lobby.ItemListener;
 import com.github.beelzebu.matrix.listener.lobby.LobbyListener;
 import com.github.beelzebu.matrix.listener.stats.StatsListener;
+import com.github.beelzebu.matrix.plugin.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.scheduler.BukkitSchedulerAdapter;
 import com.github.beelzebu.matrix.util.CompatUtil;
 import com.github.beelzebu.matrix.util.PluginsUtility;
@@ -92,9 +91,13 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             getLogger().warning("Bungee is disabled in spigot config, forcing it to true.");
             SpigotConfig.bungee = true;
         }
-        if (SpigotConfig.debug) {
-            getLogger().warning("Debug is enabled in spigot config, forcing it to false.");
-            SpigotConfig.debug = false;
+        try {
+            Class.forName("org.spigotmc.SpigotConfig").getField("debug");
+            if (SpigotConfig.debug) {
+                getLogger().warning("Debug is enabled in spigot config, forcing it to false.");
+                SpigotConfig.debug = false;
+            }
+        } catch (NoSuchFieldException | ClassNotFoundException ignore) {
         }
         saveResource("config.yml", false);
         configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
@@ -240,6 +243,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 }
             }
         };
+        Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
     public boolean isVotifier() {

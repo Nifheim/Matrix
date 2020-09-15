@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.api;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

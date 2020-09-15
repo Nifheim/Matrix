@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.api.server.lobby;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

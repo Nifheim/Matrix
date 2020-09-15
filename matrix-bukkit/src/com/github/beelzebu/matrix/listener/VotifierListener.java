@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.util.ReadURL;
 import com.vexsoftware.votifier.model.Vote;

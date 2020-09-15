@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.util.bungee;
 
-import com.github.beelzebu.matrix.MatrixBukkitBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;

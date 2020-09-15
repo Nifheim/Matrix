@@ -12,14 +12,14 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 /**
  * @author Beelzebu
  */
-public class PostLoginTask implements Runnable {
+public class PostLoginTask implements IndioLoginTask {
 
     private final PostLoginEvent event;
     private final MatrixPlayer player;
 
-    public PostLoginTask(PostLoginEvent event, MatrixPlayer player) {
+    public PostLoginTask(PostLoginEvent event) {
         this.event = event;
-        this.player = player;
+        this.player = Matrix.getAPI().getPlayer(event.getPlayer().getUniqueId());
     }
 
     @Override

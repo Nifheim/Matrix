@@ -1,6 +1,7 @@
-package com.github.beelzebu.matrix;
+package com.github.beelzebu.matrix.plugin;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.command.BungeeCommandSource;
 import com.github.beelzebu.matrix.api.command.CommandSource;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;

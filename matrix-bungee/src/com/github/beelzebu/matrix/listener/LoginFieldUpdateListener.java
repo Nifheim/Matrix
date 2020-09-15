@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.listener;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;

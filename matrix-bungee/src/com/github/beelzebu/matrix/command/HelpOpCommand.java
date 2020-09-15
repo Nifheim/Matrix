@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.command;
 
-import com.github.beelzebu.matrix.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;

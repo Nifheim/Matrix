@@ -34,13 +34,12 @@ public final class GUIManager {
     @SuppressWarnings("unchecked")
     public <T extends BaseGUI> T getGUI(UUID uniqueId, Class<T> guiClazz) {
         Map<Class<? extends BaseGUI>, WeakReference<BaseGUI>> classWeakReferenceMap = guiMap.computeIfAbsent(uniqueId, k -> new HashMap<>());
-        T gui = (T) classWeakReferenceMap.get(guiClazz).get();
-        if (gui == null) {
-            try {
-                classWeakReferenceMap.put(guiClazz, new WeakReference<>(gui = guiClazz.getConstructor(MatrixPlayer.class).newInstance(Matrix.getAPI().getPlayer(uniqueId))));
-            } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
-            }
+        T gui = null;
+        try {
+            gui = (T) classWeakReferenceMap.getOrDefault(guiClazz, new WeakReference<>(guiClazz.getConstructor(MatrixPlayer.class).newInstance(Matrix.getAPI().getPlayer(uniqueId)))).get();
+            classWeakReferenceMap.put(guiClazz, new WeakReference<>(gui = guiClazz.getConstructor(MatrixPlayer.class).newInstance(Matrix.getAPI().getPlayer(uniqueId))));
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
         }
         return gui;
     }
