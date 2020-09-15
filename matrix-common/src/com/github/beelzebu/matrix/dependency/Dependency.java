@@ -43,9 +43,9 @@ public enum Dependency {
             "3.12.2"
     ),
     MORPHIA(
-            "org.mongodb.morphia",
-            "morphia",
-            "1.3.2"
+            "dev.morphia.morphia",
+            "core",
+            "1.6.0"
     );
 
     private static final String MAVEN_CENTRAL_FORMAT = "https://repo1.maven.org/maven2/%s/%s/%s/%s-%s.jar";

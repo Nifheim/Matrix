@@ -171,5 +171,10 @@
       <option name="name" value="maven" />
       <option name="url" value="https://venus.indiopikaro.cl/nexus/repository/maven-public/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven11" />
+      <option name="name" value="maven11" />
+      <option name="url" value="https://repo.codemc.org/repository/maven-public/" />
+    </remote-repository>
   </component>
 </project>

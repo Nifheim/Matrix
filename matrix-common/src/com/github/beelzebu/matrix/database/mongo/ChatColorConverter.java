@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.database.mongo;
 
+import dev.morphia.converters.SimpleValueConverter;
+import dev.morphia.converters.TypeConverter;
+import dev.morphia.mapping.MappedField;
 import net.md_5.bungee.api.ChatColor;
-import org.mongodb.morphia.converters.SimpleValueConverter;
-import org.mongodb.morphia.converters.TypeConverter;
-import org.mongodb.morphia.mapping.MappedField;
 
 /**
  * Compatibility layer between 1.16 ChatColor and previous versions.

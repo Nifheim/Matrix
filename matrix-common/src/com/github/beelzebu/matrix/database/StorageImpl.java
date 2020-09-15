@@ -2,18 +2,28 @@ package com.github.beelzebu.matrix.database;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.database.SQLDatabase;
+import com.github.beelzebu.matrix.api.database.MatrixDatabase;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayStats;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.player.TopEntry;
+import com.github.beelzebu.matrix.api.report.ReportManager;
 import com.github.beelzebu.matrix.api.server.GameType;
+import com.github.beelzebu.matrix.database.mongo.ChatColorConverter;
 import com.github.beelzebu.matrix.database.sql.SQLQuery;
+import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.Throwing;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import dev.morphia.Datastore;
+import dev.morphia.Morphia;
+import dev.morphia.converters.UUIDConverter;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,16 +31,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
+import org.bson.types.ObjectId;
 
-/**
- * @author Beelzebu
- */
-public class MySQLStorage implements SQLDatabase {
+public class StorageImpl implements MatrixDatabase {
 
     public static final int TOP_SIZE = 10;
     private final Cache<Statistic, TopEntry[]> statsTotalCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
@@ -38,12 +47,20 @@ public class MySQLStorage implements SQLDatabase {
     private final Cache<Statistic, TopEntry[]> statsMonthlyCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
     private final MatrixAPI api;
     private HikariDataSource dataSource;
+    private final Datastore datastore;
 
-    public MySQLStorage(MatrixAPI api, String host, int port, String database, String user, String password, int poolSize) {
+    public StorageImpl(MatrixAPI api) {
         this.api = api;
+        MongoClient client = new MongoClient(new ServerAddress(api.getConfig().getString("Database.Host"), 27017), MongoCredential.createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()), MongoClientOptions.builder().build());
+        Morphia morphia = new Morphia();
+        morphia.map(MongoMatrixPlayer.class);
+        morphia.getMapper().getConverters().addConverter(new UUIDConverter());
+        morphia.getMapper().getConverters().addConverter(new ChatColorConverter());
+        this.datastore = morphia.createDatastore(client, "matrix");
+        this.datastore.ensureIndexes();
         HikariConfig hc = new HikariConfig();
         hc.setPoolName("Matrix MySQL Connection Pool");
-        hc.setDriverClassName("org.mariadb.jdbc.Driver");
+        hc.setDriverClassName("com.github.beelzebu.lib.mariadb.Driver");
         hc.addDataSourceProperty("cachePrepStmts", "true");
         hc.addDataSourceProperty("useServerPrepStmts", "true");
         hc.addDataSourceProperty("prepStmtCacheSize", "250");
@@ -51,22 +68,59 @@ public class MySQLStorage implements SQLDatabase {
         hc.addDataSourceProperty("encoding", "UTF-8");
         hc.addDataSourceProperty("characterEncoding", "utf8");
         hc.addDataSourceProperty("useUnicode", "true");
-        hc.setJdbcUrl("jdbc:mariadb://" + host + ":" + port + "/" + database + "?autoReconnect=true&useSSL=false");
-        hc.setUsername(user);
-        hc.setPassword(password);
-        hc.setMaxLifetime(60000);
+        hc.setJdbcUrl("jdbc:mariadb://" + api.getConfig().getString("mysql.host") + ":" + api.getConfig().getInt("mysql.port") + "/" + api.getConfig().getString("mysql.database") + "?autoReconnect=true&useSSL=false");
+        hc.setUsername(api.getConfig().getString("mysql.user"));
+        hc.setPassword(api.getConfig().getString("mysql.password"));
+        hc.setMaxLifetime(60000L);
         hc.setMinimumIdle(1);
-        hc.setIdleTimeout(30000);
-        hc.setConnectionTimeout(10000);
-        hc.setMaximumPoolSize(poolSize);
-        hc.setLeakDetectionThreshold(30000);// TODO: check performance impact
+        hc.setIdleTimeout(30000L);
+        hc.setConnectionTimeout(10000L);
+        hc.setMaximumPoolSize(api.getConfig().getInt("mysql.pool", 12));
         hc.validate();
+
         try {
-            dataSource = new HikariDataSource(hc);
-        } catch (Exception ex) {
+            this.dataSource = new HikariDataSource(hc);
+        } catch (Exception e) {
             Matrix.getLogger().info("An exception has occurred while starting connection pool, check your database credentials.");
-            Matrix.getLogger().debug(ex);
+            Matrix.getLogger().debug(e);
         }
+
+    }
+
+    public MatrixPlayer getPlayer(UUID uniqueId) {
+        return this.datastore.find(MongoMatrixPlayer.class).filter("uniqueId", uniqueId).first();
+    }
+
+    public MatrixPlayer getPlayer(String name) {
+        return Optional.ofNullable(this.datastore.find(MongoMatrixPlayer.class).filter("name", name).first()).orElse(this.datastore.find(MongoMatrixPlayer.class).filter("lowercaseName", name.toLowerCase()).first());
+    }
+
+    public MatrixPlayer getPlayerById(String hexId) {
+        return this.datastore.find(MongoMatrixPlayer.class).filter("_id", new ObjectId(hexId)).first();
+    }
+
+    public boolean isRegistered(UUID uniqueId) {
+        return Matrix.getAPI().getCache().isCached(uniqueId) || this.getPlayer(uniqueId) != null;
+    }
+
+    public boolean isRegistered(String name) {
+        return Matrix.getAPI().getCache().getPlayer(name).isPresent() || this.getPlayer(name) != null;
+    }
+
+    public void purgeForAllPlayers(String field) {
+        this.datastore.createUpdateOperations(MongoMatrixPlayer.class).unset(field);
+    }
+
+    public ReportManager getReportManager() {
+        return null;
+    }
+
+    public void save(MongoMatrixPlayer mongoMatrixPlayer) {
+        this.datastore.save(mongoMatrixPlayer);
+    }
+
+    public void _delete(MongoMatrixPlayer mongoMatrixPlayer) {
+        this.datastore.delete(mongoMatrixPlayer);
     }
 
     @Override
@@ -84,13 +138,13 @@ public class MySQLStorage implements SQLDatabase {
     }
 
     @Override
-    public CompletableFuture<Void> incrStat(MatrixPlayer matrixPlayer, String server, Statistic stat, long value) {
+    public CompletableFuture<Void> incrStat(MatrixPlayer matrixPlayer, GameType gameType, Statistic stat, long value) {
         if (value == 0) {
             return CompletableFuture.completedFuture(null);
         }
         return makeFuture(() -> {
             try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
-                setDefaultStatsParams(callableStatement, matrixPlayer.getId(), server);
+                setDefaultStatsParams(callableStatement, matrixPlayer.getId(), gameType);
                 setStatParam(callableStatement, stat, value);
                 callableStatement.executeUpdate();
             } catch (SQLException throwables) {
@@ -100,19 +154,13 @@ public class MySQLStorage implements SQLDatabase {
     }
 
     @Override
-    @Deprecated
-    public CompletableFuture<Void> incrStat(UUID uniqueId, String server, Statistic stat, long value) {
-        return incrStat(api.getPlayer(uniqueId), server, stat, value);
-    }
-
-    @Override
-    public CompletableFuture<Void> incrStats(MatrixPlayer matrixPlayer, String server, Map<Statistic, Long> stats) {
+    public CompletableFuture<Void> incrStats(MatrixPlayer matrixPlayer, GameType gameType, Map<Statistic, Long> stats) {
         if (stats.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
         return makeFuture(() -> {
             try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
-                setDefaultStatsParams(callableStatement, matrixPlayer.getId(), server);
+                setDefaultStatsParams(callableStatement, matrixPlayer.getId(), gameType);
                 for (Map.Entry<Statistic, Long> ent : stats.entrySet()) {
                     Statistic stat = ent.getKey();
                     long value = ent.getValue();
@@ -123,12 +171,6 @@ public class MySQLStorage implements SQLDatabase {
                 throwables.printStackTrace();
             }
         });
-    }
-
-    @Override
-    @Deprecated
-    public CompletableFuture<Void> incrStats(UUID uniqueId, String server, Map<Statistic, Long> stats) {
-        return incrStats(api.getPlayer(uniqueId), server, stats);
     }
 
     @Override
@@ -145,14 +187,9 @@ public class MySQLStorage implements SQLDatabase {
         });
     }
 
-    @Override
-    @Deprecated
-    public CompletableFuture<Void> insertCommandLogEntry(UUID uniqueId, String server, String command) {
-        return insertCommandLogEntry(api.getPlayer(uniqueId), server, command);
-    }
 
     @Override
-    public CompletableFuture<Long> getStat(MatrixPlayer matrixPlayer, String server, Statistic statistic) {
+    public CompletableFuture<Long> getStat(MatrixPlayer matrixPlayer, GameType gameType, Statistic statistic) {
         return makeFuture(() -> {
             try (Connection c = dataSource.getConnection()) {
                 PreparedStatement preparedStatement = null;
@@ -175,7 +212,7 @@ public class MySQLStorage implements SQLDatabase {
                 }
                 if (preparedStatement != null) {
                     preparedStatement.setString(1, matrixPlayer.getId());
-                    preparedStatement.setString(2, trimServerName(server));
+                    preparedStatement.setString(2, trimServerName(gameType.getGameName()));
                     ResultSet res = preparedStatement.executeQuery();
                     if (res.next()) {
                         return res.getLong(1);
@@ -188,14 +225,9 @@ public class MySQLStorage implements SQLDatabase {
         });
     }
 
-    @Override
-    @Deprecated
-    public CompletableFuture<Long> getStat(UUID uniqueId, String server, Statistic statistic) { // TODO: check switch performance impact
-        return getStat(api.getPlayer(uniqueId), server, statistic);
-    }
 
     @Override
-    public CompletableFuture<Long> getStatWeekly(MatrixPlayer matrixPlayer, String server, Statistic statistic) {
+    public CompletableFuture<Long> getStatWeekly(MatrixPlayer matrixPlayer, GameType gameType, Statistic statistic) {
         return makeFuture(() -> {
             try (Connection c = dataSource.getConnection()) {
                 PreparedStatement preparedStatement = null;
@@ -218,7 +250,7 @@ public class MySQLStorage implements SQLDatabase {
                 }
                 if (preparedStatement != null) {
                     preparedStatement.setString(1, matrixPlayer.getId());
-                    preparedStatement.setString(2, trimServerName(server));
+                    preparedStatement.setString(2, trimServerName(gameType.getGameName()));
                     ResultSet res = preparedStatement.executeQuery();
                     if (res.next()) {
                         return res.getLong(1);
@@ -232,7 +264,7 @@ public class MySQLStorage implements SQLDatabase {
     }
 
     @Override
-    public CompletableFuture<Long> getStatMonthly(MatrixPlayer matrixPlayer, String server, Statistic statistic) {
+    public CompletableFuture<Long> getStatMonthly(MatrixPlayer matrixPlayer, GameType gameType, Statistic statistic) {
         return makeFuture(() -> {
             try (Connection c = dataSource.getConnection()) {
                 PreparedStatement preparedStatement = null;
@@ -255,7 +287,7 @@ public class MySQLStorage implements SQLDatabase {
                 }
                 if (preparedStatement != null) {
                     preparedStatement.setString(1, matrixPlayer.getId());
-                    preparedStatement.setString(2, trimServerName(server));
+                    preparedStatement.setString(2, trimServerName(gameType.getGameName()));
                     ResultSet res = preparedStatement.executeQuery();
                     if (res.next()) {
                         return res.getLong(1);
@@ -269,7 +301,7 @@ public class MySQLStorage implements SQLDatabase {
     }
 
     @Override
-    public CompletableFuture<TopEntry[]> getTopStatTotal(String server, Statistic statistic) {
+    public CompletableFuture<TopEntry[]> getTopStatTotal(GameType gameType, Statistic statistic) {
         return makeFuture(() -> statsTotalCache.get(statistic, stat -> {
             TopEntry[] topEntries = new TopEntry[TOP_SIZE];
             try (Connection c = dataSource.getConnection()) {
@@ -291,7 +323,7 @@ public class MySQLStorage implements SQLDatabase {
                         preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOP_TOTAL.getQuery());
                         break;
                 }
-                fillTopEntries(server, topEntries, preparedStatement);
+                fillTopEntries(gameType, topEntries, preparedStatement);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -300,7 +332,7 @@ public class MySQLStorage implements SQLDatabase {
     }
 
     @Override
-    public CompletableFuture<TopEntry[]> getTopStatWeekly(String server, Statistic statistic) {
+    public CompletableFuture<TopEntry[]> getTopStatWeekly(GameType gameType, Statistic statistic) {
         return makeFuture(() -> statsWeeklyCache.get(statistic, stat -> {
             TopEntry[] topEntries = new TopEntry[TOP_SIZE];
             try (Connection c = dataSource.getConnection()) {
@@ -322,7 +354,7 @@ public class MySQLStorage implements SQLDatabase {
                         preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOP_WEEKLY.getQuery());
                         break;
                 }
-                fillTopEntries(server, topEntries, preparedStatement);
+                fillTopEntries(gameType, topEntries, preparedStatement);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -331,7 +363,7 @@ public class MySQLStorage implements SQLDatabase {
     }
 
     @Override
-    public CompletableFuture<TopEntry[]> getTopStatMonthly(String server, Statistic statistic) {
+    public CompletableFuture<TopEntry[]> getTopStatMonthly(GameType gameType, Statistic statistic) {
         return makeFuture(() -> statsMonthlyCache.get(statistic, stat -> {
             TopEntry[] topEntries = new TopEntry[TOP_SIZE];
             try (Connection c = dataSource.getConnection()) {
@@ -353,7 +385,7 @@ public class MySQLStorage implements SQLDatabase {
                         preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOP_MONTHLY.getQuery());
                         break;
                 }
-                fillTopEntries(server, topEntries, preparedStatement);
+                fillTopEntries(gameType, topEntries, preparedStatement);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -401,9 +433,9 @@ public class MySQLStorage implements SQLDatabase {
         });
     }
 
-    private void fillTopEntries(String server, TopEntry[] topEntries, PreparedStatement preparedStatement) throws SQLException {
+    private void fillTopEntries(GameType gameType, TopEntry[] topEntries, PreparedStatement preparedStatement) throws SQLException {
         if (preparedStatement != null) {
-            preparedStatement.setString(1, trimServerName(server));
+            preparedStatement.setString(1, trimServerName(gameType.getGameName()));
             ResultSet res = preparedStatement.executeQuery();
             for (int i = 0; i < TOP_SIZE; i++) {
                 if (res.next()) {
@@ -421,9 +453,9 @@ public class MySQLStorage implements SQLDatabase {
         }
     }
 
-    private void setDefaultStatsParams(CallableStatement callableStatement, String id, String server) throws SQLException {
+    private void setDefaultStatsParams(CallableStatement callableStatement, String id, GameType gameType) throws SQLException {
         callableStatement.setString(1, id);
-        callableStatement.setString(2, trimServerName(server));
+        callableStatement.setString(2, trimServerName(gameType.getGameName()));
         callableStatement.setLong(3, 0);
         callableStatement.setLong(4, 0);
         callableStatement.setLong(5, 0);

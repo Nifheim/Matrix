@@ -1,7 +1,5 @@
-package com.github.beelzebu.matrix;
+package com.github.beelzebu.matrix.api;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -12,23 +10,29 @@ import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
-import com.github.beelzebu.matrix.database.MongoStorage;
-import com.github.beelzebu.matrix.database.MySQLStorage;
+import com.github.beelzebu.matrix.database.StorageImpl;
 import com.github.beelzebu.matrix.dependency.DependencyManager;
 import com.github.beelzebu.matrix.dependency.DependencyRegistry;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
 import com.github.beelzebu.matrix.messaging.RedisMessaging;
+import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Set;
 import java.util.UUID;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 /**
@@ -36,38 +40,48 @@ import net.md_5.bungee.api.chat.TextComponent;
  */
 public abstract class MatrixAPIImpl extends MatrixAPI {
 
+    public static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(ChatColor.class, new TypeAdapter<ChatColor>() {
+        public void write(JsonWriter out, ChatColor value) throws IOException {
+            out.value(value.name());
+        }
+
+        public ChatColor read(JsonReader in) throws IOException {
+            return ChatColor.valueOf(in.nextString());
+        }
+    }).setDateFormat("MMM dd, yyyy h:mm:ss aa").create();
     public static final String DOMAIN_NAME = "mc.indiopikaro.net";
-    public static final Set<String> DOMAIN_NAMES = ImmutableSet.of("indiopikaro.cl", "indiopikaro.net", "indiopikaro.com", "mineperu.net", "mineperu.com", "pixelnetwork.net");
+    public static final Set<String> DOMAIN_NAMES = ImmutableSet.of("indiopikaro.cl", "indiopikaro.net", "indiopikaro.com", "mineperu.net", "mineperu.com", "pixelnetwork.net", "osornorp.cl", "onyxmc.net", "mag3.gg", "chiletumare.cl");
     private final MatrixPlugin plugin;
-    private final MongoStorage database;
+    private final StorageImpl database;
     private final RedisManager redisManager;
     private final RedisMessaging messaging;
     private final CacheProviderImpl cache;
     private final ServerInfo serverInfo;
-    private final MySQLStorage mySQLStorage;
     private final MaintenanceManager maintenanceManager;
 
     public MatrixAPIImpl(MatrixPlugin plugin) {
+        Matrix.GSON = GSON;
         this.plugin = plugin;
         plugin.getDataFolder().mkdirs();
         DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
         dependencyManager.loadInternalDependencies();
-        database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
+        database = new StorageImpl(this);
+        //database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
         redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
         messaging = new RedisMessaging(redisManager, plugin::runAsync);
         cache = new CacheProviderImpl(redisManager);
-        mySQLStorage = new MySQLStorage(this, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
+        //mySQLStorage = new MySQLStorage(this, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
         Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
         maintenanceManager = new MaintenanceManager(redisManager);
         if (plugin.getConfig().getString("server-info.game-mode") == null) {
             Matrix.getLogger().info("server-info.game-mode config option is missing, please add it to config.yml");
         }
         Matrix.setAPI(this);
-        serverInfo = new ServerInfo(
+        serverInfo = new ServerInfoImpl(
                 GameType.valueOf(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
                 plugin.getConfig().getString("server-info.group", null),
-                plugin.getConfig().get("server-info.game-mode") != null ? GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode")) : null
+                plugin.getConfig().get("server-info.game-mode") != null ? GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode").toUpperCase()) : null
         );
     }
 
@@ -83,21 +97,20 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         return maintenanceManager;
     }
 
+    @Override
     public RedisMessaging getMessaging() {
         return messaging;
     }
+
+    @Override
 
     public CacheProviderImpl getCache() {
         return cache;
     }
 
-    public MongoStorage getDatabase() {
-        return database;
-    }
-
     @Override
-    public MySQLStorage getSQLDatabase() {
-        return mySQLStorage;
+    public StorageImpl getDatabase() {
+        return database;
     }
 
     public MatrixPlugin getPlugin() {

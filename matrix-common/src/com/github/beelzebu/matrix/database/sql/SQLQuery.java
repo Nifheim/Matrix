@@ -1,7 +1,5 @@
 package com.github.beelzebu.matrix.database.sql;
 
-import com.github.beelzebu.matrix.database.MySQLStorage;
-
 /**
  * @author Beelzebu
  */
@@ -46,21 +44,21 @@ public enum SQLQuery {
     SELECT_DEATHS_MONTHLY("SELECT deaths FROM matrix_stats_monthly WHERE id = ? AND server = ?"),
     SELECT_BLOCKS_BROKEN_MONTHLY("SELECT blocksBroken FROM matrix_stats_monthly WHERE id = ? AND server = ?"),
     SELECT_BLOCKS_PLACED_MONTHLY("SELECT blocksPlaced FROM matrix_stats_monthly WHERE id = ? AND server = ?"),
-    SELECT_KILLS_TOP_TOTAL("SELECT kills, id FROM matrix_stats_total WHERE server = ? ORDER BY kills DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_MOB_KILLS_TOP_TOTAL("SELECT mobKills, id FROM matrix_stats_total WHERE server = ? ORDER BY mobKills DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_DEATHS_TOP_TOTAL("SELECT deaths, id FROM matrix_stats_total WHERE server = ? ORDER BY deaths DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_BLOCKS_BROKEN_TOP_TOTAL("SELECT blocksBroken, id FROM matrix_stats_total WHERE server = ? ORDER BY blocksBroken DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_BLOCKS_PLACED_TOP_TOTAL("SELECT blocksPlaced, id FROM matrix_stats_total WHERE server = ? ORDER BY blocksPlaced DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_KILLS_TOP_WEEKLY("SELECT kills, id FROM matrix_stats_weekly WHERE server = ? ORDER BY kills DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_MOB_KILLS_TOP_WEEKLY("SELECT mobKills, id FROM matrix_stats_weekly WHERE server = ? ORDER BY mobKills DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_DEATHS_TOP_WEEKLY("SELECT deaths, id FROM matrix_stats_weekly WHERE server = ? ORDER BY deaths DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_BLOCKS_BROKEN_TOP_WEEKLY("SELECT blocksBroken, id FROM matrix_stats_weekly WHERE server = ? ORDER BY blocksBroken DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_BLOCKS_PLACED_TOP_WEEKLY("SELECT blocksPlaced, id FROM matrix_stats_weekly WHERE server = ? ORDER BY blocksPlaced DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_KILLS_TOP_MONTHLY("SELECT kills, id FROM matrix_stats_monthly WHERE server = ? ORDER BY kills DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_MOB_KILLS_TOP_MONTHLY("SELECT mobKills, id FROM matrix_stats_monthly WHERE server = ? ORDER BY mobKills DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_DEATHS_TOP_MONTHLY("SELECT deaths, id FROM matrix_stats_monthly WHERE server = ? ORDER BY deaths DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_BLOCKS_BROKEN_TOP_MONTHLY("SELECT blocksBroken, id FROM matrix_stats_monthly WHERE server = ? ORDER BY blocksBroken DESC LIMIT " + MySQLStorage.TOP_SIZE),
-    SELECT_BLOCKS_PLACED_TOP_MONTHLY("SELECT blocksPlaced, id FROM matrix_stats_monthly WHERE server = ? ORDER BY blocksPlaced DESC LIMIT " + MySQLStorage.TOP_SIZE);
+    SELECT_KILLS_TOP_TOTAL("SELECT kills, id FROM matrix_stats_total WHERE server = ? ORDER BY kills DESC LIMIT 10"),
+    SELECT_MOB_KILLS_TOP_TOTAL("SELECT mobKills, id FROM matrix_stats_total WHERE server = ? ORDER BY mobKills DESC LIMIT 10"),
+    SELECT_DEATHS_TOP_TOTAL("SELECT deaths, id FROM matrix_stats_total WHERE server = ? ORDER BY deaths DESC LIMIT 10"),
+    SELECT_BLOCKS_BROKEN_TOP_TOTAL("SELECT blocksBroken, id FROM matrix_stats_total WHERE server = ? ORDER BY blocksBroken DESC LIMIT 10"),
+    SELECT_BLOCKS_PLACED_TOP_TOTAL("SELECT blocksPlaced, id FROM matrix_stats_total WHERE server = ? ORDER BY blocksPlaced DESC LIMIT 10"),
+    SELECT_KILLS_TOP_WEEKLY("SELECT kills, id FROM matrix_stats_weekly WHERE server = ? ORDER BY kills DESC LIMIT 10"),
+    SELECT_MOB_KILLS_TOP_WEEKLY("SELECT mobKills, id FROM matrix_stats_weekly WHERE server = ? ORDER BY mobKills DESC LIMIT 10"),
+    SELECT_DEATHS_TOP_WEEKLY("SELECT deaths, id FROM matrix_stats_weekly WHERE server = ? ORDER BY deaths DESC LIMIT 10"),
+    SELECT_BLOCKS_BROKEN_TOP_WEEKLY("SELECT blocksBroken, id FROM matrix_stats_weekly WHERE server = ? ORDER BY blocksBroken DESC LIMIT 10"),
+    SELECT_BLOCKS_PLACED_TOP_WEEKLY("SELECT blocksPlaced, id FROM matrix_stats_weekly WHERE server = ? ORDER BY blocksPlaced DESC LIMIT 10"),
+    SELECT_KILLS_TOP_MONTHLY("SELECT kills, id FROM matrix_stats_monthly WHERE server = ? ORDER BY kills DESC LIMIT 10"),
+    SELECT_MOB_KILLS_TOP_MONTHLY("SELECT mobKills, id FROM matrix_stats_monthly WHERE server = ? ORDER BY mobKills DESC LIMIT 10"),
+    SELECT_DEATHS_TOP_MONTHLY("SELECT deaths, id FROM matrix_stats_monthly WHERE server = ? ORDER BY deaths DESC LIMIT 10"),
+    SELECT_BLOCKS_BROKEN_TOP_MONTHLY("SELECT blocksBroken, id FROM matrix_stats_monthly WHERE server = ? ORDER BY blocksBroken DESC LIMIT 10"),
+    SELECT_BLOCKS_PLACED_TOP_MONTHLY("SELECT blocksPlaced, id FROM matrix_stats_monthly WHERE server = ? ORDER BY blocksPlaced DESC LIMIT 10");
 
     private final String query;
 

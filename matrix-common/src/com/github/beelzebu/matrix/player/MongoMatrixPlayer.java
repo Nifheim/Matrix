@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.player;
 
-import com.github.beelzebu.matrix.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
@@ -13,6 +13,10 @@ import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import dev.morphia.annotations.Entity;
+import dev.morphia.annotations.Id;
+import dev.morphia.annotations.IndexOptions;
+import dev.morphia.annotations.Indexed;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -29,10 +33,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.IndexOptions;
-import org.mongodb.morphia.annotations.Indexed;
 
 /**
  * @author Beelzebu
@@ -607,7 +607,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             setName(name);
         }
         MatrixAPIImpl api = (MatrixAPIImpl) Matrix.getAPI();
-        api.getDatabase().getUserDAO().save((MongoMatrixPlayer) api.getCache().getPlayer(getUniqueId()).orElse(this));
+        api.getDatabase().save((MongoMatrixPlayer) api.getCache().getPlayer(getUniqueId()).orElse(this));
         return this;
     }
 
@@ -623,22 +623,22 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void saveStats(Map<Statistic, Long> stats) {
-        Matrix.getAPI().getSQLDatabase().incrStats(this, /* using group name here because actual server name may be just an arena server*/Matrix.getAPI().getServerInfo().getGroupName(), stats);
+        Matrix.getAPI().getDatabase().incrStats(this, /* using group name here because actual server name may be just an arena server*/Matrix.getAPI().getServerInfo().getGameType(), stats);
     }
 
     @Override
     public void saveStat(Statistic stat, long value) {
-        Matrix.getAPI().getSQLDatabase().incrStat(this, Matrix.getAPI().getServerInfo().getGroupName(), stat, value);
+        Matrix.getAPI().getDatabase().incrStat(this, Matrix.getAPI().getServerInfo().getGameType(), stat, value);
     }
 
     @Override
     public CompletableFuture<Long> getStat(Statistic statistic) {
-        return getStat(Matrix.getAPI().getServerInfo().getGroupName(), statistic);
+        return getStat(Matrix.getAPI().getServerInfo().getGameType(), statistic);
     }
 
     @Override
-    public CompletableFuture<Long> getStat(String serverGroup, Statistic statistic) {
-        return Matrix.getAPI().getSQLDatabase().getStat(this, serverGroup, statistic);
+    public CompletableFuture<Long> getStat(GameType gameType, Statistic statistic) {
+        return Matrix.getAPI().getDatabase().getStat(this, gameType, statistic);
     }
 
     public void updateCached(String field) {

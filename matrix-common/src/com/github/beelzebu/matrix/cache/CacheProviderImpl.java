@@ -173,8 +173,7 @@ public class CacheProviderImpl implements CacheProvider {
                 cachedPlayer.save();
                 jedis.del(USER_KEY_PREFIX + player.getUniqueId()); // remove it from redis
             } catch (DuplicateKeyException e) {
-                Matrix.getLogger().info("Cached: " + Matrix.GSON.toJson(cachedPlayer));
-                Matrix.getLogger().info("Player: " + Matrix.GSON.toJson(player));
+                e.printStackTrace();
             }
         } catch (JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
