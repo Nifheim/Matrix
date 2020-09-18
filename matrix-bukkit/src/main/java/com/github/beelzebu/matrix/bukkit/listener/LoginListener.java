@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.listener;
 
-import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.GameType;
@@ -72,7 +72,6 @@ public class LoginListener implements Listener {
                 }
             }
         });
-        matrixPlayer.setLastLocale(player.getLocale().split("_")[0]);
         // Later task
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (firstjoin) {

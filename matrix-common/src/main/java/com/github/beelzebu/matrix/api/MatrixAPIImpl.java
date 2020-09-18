@@ -17,6 +17,8 @@ import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
 import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
+import com.github.beelzebu.matrix.task.HeartbeatTask;
+import com.github.beelzebu.matrix.task.ServerCleanupTask;
 import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
 import com.github.beelzebu.matrix.util.RedisManager;
@@ -32,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -151,6 +154,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     protected void setup() {
         loadMessages();
         motd();
+        getScheduler().asyncRepeating(() -> new HeartbeatTask(this), 1, TimeUnit.MINUTES);
     }
 
     private void motd() {

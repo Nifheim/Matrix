@@ -6,6 +6,7 @@ import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,21 @@ public class ServerInfoImpl implements ServerInfo {
         this(gameType, serverType, gameType.getGameName(), gameMode);
     }
 
+    public ServerInfoImpl(String name, Map<String, String> data) {
+        String groupName = data.get("group");
+        GameType gameType = GameType.valueOf(data.get("group"));
+        ServerType serverType = ServerType.valueOf(data.get("gametype"));
+        GameMode gameMode = GameMode.valueOf(data.get("gamemode"));
+        this.gameType = Objects.requireNonNull(gameType, "gameType can't be null");
+        this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
+        this.groupName = Objects.requireNonNull(groupName != null ? groupName : gameType.getGameName(), "groupName can't be null");
+        this.serverName = name;
+        this.gameMode = gameMode;
+    }
+
     private String generateServerName() {
         String name;
-        List<String> servers = Matrix.getAPI().getCache().getServers(groupName).stream().filter(n -> n.startsWith(ServerInfo.formatServerName(groupName, gameType, serverType))).collect(Collectors.toList());
+        List<String> servers = Matrix.getAPI().getCache().getServers(groupName).stream().map(ServerInfo::getServerName).filter(n -> n.startsWith(ServerInfo.formatServerName(groupName, gameType, serverType))).collect(Collectors.toList());
         for (int i = 1; ; ) {
             name = ServerInfo.formatServerName(groupName, gameType, serverType) + i;
             if (!servers.contains(name)) {
@@ -57,7 +70,7 @@ public class ServerInfoImpl implements ServerInfo {
     }
 
     public String getLobbyServer() {
-        return ServerInfo.getLobbyServerName(this.groupName, this.gameType);
+        return ServerInfo.findLobbyForServer(this);
     }
 
     public GameType getGameType() {

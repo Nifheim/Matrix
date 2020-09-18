@@ -44,10 +44,10 @@ import com.github.beelzebu.matrix.bukkit.plugin.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.bukkit.scheduler.BukkitSchedulerAdapter;
 import com.github.beelzebu.matrix.bukkit.util.CompatUtil;
 import com.github.beelzebu.matrix.bukkit.util.PluginsUtility;
-import com.github.beelzebu.matrix.util.ReadURL;
 import com.github.beelzebu.matrix.bukkit.util.bungee.BungeeCleanupTask;
 import com.github.beelzebu.matrix.bukkit.util.bungee.BungeeServerTracker;
 import com.github.beelzebu.matrix.bukkit.util.placeholders.StatsPlaceholders;
+import com.github.beelzebu.matrix.util.ReadURL;
 import java.io.File;
 import java.util.Date;
 import java.util.Objects;
@@ -182,7 +182,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
         for (String ip : localAddresses) {
             if (Objects.equals(Bukkit.getIp(), ip)) {
-                serverRegisterMessage = new ServerRegisterMessage(ip, Bukkit.getPort());
+                serverRegisterMessage = new ServerRegisterMessage(api.getServerInfo(), ip, Bukkit.getPort());
                 break;
             }
         }

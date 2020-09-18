@@ -18,26 +18,25 @@ public class ServerRegisterListener implements RedisMessageListener<ServerRegist
 
     @Override
     public void onMessage(ServerRegisterMessage message) {
-        if (ProxyServer.getInstance().getServers().containsKey(message.getName())) {
-            Matrix.getLogger().info("Server already registered: " + message.getName());
+        if (ProxyServer.getInstance().getServers().containsKey(message.getServerInfo().getServerName())) {
+            Matrix.getLogger().info("Server already registered: " + message.getServerInfo().getServerName());
             return;
         }
-        Matrix.getLogger().info("Adding server: " + message.getName());
-        ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(message.getName(), Util.getAddr(message.getIp() + ":" + message.getPort()), "", false);
+        Matrix.getLogger().info("Adding server: " + message.getServerInfo().getServerName());
+        ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(message.getServerInfo().getServerName(), Util.getAddr(message.getIp() + ":" + message.getPort()), "", false);
         ProxyServer.getInstance().getServers().remove("lobby");
-        Matrix.getAPI().getCache().registerGroup(message.getGroup());
-        Matrix.getAPI().getCache().addServer(message.getGroup(), message.getName());
+        Matrix.getAPI().getCache().addServer(message.getServerInfo());
         for (ServerInfo storedServer : ProxyServer.getInstance().getServers().values()) {
             if (Objects.equals(storedServer.getSocketAddress(), Util.getAddr(message.getIp() + ":" + message.getPort()))) {
                 serverInfo = ProxyServer.getInstance().constructServerInfo(storedServer.getName(), Util.getAddr(message.getIp() + ":" + message.getPort()), "", false);
                 break;
             }
         }
-        ProxyServer.getInstance().getServers().put(message.getName(), serverInfo);
-        if (message.getName().startsWith("auth")) {
+        ProxyServer.getInstance().getServers().put(message.getServerInfo().getServerName(), serverInfo);
+        if (message.getServerInfo().getServerName().startsWith("auth")) {
             Collection<ListenerInfo> listenerInfos = ProxyServer.getInstance().getConfig().getListeners();
             for (ListenerInfo listenerInfo : listenerInfos) {
-                listenerInfo.getServerPriority().add(message.getName());
+                listenerInfo.getServerPriority().add(message.getServerInfo().getServerName());
                 listenerInfo.getServerPriority().removeIf(server -> !server.toLowerCase().contains("auth"));
             }
         }

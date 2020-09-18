@@ -3,6 +3,7 @@ package com.github.beelzebu.matrix.bungee.listener;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.SpamUtils;
 import com.google.common.cache.Cache;
@@ -134,7 +135,7 @@ public class ChatListener implements Listener {
         }
         if (e.getSender() instanceof ProxiedPlayer) {
             for (String group : disabledServerGroups) {
-                Set<String> servers = api.getCache().getServers(group);
+                Set<String> servers = api.getCache().getServers(group).stream().map(ServerInfo::getServerName).collect(Collectors.toSet());
                 if (servers.contains(((ProxiedPlayer) e.getSender()).getServer().getInfo().getName())) {
                     return;
                 }

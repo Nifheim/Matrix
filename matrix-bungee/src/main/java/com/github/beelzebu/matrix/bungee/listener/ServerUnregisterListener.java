@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
 import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
+import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.bungee.util.ServerUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -17,23 +18,18 @@ public class ServerUnregisterListener implements RedisMessageListener<ServerUnre
 
     @Override
     public void onMessage(ServerUnregisterMessage message) {
-        Matrix.getLogger().info("Received unregister message for server: " + message.getName());
-        if (!message.getName().startsWith("auth")) {
-            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(message.getName());
+        Matrix.getLogger().info("Received unregister message for server: " + message.getServerInfo().getServerName());
+        if (message.getServerInfo().getServerType() != ServerType.AUTH) {
+            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(message.getServerInfo().getServerName());
             if (serverInfo != null) {
                 for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
                     proxiedPlayer.connect(ServerUtil.getRandomLobby(serverInfo.getName()), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
                 }
             }
         }
-        ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().removeIf(server -> server.equals(message.getName())));
-        ProxyServer.getInstance().getServers().remove(message.getName());
-        Matrix.getAPI().getCache().removeServer(message.getName());
-        Matrix.getAPI().getCache().getAllServers().values().forEach(group -> group.forEach(server -> {
-            if (ProxyServer.getInstance().getServerInfo(server) == null) {
-                Matrix.getAPI().getCache().removeServer(server);
-            }
-        }));
+        ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().removeIf(server -> server.equals(message.getServerInfo().getServerName())));
+        ProxyServer.getInstance().getServers().remove(message.getServerInfo().getServerName());
+        Matrix.getAPI().getCache().removeServer(message.getServerInfo());
     }
 
     @Override

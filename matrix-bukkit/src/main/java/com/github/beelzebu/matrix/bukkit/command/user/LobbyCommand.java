@@ -3,7 +3,6 @@ package com.github.beelzebu.matrix.bukkit.command.user;
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.google.common.io.ByteArrayDataOutput;
@@ -30,7 +29,7 @@ public class LobbyCommand extends MatrixCommand {
             out.writeUTF("Connect");
             String lobbyServer = api.getServerInfo().getLobbyServer();
             if (Objects.equals(lobbyServer, api.getServerInfo().getServerName())) {
-                out.writeUTF(ServerInfo.getLobbyServerName(ServerInfoImpl.MAIN_LOBBY_GROUP, GameType.NONE));
+                out.writeUTF(ServerInfo.findLobbyForGroup(ServerInfoImpl.MAIN_LOBBY_GROUP).orElse(api.getServerInfo().getLobbyServer()));
             } else {
                 out.writeUTF(api.getServerInfo().getLobbyServer());
             }

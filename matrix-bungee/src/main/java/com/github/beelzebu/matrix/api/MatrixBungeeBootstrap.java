@@ -21,6 +21,7 @@ import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.bungee.influencer.InfluencerManager;
 import com.github.beelzebu.matrix.bungee.listener.AuthListener;
 import com.github.beelzebu.matrix.bungee.listener.ChatListener;
+import com.github.beelzebu.matrix.bungee.listener.LocaleListener;
 import com.github.beelzebu.matrix.bungee.listener.LoginFieldUpdateListener;
 import com.github.beelzebu.matrix.bungee.listener.LoginListener;
 import com.github.beelzebu.matrix.bungee.listener.PermissionListener;
@@ -31,6 +32,7 @@ import com.github.beelzebu.matrix.bungee.motd.MotdManager;
 import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.scheduler.BungeeSchedulerAdapter;
 import com.github.beelzebu.matrix.bungee.tablist.TablistManager;
+import com.github.beelzebu.matrix.task.ServerCleanupTask;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -75,6 +77,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerListener(new ServerListListener(this, config.getStringList("Motd Hover").toArray(new String[0])));
         registerListener(new LoginListener(this));
         registerListener(new AuthListener());
+        registerListener(new LocaleListener());
         registerCommand(new HelpOpCommand(this));
         registerCommand(new PlayerInfoCommand(this));
         registerCommand(new MaintenanceCommand(api));
@@ -122,6 +125,8 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         for (ProxiedPlayer proxiedPlayer : getProxy().getPlayers()) {
             proxiedPlayer.setTabHeader(TablistManager.getTabHeader(proxiedPlayer), TablistManager.getTabFooter(proxiedPlayer));
         }
+
+        getScheduler().asyncRepeating(() -> new ServerCleanupTask(api), 5, TimeUnit.MINUTES);
     }
 
     @Override

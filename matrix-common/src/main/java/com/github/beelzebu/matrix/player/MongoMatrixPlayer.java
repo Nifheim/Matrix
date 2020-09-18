@@ -307,7 +307,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.isNull(lastLocale)) {
             return;
         }
-        setLastLocale(lastLocale.getISO3Language());
+        setLastLocale(lastLocale.getLanguage());
     }
 
     @Override
