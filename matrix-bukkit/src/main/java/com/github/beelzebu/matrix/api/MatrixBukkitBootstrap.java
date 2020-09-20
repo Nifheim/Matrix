@@ -128,9 +128,10 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             getLogger().warning("Can't init a CompatUtil instance.");
             Bukkit.shutdown();
         }
-        api.setup();
 
         scheduler = new BukkitSchedulerAdapter(this);
+
+        api.setup();
 
         if (Objects.equals(api.getServerInfo().getServerName(), "lobby")) {
             getLogger().warning("Invalid server name in config, lobby servers must be enumerated.");

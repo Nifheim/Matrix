@@ -67,6 +67,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
             }
         }
         config = new BungeeConfiguration(configFile);
+        scheduler = new BungeeSchedulerAdapter(this);
         (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this))).setup();
     }
 
@@ -114,8 +115,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         api.getMessaging().registerListener(new ServerUnregisterListener());
         api.getMessaging().registerListener(new LoginFieldUpdateListener(this));
         new ServerRequestMessage().send();
-
-        scheduler = new BungeeSchedulerAdapter(this);
 
         influencerManager = new InfluencerManager(this);
         influencerManager.loadInfluencers();

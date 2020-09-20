@@ -18,13 +18,14 @@ import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
 import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.task.HeartbeatTask;
-import com.github.beelzebu.matrix.task.ServerCleanupTask;
 import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -50,6 +51,28 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
         public ChatColor read(JsonReader in) throws IOException {
             return ChatColor.valueOf(in.nextString());
+        }
+    }).registerTypeAdapter(ServerInfo.class, new TypeAdapter<ServerInfo>() {
+        @Override
+        public void write(JsonWriter out, ServerInfo value) throws IOException {
+            out.beginObject().name("groupName").value(value.getGroupName())
+                    .name("serverName").value(value.getServerName())
+                    .name("gameType").value(value.getGameType().toString())
+                    .name("serverType").value(value.getServerType().name())
+                    .name("gameMode").value(value.getDefaultGameMode().toString())
+                    .endObject();
+        }
+
+        @Override
+        public ServerInfo read(JsonReader in) throws IOException {
+            JsonObject jsonObject = new JsonParser().parse(in).getAsJsonObject();
+            return new ServerInfoImpl(
+                    GameType.valueOf(jsonObject.get("gameType").getAsString()),
+                    ServerType.valueOf(jsonObject.get("serverType").getAsString()),
+                    jsonObject.get("groupName").getAsString(),
+                    jsonObject.get("serverName").getAsString(),
+                    GameMode.valueOf(jsonObject.get("gameMode").getAsString())
+            );
         }
     }).setDateFormat("MMM dd, yyyy h:mm:ss aa").create();
     public static final String DOMAIN_NAME = "mc.indiopikaro.net";

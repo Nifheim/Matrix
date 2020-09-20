@@ -27,14 +27,24 @@ public class ServerInfoImpl implements ServerInfo {
         this.gameMode = gameMode == null ? (serverType == ServerType.SURVIVAL ? GameMode.SURVIVAL : GameMode.ADVENTURE) : gameMode;
     }
 
+    @Deprecated
+    public ServerInfoImpl(GameType gameType, ServerType serverType, String groupName, String serverName, GameMode gameMode) {
+        this.gameType = Objects.requireNonNull(gameType, "gameType can't be null");
+        this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
+        this.groupName = Objects.requireNonNull(groupName != null ? groupName : gameType.getGameName(), "groupName can't be null");
+        this.serverName = serverName;
+        this.gameMode = gameMode == null ? (serverType == ServerType.SURVIVAL ? GameMode.SURVIVAL : GameMode.ADVENTURE) : gameMode;
+    }
+
     public ServerInfoImpl(GameType gameType, ServerType serverType, GameMode gameMode) {
         this(gameType, serverType, gameType.getGameName(), gameMode);
     }
 
+    @Deprecated
     public ServerInfoImpl(String name, Map<String, String> data) {
         String groupName = data.get("group");
-        GameType gameType = GameType.valueOf(data.get("group"));
-        ServerType serverType = ServerType.valueOf(data.get("gametype"));
+        GameType gameType = GameType.valueOf(data.get("gametype"));
+        ServerType serverType = ServerType.valueOf(data.get("servertype"));
         GameMode gameMode = GameMode.valueOf(data.get("gamemode"));
         this.gameType = Objects.requireNonNull(gameType, "gameType can't be null");
         this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");

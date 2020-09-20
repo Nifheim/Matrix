@@ -307,7 +307,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     private ServerInfo getServerInfo(String name, Map<String, String> data) {
-        return new ServerInfoImpl(name, data);
+        return new ServerInfoImpl(name.replaceFirst(SERVER_INFO_KEY_PREFIX, ""), data);
     }
 
     @Override
@@ -344,6 +344,7 @@ public class CacheProviderImpl implements CacheProvider {
                 pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group", serverInfo.getGroupName());
                 pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "gametype", serverInfo.getGameType().toString());
                 pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "gamemode", serverInfo.getDefaultGameMode().toString());
+                pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "servertype", serverInfo.getServerType().name());
                 pipeline.sync();
             }
         }
@@ -359,12 +360,6 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void heartbeat(ServerInfo serverInfo) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
-            if (!jedis.exists(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName())) {
-                return;
-            }
-            if (!jedis.hexists(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group")) {
-                return;
-            }
             jedis.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "heartbeat", String.valueOf(System.currentTimeMillis()));
         }
     }
@@ -372,9 +367,6 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public long getLastHeartbeat(ServerInfo serverInfo) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
-            if (!jedis.exists(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName())) {
-                return 0;
-            }
             if (!jedis.hexists(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group")) {
                 return 0;
             }

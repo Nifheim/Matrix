@@ -45,7 +45,7 @@ public class BungeeSchedulerAdapter implements SchedulerAdapter {
 
     @Override
     public SchedulerTask asyncRepeating(Runnable task, long interval, TimeUnit unit) {
-        ScheduledTask t = this.bootstrap.getProxy().getScheduler().schedule(this.bootstrap, task, interval, interval, unit);
+        ScheduledTask t = this.bootstrap.getProxy().getScheduler().schedule(this.bootstrap, task, 0, interval, unit);
         this.tasks.add(t);
         return t::cancel;
     }
