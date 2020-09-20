@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.bungee.command;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.ArrayList;
