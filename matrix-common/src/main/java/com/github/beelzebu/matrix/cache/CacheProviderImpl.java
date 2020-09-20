@@ -264,6 +264,10 @@ public class CacheProviderImpl implements CacheProvider {
                 for (String key : scan.getResult()) {
                     try {
                         ServerInfo serverInfo = getServerInfo(key, jedis.hgetAll(key));
+                        if (serverInfo == null) {
+                            jedis.del(key);
+                            continue;
+                        }
                         servers.computeIfAbsent(serverInfo.getGroupName(), k -> new HashSet<>()).add(serverInfo);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
@@ -288,6 +292,10 @@ public class CacheProviderImpl implements CacheProvider {
                 for (String key : scan.getResult()) {
                     try {
                         ServerInfo serverInfo = getServerInfo(key, jedis.hgetAll(key));
+                        if (serverInfo == null) {
+                            jedis.del(key);
+                            continue;
+                        }
                         servers.add(serverInfo);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
@@ -303,6 +311,9 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     private ServerInfo getServerInfo(String name, Map<String, String> data) {
+        if (data.isEmpty()) {
+            return null;
+        }
         return new ServerInfoImpl(name.replaceFirst(SERVER_INFO_KEY_PREFIX, ""), data);
     }
 
