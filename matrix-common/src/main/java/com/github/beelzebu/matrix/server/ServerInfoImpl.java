@@ -43,9 +43,9 @@ public class ServerInfoImpl implements ServerInfo {
     @Deprecated
     public ServerInfoImpl(String name, Map<String, String> data) {
         String groupName = data.get("group");
-        GameType gameType = GameType.valueOf(data.get("gametype"));
-        ServerType serverType = ServerType.valueOf(data.get("servertype"));
-        GameMode gameMode = GameMode.valueOf(data.get("gamemode"));
+        GameType gameType = GameType.getByName(Objects.requireNonNull(data.get("gametype")));
+        ServerType serverType = ServerType.valueOf(Objects.requireNonNull(data.get("servertype")));
+        GameMode gameMode = GameMode.valueOf(Objects.requireNonNull(data.get("gamemode")));
         this.gameType = Objects.requireNonNull(gameType, "gameType can't be null");
         this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
         this.groupName = Objects.requireNonNull(groupName != null ? groupName : gameType.getGameName(), "groupName can't be null");

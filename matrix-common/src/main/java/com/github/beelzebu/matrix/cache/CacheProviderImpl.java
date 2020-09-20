@@ -314,7 +314,13 @@ public class CacheProviderImpl implements CacheProvider {
         if (data.isEmpty()) {
             return null;
         }
-        return new ServerInfoImpl(name.replaceFirst(SERVER_INFO_KEY_PREFIX, ""), data);
+        try {
+            return new ServerInfoImpl(name.replaceFirst(SERVER_INFO_KEY_PREFIX, ""), data);
+        } catch (NullPointerException e) {
+            Matrix.getLogger().info("Error generating server info from redis hash for: " + name);
+            Matrix.getLogger().debug(e);
+            return null;
+        }
     }
 
     @Override
@@ -367,6 +373,9 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void heartbeat(ServerInfo serverInfo) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
+            if (!jedis.hexists(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group")) {
+                throw new RuntimeException("Server doesn't have a group, cancelling heartbeat.");
+            }
             jedis.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "heartbeat", String.valueOf(System.currentTimeMillis()));
         }
     }

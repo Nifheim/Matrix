@@ -4,7 +4,6 @@ import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
-import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
@@ -163,10 +162,6 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         Matrix.getLogger().info("Reloaded config and messages.");
     }
 
-    public final SchedulerAdapter getScheduler() {
-        return plugin.getBootstrap().getScheduler();
-    }
-
     public RedisManager getRedisManager() {
         return redisManager;
     }
@@ -177,7 +172,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     protected void setup() {
         loadMessages();
         motd();
-        getScheduler().asyncRepeating(() -> new HeartbeatTask(this), 1, TimeUnit.MINUTES);
+        plugin.getBootstrap().getScheduler().asyncRepeating(new HeartbeatTask(this), 1, TimeUnit.MINUTES);
     }
 
     private void motd() {

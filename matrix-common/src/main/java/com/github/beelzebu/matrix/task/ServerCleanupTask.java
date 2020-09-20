@@ -1,5 +1,6 @@
 package com.github.beelzebu.matrix.task;
 
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,14 +29,17 @@ public class ServerCleanupTask implements Runnable {
                 if (slowHeartbeats.get(serverInfo.getServerName()) <= System.currentTimeMillis() - DEAD_HEARTBEAT) {
                     slowHeartbeats.remove(serverInfo.getServerName());
                     api.getCache().removeServer(serverInfo);
+                    Matrix.getLogger().info("Removed " + serverInfo.getServerName() + " since heartbeat is dead");
                 } else {
                     if (heartbeat < System.currentTimeMillis() - NORMAL_HEARTBEAT) {
                         slowHeartbeats.remove(serverInfo.getServerName());
+                        Matrix.getLogger().info(serverInfo.getServerName() + " has a normal heartbeat, removed from slow heartbeats");
                     }
                 }
             }
             if (heartbeat < System.currentTimeMillis() - SLOW_HEARTBEAT) {
                 slowHeartbeats.put(serverInfo.getServerName(), heartbeat);
+                Matrix.getLogger().info(serverInfo.getServerName() + " has a slow heartbeat");
             }
         }));
     }

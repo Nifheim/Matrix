@@ -133,10 +133,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
         api.setup();
 
-        if (Objects.equals(api.getServerInfo().getServerName(), "lobby")) {
-            getLogger().warning("Invalid server name in config, lobby servers must be enumerated.");
-            Bukkit.shutdown();
-        }
         // Load things
         loadManagers();
 
