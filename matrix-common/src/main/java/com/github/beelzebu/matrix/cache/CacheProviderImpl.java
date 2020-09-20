@@ -264,11 +264,8 @@ public class CacheProviderImpl implements CacheProvider {
                 for (String key : scan.getResult()) {
                     try {
                         ServerInfo serverInfo = getServerInfo(key, jedis.hgetAll(key));
-                        servers.computeIfAbsent(serverInfo.getGroupName(), k -> {
-                            Set<ServerInfo> serverInfos = new HashSet<>();
-                            serverInfos.add(serverInfo);
-                            return serverInfos;
-                        });
+                        servers.get(serverInfo.getGroupName()).add(serverInfo);
+                        servers.computeIfAbsent(serverInfo.getGroupName(), k -> new HashSet<>()).add(serverInfo);
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }
