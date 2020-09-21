@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
+import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 
 /**

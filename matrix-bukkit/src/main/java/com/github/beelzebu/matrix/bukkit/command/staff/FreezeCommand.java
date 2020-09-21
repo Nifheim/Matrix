@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
+import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.Titles;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;

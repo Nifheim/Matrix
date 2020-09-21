@@ -1,15 +1,14 @@
 package com.github.beelzebu.matrix.bukkit.menus;
 
-import com.github.beelzebu.matrix.bukkit.util.SkullCreator;
-import com.github.beelzebu.matrix.api.ItemBuilder;
+import cl.indiopikaro.bukkitutil.api.ItemBuilder;
+import cl.indiopikaro.bukkitutil.api.menu.BaseMenu;
+import cl.indiopikaro.bukkitutil.util.CompatUtil;
+import cl.indiopikaro.bukkitutil.util.SkullCreator;
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.menu.BaseGUI;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.bukkit.util.CompatUtil;
 import com.github.beelzebu.matrix.bukkit.util.placeholders.Placeholders;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,9 +23,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 /**
  * @author Beelzebu
  */
-public class ProfileGUI extends BaseGUI {
+public class ProfileGUI extends BaseMenu {
 
-    private static final MatrixAPI api = Matrix.getAPI();
     private final MatrixPlayer matrixPlayer;
     private final Set<Item> items = new HashSet<>();
     private final String locale;

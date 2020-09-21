@@ -1,11 +1,12 @@
 package com.github.beelzebu.matrix.bukkit.menus;
 
-import com.github.beelzebu.matrix.api.ItemBuilder;
+import cl.indiopikaro.bukkitutil.api.ItemBuilder;
+import cl.indiopikaro.bukkitutil.api.menu.BaseMenu;
+import cl.indiopikaro.bukkitutil.util.CompatUtil;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.menu.BaseGUI;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.ServerType;
@@ -13,7 +14,6 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.player.options.FlyOption;
 import com.github.beelzebu.matrix.player.options.Option;
 import com.github.beelzebu.matrix.player.options.SpeedOption;
-import com.github.beelzebu.matrix.bukkit.util.CompatUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,7 +27,7 @@ import org.bukkit.potion.PotionEffectType;
 /**
  * @author Beelzebu
  */
-public class OptionsGUI extends BaseGUI {
+public class OptionsGUI extends BaseMenu {
 
     private final MatrixAPI api = Matrix.getAPI();
     private final MatrixPlayer matrixPlayer;

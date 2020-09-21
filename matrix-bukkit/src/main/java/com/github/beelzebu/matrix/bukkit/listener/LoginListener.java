@@ -1,5 +1,6 @@
 package com.github.beelzebu.matrix.bukkit.listener;
 
+import cl.indiopikaro.bukkitutil.util.CompatUtil;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
@@ -8,7 +9,6 @@ import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
-import com.github.beelzebu.matrix.bukkit.util.CompatUtil;
 import com.github.beelzebu.matrix.util.PermsUtils;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.util.HashMap;
