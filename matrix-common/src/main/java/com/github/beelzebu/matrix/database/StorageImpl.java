@@ -442,7 +442,7 @@ public class StorageImpl implements MatrixDatabase {
                     String id = res.getString("id");
                     MatrixPlayer matrixPlayer = api.getDatabase().getPlayerById(id);
                     if (matrixPlayer == null) {
-                        Matrix.getLogger().warn("Player with '" + id + "' can not be found on database.");
+                        Matrix.getLogger().warn("Player with id '" + id + "' can not be found on database.");
                         continue;
                     }
                     topEntries[i] = new TopEntry(id, matrixPlayer.getName(), res.getInt(1), i);
