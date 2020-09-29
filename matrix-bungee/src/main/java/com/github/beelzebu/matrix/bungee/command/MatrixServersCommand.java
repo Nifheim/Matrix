@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -29,7 +30,8 @@ public class MatrixServersCommand extends Command {
     public void execute(CommandSender commandSender, String[] args) {
         Map<String, Set<ServerInfo>> servers = Matrix.getAPI().getCache().getAllServers();
         List<BaseComponent[]> components = new ArrayList<>();
-        components.add(TextComponent.fromLegacyText(StringUtils.replace("&6Jugadores en linea: &a" + ProxyServer.getInstance().getPlayers().size())));
+        Set<UUID> onlinePlayers = Matrix.getAPI().getCache().getOnlinePlayers();
+        components.add(TextComponent.fromLegacyText(StringUtils.replace("&6Jugadores en linea: &a" + onlinePlayers.size())));
         for (Map.Entry<String, Set<ServerInfo>> ent : servers.entrySet()) {
             int groupCount = 0;
             for (ServerInfo server : ent.getValue()) {

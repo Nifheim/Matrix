@@ -201,6 +201,72 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
+    public Set<UUID> getOnlinePlayersInServer(String server) {
+        Set<UUID> uniqueIds = new HashSet<>();
+        try (Jedis jedis = redisManager.getPool().getResource()) {
+            String cursor = ScanParams.SCAN_POINTER_START;
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            do {
+                for (String playerKey : scan.getResult()) {
+                    try {
+                        UUID uniqueId = UUID.fromString(playerKey.split(":")[1]);
+                        if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
+                            continue;
+                        }
+                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "loggedIn").equals("true")) {
+                            continue;
+                        }
+                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "lastServerName").equals(server)) {
+                            continue;
+                        }
+                        uniqueIds.add(uniqueId);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                }
+                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+        } catch (JedisException ex) {
+            Matrix.getLogger().log("An error has occurred getting online players from cache.");
+            Matrix.getLogger().debug(ex);
+        }
+        return uniqueIds;
+    }
+
+    @Override
+    public Set<UUID> getOnlinePlayersInGroup(String group) {
+        Set<UUID> uniqueIds = new HashSet<>();
+        try (Jedis jedis = redisManager.getPool().getResource()) {
+            String cursor = ScanParams.SCAN_POINTER_START;
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            do {
+                for (String playerKey : scan.getResult()) {
+                    try {
+                        UUID uniqueId = UUID.fromString(playerKey.split(":")[1]);
+                        if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
+                            continue;
+                        }
+                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "loggedIn").equals("true")) {
+                            continue;
+                        }
+                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "lastServerGroup").equals(group)) {
+                            continue;
+                        }
+                        uniqueIds.add(uniqueId);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                }
+                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+        } catch (JedisException ex) {
+            Matrix.getLogger().log("An error has occurred getting online players from cache.");
+            Matrix.getLogger().debug(ex);
+        }
+        return uniqueIds;
+    }
+
+    @Override
     public void removePlayer(MatrixPlayer player) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
             MongoMatrixPlayer cachedPlayer = (MongoMatrixPlayer) getPlayer(player.getUniqueId()).orElse(player);
@@ -310,6 +376,17 @@ public class CacheProviderImpl implements CacheProvider {
         return servers;
     }
 
+    @Override
+    public ServerInfo getServer(String name) {
+        try (Jedis jedis = redisManager.getPool().getResource()) {
+            if (jedis.exists(SERVER_INFO_KEY_PREFIX + name)) {
+                return getServerInfo(name, jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name));
+            }
+        }
+        return null;
+    }
+
+    @SuppressWarnings("deprecation")
     private ServerInfo getServerInfo(String name, Map<String, String> data) {
         if (data.isEmpty()) {
             return null;
@@ -321,24 +398,6 @@ public class CacheProviderImpl implements CacheProvider {
             Matrix.getLogger().debug(e);
             return null;
         }
-    }
-
-    @Override
-    public boolean isGroupRegistered(String group) {
-        try (Jedis jedis = redisManager.getPool().getResource()) {
-            String cursor = ScanParams.SCAN_POINTER_START;
-            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + group + "*").count(Integer.MAX_VALUE));
-            do {
-                if (!scan.getResult().isEmpty()) {
-                    return true;
-                }
-                scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + group + "*").count(Integer.MAX_VALUE));
-            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
-        } catch (JedisException ex) {
-            Matrix.getLogger().log("An error has occurred getting all servers from cache.");
-            Matrix.getLogger().debug(ex);
-        }
-        return false;
     }
 
     @Override
@@ -354,11 +413,7 @@ public class CacheProviderImpl implements CacheProvider {
                 // gametype  : string
                 // gamemode  : string
                 // heartbeat : long
-                pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group", serverInfo.getGroupName());
-                pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "gametype", serverInfo.getGameType().toString());
-                pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "gamemode", serverInfo.getDefaultGameMode().toString());
-                pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "servertype", serverInfo.getServerType().name());
-                pipeline.sync();
+                setPipelineBasicHeartbeat(serverInfo, pipeline);
             }
         }
     }
@@ -372,22 +427,32 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void heartbeat(ServerInfo serverInfo) {
-        try (Jedis jedis = redisManager.getPool().getResource()) {
-            if (!jedis.hexists(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group")) {
-                throw new RuntimeException("Server doesn't have a group, cancelling heartbeat.");
-            }
-            jedis.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "heartbeat", String.valueOf(System.currentTimeMillis()));
+        try (Jedis jedis = redisManager.getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
+            pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "heartbeat", String.valueOf(System.currentTimeMillis()));
+            setPipelineBasicHeartbeat(serverInfo, pipeline);
         }
+    }
+
+    private void setPipelineBasicHeartbeat(ServerInfo serverInfo, Pipeline pipeline) {
+        pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group", serverInfo.getGroupName());
+        pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "gametype", serverInfo.getGameType().getGameName());
+        pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "gamemode", serverInfo.getDefaultGameMode().toString());
+        pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "servertype", serverInfo.getServerType().name());
+        pipeline.sync();
     }
 
     @Override
     public long getLastHeartbeat(ServerInfo serverInfo) {
         try (Jedis jedis = redisManager.getPool().getResource()) {
-            if (!jedis.hexists(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group")) {
-                return 0;
-            }
             return Long.parseLong(jedis.hget(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "heartbeat"));
+        } catch (NumberFormatException e) {
+            Matrix.getLogger().info("Error getting heartbeat for: " + serverInfo.getServerName());
+            try (Jedis jedis = redisManager.getPool().getResource()) {
+                jedis.hgetAll(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName()).forEach((k, v) -> Matrix.getLogger().info(k + ":" + v));
+            }
+            Matrix.getLogger().debug(e);
         }
+        return 0;
     }
 
     @Override

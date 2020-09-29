@@ -7,6 +7,11 @@ buildscript {
     subprojects {
         apply plugin: 'java-library'
 
+        configurations.all {
+            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+            resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+        }
+
         repositories {
             mavenCentral()
             mavenLocal()

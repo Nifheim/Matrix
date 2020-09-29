@@ -68,7 +68,9 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         }
         config = new BungeeConfiguration(configFile);
         scheduler = new BungeeSchedulerAdapter(this);
-        (api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this))).setup();
+        api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this));
+        api.getCache().addServer(api.getServerInfo()); // add proxy to server cache since it doesn't get registered
+        api.setup();
     }
 
     @Override
@@ -125,14 +127,14 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
             proxiedPlayer.setTabHeader(TablistManager.getTabHeader(proxiedPlayer), TablistManager.getTabFooter(proxiedPlayer));
         }
 
-        api.getCache().addServer(api.getServerInfo()); // add proxy to server cache since it doesn't get registered
         getScheduler().asyncRepeating(new ServerCleanupTask(api), 5, TimeUnit.MINUTES);
     }
 
     @Override
     public void onDisable() {
+        api.getCache().removeServer(api.getServerInfo());
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().set(0, "lobby"));
-        api.getPlayers().forEach(MatrixPlayer::save);
+        api.getPlayers().stream().peek(matrixPlayer -> matrixPlayer.setLoggedIn(false)).forEach(MatrixPlayer::save);
         api.getPlayers().clear();
         api.getCache().shutdown();
         api.getMessaging().shutdown();

@@ -103,37 +103,26 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public boolean isOnline(String name, boolean here) {
-        try {
-            return ProxyServer.getInstance().getPlayer(name) != null;
-
-        } catch (Exception e) {
-            return false;
-        }/*
-        if (!here) {
-            return RedisBungee.getApi().isPlayerOnline(RedisBungee.getApi().getUuidFromName(name));
-        } else {
-            return ProxyServer.getInstance().getPlayer(name) != null;
-        }*/
+        return isOnline(here, ProxyServer.getInstance().getPlayer(name), Matrix.getAPI().getPlayer(name));
     }
 
     @Override
     public boolean isOnline(UUID uuid, boolean here) {
-        try {
-            ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uuid);
-            return proxiedPlayer != null && proxiedPlayer.isConnected();
-        } catch (Exception e) {
-            return false;
-        }/*
-        if (!here) {
-            return RedisBungee.getApi().isPlayerOnline(uuid);
-        } else {
-            return ProxyServer.getInstance().getPlayer(uuid) != null;
-        }*/
+        return isOnline(here, ProxyServer.getInstance().getPlayer(uuid), Matrix.getAPI().getPlayer(uuid));
     }
 
-    @Override
-    public void ban(String name) {
-        ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "ban " + name + " nope :p");
+    private boolean isOnline(boolean here, ProxiedPlayer proxiedPlayer, MatrixPlayer matrixPlayer) {
+        if (here) {
+            return proxiedPlayer != null && proxiedPlayer.isConnected();
+        } else {
+            if (proxiedPlayer != null) {
+                return proxiedPlayer.isConnected();
+            }
+            if (matrixPlayer != null) {
+                return matrixPlayer.isLoggedIn();
+            }
+        }
+        return false;
     }
 
     @Override
@@ -143,7 +132,6 @@ public class MatrixPluginBungee implements MatrixPlugin {
             return proxiedPlayer.getUniqueId();
         }
         return null;
-        /*isOnline(name, false) ? RedisBungee.getApi().getUuidFromName(name) : null*/
     }
 
     @Override

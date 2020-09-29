@@ -10,6 +10,7 @@ import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
+import com.github.beelzebu.matrix.server.GameTypeImpl;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -77,10 +78,10 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private int censoringLevel;
     private int spammingLevel;
     private boolean vanished;
-    private GameType lastGameType;
+    private String lastGameType;
     private String lastServerGroup;
     private String lastServerName;
-    private HashMap<GameType, GameMode> gameModeByGame = new HashMap<>();
+    private HashMap<String, GameMode> gameModeByGame = new HashMap<>();
 
     public MongoMatrixPlayer(UUID uniqueId, String name) {
         this();
@@ -478,13 +479,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(gameModeByGame.get(gameType), gameMode)) {
             return;
         }
-        gameModeByGame.put(gameType, gameMode);
+        gameModeByGame.put(gameType.getGameName(), gameMode);
         updateCached("gameModeByGame");
     }
 
     @Override
     public GameType getLastGameType() {
-        return lastGameType;
+        return GameTypeImpl.getByName(lastGameType);
     }
 
     @Override
@@ -517,10 +518,10 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setLastGameType(GameType lastGameType) {
-        if (Objects.equals(this.lastGameType, lastGameType)) {
+        if (Objects.equals(this.lastGameType, lastGameType.getGameName())) {
             return;
         }
-        this.lastGameType = lastGameType;
+        this.lastGameType = lastGameType.getGameName();
         updateCached("lastGameType");
     }
 
@@ -653,10 +654,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return knownNames;
     }
 
-    public Map<GameType, GameMode> getGameModeByGame() {
-        return gameModeByGame;
-    }
-
     @SuppressWarnings("unchecked")
     private void setField(Field field, String json) {
         try {
@@ -666,7 +663,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                 HashMap<GameType, GameMode> jsonMap = Matrix.GSON.fromJson(json, new TypeToken<HashMap<GameType, GameMode>>() {
                 }.getType());
                 if (!jsonMap.isEmpty()) {
-                    Matrix.getLogger().info("Updating json map for " + getName() + " json: '" + json + "'");
                     for (Map.Entry<GameType, GameMode> ent : jsonMap.entrySet()) {
                         map.put(ent.getKey(), ent.getValue());
                     }

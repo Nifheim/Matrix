@@ -17,6 +17,7 @@ import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.LoginEvent;
+import org.geysermc.floodgate.FloodgateAPI;
 
 /**
  * @author Beelzebu
@@ -67,10 +68,12 @@ public class LoginTask implements IndioLoginTask {
                 firstJoin = true;
             }
             if (!player.isPremium() && !Objects.equals(player.getUniqueId(), UUID.nameUUIDFromBytes(("OfflinePlayer:" + event.getConnection().getName()).getBytes()))) {
-                event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n\nYour UUID doesn't match with the UUID associated to your name in our database.\nThis login attempt was recorded for security reasons."));
-                event.setCancelled(true);
-                Matrix.getAPI().getDatabase().addFailedLogin(event.getConnection().getUniqueId(), event.getConnection().getName(), "error login bungee");
-                return;
+                if (!FloodgateAPI.isBedrockPlayer(event.getConnection().getUniqueId())) {
+                    event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n\nYour UUID doesn't match with the UUID associated to your name in our database.\nThis login attempt was recorded for security reasons."));
+                    event.setCancelled(true);
+                    Matrix.getAPI().getDatabase().addFailedLogin(event.getConnection().getUniqueId(), event.getConnection().getName(), "error login bungee");
+                    return;
+                }
             }
             if (!event.getConnection().getName().equalsIgnoreCase("Beelzebu") && plugin.getApi().getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
@@ -95,7 +98,6 @@ public class LoginTask implements IndioLoginTask {
                 if (firstJoin) {
                     player.setOption(PlayerOptionType.SPEED, true);
                 }
-
                 player.setLastLogin(new Date());
             }
         } catch (Exception e) {

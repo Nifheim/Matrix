@@ -43,7 +43,7 @@ public class ServerInfoImpl implements ServerInfo {
     @Deprecated
     public ServerInfoImpl(String name, Map<String, String> data) {
         String groupName = data.get("group");
-        GameType gameType = GameType.getByName(Objects.requireNonNull(data.get("gametype")));
+        GameType gameType = GameTypeImpl.getByName(data.get("gametype"));
         ServerType serverType = ServerType.valueOf(Objects.requireNonNull(data.get("servertype")));
         GameMode gameMode = GameMode.valueOf(Objects.requireNonNull(data.get("gamemode")));
         this.gameType = Objects.requireNonNull(gameType, "gameType can't be null");

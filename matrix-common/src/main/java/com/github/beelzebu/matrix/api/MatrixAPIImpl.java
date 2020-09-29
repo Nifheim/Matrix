@@ -15,6 +15,7 @@ import com.github.beelzebu.matrix.dependency.DependencyRegistry;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
 import com.github.beelzebu.matrix.messaging.RedisMessaging;
+import com.github.beelzebu.matrix.server.GameTypeImpl;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.task.HeartbeatTask;
 import com.github.beelzebu.matrix.util.FileManager;
@@ -56,7 +57,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         public void write(JsonWriter out, ServerInfo value) throws IOException {
             out.beginObject().name("groupName").value(value.getGroupName())
                     .name("serverName").value(value.getServerName())
-                    .name("gameType").value(value.getGameType().toString())
+                    .name("gameType").value(value.getGameType().getGameName())
                     .name("serverType").value(value.getServerType().name())
                     .name("gameMode").value(value.getDefaultGameMode().toString())
                     .endObject();
@@ -66,12 +67,22 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         public ServerInfo read(JsonReader in) throws IOException {
             JsonObject jsonObject = new JsonParser().parse(in).getAsJsonObject();
             return new ServerInfoImpl(
-                    GameType.valueOf(jsonObject.get("gameType").getAsString()),
+                    GameTypeImpl.getByName(jsonObject.get("gameType").getAsString()),
                     ServerType.valueOf(jsonObject.get("serverType").getAsString()),
                     jsonObject.get("groupName").getAsString(),
                     jsonObject.get("serverName").getAsString(),
                     GameMode.valueOf(jsonObject.get("gameMode").getAsString())
             );
+        }
+    }).registerTypeAdapter(GameType.class, new TypeAdapter<GameType>() {
+        @Override
+        public void write(JsonWriter out, GameType value) throws IOException {
+            out.value(value.getGameName());
+        }
+
+        @Override
+        public GameType read(JsonReader in) throws IOException {
+            return GameTypeImpl.getByName(in.nextString());
         }
     }).setDateFormat("MMM dd, yyyy h:mm:ss aa").create();
     public static final String DOMAIN_NAME = "mc.indiopikaro.net";
@@ -103,7 +114,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         }
         Matrix.setAPI(this);
         serverInfo = new ServerInfoImpl(
-                GameType.valueOf(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
+                GameTypeImpl.getByName(plugin.getConfig().getString("server-info.game-type", "NONE").toUpperCase()),
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
                 plugin.getConfig().getString("server-info.group", null),
                 plugin.getConfig().get("server-info.game-mode") != null ? GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode").toUpperCase()) : null
@@ -190,7 +201,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         plugin.sendMessage(plugin.getConsole(), TextComponent.fromLegacyText(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-")));
         Matrix.getLogger().info("&7Server Info:");
         Matrix.getLogger().info("&7Group: &6" + getServerInfo().getGroupName() + " &7Name: &6" + getServerInfo().getServerName());
-        Matrix.getLogger().info("&7ServerType: &6" + getServerInfo().getServerType() + " &7GameType: &6" + getServerInfo().getGameType());
+        Matrix.getLogger().info("&7ServerType: &6" + getServerInfo().getServerType() + " &7GameType: &6" + getServerInfo().getGameType().getGameName());
     }
 
     private void loadMessages() {

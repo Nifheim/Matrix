@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -112,11 +111,6 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     @Override
     public boolean isOnline(UUID uuid, boolean here) {
         return Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline();
-    }
-
-    @Override
-    public void ban(String name) {
-        Bukkit.getBanList(BanList.Type.NAME).addBan(name, "nope :p", null, null);
     }
 
     @Override
