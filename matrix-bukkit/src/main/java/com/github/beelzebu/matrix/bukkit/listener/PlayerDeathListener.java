@@ -1,9 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.listener;
 
-import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.Titles;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import org.bukkit.Bukkit;
@@ -39,7 +38,7 @@ public class PlayerDeathListener implements Listener {
                     return;
                 }
             }
-            Titles.sendTitle(p, 30, stay, 30, I18n.tl(Message.DEATH_TITLES_TITLE, core.getPlayer(p.getUniqueId()).getLastLocale()), I18n.tl(Message.DEATH_TITLES_SUBTITLE, core.getPlayer(p.getUniqueId()).getLastLocale()));
+            p.sendTitle(I18n.tl(Message.DEATH_TITLES_TITLE, core.getPlayer(p.getUniqueId()).getLastLocale()), I18n.tl(Message.DEATH_TITLES_SUBTITLE, core.getPlayer(p.getUniqueId()).getLastLocale()), 30, stay, 30);
         }, 10L);
     }
 }

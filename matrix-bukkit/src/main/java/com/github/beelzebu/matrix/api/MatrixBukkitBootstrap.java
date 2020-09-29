@@ -42,7 +42,6 @@ import com.github.beelzebu.matrix.bukkit.util.bungee.BungeeCleanupTask;
 import com.github.beelzebu.matrix.bukkit.util.bungee.BungeeServerTracker;
 import com.github.beelzebu.matrix.bukkit.util.placeholders.StatsPlaceholders;
 import com.github.beelzebu.matrix.util.ReadURL;
-import io.github.beelzebu.networklevels.bukkit.listener.GUIListener;
 import java.io.File;
 import java.util.Date;
 import java.util.Objects;
@@ -128,7 +127,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         loadManagers();
 
         // Register events
-        registerEvents(new GUIListener());
         registerEvents(new InternalListener());
         registerEvents(new PlayerCommandPreprocessListener(this));
         registerEvents(new PlayerDeathListener(this));
