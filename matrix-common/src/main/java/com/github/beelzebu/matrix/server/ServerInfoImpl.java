@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 public class ServerInfoImpl implements ServerInfo {
 
+    public static final String AUTH_GROUP = ServerType.AUTH.getFriendlyName();
+    public static final String PROXY_GROUP = ServerType.PROXY.getFriendlyName();
     public static final String MAIN_LOBBY_GROUP = "lobby";
     private final String groupName;
     private final String serverName;
