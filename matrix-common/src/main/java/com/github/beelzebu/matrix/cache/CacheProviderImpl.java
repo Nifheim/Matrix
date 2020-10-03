@@ -154,7 +154,7 @@ public class CacheProviderImpl implements CacheProvider {
             ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
             do {
                 for (String playerKey : scan.getResult()) {
-                    MatrixPlayer matrixPlayer = getPlayer(jedis, UUID.fromString(playerKey.split(":")[1])).orElse(null);
+                    MatrixPlayer matrixPlayer = getPlayer(jedis, UUID.fromString(playerKey.replaceFirst(USER_KEY_PREFIX, ""))).orElse(null);
                     if (matrixPlayer == null) {
                         Matrix.getLogger().info("Invalid player key stored in redis: " + playerKey);
                         continue;
@@ -179,7 +179,7 @@ public class CacheProviderImpl implements CacheProvider {
             do {
                 for (String playerKey : scan.getResult()) {
                     try {
-                        UUID uniqueId = UUID.fromString(playerKey.split(":")[1]);
+                        UUID uniqueId = UUID.fromString(playerKey.replaceFirst(USER_KEY_PREFIX, ""));
                         if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
                             continue;
                         }
@@ -209,7 +209,7 @@ public class CacheProviderImpl implements CacheProvider {
             do {
                 for (String playerKey : scan.getResult()) {
                     try {
-                        UUID uniqueId = UUID.fromString(playerKey.split(":")[1]);
+                        UUID uniqueId = UUID.fromString(playerKey.replaceFirst(USER_KEY_PREFIX, ""));
                         if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
                             continue;
                         }
@@ -242,7 +242,7 @@ public class CacheProviderImpl implements CacheProvider {
             do {
                 for (String playerKey : scan.getResult()) {
                     try {
-                        UUID uniqueId = UUID.fromString(playerKey.split(":")[1]);
+                        UUID uniqueId = UUID.fromString(playerKey.replaceFirst(USER_KEY_PREFIX, ""));
                         if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
                             continue;
                         }
@@ -306,7 +306,7 @@ public class CacheProviderImpl implements CacheProvider {
                 for (String groupKey : scan.getResult()) {
                     try {
                         String server = groupKey.replaceFirst(SERVER_INFO_KEY_PREFIX, "");
-                        groups.add(server.split(":", 2)[0]);
+                        groups.add(server.replaceFirst(SERVER_INFO_KEY_PREFIX, ""));
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     }
@@ -520,7 +520,7 @@ public class CacheProviderImpl implements CacheProvider {
             ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
             do {
                 for (String playerKey : scan.getResult()) {
-                    playerUUIDs.add(UUID.fromString(playerKey.split(":")[1]));
+                    playerUUIDs.add(UUID.fromString(playerKey.replaceFirst(USER_KEY_PREFIX, "")));
                 }
                 scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
             } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
