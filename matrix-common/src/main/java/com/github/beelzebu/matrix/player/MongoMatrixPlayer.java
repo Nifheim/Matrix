@@ -59,6 +59,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private Set<String> knownNames = new HashSet<>();
     private String displayName;
     private boolean premium;
+    private boolean bedrock;
     private boolean registered;
     private boolean admin;
     private String secret;
@@ -508,21 +509,21 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLastServerName(String serverName) {
-        if (Objects.equals(this.lastServerName, serverName)) {
+    public void setLastServerName(String lastServerName) {
+        Objects.requireNonNull(lastServerName, "lastServerName can't be null");
+        if (Objects.equals(this.lastServerName, lastServerName)) {
             return;
         }
-        this.lastServerName = serverName;
-        updateCached("lastServerName");
+        this.lastServerName = updateCached("lastServerName", lastServerName);
     }
 
     @Override
     public void setLastGameType(GameType lastGameType) {
+        Objects.requireNonNull(lastGameType, "lastGameType can't be null");
         if (Objects.equals(this.lastGameType, lastGameType.getGameName())) {
             return;
         }
-        this.lastGameType = lastGameType.getGameName();
-        updateCached("lastGameType");
+        this.lastGameType = updateCached("lastGameType", lastGameType.getGameName());
     }
 
     @Override
@@ -598,7 +599,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public MatrixPlayer save() {
+    public MongoMatrixPlayer save() {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
         if (getDisplayName() == null) {
@@ -650,8 +651,31 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
+    public <T> T updateCached(String field, T value) {
+        try {
+            Matrix.getAPI().getCache().updateCachedField(this, field, MongoMatrixPlayer.FIELDS.get(field).get(this));
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return value;
+    }
+
     public Set<String> getKnownNames() {
         return knownNames;
+    }
+
+    public boolean isBedrock() {
+        return bedrock;
+    }
+
+    public void setBedrock(boolean bedrock) {
+        if (!bedrock) {
+            throw new IllegalArgumentException("Bedrock can't be disabled for this player");
+        }
+        if (!isPremium()) {
+            setPremium(true);
+        }
+        this.bedrock = updateCached("bedrock", true);
     }
 
     @SuppressWarnings("unchecked")

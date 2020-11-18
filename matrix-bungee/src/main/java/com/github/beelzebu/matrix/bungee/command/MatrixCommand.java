@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.bungee.command;
 
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
-import com.github.beelzebu.matrix.api.config.MatrixConfig;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bungee.motd.MotdManager;
@@ -28,7 +27,6 @@ public class MatrixCommand extends Command {
         if (args.length >= 1) {
             switch (args[0]) {
                 case "reload":
-                    MatrixConfig config = bungeeBootstrap.getConfig();
                     MotdManager.onEnable();
                     bungeeBootstrap.getInfluencerManager().reloadInfluencers();
                     bungeeBootstrap.getApi().reload();

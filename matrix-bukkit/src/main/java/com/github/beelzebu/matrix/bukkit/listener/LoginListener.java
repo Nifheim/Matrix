@@ -6,7 +6,7 @@ import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
-import com.github.beelzebu.matrix.api.server.GameType;
+import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.PermsUtils;
@@ -32,12 +32,13 @@ public class LoginListener implements Listener {
 
     private final MatrixBukkitBootstrap plugin;
     private final MatrixAPI api;
-    private final GameType gameType = Matrix.getAPI().getServerInfo().getGameType();
+    private final ServerInfo serverInfo;
     private final Map<UUID, Long> playTime = new HashMap<>();
-    private boolean firstjoin = true;
+    private boolean firstJoin = true;
 
     public LoginListener(MatrixAPI api, MatrixBukkitBootstrap plugin) {
         this.api = api;
+        serverInfo = api.getServerInfo();
         this.plugin = plugin;
     }
 
@@ -46,13 +47,12 @@ public class LoginListener implements Listener {
         e.setJoinMessage(null);
         Player player = e.getPlayer();
         MatrixPlayer matrixPlayer = api.getPlayer(player.getUniqueId());
-        matrixPlayer.setLastGameType(gameType);
-        matrixPlayer.setLastServerName(api.getServerInfo().getServerName());
-        matrixPlayer.setLastServerGroup(api.getServerInfo().getGroupName());
-        matrixPlayer.addPlayedGame(gameType);
+        matrixPlayer.setLastGameType(serverInfo.getGameType());
+        matrixPlayer.setLastServerName(serverInfo.getServerName());
+        matrixPlayer.setLastServerGroup(serverInfo.getGroupName());
+        matrixPlayer.addPlayedGame(serverInfo.getGameType());
         playTime.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
-        ServerType type = api.getServerInfo().getServerType();
-        if ((type.equals(ServerType.LOBBY) || type.equals(ServerType.SURVIVAL) || type.equals(ServerType.MINIGAME_MULTIARENA))) {
+        if ((serverInfo.getServerType().equals(ServerType.LOBBY) || serverInfo.getServerType().equals(ServerType.SURVIVAL) || serverInfo.getServerType().equals(ServerType.MINIGAME_MULTIARENA))) {
             if (!matrixPlayer.isVanished()) {
                 if (player.hasPermission("matrix.joinmessage")) {
                     e.setJoinMessage(StringUtils.replace(" &8[&a+&8] &f" + PermsUtils.getPrefix(player.getUniqueId()) + api.getPlayer(player.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
@@ -74,9 +74,9 @@ public class LoginListener implements Listener {
         });
         // Later task
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (firstjoin) {
+            if (firstJoin) {
                 plugin.getConfig().getStringList("Join cmds").forEach(cmd -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd));
-                firstjoin = false;
+                firstJoin = false;
             }
             if (!player.hasPermission("matrix.command.fly")) {
                 matrixPlayer.setOption(PlayerOptionType.FLY, false);
@@ -88,7 +88,7 @@ public class LoginListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent e) {
         e.setQuitMessage(null);
         MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(e.getPlayer().getUniqueId());
-        matrixPlayer.setLastPlayTime(gameType, System.currentTimeMillis() - playTime.get(matrixPlayer.getUniqueId()));
+        matrixPlayer.setLastPlayTime(serverInfo.getGameType(), System.currentTimeMillis() - playTime.get(matrixPlayer.getUniqueId()));
         Matrix.getAPI().getPlayers().remove(matrixPlayer);
     }
 }

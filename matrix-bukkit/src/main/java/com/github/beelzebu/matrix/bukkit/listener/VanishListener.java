@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.listener;
 
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.bukkit.command.staff.VanishCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 /**
  * @author Beelzebu
@@ -22,6 +23,8 @@ public class VanishListener implements Listener {
 
     public VanishListener(MatrixBukkitBootstrap plugin) {
         this.plugin = plugin;
+        // TODO: check vanish
+        /*
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 MatrixPlayer matrixPlayer = plugin.getApi().getPlayer(player.getUniqueId());
@@ -38,10 +41,16 @@ public class VanishListener implements Listener {
                 }
             }
         }, 0, 10);
+         */
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent e) {
+        checkVanish(e.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoin(PlayerTeleportEvent e) {
         checkVanish(e.getPlayer());
     }
 
@@ -72,8 +81,14 @@ public class VanishListener implements Listener {
 
     private void checkVanish(Player player) {
         MatrixPlayer matrixPlayer = plugin.getApi().getPlayer(player.getUniqueId());
+        if (matrixPlayer == null) {
+            Matrix.getLogger().info("Null matrix player for: " + player.getName());
+            return;
+        }
         if (matrixPlayer.isVanished()) {
             player.setGameMode(GameMode.SPECTATOR);
+            player.setAllowFlight(true);
+            player.setFlying(true);
         } else {
             player.setGameMode(GameMode.valueOf(matrixPlayer.getGameMode(plugin.getApi().getServerInfo().getGameType()).toString()));
         }

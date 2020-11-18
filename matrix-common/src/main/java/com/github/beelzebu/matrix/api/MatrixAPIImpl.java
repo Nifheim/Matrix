@@ -1,5 +1,6 @@
 package com.github.beelzebu.matrix.api;
 
+import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -33,6 +34,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -94,8 +97,10 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     private final CacheProviderImpl cache;
     private final ServerInfo serverInfo;
     private final MaintenanceManager maintenanceManager;
+    private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
 
     public MatrixAPIImpl(MatrixPlugin plugin) {
+        super(plugin);
         Matrix.GSON = GSON;
         this.plugin = plugin;
         plugin.getDataFolder().mkdirs();
@@ -139,7 +144,6 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     }
 
     @Override
-
     public CacheProviderImpl getCache() {
         return cache;
     }

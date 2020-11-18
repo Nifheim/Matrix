@@ -12,11 +12,9 @@ import com.github.beelzebu.matrix.bungee.command.HelpOpCommand;
 import com.github.beelzebu.matrix.bungee.command.HubCommand;
 import com.github.beelzebu.matrix.bungee.command.MaintenanceCommand;
 import com.github.beelzebu.matrix.bungee.command.MatrixCommand;
-import com.github.beelzebu.matrix.bungee.command.MatrixServersCommand;
 import com.github.beelzebu.matrix.bungee.command.PlayerInfoCommand;
 import com.github.beelzebu.matrix.bungee.command.PremiumCommand;
 import com.github.beelzebu.matrix.bungee.command.ReplyCommand;
-import com.github.beelzebu.matrix.bungee.command.StaffListCommand;
 import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.bungee.influencer.InfluencerManager;
 import com.github.beelzebu.matrix.bungee.listener.AuthListener;
@@ -89,16 +87,16 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new PremiumCommand(this));
         registerCommand(new CrackedCommand());
         registerCommand(new BungeeTPCommand());
-        registerCommand(new MatrixServersCommand());
+        //registerCommand(new MatrixServersCommand());
         registerCommand(new MatrixCommand(this));
-        registerCommand(new StaffListCommand());
+        //0registerCommand(new StaffListCommand());
         registerCommand(new HubCommand());
         new PermissionListener();
         MotdManager.onEnable();
         new BasicCommands(this);
         ProxyServer.getInstance().getScheduler().schedule(this, () -> {
             for (MatrixPlayer matrixPlayer : api.getCache().getPlayers()) {
-                if (api.getPlugin().isOnline(matrixPlayer.getUniqueId(), false) || matrixPlayer.isLoggedIn()) {
+                if (matrixPlayer.isLoggedIn()) {
                     continue;
                 }
                 try {
@@ -134,7 +132,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     public void onDisable() {
         api.getCache().removeServer(api.getServerInfo());
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().set(0, "lobby"));
-        api.getPlayers().stream().peek(matrixPlayer -> matrixPlayer.setLoggedIn(false)).forEach(MatrixPlayer::save);
+        ProxyServer.getInstance().getPlayers().stream().map(proxiedPlayer -> Matrix.getAPI().getPlayer(proxiedPlayer.getUniqueId())).peek(matrixPlayer -> matrixPlayer.setLoggedIn(false)).forEach(MatrixPlayer::save);
         api.getPlayers().clear();
         api.getCache().shutdown();
         api.getMessaging().shutdown();

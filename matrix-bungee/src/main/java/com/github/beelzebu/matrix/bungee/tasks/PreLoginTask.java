@@ -3,11 +3,10 @@ package com.github.beelzebu.matrix.bungee.tasks;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import java.io.IOException;
-import java.util.Objects;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 
@@ -18,29 +17,32 @@ public class PreLoginTask implements IndioLoginTask {
 
     private final MatrixBungeeBootstrap plugin;
     private final PreLoginEvent event;
-    private final MatrixPlayer player;
+    private final MongoMatrixPlayer player;
 
     public PreLoginTask(MatrixBungeeBootstrap plugin, PreLoginEvent event) {
         this.plugin = plugin;
         this.event = event;
-        MatrixPlayer player = null;
-        Profile profile = null;
-        try {
-            profile = RESOLVER.findProfile(event.getConnection().getName()).orElse(null);
-        } catch (RateLimitException | IOException e) {
-            e.printStackTrace();
-        }
-        if (profile != null) {
-            player = Matrix.getAPI().getPlayer(profile.getId());
-            if (player != null) {
-                Matrix.getLogger().info(event.getConnection().getName() + " is premium, stored name: " + player.getName());
-                if (event.getConnection().getName() != null && !Objects.equals(player.getName(), event.getConnection().getName())) {
-                    player.setName(event.getConnection().getName());
+        MongoMatrixPlayer player = (MongoMatrixPlayer) Matrix.getAPI().getPlayer(event.getConnection().getName());
+        if (player == null) {
+            Profile profile = null;
+            try {
+                profile = RESOLVER.findProfile(event.getConnection().getName()).orElse(null);
+            } catch (RateLimitException | IOException e) {
+                e.printStackTrace();
+            }
+            if (profile != null) {
+                player = (MongoMatrixPlayer) Matrix.getAPI().getPlayer(profile.getId());
+                if (player != null) {
+                    if (player.isPremium()) {
+                        if (event.getConnection().getName() != null) {
+                            player.setName(event.getConnection().getName());
+                        }
+                        if (!player.isBedrock()) {
+                            event.getConnection().setOnlineMode(true);
+                        }
+                    }
                 }
             }
-        }
-        if (player == null) {
-            player = Matrix.getAPI().getPlayer(event.getConnection().getName());
         }
         if (player == null) {
             Matrix.getLogger().info("Player null pre login name: " + event.getConnection().getName());
@@ -88,14 +90,16 @@ public class PreLoginTask implements IndioLoginTask {
             }
             for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
                 if (host.equals("premium." + domain)) {
-                    event.getConnection().setOnlineMode(true);
+                    if (!player.isBedrock()) {
+                        event.getConnection().setOnlineMode(true);
+                    }
                     if (player != null && !player.isPremium()) {
                         player.setPremium(true);
                     }
                     break;
                 }
             }
-            if (player != null && player.isPremium()) {
+            if (player != null && player.isPremium() && !player.isBedrock()) {
                 event.getConnection().setOnlineMode(true);
             }
             Matrix.getAPI().getCache().update(event.getConnection().getName(), event.getConnection().getUniqueId());

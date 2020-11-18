@@ -26,7 +26,7 @@ public class LoginTask implements IndioLoginTask {
 
     private final MatrixBungeeBootstrap plugin;
     private final LoginEvent event;
-    private MatrixPlayer player;
+    private MongoMatrixPlayer player;
     private boolean firstJoin = false;
 
     public LoginTask(MatrixBungeeBootstrap plugin, LoginEvent event) {
@@ -45,7 +45,6 @@ public class LoginTask implements IndioLoginTask {
                 if (profile != null) {
                     player = Matrix.getAPI().getPlayer(profile.getId());
                     if (player != null) {
-                        Matrix.getLogger().info(event.getConnection().getName() + " is premium, stored name: " + player.getName());
                         if (event.getConnection().getName() != null && !Objects.equals(player.getName(), event.getConnection().getName())) {
                             player.setName(event.getConnection().getName());
                         }
@@ -56,7 +55,7 @@ public class LoginTask implements IndioLoginTask {
                 }
             }
         }
-        this.player = player;
+        this.player = (MongoMatrixPlayer) player;
     }
 
     @Override
@@ -67,13 +66,14 @@ public class LoginTask implements IndioLoginTask {
                 player = new MongoMatrixPlayer(pendingConnection.getUniqueId(), pendingConnection.getName()).save();
                 firstJoin = true;
             }
+            if (FloodgateAPI.isBedrockPlayer(player.getUniqueId())) {
+                player.setBedrock(true);
+            }
             if (!player.isPremium() && !Objects.equals(player.getUniqueId(), UUID.nameUUIDFromBytes(("OfflinePlayer:" + event.getConnection().getName()).getBytes()))) {
-                if (!FloodgateAPI.isBedrockPlayer(event.getConnection().getUniqueId())) {
-                    event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n\nYour UUID doesn't match with the UUID associated to your name in our database.\nThis login attempt was recorded for security reasons."));
-                    event.setCancelled(true);
-                    Matrix.getAPI().getDatabase().addFailedLogin(event.getConnection().getUniqueId(), event.getConnection().getName(), "error login bungee");
-                    return;
-                }
+                event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n\nYour UUID doesn't match with the UUID associated to your name in our database.\nThis login attempt was recorded for security reasons."));
+                event.setCancelled(true);
+                Matrix.getAPI().getDatabase().addFailedLogin(event.getConnection().getUniqueId(), event.getConnection().getName(), "error login bungee");
+                return;
             }
             if (!event.getConnection().getName().equalsIgnoreCase("Beelzebu") && plugin.getApi().getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
@@ -85,7 +85,7 @@ public class LoginTask implements IndioLoginTask {
                     player.setUniqueId(pendingConnection.getUniqueId());
                 }
                 player.setName(pendingConnection.getName());
-                if (pendingConnection.isOnlineMode()) {
+                if (pendingConnection.isOnlineMode() || player.isBedrock()) {
                     player.setPremium(true);
                     player.setRegistered(true);
                     player.setLoggedIn(true);

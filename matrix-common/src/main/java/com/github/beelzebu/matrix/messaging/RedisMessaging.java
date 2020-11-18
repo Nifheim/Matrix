@@ -1,8 +1,11 @@
 package com.github.beelzebu.matrix.messaging;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixAPIImpl;
+import com.github.beelzebu.matrix.api.messaging.MessageListener;
 import com.github.beelzebu.matrix.api.messaging.Messaging;
 import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
+import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessage;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
 import com.github.beelzebu.matrix.util.RedisManager;
@@ -22,8 +25,10 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 public class RedisMessaging implements Messaging {
 
+    public static final String MATRIX_MESSAGING = "matrix:message";
     private final Set<UUID> messages = new HashSet<>();
-    private final Set<RedisMessageListener<? extends RedisMessage>> listeners = new LinkedHashSet<>();
+    private final Set<RedisMessageListener<? extends RedisMessage>> redisListeners = new LinkedHashSet<>();
+    private final Set<MessageListener> messageListeners = new LinkedHashSet<>();
     private final RedisManager redisManager;
     private final PubSubListener pubSubListener;
 
@@ -47,13 +52,23 @@ public class RedisMessaging implements Messaging {
         Matrix.getLogger().debug("&7Sent: " + jsonMessage);
     }
 
+    @Override
+    public void sendMessage(Message message) {
+        sendMessage(MATRIX_MESSAGING, MatrixAPIImpl.GSON.toJson(message));
+    }
+
     public void registerListener(RedisMessageListener<? extends RedisMessage> redisMessageListener) {
-        listeners.add(redisMessageListener);
+        redisListeners.add(redisMessageListener);
+    }
+
+    @Override
+    public void registerListener(MessageListener messageListener) {
+        messageListeners.add(messageListener);
     }
 
     @Override
     public void shutdown() {
-        listeners.clear();
+        redisListeners.clear();
         if (getPubSubListener().jpsh != null) {
             getPubSubListener().jpsh.unsubscribe();
         }
@@ -117,7 +132,7 @@ public class RedisMessaging implements Messaging {
             }
             redisMessage.read();
             Matrix.getLogger().debug("Sending message to listeners...");
-            for (RedisMessageListener<?> listener : listeners) {
+            for (RedisMessageListener<?> listener : redisListeners) {
                 if (listener.getType() == type) {
                     Matrix.getLogger().debug("Sending to listener: " + listener);
                     listener.$$onMessage0$$(redisMessage);

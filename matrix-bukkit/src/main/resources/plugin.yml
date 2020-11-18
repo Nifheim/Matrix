@@ -3,7 +3,6 @@ main: com.github.beelzebu.matrix.api.MatrixBukkitBootstrap
 description: 'Network management plugin'
 version: ${pluginVersion}
 author: Beelzebu
-depend: [LuckPerms, PlaceholderAPI]
-softdepend: [Votifier]
-loadbefore: [NetworkLevels]
+softdepend: [ LuckPerms, PlaceholderAPI, Votifier ]
+loadbefore: [ NetworkLevels ]
 api-version: 1.15

@@ -71,6 +71,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void update(String name, UUID uniqueId) {
         if (name == null || uniqueId == null) {
+            Matrix.getLogger().info("Tried to update name: " + name + " uuid: " + uniqueId);
             return;
         }
 
@@ -183,6 +184,9 @@ public class CacheProviderImpl implements CacheProvider {
                         if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
                             continue;
                         }
+                        if (!jedis.hexists(USER_KEY_PREFIX + uniqueId, "loggedIn")) {
+                            continue;
+                        }
                         if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "loggedIn").equals("true")) {
                             continue;
                         }
@@ -202,6 +206,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Set<UUID> getOnlinePlayersInServer(String server) {
+        Objects.requireNonNull(server, "Server can't be null");
         Set<UUID> uniqueIds = new HashSet<>();
         try (Jedis jedis = redisManager.getPool().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;
@@ -213,10 +218,16 @@ public class CacheProviderImpl implements CacheProvider {
                         if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
                             continue;
                         }
-                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "loggedIn").equals("true")) {
+                        if (!jedis.hexists(USER_KEY_PREFIX + uniqueId, "loggedIn")) {
                             continue;
                         }
-                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "lastServerName").equals(server)) {
+                        if (!Objects.equals(jedis.hget(USER_KEY_PREFIX + uniqueId, "loggedIn"), "true")) {
+                            continue;
+                        }
+                        if (!jedis.hexists(USER_KEY_PREFIX + uniqueId, "lastServerName")) {
+                            continue;
+                        }
+                        if (!Objects.equals(jedis.hget(USER_KEY_PREFIX + uniqueId, "lastServerName").replace("\"", ""), server)) {
                             continue;
                         }
                         uniqueIds.add(uniqueId);
@@ -235,6 +246,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Set<UUID> getOnlinePlayersInGroup(String group) {
+        Objects.requireNonNull(group, "Group can't be null");
         Set<UUID> uniqueIds = new HashSet<>();
         try (Jedis jedis = redisManager.getPool().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;
@@ -246,10 +258,16 @@ public class CacheProviderImpl implements CacheProvider {
                         if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
                             continue;
                         }
-                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "loggedIn").equals("true")) {
+                        if (!jedis.hexists(USER_KEY_PREFIX + uniqueId, "loggedIn")) {
                             continue;
                         }
-                        if (!jedis.hget(USER_KEY_PREFIX + uniqueId, "lastServerGroup").equals(group)) {
+                        if (!Objects.equals(jedis.hget(USER_KEY_PREFIX + uniqueId, "loggedIn"), "true")) {
+                            continue;
+                        }
+                        if (!jedis.hexists(USER_KEY_PREFIX + uniqueId, "lastServerGroup")) {
+                            continue;
+                        }
+                        if (!Objects.equals(jedis.hget(USER_KEY_PREFIX + uniqueId, "lastServerGroup").replace("\"", ""), group)) {
                             continue;
                         }
                         uniqueIds.add(uniqueId);
@@ -485,6 +503,10 @@ public class CacheProviderImpl implements CacheProvider {
     public MatrixPlayer saveToCache(MatrixPlayer matrixPlayer) {
         Objects.requireNonNull(matrixPlayer.getUniqueId(), "UUID can't be null");
         Objects.requireNonNull(matrixPlayer.getName(), "name can't be null");
+        if (isCached(matrixPlayer.getUniqueId())) {
+            Matrix.getLogger().info("Tried to save already cached player");
+            return matrixPlayer;
+        }
         if (Objects.isNull(matrixPlayer.getLowercaseName())) {
             matrixPlayer.setName(matrixPlayer.getName());
         }
@@ -538,5 +560,41 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void shutdown() {
+    }
+
+    public Set<MatrixPlayer> getPlayers(ServerInfo serverInfo) {
+        Set<MatrixPlayer> players = new HashSet<>();
+        try (Jedis jedis = redisManager.getPool().getResource()) {
+            String cursor = ScanParams.SCAN_POINTER_START;
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            do {
+                for (String playerKey : scan.getResult()) {
+                    try {
+                        UUID uniqueId = UUID.fromString(playerKey.replaceFirst(USER_KEY_PREFIX, ""));
+                        if (!jedis.exists(USER_KEY_PREFIX + uniqueId)) {
+                            continue;
+                        }
+                        MatrixPlayer matrixPlayer = getPlayer(jedis, uniqueId).orElse(null);
+                        if (matrixPlayer == null) {
+                            continue;
+                        }
+                        if (!matrixPlayer.isLoggedIn()) {
+                            continue;
+                        }
+                        if (!matrixPlayer.getLastServerName().equals(serverInfo.getServerName())) {
+                            continue;
+                        }
+                        players.add(matrixPlayer);
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                }
+                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+        } catch (JedisException ex) {
+            Matrix.getLogger().log("An error has occurred getting online players from cache.");
+            Matrix.getLogger().debug(ex);
+        }
+        return players;
     }
 }

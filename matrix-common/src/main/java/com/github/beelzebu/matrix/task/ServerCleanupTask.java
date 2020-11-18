@@ -11,9 +11,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ServerCleanupTask implements Runnable {
 
-    public static long SLOW_HEARTBEAT = TimeUnit.MINUTES.toMillis(10);
-    public static long NORMAL_HEARTBEAT = TimeUnit.MINUTES.toMillis(5);
-    public static long DEAD_HEARTBEAT = TimeUnit.MINUTES.toMillis(15);
+    public static long SLOW_HEARTBEAT = TimeUnit.MINUTES.toMillis(3);
+    public static long NORMAL_HEARTBEAT = TimeUnit.MINUTES.toMillis(2);
+    public static long DEAD_HEARTBEAT = TimeUnit.MINUTES.toMillis(5);
     private final MatrixAPI api;
     private final Map<String, Long> slowHeartbeats = new HashMap<>();
 

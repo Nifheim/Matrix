@@ -1,12 +1,11 @@
 package com.github.beelzebu.matrix.bukkit.util.placeholders;
 
-import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.player.TopEntry;
 import com.github.beelzebu.matrix.database.StorageImpl;
-import com.github.beelzebu.matrix.bukkit.util.bungee.BungeeServerTracker;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class StatsPlaceholders extends PlaceholderExpansion {
@@ -42,22 +40,6 @@ public class StatsPlaceholders extends PlaceholderExpansion {
         }
         if (stat.equals("nick")) {
             return api.getPlayer(p.getUniqueId()).getDisplayName();
-        }
-        if (stat.startsWith("online")) {
-            if (stat.matches("online_status_.*")) {
-                return BungeeServerTracker.isOnline(stat.split("online_status_")[1]) ? "ONLINE" : "OFFLINE";
-            }
-            if (stat.equals("onlinebungee")) {
-                return String.valueOf(BungeeServerTracker.getTotalOnline());
-            }
-            if (stat.equals("onlineplayers")) {
-                int online = 0;
-                online = Bukkit.getOnlinePlayers().stream().filter(p::canSee).map((_item) -> 1).reduce(online, Integer::sum);
-                return String.valueOf(online);
-            }
-            if (stat.matches("online_.*")) {
-                return String.valueOf(BungeeServerTracker.getPlayersOnline(stat.split("_")[1]));
-            }
         }
         // <server>_top_<stat>_<type>_<request>_<pos>
         // 0        1   2      3      4         5

@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 /**
  * @author Beelzebu
  */
+@SuppressWarnings("deprecation")
 public class ProfileGUI extends BaseMenu {
 
     private final MatrixPlayer matrixPlayer;

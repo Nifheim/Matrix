@@ -38,8 +38,7 @@ import com.github.beelzebu.matrix.bukkit.listener.stats.StatsListener;
 import com.github.beelzebu.matrix.bukkit.plugin.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.bukkit.scheduler.BukkitSchedulerAdapter;
 import com.github.beelzebu.matrix.bukkit.util.PluginsUtility;
-import com.github.beelzebu.matrix.bukkit.util.bungee.BungeeCleanupTask;
-import com.github.beelzebu.matrix.bukkit.util.bungee.BungeeServerTracker;
+import com.github.beelzebu.matrix.bukkit.util.placeholders.OnlinePlaceholders;
 import com.github.beelzebu.matrix.bukkit.util.placeholders.StatsPlaceholders;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.io.File;
@@ -48,7 +47,6 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -103,12 +101,15 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         if (serverRegisterMessage != null) { // check if server was registered first
             new ServerUnregisterMessage().send();
         }
+        getScheduler().shutdownExecutor();
+        getScheduler().shutdownScheduler();
         api.shutdown();
         Bukkit.getScheduler().cancelTasks(this);
     }
 
     @Override
     public void onEnable() {
+        scheduler = new BukkitSchedulerAdapter(this);
         api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this));
         try {
             bukkitCoreUtils.init(this);
@@ -118,8 +119,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             Bukkit.shutdown();
             return;
         }
-
-        scheduler = new BukkitSchedulerAdapter(this);
 
         api.setup();
 
@@ -182,8 +181,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 serverRegisterMessage.send();
             }
         });
-        BungeeServerTracker.startTask(5);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new BungeeCleanupTask(), 600, 600);
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             try {
                 Class.forName("com.destroystokyo.paper.PaperConfig");
@@ -272,9 +269,11 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
-            // Utils
             StatsPlaceholders statsPlaceholders = new StatsPlaceholders();
-            PlaceholderAPI.registerExpansion(statsPlaceholders);
+            statsPlaceholders.register();
+            new OnlinePlaceholders(this).register();
+        } else {
+            Bukkit.shutdown();
         }
     }
 

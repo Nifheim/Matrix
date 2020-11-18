@@ -10,10 +10,8 @@ import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bukkit.config.BukkitConfiguration;
-import com.github.beelzebu.matrix.bukkit.util.bungee.PluginMessage;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -125,9 +123,6 @@ public class MatrixPluginBukkit implements MatrixPlugin {
         Player player = Bukkit.getPlayer(uniqueId);
         if (player != null && player.isOnline()) {
             player.sendMessage(reason);
-            if (getConfig().getLobby() != null) {
-                PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
-            }
             player.kickPlayer(reason);
         } else {
             Matrix.getLogger().debug("Tried to kick " + uniqueId + ", but isn't online.");
@@ -141,9 +136,6 @@ public class MatrixPluginBukkit implements MatrixPlugin {
         Player player = Bukkit.getPlayer(name);
         if (player != null && player.isOnline()) {
             player.sendMessage(reason);
-            if (getConfig().getLobby() != null) {
-                PluginMessage.get().sendMessage("BungeeCord", "Connect", Collections.singletonList(getConfig().getLobby()), player);
-            }
             player.kickPlayer(reason);
         } else {
             Matrix.getLogger().debug("Tried to kick " + name + ", but isn't online.");

@@ -82,7 +82,8 @@ public class ServerInfoImpl implements ServerInfo {
     }
 
     public String getLobbyServer() {
-        return ServerInfo.findLobbyForServer(this);
+        String lobby = Matrix.getAPI().getConfig().getString("server-info.lobby", ServerInfo.findLobbyForServer(this));
+        return lobby != null ? lobby : ServerInfo.findLobbyForGroup(MAIN_LOBBY_GROUP).orElse("lobby2");
     }
 
     public GameType getGameType() {
