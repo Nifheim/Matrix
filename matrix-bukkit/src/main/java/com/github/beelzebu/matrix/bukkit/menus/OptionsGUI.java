@@ -29,7 +29,7 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class OptionsGUI extends BaseMenu {
 
-    private final MatrixAPI api = Matrix.getAPI();
+    private final MatrixAPI<?> api = Matrix.getAPI();
     private final MatrixPlayer matrixPlayer;
     private final String locale;
 
@@ -83,8 +83,7 @@ public class OptionsGUI extends BaseMenu {
             p.closeInventory();
         });
 
-        List<String> hideLore = new ArrayList<>();
-        hideLore.addAll(Arrays.asList(I18n.tls(Message.MENU_OPTIONS_HIDE_LORE, locale)));
+        List<String> hideLore = new ArrayList<>(Arrays.asList(I18n.tls(Message.MENU_OPTIONS_HIDE_LORE, locale)));
 
         setItem(14, new ItemBuilder(CompatUtil.getInstance().getGreenDye()).displayname(I18n.tl(Message.MENU_OPTIONS_HIDE_NAME, locale)).lore(hideLore).build(), p -> {
             boolean fail = false;

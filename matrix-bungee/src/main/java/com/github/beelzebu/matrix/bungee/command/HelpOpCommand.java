@@ -25,24 +25,24 @@ public class HelpOpCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        bootstrap.getApi().getPlugin().runAsync(() -> {
+        bootstrap.getApi().getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
             if (!(sender instanceof ProxiedPlayer)) {
                 return;
             }
             ProxiedPlayer pp = (ProxiedPlayer) sender;
             UUID uniqueId = pp.getUniqueId();
-            MatrixPlayer matrixPlayer = bootstrap.getApi().getPlayer(uniqueId);
-            if (args.length == 1 && args[0].length() <= 2) {
+            MatrixPlayer matrixPlayer = bootstrap.getApi().getPlayerManager().getPlayer(uniqueId).join();
+            StringBuilder message = new StringBuilder();
+            for (String arg : args) {
+                message.append(arg).append(" ");
+            }
+            if (message.length() <= 5) {
                 sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.HELPOP_HELP_USAGE, matrixPlayer.getLastLocale())));
                 return;
             }
             if (timer.containsKey(uniqueId) && timer.get(uniqueId) > System.currentTimeMillis()) {
                 sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.HELPOP_COOLDOWN, matrixPlayer.getLastLocale()).replace("%cooldown%", String.valueOf((timer.get(uniqueId) - System.currentTimeMillis()) / 1000))));
                 return;
-            }
-            StringBuilder message = new StringBuilder();
-            for (String arg : args) {
-                message.append(arg).append(" ");
             }
             if (!timer.containsKey(uniqueId) || timer.get(uniqueId) <= System.currentTimeMillis()) {
                 String helpopMessageFormatted = I18n.tl(Message.HELPOP_FORMAT, matrixPlayer.getLastLocale()).replace("%server%", ((ProxiedPlayer) sender).getServer().getInfo().getName()).replace("%player_name%", matrixPlayer.getDisplayName()).replace("%message%", message);

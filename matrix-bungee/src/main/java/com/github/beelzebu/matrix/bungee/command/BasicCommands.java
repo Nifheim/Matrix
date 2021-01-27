@@ -1,13 +1,9 @@
 package com.github.beelzebu.matrix.bungee.command;
 
-import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.CentredMessage;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 import net.md_5.bungee.api.CommandSender;
@@ -22,12 +18,13 @@ import net.md_5.bungee.api.plugin.Command;
 public class BasicCommands {
 
     private static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private final MatrixAPI api = Matrix.getAPI();
+    private final MatrixBungeeAPI api;
     private final Set<Command> commands = new HashSet<>();
 
-    public BasicCommands(MatrixBungeeBootstrap plugin) {
+    public BasicCommands(MatrixBungeeAPI api) {
+        this.api = api;
         createCommands();
-        commands.forEach(cmd -> ProxyServer.getInstance().getPluginManager().registerCommand(plugin, cmd));
+        commands.forEach(cmd -> ProxyServer.getInstance().getPluginManager().registerCommand(api.getPlugin().getBootstrap(), cmd));
     }
 
     public static String randomAlphaNumeric(int count) {
@@ -44,10 +41,11 @@ public class BasicCommands {
             @Override
             public void execute(CommandSender sender, String[] arg1) {
                 if (sender instanceof ProxiedPlayer) {
-                    MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                    for (String line : I18n.tls(Message.COMMAND_SOCIAL_TWITTER, matrixPlayer.getLastLocale())) {
-                        sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
-                    }
+                    api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
+                        for (String line : I18n.tls(Message.COMMAND_SOCIAL_TWITTER, matrixPlayer.getLastLocale())) {
+                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                        }
+                    });
                 }
             }
         });
@@ -55,10 +53,11 @@ public class BasicCommands {
             @Override
             public void execute(CommandSender sender, String[] arg1) {
                 if (sender instanceof ProxiedPlayer) {
-                    MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                    for (String line : I18n.tls(Message.COMMAND_SOCIAL_FACEBOOK, matrixPlayer.getLastLocale())) {
-                        sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
-                    }
+                    api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
+                        for (String line : I18n.tls(Message.COMMAND_SOCIAL_FACEBOOK, matrixPlayer.getLastLocale())) {
+                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                        }
+                    });
                 }
             }
         });
@@ -66,10 +65,11 @@ public class BasicCommands {
             @Override
             public void execute(CommandSender sender, String[] arg1) {
                 if (sender instanceof ProxiedPlayer) {
-                    MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                    for (String line : I18n.tls(Message.COMMAND_SOCIAL_INSTAGRAM, matrixPlayer.getLastLocale())) {
-                        sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
-                    }
+                    api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
+                        for (String line : I18n.tls(Message.COMMAND_SOCIAL_INSTAGRAM, matrixPlayer.getLastLocale())) {
+                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                        }
+                    });
                 }
             }
         });
@@ -78,16 +78,12 @@ public class BasicCommands {
             public void execute(CommandSender sender, String[] args) {
                 if (args.length == 0) {
                     if (sender instanceof ProxiedPlayer) {
-                        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) sender).getUniqueId());
-                        for (String line : I18n.tls(Message.COMMAND_SOCIAL_DISCORD, matrixPlayer.getLastLocale())) {
-                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
-                        }
+                        api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
+                            for (String line : I18n.tls(Message.COMMAND_SOCIAL_DISCORD, matrixPlayer.getLastLocale())) {
+                                sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                            }
+                        });
                     }
-                } else if (args.length == 1 && args[0].equalsIgnoreCase("verify")) {
-                    String random = randomAlphaNumeric(6);
-                    api.getCache().setDiscordVerificationCode(sender.getName(), random);
-                    sender.sendMessage(StringUtils.replace("&fTu código de verificación es: &a" + random));
-                    sender.sendMessage(StringUtils.replace("&fEl código expira en &a5&f minutos."));
                 }
             }
         });

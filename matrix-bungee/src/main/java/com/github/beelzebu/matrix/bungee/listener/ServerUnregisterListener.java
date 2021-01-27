@@ -29,7 +29,7 @@ public class ServerUnregisterListener implements RedisMessageListener<ServerUnre
         }
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().removeIf(server -> server.equals(message.getServerInfo().getServerName())));
         ProxyServer.getInstance().getServers().remove(message.getServerInfo().getServerName());
-        Matrix.getAPI().getCache().removeServer(message.getServerInfo());
+        Matrix.getAPI().getServerManager().removeServer(message.getServerInfo());
     }
 
     @Override

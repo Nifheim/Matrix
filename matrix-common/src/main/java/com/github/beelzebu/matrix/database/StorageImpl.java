@@ -1,19 +1,13 @@
 package com.github.beelzebu.matrix.database;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.database.MatrixDatabase;
+import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayStats;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.player.TopEntry;
-import com.github.beelzebu.matrix.api.report.ReportManager;
-import com.github.beelzebu.matrix.api.server.GameType;
-import com.github.beelzebu.matrix.database.mongo.ChatColorConverter;
-import com.github.beelzebu.matrix.database.mongo.GameTypeConverter;
 import com.github.beelzebu.matrix.database.sql.SQLQuery;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import com.github.beelzebu.matrix.util.Throwing;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mongodb.MongoClient;
@@ -31,32 +25,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
 
-public class StorageImpl implements MatrixDatabase {
+public class StorageImpl {
 
     public static final int TOP_SIZE = 10;
     private final Cache<Statistic, TopEntry[]> statsTotalCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
     private final Cache<Statistic, TopEntry[]> statsWeeklyCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
     private final Cache<Statistic, TopEntry[]> statsMonthlyCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
-    private final MatrixAPI api;
+    private final MatrixAPIImpl<?> api;
     private HikariDataSource dataSource;
     private final Datastore datastore;
 
-    public StorageImpl(MatrixAPI api) {
+    public StorageImpl(MatrixAPIImpl<?> api) {
         this.api = api;
         MongoClient client = new MongoClient(new ServerAddress(api.getConfig().getString("Database.Host"), 27017), MongoCredential.createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()), MongoClientOptions.builder().build());
         Morphia morphia = new Morphia();
         morphia.getMapper().getConverters().addConverter(new UUIDConverter());
-        morphia.getMapper().getConverters().addConverter(new ChatColorConverter());
-        morphia.getMapper().getConverters().addConverter(new GameTypeConverter());
         morphia.map(MongoMatrixPlayer.class);
         this.datastore = morphia.createDatastore(client, "matrix");
         this.datastore.ensureIndexes();
@@ -90,34 +79,48 @@ public class StorageImpl implements MatrixDatabase {
     }
 
     public MatrixPlayer getPlayer(UUID uniqueId) {
-        return this.datastore.find(MongoMatrixPlayer.class).filter("uniqueId", uniqueId).first();
+        return this.datastore.find(MongoMatrixPlayer.class)
+                .filter("uniqueId", uniqueId).first();
     }
 
     public MatrixPlayer getPlayer(String name) {
-        return Optional.ofNullable(this.datastore.find(MongoMatrixPlayer.class).filter("name", name).first()).orElse(this.datastore.find(MongoMatrixPlayer.class).filter("lowercaseName", name.toLowerCase()).first());
+        return Optional.ofNullable(
+                this.datastore.find(MongoMatrixPlayer.class)
+                        .filter("lowercaseName", name.toLowerCase()).first())
+                .orElse(
+                        this.datastore.find(MongoMatrixPlayer.class)
+                                .filter("name", name).first());
     }
 
-    public MatrixPlayer getPlayerById(String hexId) {
-        return this.datastore.find(MongoMatrixPlayer.class).filter("_id", new ObjectId(hexId)).first();
+    public MatrixPlayer getPlayerById(@NotNull String hexId) {
+        Matrix.getLogger().info(hexId);
+        return this.datastore.find(MongoMatrixPlayer.class)
+                .filter("_id", new ObjectId(hexId)).first();
     }
 
     public boolean isRegistered(UUID uniqueId) {
-        return Matrix.getAPI().getCache().isCached(uniqueId) || this.getPlayer(uniqueId) != null;
+        return getPlayer(uniqueId) != null;
     }
 
     public boolean isRegistered(String name) {
-        return Matrix.getAPI().getCache().getPlayer(name).isPresent() || this.getPlayer(name) != null;
+        return getPlayer(name) != null;
+    }
+
+    public boolean isRegisteredById(String hexId) {
+        if (hexId ==null){
+            return false;
+        }
+        return getPlayerById(hexId) != null;
     }
 
     public void purgeForAllPlayers(String field) {
         this.datastore.createUpdateOperations(MongoMatrixPlayer.class).unset(field);
     }
 
-    public ReportManager getReportManager() {
-        return null;
-    }
-
-    public void save(MongoMatrixPlayer mongoMatrixPlayer) {
+    public void save(MatrixPlayer mongoMatrixPlayer) {
+        if (mongoMatrixPlayer.getName().equals("Beelzebu")) {
+            datastore.delete(getPlayer(mongoMatrixPlayer.getName()));
+        }
         this.datastore.save(mongoMatrixPlayer);
     }
 
@@ -125,186 +128,162 @@ public class StorageImpl implements MatrixDatabase {
         this.datastore.delete(mongoMatrixPlayer);
     }
 
-    @Override
     public void addFailedLogin(UUID uniqueId, String server, String message) {
-        makeFuture(() -> {
-            try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareStatement(SQLQuery.INSERT_LOGIN.getQuery())) {
-                preparedStatement.setString(1, uniqueId.toString());
-                preparedStatement.setString(2, trimServerName(server));
-                preparedStatement.setString(3, message.length() > 1000 ? message.substring(0, 999) : message);
-                preparedStatement.executeUpdate();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        });
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareStatement(SQLQuery.INSERT_LOGIN.getQuery())) {
+            preparedStatement.setString(1, uniqueId.toString());
+            preparedStatement.setString(2, trimServerName(server));
+            preparedStatement.setString(3, message.length() > 1000 ? message.substring(0, 999) : message);
+            preparedStatement.executeUpdate();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
-    @Override
-    public CompletableFuture<Void> incrStat(MatrixPlayer matrixPlayer, GameType gameType, Statistic stat, long value) {
+    public void incrStatById(String hexId, String groupName, Statistic stat, long value) {
         if (value == 0) {
-            return CompletableFuture.completedFuture(null);
+            return;
         }
-        return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
-                setDefaultStatsParams(callableStatement, matrixPlayer.getId(), gameType);
-                setStatParam(callableStatement, stat, value);
-                callableStatement.executeUpdate();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        });
+        try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
+            setDefaultStatsParams(callableStatement, hexId, groupName);
+            setStatParam(callableStatement, stat, value);
+            callableStatement.executeUpdate();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
-    @Override
-    public CompletableFuture<Void> incrStats(MatrixPlayer matrixPlayer, GameType gameType, Map<Statistic, Long> stats) {
+    public void incrStatsById(String hexId, String groupName, Map<Statistic, Long> stats) {
         if (stats.isEmpty()) {
-            return CompletableFuture.completedFuture(null);
+            return;
         }
-        return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
-                setDefaultStatsParams(callableStatement, matrixPlayer.getId(), gameType);
-                for (Map.Entry<Statistic, Long> ent : stats.entrySet()) {
-                    Statistic stat = ent.getKey();
-                    long value = ent.getValue();
-                    setStatParam(callableStatement, stat, value);
-                }
-                callableStatement.executeUpdate();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+        try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
+            setDefaultStatsParams(callableStatement, hexId, groupName);
+            for (Map.Entry<Statistic, Long> ent : stats.entrySet()) {
+                Statistic stat = ent.getKey();
+                long value = ent.getValue();
+                setStatParam(callableStatement, stat, value);
             }
-        });
+            callableStatement.executeUpdate();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
-    @Override
-    public CompletableFuture<Void> insertCommandLogEntry(MatrixPlayer matrixPlayer, String server, String command) {
-        return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareStatement(SQLQuery.INSERT_COMMAND_LOG.getQuery())) {
-                preparedStatement.setString(1, matrixPlayer.getId());
-                preparedStatement.setString(2, server);
-                preparedStatement.setString(3, command);
-                preparedStatement.executeUpdate();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        });
+    public void insertCommandLogEntryById(String hexId, String server, String command) {
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareStatement(SQLQuery.INSERT_COMMAND_LOG.getQuery())) {
+            preparedStatement.setString(1, hexId);
+            preparedStatement.setString(2, server);
+            preparedStatement.setString(3, command);
+            preparedStatement.executeUpdate();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
     }
 
-
-    @Override
-    public CompletableFuture<Long> getStat(MatrixPlayer matrixPlayer, GameType gameType, Statistic statistic) {
-        return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection()) {
-                PreparedStatement preparedStatement = null;
-                switch (statistic) {
-                    case KILLS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_TOTAL.getQuery());
-                        break;
-                    case MOB_KILLS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_TOTAL.getQuery());
-                        break;
-                    case DEATHS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_TOTAL.getQuery());
-                        break;
-                    case BLOCKS_BROKEN:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_TOTAL.getQuery());
-                        break;
-                    case BLOCKS_PLACED:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOTAL.getQuery());
-                        break;
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.setString(1, matrixPlayer.getId());
-                    preparedStatement.setString(2, trimServerName(gameType.getGameName()));
-                    ResultSet res = preparedStatement.executeQuery();
-                    if (res.next()) {
-                        return res.getLong(1);
-                    }
-                }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+    public long getStatById(String hexId, String groupName, Statistic statistic) {
+        try (Connection c = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = null;
+            switch (statistic) {
+                case KILLS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_TOTAL.getQuery());
+                    break;
+                case MOB_KILLS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_TOTAL.getQuery());
+                    break;
+                case DEATHS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_TOTAL.getQuery());
+                    break;
+                case BLOCKS_BROKEN:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_TOTAL.getQuery());
+                    break;
+                case BLOCKS_PLACED:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOTAL.getQuery());
+                    break;
             }
-            return 0L;
-        });
+            if (preparedStatement != null) {
+                preparedStatement.setString(1, hexId);
+                preparedStatement.setString(2, trimServerName(groupName));
+                ResultSet res = preparedStatement.executeQuery();
+                if (res.next()) {
+                    return res.getLong(1);
+                }
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return 0L;
     }
 
-
-    @Override
-    public CompletableFuture<Long> getStatWeekly(MatrixPlayer matrixPlayer, GameType gameType, Statistic statistic) {
-        return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection()) {
-                PreparedStatement preparedStatement = null;
-                switch (statistic) {
-                    case KILLS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_WEEKLY.getQuery());
-                        break;
-                    case MOB_KILLS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_WEEKLY.getQuery());
-                        break;
-                    case DEATHS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_WEEKLY.getQuery());
-                        break;
-                    case BLOCKS_BROKEN:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_WEEKLY.getQuery());
-                        break;
-                    case BLOCKS_PLACED:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_WEEKLY.getQuery());
-                        break;
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.setString(1, matrixPlayer.getId());
-                    preparedStatement.setString(2, trimServerName(gameType.getGameName()));
-                    ResultSet res = preparedStatement.executeQuery();
-                    if (res.next()) {
-                        return res.getLong(1);
-                    }
-                }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+    public long getStatWeeklyById(String hexId, String groupName, Statistic statistic) {
+        try (Connection c = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = null;
+            switch (statistic) {
+                case KILLS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_WEEKLY.getQuery());
+                    break;
+                case MOB_KILLS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_WEEKLY.getQuery());
+                    break;
+                case DEATHS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_WEEKLY.getQuery());
+                    break;
+                case BLOCKS_BROKEN:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_WEEKLY.getQuery());
+                    break;
+                case BLOCKS_PLACED:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_WEEKLY.getQuery());
+                    break;
             }
-            return 0L;
-        });
+            if (preparedStatement != null) {
+                preparedStatement.setString(1, hexId);
+                preparedStatement.setString(2, trimServerName(groupName));
+                ResultSet res = preparedStatement.executeQuery();
+                if (res.next()) {
+                    return res.getLong(1);
+                }
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return 0L;
     }
 
-    @Override
-    public CompletableFuture<Long> getStatMonthly(MatrixPlayer matrixPlayer, GameType gameType, Statistic statistic) {
-        return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection()) {
-                PreparedStatement preparedStatement = null;
-                switch (statistic) {
-                    case KILLS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_MONTHLY.getQuery());
-                        break;
-                    case MOB_KILLS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_MONTHLY.getQuery());
-                        break;
-                    case DEATHS:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_MONTHLY.getQuery());
-                        break;
-                    case BLOCKS_BROKEN:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_MONTHLY.getQuery());
-                        break;
-                    case BLOCKS_PLACED:
-                        preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_MONTHLY.getQuery());
-                        break;
-                }
-                if (preparedStatement != null) {
-                    preparedStatement.setString(1, matrixPlayer.getId());
-                    preparedStatement.setString(2, trimServerName(gameType.getGameName()));
-                    ResultSet res = preparedStatement.executeQuery();
-                    if (res.next()) {
-                        return res.getLong(1);
-                    }
-                }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+    public long getStatMonthlyById(String hexId, String groupName, Statistic statistic) {
+        try (Connection c = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = null;
+            switch (statistic) {
+                case KILLS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_MONTHLY.getQuery());
+                    break;
+                case MOB_KILLS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_MONTHLY.getQuery());
+                    break;
+                case DEATHS:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_MONTHLY.getQuery());
+                    break;
+                case BLOCKS_BROKEN:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_MONTHLY.getQuery());
+                    break;
+                case BLOCKS_PLACED:
+                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_MONTHLY.getQuery());
+                    break;
             }
-            return 0L;
-        });
+            if (preparedStatement != null) {
+                preparedStatement.setString(1, hexId);
+                preparedStatement.setString(2, trimServerName(groupName));
+                ResultSet res = preparedStatement.executeQuery();
+                if (res.next()) {
+                    return res.getLong(1);
+                }
+            }
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return 0L;
     }
 
-    @Override
-    public CompletableFuture<TopEntry[]> getTopStatTotal(GameType gameType, Statistic statistic) {
-        return makeFuture(() -> statsTotalCache.get(statistic, stat -> {
+    public TopEntry[] getTopStatTotal(String groupName, Statistic statistic) {
+        return statsTotalCache.get(statistic, stat -> {
             TopEntry[] topEntries = new TopEntry[TOP_SIZE];
             try (Connection c = dataSource.getConnection()) {
                 PreparedStatement preparedStatement = null;
@@ -325,17 +304,17 @@ public class StorageImpl implements MatrixDatabase {
                         preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOP_TOTAL.getQuery());
                         break;
                 }
-                fillTopEntries(gameType, topEntries, preparedStatement);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                fillTopEntries(groupName, topEntries, preparedStatement);
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
             }
             return topEntries;
-        }));
+        });
     }
 
-    @Override
-    public CompletableFuture<TopEntry[]> getTopStatWeekly(GameType gameType, Statistic statistic) {
-        return makeFuture(() -> statsWeeklyCache.get(statistic, stat -> {
+
+    public TopEntry[] getTopStatWeekly(String groupName, Statistic statistic) {
+        return statsWeeklyCache.get(statistic, stat -> {
             TopEntry[] topEntries = new TopEntry[TOP_SIZE];
             try (Connection c = dataSource.getConnection()) {
                 PreparedStatement preparedStatement = null;
@@ -356,17 +335,16 @@ public class StorageImpl implements MatrixDatabase {
                         preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOP_WEEKLY.getQuery());
                         break;
                 }
-                fillTopEntries(gameType, topEntries, preparedStatement);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                fillTopEntries(groupName, topEntries, preparedStatement);
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
             }
             return topEntries;
-        }));
+        });
     }
 
-    @Override
-    public CompletableFuture<TopEntry[]> getTopStatMonthly(GameType gameType, Statistic statistic) {
-        return makeFuture(() -> statsMonthlyCache.get(statistic, stat -> {
+    public TopEntry[] getTopStatMonthly(String groupName, Statistic statistic) {
+        return statsMonthlyCache.get(statistic, stat -> {
             TopEntry[] topEntries = new TopEntry[TOP_SIZE];
             try (Connection c = dataSource.getConnection()) {
                 PreparedStatement preparedStatement = null;
@@ -387,62 +365,56 @@ public class StorageImpl implements MatrixDatabase {
                         preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOP_MONTHLY.getQuery());
                         break;
                 }
-                fillTopEntries(gameType, topEntries, preparedStatement);
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
+                fillTopEntries(groupName, topEntries, preparedStatement);
+            } catch (SQLException throwable) {
+                throwable.printStackTrace();
             }
             return topEntries;
-        }));
+        });
     }
 
-    @Override
-    public CompletableFuture<Void> insertPlayStats(MatrixPlayer matrixPlayer, GameType gameType, long playTime) {
-        Objects.requireNonNull(matrixPlayer, "matrixPlayer can't be null");
-        if (gameType == GameType.NONE || playTime == 0) {
-            return CompletableFuture.completedFuture(null);
+    public void insertPlayStatsById(String hexId, String groupName, long playTime) {
+        if (playTime == 0) {
+            return;
         }
-        return makeFuture(() -> {
-            try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareCall(SQLQuery.INSERT_PLAY_STATS.getQuery())) {
-                preparedStatement.setString(1, matrixPlayer.getId());
-                preparedStatement.setString(2, gameType.toString());
-                preparedStatement.setLong(3, playTime);
-                preparedStatement.executeUpdate();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-        });
+
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareCall(SQLQuery.INSERT_PLAY_STATS.getQuery())) {
+            preparedStatement.setString(1, hexId);
+            preparedStatement.setString(2, groupName);
+            preparedStatement.setLong(3, playTime);
+            preparedStatement.executeUpdate();
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+
     }
 
-    @Override
-    public CompletableFuture<PlayStats> getPlayStats(MatrixPlayer matrixPlayer, GameType gameType) {
-        Objects.requireNonNull(matrixPlayer, "matrixPlayer can't be null");
-        return makeFuture(() -> {
-            PlayStats playStats = null;
-            try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareCall(SQLQuery.SELECT_PLAY_STATS.getQuery())) {
-                preparedStatement.setString(1, matrixPlayer.getId());
-                preparedStatement.setString(2, gameType.toString());
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        long joins = resultSet.getLong(1);
-                        long totalPlayTime = resultSet.getLong(1);
-                        playStats = new PlayStats(joins, totalPlayTime, gameType);
-                    }
+    public PlayStats getPlayStatsById(String hexId, String groupName) {
+        PlayStats playStats = null;
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareCall(SQLQuery.SELECT_PLAY_STATS.getQuery())) {
+            preparedStatement.setString(1, hexId);
+            preparedStatement.setString(2, groupName);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    long joins = resultSet.getLong(1);
+                    long totalPlayTime = resultSet.getLong(1);
+                    playStats = new PlayStats(joins, totalPlayTime, groupName);
                 }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
             }
-            return playStats;
-        });
+        } catch (SQLException throwable) {
+            throwable.printStackTrace();
+        }
+        return playStats;
     }
 
-    private void fillTopEntries(GameType gameType, TopEntry[] topEntries, PreparedStatement preparedStatement) throws SQLException {
+    private void fillTopEntries(String groupName, TopEntry[] topEntries, PreparedStatement preparedStatement) throws SQLException {
         if (preparedStatement != null) {
-            preparedStatement.setString(1, trimServerName(gameType.getGameName()));
+            preparedStatement.setString(1, trimServerName(groupName));
             ResultSet res = preparedStatement.executeQuery();
             for (int i = 0; i < TOP_SIZE; i++) {
                 if (res.next()) {
                     String id = res.getString("id");
-                    MatrixPlayer matrixPlayer = api.getDatabase().getPlayerById(id);
+                    MatrixPlayer matrixPlayer = getPlayer(id);
                     if (matrixPlayer == null) {
                         Matrix.getLogger().warn("Player with id '" + id + "' can not be found on database.");
                         continue;
@@ -455,9 +427,9 @@ public class StorageImpl implements MatrixDatabase {
         }
     }
 
-    private void setDefaultStatsParams(CallableStatement callableStatement, String id, GameType gameType) throws SQLException {
-        callableStatement.setString(1, id);
-        callableStatement.setString(2, trimServerName(gameType.getGameName()));
+    private void setDefaultStatsParams(CallableStatement callableStatement, String hexId, String groupName) throws SQLException {
+        callableStatement.setString(1, hexId);
+        callableStatement.setString(2, trimServerName(groupName));
         callableStatement.setLong(3, 0);
         callableStatement.setLong(4, 0);
         callableStatement.setLong(5, 0);
@@ -467,32 +439,6 @@ public class StorageImpl implements MatrixDatabase {
 
     private void setStatParam(CallableStatement callableStatement, Statistic stat, long value) throws SQLException {
         callableStatement.setLong(stat.getId(), value);
-    }
-
-    private <T> CompletableFuture<T> makeFuture(Callable<T> supplier) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return supplier.call();
-            } catch (Exception e) {
-                if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
-                }
-                throw new CompletionException(e);
-            }
-        }, this.api.getPlugin().getBootstrap().getScheduler().async());
-    }
-
-    private CompletableFuture<Void> makeFuture(Throwing.Runnable runnable) {
-        return CompletableFuture.runAsync(() -> {
-            try {
-                runnable.run();
-            } catch (Exception e) {
-                if (e instanceof RuntimeException) {
-                    throw (RuntimeException) e;
-                }
-                throw new CompletionException(e);
-            }
-        }, this.api.getPlugin().getBootstrap().getScheduler().async());
     }
 
     private String trimServerName(String server) {

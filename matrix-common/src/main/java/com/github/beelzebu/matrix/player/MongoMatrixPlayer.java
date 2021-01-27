@@ -1,16 +1,12 @@
 package com.github.beelzebu.matrix.player;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.player.Statistic;
-import com.github.beelzebu.matrix.api.server.GameType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
-import com.github.beelzebu.matrix.cache.CacheProviderImpl;
-import com.github.beelzebu.matrix.server.GameTypeImpl;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -18,6 +14,7 @@ import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.IndexOptions;
 import dev.morphia.annotations.Indexed;
+import dev.morphia.annotations.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -31,8 +28,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Stream;
-import net.md_5.bungee.api.ChatColor;
 import org.bson.types.ObjectId;
 
 /**
@@ -50,6 +47,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Id
     private ObjectId id;
+    @Transient
+    private transient String idString;
     @Indexed(options = @IndexOptions(unique = true))
     private UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
@@ -62,10 +61,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private boolean bedrock;
     private boolean registered;
     private boolean admin;
-    private String secret;
     private String hashedPassword;
     private boolean loggedIn;
-    private ChatColor chatColor = ChatColor.RESET;
     private String lastLocale;
     private String staffChannel;
     private boolean watcher;
@@ -79,9 +76,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private int censoringLevel;
     private int spammingLevel;
     private boolean vanished;
-    private String lastGameType;
-    private String lastServerGroup;
-    private String lastServerName;
     private HashMap<String, GameMode> gameModeByGame = new HashMap<>();
 
     public MongoMatrixPlayer(UUID uniqueId, String name) {
@@ -89,7 +83,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         this.uniqueId = uniqueId;
         this.name = name;
         this.lowercaseName = name.toLowerCase();
-        Matrix.getAPI().getCache().update(name, uniqueId);
         registration = new Date();
     }
 
@@ -117,16 +110,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return mongoMatrixPlayer;
     }
 
-    public String getId() {
-        if (id == null) {
-            return null;
-        }
-        return id.toHexString();
-    }
-
     @Override
-    public String getRedisKey() {
-        return CacheProviderImpl.USER_KEY_PREFIX + getUniqueId();
+    public String getId() {
+        if (Objects.equals(idString, "")) {
+            return idString = id.toHexString();
+        }
+        return idString;
     }
 
     @Override
@@ -139,7 +128,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(this.uniqueId, uniqueId)) {
             return;
         }
-        Matrix.getAPI().getCache().update(name, uniqueId);
+        if (premium) {
+            throw new RuntimeException("Can't update UUID for premium player");
+        }
         this.uniqueId = uniqueId;
         updateCached("uniqueId");
     }
@@ -154,10 +145,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(this.name, name)) {
             return;
         }
+        if (!premium) {
+            throw new RuntimeException("Can't update name for cracked player");
+        }
         this.name = Objects.requireNonNull(name, "name can't be null.");
         lowercaseName = name.toLowerCase();
         knownNames.add(name);
-        Matrix.getAPI().getCache().update(name, uniqueId);
         updateCached("name");
         updateCached("lowercaseName");
         updateCached("knownNames");
@@ -244,20 +237,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getSecret() {
-        return secret;
-    }
-
-    @Override
-    public void setSecret(String secret) {
-        if (Objects.equals(this.secret, secret)) {
-            return;
-        }
-        this.secret = secret;
-        updateCached("secret");
-    }
-
-    @Override
     public String getHashedPassword() {
         return hashedPassword;
     }
@@ -283,20 +262,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
         this.loggedIn = loggedIn;
         updateCached("loggedIn");
-    }
-
-    @Override
-    public ChatColor getChatColor() {
-        return chatColor;
-    }
-
-    @Override
-    public void setChatColor(ChatColor chatColor) {
-        if (Objects.equals(this.chatColor, chatColor)) {
-            return;
+        if (loggedIn) {
+            Matrix.getAPI().getPlayerManager().setOnlineById(getId());
+        } else {
+            Matrix.getAPI().getPlayerManager().setOfflineById(getId());
         }
-        this.chatColor = chatColor;
-        updateCached("chatColor");
     }
 
     @Override
@@ -468,66 +438,41 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public GameMode getGameMode(GameType gameType) {
-        return gameModeByGame.getOrDefault(gameType, Matrix.getAPI().getServerInfo().getDefaultGameMode());
+    public GameMode getGameMode(String serverGroup) {
+        return gameModeByGame.getOrDefault(serverGroup, Matrix.getAPI().getServerInfo().getDefaultGameMode());
     }
 
     @Override
-    public void setGameMode(GameMode gameMode, GameType gameType) {
-        if (gameType == GameType.NONE) {
+    public void setGameMode(GameMode gameMode, String serverGroup) {
+        if (Objects.equals(gameModeByGame.get(serverGroup), gameMode)) {
             return;
         }
-        if (Objects.equals(gameModeByGame.get(gameType), gameMode)) {
-            return;
-        }
-        gameModeByGame.put(gameType.getGameName(), gameMode);
+        gameModeByGame.put(serverGroup, gameMode);
         updateCached("gameModeByGame");
     }
 
     @Override
-    public GameType getLastGameType() {
-        return GameTypeImpl.getByName(lastGameType);
-    }
-
-    @Override
-    public String getLastServerGroup() {
-        return lastServerGroup;
+    public CompletableFuture<String> getLastServerGroup() {
+        return Matrix.getAPI().getPlayerManager().getGroupById(getId());
     }
 
     @Override
     public void setLastServerGroup(String serverGroup) {
-        if (Objects.equals(this.lastServerGroup, serverGroup)) {
-            return;
-        }
-        this.lastServerGroup = serverGroup;
-        updateCached("lastServerGroup");
+        Matrix.getAPI().getPlayerManager().setGroupById(getId(), serverGroup);
     }
 
     @Override
-    public String getLastServerName() {
-        return lastServerName;
+    public CompletableFuture<String> getLastServerName() {
+        return Matrix.getAPI().getPlayerManager().getServerById(getId());
     }
 
     @Override
     public void setLastServerName(String lastServerName) {
-        Objects.requireNonNull(lastServerName, "lastServerName can't be null");
-        if (Objects.equals(this.lastServerName, lastServerName)) {
-            return;
-        }
-        this.lastServerName = updateCached("lastServerName", lastServerName);
+        Matrix.getAPI().getPlayerManager().setServerById(getId(), lastServerName);
     }
 
     @Override
-    public void setLastGameType(GameType lastGameType) {
-        Objects.requireNonNull(lastGameType, "lastGameType can't be null");
-        if (Objects.equals(this.lastGameType, lastGameType.getGameName())) {
-            return;
-        }
-        this.lastGameType = updateCached("lastGameType", lastGameType.getGameName());
-    }
-
-    @Override
-    public long getTotalPlayTime(GameType gameType) {
+    public long getTotalPlayTime(String serverGroup) {
         return 0;//totalPlayTimeByGame.getOrDefault(gameType, 0L);
     }
 
@@ -543,7 +488,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public long getLastPlayTime(GameType gameType) {
+    public long getLastPlayTime(String serverGroup) {
         return 0;//playTimeByGame.getOrDefault(gameType, 0L);
     }
 
@@ -559,7 +504,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLastPlayTime(GameType gameType, long playTime) {
+    public void setLastPlayTime(String serverGroup, long playTime) {
         /*
         if (gameType == GameType.NONE) {
             return;
@@ -578,17 +523,17 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public Collection<GameType> getPlayedGames() {
+    public Collection<String> getPlayedGames() {
         return ImmutableSet.of();//ImmutableSet.copyOf(playedGamesMap.keySet());
     }
 
     @Override
-    public long getJoins(GameType gameType) {
+    public long getJoins(String serverGroup) {
         return 0;//playedGamesMap.getOrDefault(gameType, 0L);
     }
 
     @Override
-    public void addPlayedGame(GameType gameType) {
+    public void addPlayedGame(String serverGroup) {
         /*
         if (gameType == GameType.NONE) {
             return;
@@ -599,7 +544,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public MongoMatrixPlayer save() {
+    public CompletableFuture<Boolean> save() {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
         if (getDisplayName() == null) {
@@ -608,9 +553,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (lowercaseName == null) {
             setName(name);
         }
-        MatrixAPIImpl api = (MatrixAPIImpl) Matrix.getAPI();
-        api.getDatabase().save((MongoMatrixPlayer) api.getCache().getPlayer(getUniqueId()).orElse(this));
-        return this;
+        return Matrix.getAPI().getDatabase().save(uniqueId, this);
     }
 
     @Override
@@ -624,40 +567,25 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void saveStats(Map<Statistic, Long> stats) {
-        Matrix.getAPI().getDatabase().incrStats(this, /* using group name here because actual server name may be just an arena server*/Matrix.getAPI().getServerInfo().getGameType(), stats);
+    public long getStat(String serverGroup, Statistic statistic) {
+        return Matrix.getAPI().getDatabase().getStatById(getId(), serverGroup, statistic).join(); // TODO: check
     }
 
-    @Override
-    public void saveStat(Statistic stat, long value) {
-        Matrix.getAPI().getDatabase().incrStat(this, Matrix.getAPI().getServerInfo().getGameType(), stat, value);
-    }
-
-    @Override
-    public CompletableFuture<Long> getStat(Statistic statistic) {
-        return getStat(Matrix.getAPI().getServerInfo().getGameType(), statistic);
-    }
-
-    @Override
-    public CompletableFuture<Long> getStat(GameType gameType, Statistic statistic) {
-        return Matrix.getAPI().getDatabase().getStat(this, gameType, statistic);
-    }
-
+    @Deprecated
     public void updateCached(String field) {
         try {
-            Matrix.getAPI().getCache().updateCachedField(this, field, MongoMatrixPlayer.FIELDS.get(field).get(this));
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public <T> T updateCached(String field, T value) {
-        try {
-            Matrix.getAPI().getCache().updateCachedField(this, field, MongoMatrixPlayer.FIELDS.get(field).get(this));
+            Matrix.getAPI().getDatabase().updateFieldById(getId(), field, MongoMatrixPlayer.FIELDS.get(field).get(this));
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
-        return value;
+    }
+
+    public <T> CompletableFuture<T> updateCached(String field, T value) {
+        try {
+            return Matrix.getAPI().getDatabase().updateFieldById(getId(), field, value);
+        } catch (CompletionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Set<String> getKnownNames() {
@@ -675,24 +603,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (!isPremium()) {
             setPremium(true);
         }
-        this.bedrock = updateCached("bedrock", true);
+        updateCached("bedrock", true).thenAccept(val -> this.bedrock = val);
     }
 
     @SuppressWarnings("unchecked")
     private void setField(Field field, String json) {
         try {
-            if (field.getName().equals("gameModeByGame")) {
-                HashMap<GameType, GameMode> map = (HashMap<GameType, GameMode>) field.get(this);
-                map.remove(GameType.NONE);
-                HashMap<GameType, GameMode> jsonMap = Matrix.GSON.fromJson(json, new TypeToken<HashMap<GameType, GameMode>>() {
-                }.getType());
-                if (!jsonMap.isEmpty()) {
-                    for (Map.Entry<GameType, GameMode> ent : jsonMap.entrySet()) {
-                        map.put(ent.getKey(), ent.getValue());
-                    }
-                }
-                map.remove(GameType.NONE);
-            } else if (field.getName().equals("options")) {
+            if (field.getName().equals("options")) {
                 Object value = Matrix.GSON.fromJson(json, new TypeToken<HashSet<PlayerOptionType>>() {
                 }.getType());
                 if (value != null) {

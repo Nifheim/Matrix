@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    api project(':matrix-common')
+    implementation project(':matrix-common')
     implementation 'redis.clients:jedis:3.3.0'
     implementation 'com.github.ben-manes.caffeine:caffeine:2.8.4'
     implementation 'org.apache.commons:commons-pool2:2.6.2'
@@ -33,9 +33,9 @@ shadowJar {
     getArchiveVersion().set(null)
 
     dependencies {
-        include(dependency('cl.indiopikaro:jMatrix'))
-        include(project(':matrix-common'))
+        include(dependency('com.github.beelzebu:jMatrix'))
         include(dependency('com.github.games647:craftapi'))
+        include(project(':matrix-common'))
     }
 
     relocate 'com.github.benmanes.caffeine', 'com.github.beelzebu.lib.caffeine'

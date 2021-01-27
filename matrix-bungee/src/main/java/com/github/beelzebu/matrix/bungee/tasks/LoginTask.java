@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.bungee.tasks;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -24,15 +24,15 @@ import org.geysermc.floodgate.FloodgateAPI;
  */
 public class LoginTask implements IndioLoginTask {
 
-    private final MatrixBungeeBootstrap plugin;
+    private final MatrixBungeeAPI api;
     private final LoginEvent event;
     private MongoMatrixPlayer player;
     private boolean firstJoin = false;
 
-    public LoginTask(MatrixBungeeBootstrap plugin, LoginEvent event) {
-        this.plugin = plugin;
+    public LoginTask(MatrixBungeeAPI api, LoginEvent event) {
+        this.api = api;
         this.event = event;
-        MatrixPlayer player = Matrix.getAPI().getPlayer(event.getConnection().getUniqueId());
+        MatrixPlayer player = api.getPlayerManager().getPlayer(event.getConnection().getUniqueId()).join();
         if (player == null) {
             Matrix.getLogger().info("Player null login name: " + event.getConnection().getName() + " uuid: " + event.getConnection().getUniqueId());
             if (event.getConnection().getName() != null) {
@@ -43,7 +43,7 @@ public class LoginTask implements IndioLoginTask {
                     e.printStackTrace();
                 }
                 if (profile != null) {
-                    player = Matrix.getAPI().getPlayer(profile.getId());
+                    player = api.getPlayerManager().getPlayer(profile.getId()).join();
                     if (player != null) {
                         if (event.getConnection().getName() != null && !Objects.equals(player.getName(), event.getConnection().getName())) {
                             player.setName(event.getConnection().getName());
@@ -51,7 +51,7 @@ public class LoginTask implements IndioLoginTask {
                     }
                 }
                 if (player == null) {
-                    player = Matrix.getAPI().getPlayer(event.getConnection().getName());
+                    player = api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
                 }
             }
         }
@@ -63,7 +63,8 @@ public class LoginTask implements IndioLoginTask {
         try {
             PendingConnection pendingConnection = event.getConnection();
             if (player == null) {
-                player = new MongoMatrixPlayer(pendingConnection.getUniqueId(), pendingConnection.getName()).save();
+                player = new MongoMatrixPlayer(pendingConnection.getUniqueId(), pendingConnection.getName());
+                player.save();
                 firstJoin = true;
             }
             if (FloodgateAPI.isBedrockPlayer(player.getUniqueId())) {
@@ -72,10 +73,10 @@ public class LoginTask implements IndioLoginTask {
             if (!player.isPremium() && !Objects.equals(player.getUniqueId(), UUID.nameUUIDFromBytes(("OfflinePlayer:" + event.getConnection().getName()).getBytes()))) {
                 event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n\nYour UUID doesn't match with the UUID associated to your name in our database.\nThis login attempt was recorded for security reasons."));
                 event.setCancelled(true);
-                Matrix.getAPI().getDatabase().addFailedLogin(event.getConnection().getUniqueId(), event.getConnection().getName(), "error login bungee");
+                api.getDatabase().addFailedLogin(event.getConnection().getUniqueId(), event.getConnection().getName(), "error login bungee");
                 return;
             }
-            if (!event.getConnection().getName().equalsIgnoreCase("Beelzebu") && plugin.getApi().getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
+            if (!event.getConnection().getName().equalsIgnoreCase("Beelzebu") && api.getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
                 event.setCancelled(true);
                 event.setCancelReason(TextComponent.fromLegacyText(I18n.tl(Message.MAINTENANCE, player.getLastLocale())));
                 return;
@@ -91,10 +92,6 @@ public class LoginTask implements IndioLoginTask {
                     player.setLoggedIn(true);
                 }
 
-                if (!Matrix.getAPI().getCache().isCached(player.getUniqueId())) {
-                    plugin.getApi().getCache().saveToCache(player);
-                }
-
                 if (firstJoin) {
                     player.setOption(PlayerOptionType.SPEED, true);
                 }
@@ -105,7 +102,7 @@ public class LoginTask implements IndioLoginTask {
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
         } finally {
-            event.completeIntent(plugin);
+            event.completeIntent(api.getPlugin().getBootstrap());
         }
     }
 }

@@ -1,19 +1,12 @@
 package com.github.beelzebu.matrix.bungee.listener;
 
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.bungee.tablist.TablistManager;
 import com.github.beelzebu.matrix.bungee.tasks.DisconnectTask;
 import com.github.beelzebu.matrix.bungee.tasks.LoginTask;
 import com.github.beelzebu.matrix.bungee.tasks.PostLoginTask;
 import com.github.beelzebu.matrix.bungee.tasks.PreLoginTask;
 import com.github.beelzebu.matrix.bungee.util.ServerUtil;
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -27,49 +20,10 @@ import net.md_5.bungee.event.EventPriority;
 
 public class LoginListener implements Listener {
 
-    private static final Map<String, Boolean> blacklist = new HashMap<>();
-    private static final Map<String, Object> activeBlacklist = new HashMap<>();
-    private final MatrixAPI api = Matrix.getAPI();
-    private final MatrixBungeeBootstrap plugin;
+    private final MatrixBungeeAPI api;
 
-    public LoginListener(MatrixBungeeBootstrap matrixBungeeBootstrap) {
-        plugin = matrixBungeeBootstrap;
-        activeBlacklist.put("http://www,stopforumspam,com/api?ip=", "yes");
-        activeBlacklist.put("http://www,shroomery,org/ythan/proxycheck,php?ip=", "Y");
-        try (Scanner blackList = new Scanner(new URL("http://myip.ms/files/blacklist/csf/latest_blacklist.txt").openStream())) {
-            Matrix.getLogger().info("[AJB] Downloading Blacklist...");
-            while (blackList.hasNextLine()) {
-                String IP = blackList.nextLine();
-                if (IP.matches("\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}") && !blacklist.containsKey(IP)) {
-                    blacklist.put(IP, true);
-                }
-            }
-            Matrix.getLogger().info("[AJB] Blacklist successfully Downloaded");
-        } catch (IOException e) {
-            Matrix.getLogger().info("[AJB] Error Downloading the Blacklist");
-        }
-    }
-
-    public static boolean isProxy(String IP) {
-        if ((IP.equals("127.0.0.1")) || (IP.equals("localhost")) || (IP.matches("192\\.168\\.[01]{1}\\.[0-9]{1,3}"))) { // está enviando información falsa
-            return true;
-        }
-        for (String s : activeBlacklist.keySet()) {
-            try (Scanner scanner = new Scanner(new URL(s.replace(",", ".") + IP).openStream())) {
-                StringBuilder res = new StringBuilder();
-                while (scanner.hasNextLine()) {
-                    res.append(scanner.nextLine());
-                }
-                String[] args = ((String) activeBlacklist.get(s)).split(",");
-                for (String arg : args) {
-                    if (res.toString().matches(arg)) {
-                        return true;
-                    }
-                }
-            } catch (Exception ignore) {
-            }
-        }
-        return blacklist.containsKey(IP) && blacklist.get(IP);
+    public LoginListener(MatrixBungeeAPI api) {
+        this.api = api;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -84,19 +38,19 @@ public class LoginListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        e.registerIntent(plugin);
-        api.getPlugin().runAsync(new PreLoginTask(plugin, e));
+        e.registerIntent(api.getPlugin().getBootstrap());
+        api.getPlugin().getBootstrap().getScheduler().executeAsync(new PreLoginTask(api, e));
     }
 
     @EventHandler(priority = 127)
     public void onLogin(LoginEvent e) {
-        e.registerIntent(plugin);
-        api.getPlugin().runAsync(new LoginTask(plugin, e));
+        e.registerIntent(api.getPlugin().getBootstrap());
+        api.getPlugin().getBootstrap().getScheduler().executeAsync(new LoginTask(api, e));
     }
 
     @EventHandler(priority = -128)
     public void onLogin(PostLoginEvent e) {
-        api.getPlugin().runAsync(new PostLoginTask(e));
+        api.getPlugin().getBootstrap().getScheduler().executeAsync(new PostLoginTask(api, e));
     }
 
     @EventHandler(priority = -128)
@@ -111,6 +65,6 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = 127)
     public void onDisconnect(PlayerDisconnectEvent e) {
-        api.getPlugin().runAsync(new DisconnectTask(e));
+        api.getPlugin().getBootstrap().getScheduler().executeAsync(new DisconnectTask(api, e));
     }
 }

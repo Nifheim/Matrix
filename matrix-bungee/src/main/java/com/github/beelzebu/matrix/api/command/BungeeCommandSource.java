@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.api.command;
 
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -28,6 +29,6 @@ public class BungeeCommandSource implements CommandSource {
 
     @Override
     public void sendMessage(String message) {
-        sender.sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
+        sender.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', StringUtils.replace(message))));
     }
 }

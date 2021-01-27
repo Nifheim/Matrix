@@ -1,9 +1,7 @@
 package com.github.beelzebu.matrix.bungee.listener;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.server.ServerInfo;
+import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.SpamUtils;
 import com.google.common.cache.Cache;
@@ -35,8 +33,8 @@ import net.md_5.bungee.event.EventHandler;
 
 public class ChatListener implements Listener {
 
-    private final MatrixAPI api;
-    private final String[] blockedCommands = {"version", "icanhasbukkit", "ver", "about", "luckperms", "lp", "perm", "perms", "permission", "permissions", "lpb", "pp", "pex", "powerfulperms", "permissionsex", "bungee"};
+    private final MatrixBungeeAPI api;
+    private final String[] blockedCommands = {"version", "icanhasbukkit", "ver", "about", "luckperms", "lp", "perm", "perms", "permission", "permissions", "lpb", "pp", "pex", "powerfulperms", "permissionsex", "bungee", "plugins", "pl", "plugman"};
     private final String[] disabledServerGroups = {"auth"};
     private final Cache<UUID, String> messageEquals = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
     private final Cache<UUID, Boolean> messageCooldown = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
@@ -44,7 +42,7 @@ public class ChatListener implements Listener {
     private final ListMultimap<Integer, String> spamPunishments = ArrayListMultimap.create();
     private final Set<String> loggedCommands = new HashSet<>();
 
-    public ChatListener(MatrixAPI api) {
+    public ChatListener(MatrixBungeeAPI api) {
         this.api = api;
         api.getConfig().getStringList("Censoring.command").forEach(k -> punishments.put(Integer.parseInt(k.split(";", 2)[0]), k.split(";", 2)[1]));
         api.getConfig().getStringList("AntiSpam.Commands").forEach(k -> spamPunishments.put(Integer.parseInt(k.split(";", 2)[0]), k.split(";", 2)[1]));
@@ -134,9 +132,11 @@ public class ChatListener implements Listener {
             return;
         }
         if (e.getSender() instanceof ProxiedPlayer) {
+            if (((ProxiedPlayer) e.getSender()).hasPermission("matrix.chat.lowercase.bypass")) {
+                return;
+            }
             for (String group : disabledServerGroups) {
-                Set<String> servers = api.getCache().getServers(group).stream().map(ServerInfo::getServerName).collect(Collectors.toSet());
-                if (servers.contains(((ProxiedPlayer) e.getSender()).getServer().getInfo().getName())) {
+                if (((ProxiedPlayer) e.getSender()).getServer().getInfo().getName().startsWith(group + ":")) {
                     return;
                 }
             }
@@ -158,7 +158,7 @@ public class ChatListener implements Listener {
             }
             if (down + up != 0) {
                 double Percent = 1.0D * up / (up + down) * 100.0D;
-                int configpercent = 60;
+                int configpercent = 50;
                 if (Percent > configpercent) {
                     e.setMessage(e.getMessage().toLowerCase());
                 }
@@ -230,25 +230,26 @@ public class ChatListener implements Listener {
         if (!(e.getSender() instanceof ProxiedPlayer)) {
             return;
         }
-        String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
-        if (command.split(":").length > 1) {
-            e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));
-            command = command.split(":")[1];
-        }
-        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
-        for (String loggedCommand : loggedCommands) {
-            if (command.equals(loggedCommand)) {
-                api.getDatabase().insertCommandLogEntry(matrixPlayer, api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId()).getLastServerName(), e.getMessage());
+        api.getPlayerManager().getPlayer((ProxiedPlayer) e.getSender()).thenAccept(matrixPlayer -> {
+            String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
+            if (command.split(":").length > 1) {
+                e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));
+                command = command.split(":")[1];
             }
-        }
-        if (matrixPlayer.isAdmin()) {
-            return;
-        }
-        for (String blockedCommand : blockedCommands) {
-            if (blockedCommand.equals(command)) {
-                e.setMessage("/"); // send unknown command message
+            for (String loggedCommand : loggedCommands) {
+                if (command.equals(loggedCommand)) {
+                    api.getDatabase().insertCommandLogEntryById(matrixPlayer.getId(), matrixPlayer.getLastServerName().join(), e.getMessage());
+                }
             }
-        }
+            if (matrixPlayer.isAdmin()) {
+                return;
+            }
+            for (String blockedCommand : blockedCommands) {
+                if (blockedCommand.equals(command)) {
+                    e.setMessage("/"); // send unknown command message
+                }
+            }
+        });
     }
 
     @EventHandler(priority = 127)
@@ -256,31 +257,32 @@ public class ChatListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
-        if (matrixPlayer.isAdmin()) {
-            return;
-        }
-        String command = e.getCursor().replaceFirst("/", "").split(":", 2)[0].toLowerCase();
-        for (String blockedCommand : blockedCommands) {
-            if (blockedCommand.equals(command)) {
-                e.getSuggestions().clear(); // send unknown command message
+        api.getPlayerManager().getPlayer((ProxiedPlayer) e.getSender()).thenAccept(matrixPlayer -> {
+            if (matrixPlayer.isAdmin()) {
                 return;
             }
-        }
-        Iterator<String> it = e.getSuggestions().iterator();
-        while (it.hasNext()) {
-            String suggestion = it.next().replaceFirst("/", "").split(":", 2)[0].toLowerCase();
-            if (suggestion.split(":").length > 1) {
-                it.remove();
-                continue;
-            }
+            String command = e.getCursor().replaceFirst("/", "").split(":", 2)[0].toLowerCase();
             for (String blockedCommand : blockedCommands) {
-                if (suggestion.equals(blockedCommand)) {
-                    it.remove();
-                    break;
+                if (blockedCommand.equals(command)) {
+                    e.getSuggestions().clear(); // send unknown command message
+                    return;
                 }
             }
-        }
+            Iterator<String> it = e.getSuggestions().iterator();
+            while (it.hasNext()) {
+                String suggestion = it.next().replaceFirst("/", "").split(":", 2)[0].toLowerCase();
+                if (suggestion.split(":").length > 1) {
+                    it.remove();
+                    continue;
+                }
+                for (String blockedCommand : blockedCommands) {
+                    if (suggestion.equals(blockedCommand)) {
+                        it.remove();
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     @EventHandler(priority = 127)
@@ -288,18 +290,19 @@ public class ChatListener implements Listener {
         if (e.isCancelled()) {
             return;
         }
-        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(((ProxiedPlayer) e.getReceiver()).getUniqueId());
-        if (matrixPlayer.isAdmin()) {
-            return;
-        }
-        Iterator<String> it = e.getSuggestions().iterator();
-        while (it.hasNext()) {
-            String suggestion = it.next();
-            String command = suggestion.toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
-            if (command.split(":").length > 1) {
-                it.remove();
+        api.getPlayerManager().getPlayerById(api.getMetaInjector().getId((ProxiedPlayer) e.getReceiver())).thenAccept(matrixPlayer -> {
+            if (matrixPlayer.isAdmin()) {
+                return;
             }
-        }
+            Iterator<String> it = e.getSuggestions().iterator();
+            while (it.hasNext()) {
+                String suggestion = it.next();
+                String command = suggestion.toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
+                if (command.split(":").length > 1) {
+                    it.remove();
+                }
+            }
+        });
     }
 
     private String checkCensoring(String message) {
@@ -347,12 +350,13 @@ public class ChatListener implements Listener {
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&8&m--------------------------------------------------")));
         });
         if (broadcastType == BroadcastType.SPAM) {
-            MatrixPlayer matrixPlayer = api.getPlayer(spamer.getUniqueId());
-            if (matrixPlayer != null) {
-                matrixPlayer.incrSpammingLevel();
-                int level = matrixPlayer.getSpammingLevel();
-                spamPunishments.get(spamPunishments.containsKey(level) ? level : spamPunishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", spamer.getName()).replace("%message%", message).replace("%word%", message).replace("%count%", String.valueOf(level))));
-            }
+            api.getPlayerManager().getPlayer(spamer).thenAccept(matrixPlayer -> {
+                if (matrixPlayer != null) {
+                    matrixPlayer.incrSpammingLevel();
+                    int level = matrixPlayer.getSpammingLevel();
+                    spamPunishments.get(spamPunishments.containsKey(level) ? level : spamPunishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", spamer.getName()).replace("%message%", message).replace("%word%", message).replace("%count%", String.valueOf(level))));
+                }
+            });
         }
     }
 

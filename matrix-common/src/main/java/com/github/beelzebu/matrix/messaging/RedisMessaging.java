@@ -25,7 +25,7 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 public class RedisMessaging implements Messaging {
 
-    public static final String MATRIX_MESSAGING = "matrix:message";
+    public static final String MATRIX_MESSAGING = "matrix:1:message";
     private final Set<UUID> messages = new HashSet<>();
     private final Set<RedisMessageListener<? extends RedisMessage>> redisListeners = new LinkedHashSet<>();
     private final Set<MessageListener> messageListeners = new LinkedHashSet<>();
@@ -48,7 +48,7 @@ public class RedisMessaging implements Messaging {
         Objects.requireNonNull(redisMessage.getUniqueId(), "Can't send a message with null id");
         messages.add(redisMessage.getUniqueId());
         String jsonMessage = Matrix.GSON.toJson(redisMessage);
-        sendMessage(RedisManager.MATRIX_CHANNEL, jsonMessage);
+        sendMessage(MATRIX_MESSAGING, jsonMessage);
         Matrix.getLogger().debug("&7Sent: " + jsonMessage);
     }
 
@@ -96,7 +96,7 @@ public class RedisMessaging implements Messaging {
             try (Jedis jedis = redisManager.getPool().getResource()) {
                 try {
                     jpsh = new JedisPubSubHandler();
-                    jedis.subscribe(jpsh, RedisManager.MATRIX_CHANNEL);
+                    jedis.subscribe(jpsh, MATRIX_MESSAGING);
                 } catch (Exception e) {
                     Matrix.getLogger().info("PubSub error, attempting to recover.");
                     Matrix.getLogger().debug(e);

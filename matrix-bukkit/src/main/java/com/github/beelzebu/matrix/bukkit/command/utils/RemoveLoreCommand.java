@@ -25,7 +25,7 @@ public class RemoveLoreCommand extends MatrixCommand {
             return;
         }
         Player p = (Player) sender;
-        String locale = api.getPlayer(p.getUniqueId()).getLastLocale();
+        String locale = ((Player) sender).getLocale().substring(0, 2);
         if (args.length == 1) {
             if (p.getInventory().getItemInMainHand() != null) {
                 try {

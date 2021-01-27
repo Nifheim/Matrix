@@ -4,7 +4,6 @@ import cl.indiopikaro.bukkitutil.api.ItemBuilder;
 import cl.indiopikaro.bukkitutil.api.menu.BaseMenu;
 import cl.indiopikaro.bukkitutil.util.CompatUtil;
 import cl.indiopikaro.bukkitutil.util.SkullCreator;
-import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
@@ -93,7 +92,7 @@ public class ProfileGUI extends BaseMenu {
     }
 
     private void setItems() {
-        AbstractConfig messages = I18n.getMessagesFile(Matrix.getAPI().getPlayer(matrixPlayer.getUniqueId()).getLastLocale());
+        AbstractConfig messages = I18n.getMessagesFile(matrixPlayer.getLastLocale());
         messages.getKeys("Social.Profile.Items").forEach(itemPath -> items.add(getItem(messages, "Social.Profile.Items." + itemPath)));
         socialItems(getInv());
         items.forEach(this::setItem);

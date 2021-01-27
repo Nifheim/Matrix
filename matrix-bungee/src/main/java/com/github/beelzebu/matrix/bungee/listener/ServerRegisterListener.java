@@ -25,7 +25,7 @@ public class ServerRegisterListener implements RedisMessageListener<ServerRegist
         Matrix.getLogger().info("Adding server: " + message.getServerInfo().getServerName());
         ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(message.getServerInfo().getServerName(), Util.getAddr(message.getIp() + ":" + message.getPort()), "", false);
         ProxyServer.getInstance().getServers().remove("lobby");
-        Matrix.getAPI().getCache().addServer(message.getServerInfo());
+        Matrix.getAPI().getServerManager().addServer(message.getServerInfo());
         for (ServerInfo storedServer : ProxyServer.getInstance().getServers().values()) {
             if (Objects.equals(storedServer.getSocketAddress(), Util.getAddr(message.getIp() + ":" + message.getPort()))) {
                 serverInfo = ProxyServer.getInstance().constructServerInfo(storedServer.getName(), Util.getAddr(message.getIp() + ":" + message.getPort()), "", false);

@@ -2,7 +2,7 @@ package com.github.beelzebu.matrix.bungee.tasks;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
-import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
+import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
@@ -15,31 +15,29 @@ import net.md_5.bungee.api.event.PreLoginEvent;
  */
 public class PreLoginTask implements IndioLoginTask {
 
-    private final MatrixBungeeBootstrap plugin;
+    private final MatrixBungeeAPI api;
     private final PreLoginEvent event;
     private final MongoMatrixPlayer player;
 
-    public PreLoginTask(MatrixBungeeBootstrap plugin, PreLoginEvent event) {
-        this.plugin = plugin;
+    public PreLoginTask(MatrixBungeeAPI api, PreLoginEvent event) {
+        this.api = api;
         this.event = event;
-        MongoMatrixPlayer player = (MongoMatrixPlayer) Matrix.getAPI().getPlayer(event.getConnection().getName());
-        if (player == null) {
-            Profile profile = null;
-            try {
-                profile = RESOLVER.findProfile(event.getConnection().getName()).orElse(null);
-            } catch (RateLimitException | IOException e) {
-                e.printStackTrace();
-            }
-            if (profile != null) {
-                player = (MongoMatrixPlayer) Matrix.getAPI().getPlayer(profile.getId());
-                if (player != null) {
-                    if (player.isPremium()) {
-                        if (event.getConnection().getName() != null) {
-                            player.setName(event.getConnection().getName());
-                        }
-                        if (!player.isBedrock()) {
-                            event.getConnection().setOnlineMode(true);
-                        }
+        MongoMatrixPlayer player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
+        Profile profile = null;
+        try {
+            profile = RESOLVER.findProfile(event.getConnection().getName()).orElse(null);
+        } catch (RateLimitException | IOException e) {
+            e.printStackTrace();
+        }
+        if (profile != null) {
+            player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(profile.getId()).join();
+            if (player != null) {
+                if (player.isPremium()) {
+                    if (event.getConnection().getName() != null) {
+                        player.setName(event.getConnection().getName());
+                    }
+                    if (!player.isBedrock()) {
+                        event.getConnection().setOnlineMode(true);
                     }
                 }
             }
@@ -93,28 +91,24 @@ public class PreLoginTask implements IndioLoginTask {
                     if (!player.isBedrock()) {
                         event.getConnection().setOnlineMode(true);
                     }
-                    if (player != null && !player.isPremium()) {
+                    if (!player.isPremium()) {
                         player.setPremium(true);
                     }
                     break;
                 }
             }
-            if (player != null && player.isPremium() && !player.isBedrock()) {
-                event.getConnection().setOnlineMode(true);
+            if (player != null) {
+                if (player.isPremium() && !player.isBedrock()) {
+                    event.getConnection().setOnlineMode(true);
+                }
+                api.getDatabase().save(event.getConnection().getUniqueId(), player);
             }
-            Matrix.getAPI().getCache().update(event.getConnection().getName(), event.getConnection().getUniqueId());
-            /**
-             * if (LoginListener.isProxy(event.getConnection().getAddress().getAddress().getHostAddress())) {
-             Matrix.getAPI().getPlugin().ban(event.getConnection().getAddress().getAddress().getHostAddress());
-             return;
-             }
-             */
         } catch (Exception e) {
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
         } finally {
-            this.event.completeIntent(this.plugin);
+            event.completeIntent(api.getPlugin().getBootstrap());
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.util.placeholders;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.player.TopEntry;
@@ -17,18 +17,19 @@ import org.bukkit.entity.Player;
 
 public class StatsPlaceholders extends PlaceholderExpansion {
 
-    private final MatrixAPI api = Matrix.getAPI();
+    private final MatrixBukkitAPI api;
     private final Cache<UUID, Map<String, Map<Statistic, Long>>> personalStats = Caffeine.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
     private final Cache<Statistic, TopEntry[]> weekly = Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
     private final Cache<Statistic, TopEntry[]> monthly = Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
     private final Cache<Statistic, TopEntry[]> total = Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).build();
 
-    public StatsPlaceholders() {
+    public StatsPlaceholders(MatrixBukkitAPI api) {
+        this.api = api;
         api.getPlugin().getBootstrap().getScheduler().asyncRepeating(() -> {
             for (Statistic statistic : Statistic.values()) {
-                api.getDatabase().getTopStatWeekly(api.getServerInfo().getGameType(), statistic).thenAccept(topEntries -> weekly.put(statistic, topEntries));
-                api.getDatabase().getTopStatMonthly(api.getServerInfo().getGameType(), statistic).thenAccept(topEntries -> monthly.put(statistic, topEntries));
-                api.getDatabase().getTopStatTotal(api.getServerInfo().getGameType(), statistic).thenAccept(topEntries -> total.put(statistic, topEntries));
+                api.getDatabase().getTopStatWeekly(api.getServerInfo().getGroupName(), statistic).thenAccept(topEntries -> weekly.put(statistic, topEntries));
+                api.getDatabase().getTopStatMonthly(api.getServerInfo().getGroupName(), statistic).thenAccept(topEntries -> monthly.put(statistic, topEntries));
+                api.getDatabase().getTopStatTotal(api.getServerInfo().getGroupName(), statistic).thenAccept(topEntries -> total.put(statistic, topEntries));
             }
         }, 10, TimeUnit.MINUTES);
     }
@@ -39,7 +40,7 @@ public class StatsPlaceholders extends PlaceholderExpansion {
             return "Player needed!";
         }
         if (stat.equals("nick")) {
-            return api.getPlayer(p.getUniqueId()).getDisplayName();
+            return api.getDatabase().getPlayer(p.getUniqueId()).join().getDisplayName();
         }
         // <server>_top_<stat>_<type>_<request>_<pos>
         // 0        1   2      3      4         5
@@ -91,7 +92,7 @@ public class StatsPlaceholders extends PlaceholderExpansion {
                         for (String sType : sTypes) {
                             Map<Statistic, Long> values = new HashMap<>();
                             for (Statistic populatingStatistic : Statistic.values()) {
-                                api.getDatabase().getStat(api.getPlayer(p.getUniqueId()), api.getServerInfo().getGameType(), statistic).thenAccept(value -> values.put(populatingStatistic, value));
+                                api.getDatabase().getStatById(api.getMetaInjector().getId(p), api.getServerInfo().getGroupName(), statistic).thenAccept(value -> values.put(populatingStatistic, value));
                             }
                             statsMap.put(sType, values);
                         }

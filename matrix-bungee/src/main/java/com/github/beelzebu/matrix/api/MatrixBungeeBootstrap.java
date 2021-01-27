@@ -9,7 +9,6 @@ import com.github.beelzebu.matrix.bungee.command.BungeeTPCommand;
 import com.github.beelzebu.matrix.bungee.command.CountdownCommand;
 import com.github.beelzebu.matrix.bungee.command.CrackedCommand;
 import com.github.beelzebu.matrix.bungee.command.HelpOpCommand;
-import com.github.beelzebu.matrix.bungee.command.HubCommand;
 import com.github.beelzebu.matrix.bungee.command.MaintenanceCommand;
 import com.github.beelzebu.matrix.bungee.command.MatrixCommand;
 import com.github.beelzebu.matrix.bungee.command.PlayerInfoCommand;
@@ -17,7 +16,6 @@ import com.github.beelzebu.matrix.bungee.command.PremiumCommand;
 import com.github.beelzebu.matrix.bungee.command.ReplyCommand;
 import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.bungee.influencer.InfluencerManager;
-import com.github.beelzebu.matrix.bungee.listener.AuthListener;
 import com.github.beelzebu.matrix.bungee.listener.ChatListener;
 import com.github.beelzebu.matrix.bungee.listener.LocaleListener;
 import com.github.beelzebu.matrix.bungee.listener.LoginFieldUpdateListener;
@@ -67,7 +65,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         config = new BungeeConfiguration(configFile);
         scheduler = new BungeeSchedulerAdapter(this);
         api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this));
-        api.getCache().addServer(api.getServerInfo()); // add proxy to server cache since it doesn't get registered
+        api.getServerManager().addServer(api.getServerInfo()); // add proxy to server cache since it doesn't get registered
         api.setup();
     }
 
@@ -76,8 +74,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         loadManagers();
         registerListener(new ChatListener(api));
         registerListener(new ServerListListener(this, config.getStringList("Motd Hover").toArray(new String[0])));
-        registerListener(new LoginListener(this));
-        registerListener(new AuthListener());
+        registerListener(new LoginListener(api));
         registerListener(new LocaleListener());
         registerCommand(new HelpOpCommand(this));
         registerCommand(new PlayerInfoCommand(this));
@@ -90,23 +87,22 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         //registerCommand(new MatrixServersCommand());
         registerCommand(new MatrixCommand(this));
         //0registerCommand(new StaffListCommand());
-        registerCommand(new HubCommand());
         new PermissionListener();
         MotdManager.onEnable();
-        new BasicCommands(this);
-        ProxyServer.getInstance().getScheduler().schedule(this, () -> {
-            for (MatrixPlayer matrixPlayer : api.getCache().getPlayers()) {
+        new BasicCommands(api);
+        ProxyServer.getInstance().getScheduler().schedule(this, () -> matrixPlugin.getLoggedInPlayers().thenAccept(matrixPlayers -> {
+            for (MatrixPlayer matrixPlayer : matrixPlayers) {
                 if (matrixPlayer.isLoggedIn()) {
                     continue;
                 }
                 try {
-                    api.getCache().removePlayer(matrixPlayer);
+                    api.getDatabase().cleanUp(matrixPlayer);
                 } catch (Exception e) {
                     Matrix.getLogger().warn("Error removing " + matrixPlayer.getName() + " from cache.");
                     e.printStackTrace();
                 }
             }
-        }, 0, 1, TimeUnit.HOURS);
+        }), 0, 1, TimeUnit.HOURS);
 
         // set default listener
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().set(0, "lobby"));
@@ -130,18 +126,22 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
     @Override
     public void onDisable() {
-        api.getCache().removeServer(api.getServerInfo());
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().set(0, "lobby"));
-        ProxyServer.getInstance().getPlayers().stream().map(proxiedPlayer -> Matrix.getAPI().getPlayer(proxiedPlayer.getUniqueId())).peek(matrixPlayer -> matrixPlayer.setLoggedIn(false)).forEach(MatrixPlayer::save);
-        api.getPlayers().clear();
-        api.getCache().shutdown();
+        for (ProxiedPlayer proxiedPlayer : ProxyServer.getInstance().getPlayers()) {
+            MatrixPlayer matrixPlayer = api.getDatabase().getPlayerById(
+                    api.getMetaInjector().getId(proxiedPlayer)
+            ).join();
+            matrixPlayer.setLoggedIn(false);
+            api.getDatabase().cleanUp(matrixPlayer);
+        }
+        api.getDatabase().shutdown();
         api.getMessaging().shutdown();
         api.getRedisManager().shutdown();
         getScheduler().shutdownExecutor();
         getScheduler().shutdownScheduler();
     }
 
-    public MatrixAPIImpl getApi() {
+    public MatrixBungeeAPI getApi() {
         return api;
     }
 

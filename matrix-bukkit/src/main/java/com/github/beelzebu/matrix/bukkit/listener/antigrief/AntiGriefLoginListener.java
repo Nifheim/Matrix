@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.bukkit.listener.antigrief;
 
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -17,34 +16,36 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class AntiGriefLoginListener implements Listener {
 
-    private final MatrixAPI api;
+    private final MatrixBukkitAPI api;
     private final Set<UUID> premiumPlayer = new HashSet<>();
 
-    public AntiGriefLoginListener(MatrixAPI api) {
+    public AntiGriefLoginListener(MatrixBukkitAPI api) {
         this.api = api;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(AsyncPlayerPreLoginEvent e) {
-        MatrixPlayer matrixPlayer = api.getPlayer(e.getUniqueId());
-        if (matrixPlayer == null) { // si el usuario aún no existe en la base de datos es porque no ha entrado por el proxy
-            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
-            api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(1)", e.getName(), e.getAddress().getHostAddress()));
-            return;
-        }
-        if (!matrixPlayer.isLoggedIn() && !api.getServerInfo().getGroupName().equals("auth")) {
-            if (matrixPlayer.isPremium() && api.getServerInfo().getGroupName().equals("lobby")) {
-                premiumPlayer.add(e.getUniqueId());
+        api.getPlayerManager().getPlayer(e.getUniqueId()).thenAcceptAsync(matrixPlayer -> {
+            if (matrixPlayer == null) { // si el usuario aún no existe en la base de datos es porque no ha entrado por el proxy
+                e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
+                api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(1)", e.getName(), e.getAddress().getHostAddress()));
                 return;
             }
-            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
-            api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(2)", e.getName(), e.getAddress().getHostAddress()));
-            return;
-        }
-        if (!api.getPlayer(e.getName()).getUniqueId().equals(e.getUniqueId())) {
-            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Tu UUID no coincide con la UUID que hay en nuestra base de datos\ntus datos fueron registrados por seguridad.");
-            api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(3)", e.getName(), e.getAddress().getHostAddress()));
-        }
+            if (!matrixPlayer.isLoggedIn() && !api.getServerInfo().getGroupName().equals("auth")) {
+                if (matrixPlayer.isPremium() && api.getServerInfo().getGroupName().equals("lobby")) {
+                    premiumPlayer.add(e.getUniqueId());
+                    return;
+                }
+                e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
+                api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(2)", e.getName(), e.getAddress().getHostAddress()));
+                return;
+            }
+            if (!api.getPlayerManager().getUniqueIdByName(e.getName()).join().equals(e.getUniqueId())) {
+                e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Tu UUID no coincide con la UUID que hay en nuestra base de datos\ntus datos fueron registrados por seguridad.");
+                api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(3)", e.getName(), e.getAddress().getHostAddress()));
+            }
+        });
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

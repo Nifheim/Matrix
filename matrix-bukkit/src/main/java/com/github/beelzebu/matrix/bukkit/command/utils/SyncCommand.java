@@ -11,7 +11,7 @@ import org.bukkit.command.CommandSender;
 public class SyncCommand extends MatrixCommand {
 
     public SyncCommand() {
-        super("sync", "matrix.owner");
+        super("matrixsync", "matrix.owner");
     }
 
     @Override

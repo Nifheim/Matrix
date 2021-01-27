@@ -16,7 +16,6 @@ import com.github.beelzebu.matrix.bukkit.command.staff.MatrixReloadCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.ReloadCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.StopCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.VanishCommand;
-import com.github.beelzebu.matrix.bukkit.command.user.LobbyCommand;
 import com.github.beelzebu.matrix.bukkit.command.user.OptionsCommand;
 import com.github.beelzebu.matrix.bukkit.command.user.ProfileCommand;
 import com.github.beelzebu.matrix.bukkit.command.user.SpitCommand;
@@ -62,8 +61,8 @@ import org.spigotmc.SpigotConfig;
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
     private final BukkitCoreUtils bukkitCoreUtils = new BukkitCoreUtils();
-    private final String[] localAddresses = {"localhost", "127.0.0.1", "172.20.0.2", "172.20.0.3"};
-    private MatrixAPIImpl api;
+    private final String[] localAddresses = {"10.8.0.1", "10.8.0.2", "10.8.0.3", "10.8.0.4", "10.8.0.5"};
+    private MatrixBukkitAPI api;
     private boolean chatMuted = false;
     private BukkitConfiguration configuration;
     private MatrixPluginBukkit matrixPlugin;
@@ -127,8 +126,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
         // Register events
         registerEvents(new InternalListener());
-        registerEvents(new PlayerCommandPreprocessListener(this));
-        registerEvents(new PlayerDeathListener(this));
+        registerEvents(new PlayerCommandPreprocessListener(api));
+        registerEvents(new PlayerDeathListener(api));
         if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
         }
@@ -153,7 +152,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new StopCommand());
         CommandAPI.registerCommand(this, new VanishCommand());
         CommandAPI.registerCommand(this, new ProfileCommand());
-        CommandAPI.registerCommand(this, new LobbyCommand());
 
         pluginsUtility = new PluginsUtility();
 
@@ -269,7 +267,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
-            StatsPlaceholders statsPlaceholders = new StatsPlaceholders();
+            StatsPlaceholders statsPlaceholders = new StatsPlaceholders(api);
             statsPlaceholders.register();
             new OnlinePlaceholders(this).register();
         } else {

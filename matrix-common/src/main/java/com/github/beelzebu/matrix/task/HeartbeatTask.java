@@ -17,7 +17,7 @@ public class HeartbeatTask implements Runnable {
     @Override
     public void run() {
         try {
-            api.getCache().heartbeat(api.getServerInfo());
+            api.getServerManager().heartbeat(api.getServerInfo()).join();
         } catch (RuntimeException e) {
             Matrix.getLogger().debug(e);
         }

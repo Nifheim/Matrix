@@ -1,29 +1,20 @@
 buildscript {
     allprojects {
         group = 'com.github.beelzebu'
-        version = '1.1.0-SNAPSHOT'
+        version = '1.1.0-SNAPSHOT' + System.getenv("BUILD_NUMBER")
+
+        repositories {
+            mavenLocal()
+            mavenCentral()
+        }
     }
 
     subprojects {
         apply plugin: 'java-library'
 
-        configurations.all {
-            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-            resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-        }
-
         repositories {
-            mavenCentral()
             mavenLocal()
-
-            maven {
-                url = 'https://venus.indiopikaro.cl/nexus/repository/maven-public/'
-
-                credentials {
-                    username "${mavenUser}"
-                    password "${mavenPassword}"
-                }
-            }
+            mavenCentral()
 
             maven {
                 url = 'https://repo.lucko.me/'
@@ -63,8 +54,9 @@ buildscript {
         }
 
         dependencies {
-            api 'cl.indiopikaro:jMatrix:2.0-SNAPSHOT'
+            implementation 'com.github.beelzebu:jMatrix:2.0-SNAPSHOT'
             implementation 'com.google.guava:guava:21.0'
+            implementation 'org.jetbrains:annotations:20.1.0'
         }
 
         sourceCompatibility = '1.8'

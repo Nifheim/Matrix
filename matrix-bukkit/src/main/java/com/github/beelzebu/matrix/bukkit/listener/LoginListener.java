@@ -1,10 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.listener;
 
 import cl.indiopikaro.bukkitutil.util.CompatUtil;
-import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPI;
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
@@ -31,12 +29,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class LoginListener implements Listener {
 
     private final MatrixBukkitBootstrap plugin;
-    private final MatrixAPI api;
+    private final MatrixBukkitAPI api;
     private final ServerInfo serverInfo;
     private final Map<UUID, Long> playTime = new HashMap<>();
     private boolean firstJoin = true;
 
-    public LoginListener(MatrixAPI api, MatrixBukkitBootstrap plugin) {
+    public LoginListener(MatrixBukkitAPI api, MatrixBukkitBootstrap plugin) {
         this.api = api;
         serverInfo = api.getServerInfo();
         this.plugin = plugin;
@@ -46,22 +44,22 @@ public class LoginListener implements Listener {
     public void onPlayerJoinEvent(PlayerJoinEvent e) {
         e.setJoinMessage(null);
         Player player = e.getPlayer();
-        MatrixPlayer matrixPlayer = api.getPlayer(player.getUniqueId());
-        matrixPlayer.setLastGameType(serverInfo.getGameType());
-        matrixPlayer.setLastServerName(serverInfo.getServerName());
-        matrixPlayer.setLastServerGroup(serverInfo.getGroupName());
-        matrixPlayer.addPlayedGame(serverInfo.getGameType());
-        playTime.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
-        if ((serverInfo.getServerType().equals(ServerType.LOBBY) || serverInfo.getServerType().equals(ServerType.SURVIVAL) || serverInfo.getServerType().equals(ServerType.MINIGAME_MULTIARENA))) {
-            if (!matrixPlayer.isVanished()) {
-                if (player.hasPermission("matrix.joinmessage")) {
-                    e.setJoinMessage(StringUtils.replace(" &8[&a+&8] &f" + PermsUtils.getPrefix(player.getUniqueId()) + api.getPlayer(player.getUniqueId()).getDisplayName() + " &ese ha unido al servidor"));
-                }
-                if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
-                    Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
+        api.getPlayerManager().getPlayer(player.getUniqueId()).thenAccept(matrixPlayer -> {
+            matrixPlayer.setLastServerName(serverInfo.getServerName());
+            matrixPlayer.setLastServerGroup(serverInfo.getGroupName());
+            matrixPlayer.addPlayedGame(serverInfo.getGroupName());
+            playTime.put(e.getPlayer().getUniqueId(), System.currentTimeMillis());
+            if ((serverInfo.getServerType().equals(ServerType.LOBBY) || serverInfo.getServerType().equals(ServerType.SURVIVAL) || serverInfo.getServerType().equals(ServerType.MINIGAME_MULTIARENA))) {
+                if (!matrixPlayer.isVanished()) {
+                    if (player.hasPermission("matrix.joinmessage")) {
+                        e.setJoinMessage(StringUtils.replace(" &8[&a+&8] &f" + PermsUtils.getPrefix(player.getUniqueId()) + matrixPlayer.getDisplayName() + " &ese ha unido al servidor"));
+                    }
+                    if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+                        Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));
+                    }
                 }
             }
-        }
+        });
         // Async task
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (plugin.isVotifier()) {
@@ -79,7 +77,7 @@ public class LoginListener implements Listener {
                 firstJoin = false;
             }
             if (!player.hasPermission("matrix.command.fly")) {
-                matrixPlayer.setOption(PlayerOptionType.FLY, false);
+                api.getPlayerManager().getPlayer(player).thenAccept(matrixPlayer -> matrixPlayer.setOption(PlayerOptionType.FLY, false));
             }
         }, 6);
     }
@@ -87,8 +85,9 @@ public class LoginListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent e) {
         e.setQuitMessage(null);
-        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(e.getPlayer().getUniqueId());
-        matrixPlayer.setLastPlayTime(serverInfo.getGameType(), System.currentTimeMillis() - playTime.get(matrixPlayer.getUniqueId()));
-        Matrix.getAPI().getPlayers().remove(matrixPlayer);
+        if (api.getServerInfo().getServerType() == ServerType.LOBBY || api.getServerInfo().getServerType() == ServerType.AUTH) {
+            return;
+        }
+        api.getPlayerManager().getPlayer(e.getPlayer()).thenAccept(matrixPlayer -> matrixPlayer.setLastPlayTime(serverInfo.getGroupName(), System.currentTimeMillis() - playTime.get(matrixPlayer.getUniqueId())));
     }
 }

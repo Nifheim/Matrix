@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.plugin;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.command.BukkitCommandSource;
 import com.github.beelzebu.matrix.api.command.CommandSource;
@@ -12,12 +13,13 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bukkit.config.BukkitConfiguration;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -27,6 +29,7 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     private final MatrixBukkitBootstrap bootstrap;
     private final CommandSource console = new BukkitCommandSource(Bukkit.getConsoleSender());
+    private MatrixBukkitAPI api;
 
     public MatrixPluginBukkit(MatrixBukkitBootstrap bootstrap) {
         this.bootstrap = bootstrap;
@@ -43,37 +46,13 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public void runAsync(Runnable rn) {
-        Bukkit.getScheduler().runTaskAsynchronously(bootstrap, rn);
-    }
-
-    @Override
-    public void runAsync(Runnable rn, Integer timer) {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(bootstrap, rn, 0, timer * 20);
-    }
-
-    @Override
-    public void runSync(Runnable rn) {
-        Bukkit.getScheduler().runTask(bootstrap, rn);
-    }
-
-    @Override
     public void executeCommand(String cmd) {
-        runSync(() -> console.execute(cmd));
+        bootstrap.getScheduler().executeSync(() -> console.execute(cmd));
     }
 
     @Override
     public CommandSource getConsole() {
         return console;
-    }
-
-    @Override
-    public void sendMessage(Object sender, BaseComponent[] msg) {
-        if (sender instanceof CommandSender) {
-            ((CommandSender) sender).sendMessage(msg);
-        } else if (sender instanceof CommandSource) {
-            ((CommandSource) sender).sendMessage(TextComponent.toLegacyText(msg));
-        }
     }
 
     @Override
@@ -160,7 +139,38 @@ public class MatrixPluginBukkit implements MatrixPlugin {
         }
     }
 
+    @Override
+    public CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
+        return CompletableFuture.supplyAsync(() -> Bukkit.getOnlinePlayers().stream().map(player -> api.getPlayerManager().getPlayer(player).join()).collect(Collectors.toSet()), bootstrap.getScheduler().async());
+    }
+
+    @Override
+    public Optional<String> getHexId(UUID uniqueId) {
+        Player player = Bukkit.getPlayer(uniqueId);
+        if (player != null) {
+            return Optional.ofNullable(api.getMetaInjector().getId(player));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getHexId(String name) {
+        Player player = Bukkit.getPlayer(name);
+        if (player != null) {
+            return Optional.ofNullable(api.getMetaInjector().getId(player));
+        }
+        return Optional.empty();
+    }
+
     public String toString() {
         return "MatrixPluginBukkit(bootstrap=" + bootstrap + ", console=" + getConsole() + ")";
+    }
+
+    public MatrixBukkitAPI getApi() {
+        return api;
+    }
+
+    public void setApi(MatrixBukkitAPI api) {
+        this.api = api;
     }
 }

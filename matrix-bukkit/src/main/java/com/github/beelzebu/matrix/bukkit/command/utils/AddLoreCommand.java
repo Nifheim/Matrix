@@ -26,7 +26,7 @@ public class AddLoreCommand extends MatrixCommand {
             sender.sendMessage(I18n.tl(Message.GENERAL_NO_CONSOLE, I18n.DEFAULT_LOCALE));
             return;
         }
-        String locale = api.getPlayer(((Player) sender).getUniqueId()).getLastLocale();
+        String locale = ((Player) sender).getLocale().substring(0, 2);
         Player p = (Player) sender;
         if (args.length > 0) {
             if (p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType().equals(Material.AIR)) {

@@ -1,9 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.listener.stats;
 
-import com.github.beelzebu.matrix.api.MatrixAPI;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.player.Statistic;
-import com.github.beelzebu.matrix.api.server.GameType;
+import com.github.beelzebu.matrix.api.server.ServerType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -22,14 +21,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class StatsListener implements Listener {
 
-    private final MatrixAPI api;
+    private final MatrixBukkitAPI api;
     private final Map<UUID, Long> kills = new HashMap<>();
     private final Map<UUID, Long> mobKills = new HashMap<>();
     private final Map<UUID, Long> deaths = new HashMap<>();
     private final Map<UUID, Long> placed = new HashMap<>();
     private final Map<UUID, Long> broken = new HashMap<>();
 
-    public StatsListener(MatrixAPI api) {
+    public StatsListener(MatrixBukkitAPI api) {
         this.api = api;
     }
 
@@ -66,21 +65,21 @@ public class StatsListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerQuit(PlayerQuitEvent e) {
-        if (api.getServerInfo().getGameType() == GameType.NONE) {
+        if (api.getServerInfo().getServerType() == ServerType.LOBBY || api.getServerInfo().getServerType() == ServerType.AUTH) {
             return;
         }
-        MatrixPlayer matrixPlayer = api.getPlayer(e.getPlayer().getUniqueId());
-        if (matrixPlayer == null) {
-            return;
-        }
-        api.getPlugin().runAsync(() -> {
+        api.getPlayerManager().getPlayer(e.getPlayer()).thenAccept(matrixPlayer -> {
+            if (matrixPlayer == null) {
+                return;
+            }
             Map<Statistic, Long> stats = new HashMap<>();
             stats.put(Statistic.KILLS, kills.getOrDefault(matrixPlayer.getUniqueId(), 0L));
             stats.put(Statistic.MOB_KILLS, mobKills.getOrDefault(matrixPlayer.getUniqueId(), 0L));
             stats.put(Statistic.DEATHS, deaths.getOrDefault(matrixPlayer.getUniqueId(), 0L));
             stats.put(Statistic.BLOCKS_BROKEN, broken.getOrDefault(matrixPlayer.getUniqueId(), 0L));
             stats.put(Statistic.BLOCKS_PLACED, placed.getOrDefault(matrixPlayer.getUniqueId(), 0L));
-            matrixPlayer.saveStats(stats);
+            api.getDatabase().incrStatsById(matrixPlayer.getId(), api.getServerInfo().getGroupName(), stats);
         });
+
     }
 }

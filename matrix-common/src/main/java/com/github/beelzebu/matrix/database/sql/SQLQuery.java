@@ -26,7 +26,7 @@ public enum SQLQuery {
      * </ol>
      */
     INSERT_LOGIN("INSERT INTO matrix_failed_login(uniqueId, server, message) VALUES(?, ?, ?)"),
-    INSERT_COMMAND_LOG("INSERT INTO matrix_command_log(user_id, server, command) VALUES (?, ?, ?)"),
+    INSERT_COMMAND_LOG("INSERT INTO matrix_command_log(user_id, server, command) VALUES (UNHEX(?), ?, ?)"),
     INSERT_PLAY_STATS("INSERT INTO matrix_play_stats(user_id, game_type, play_time) VALUES (?, ?, ?)"),
     SELECT_PLAY_STATS("SELECT joins, total_play_time FROM matrix_play_stats_total WHERE user_id = ? AND game_type = ?"),
     SELECT_KILLS_TOTAL("SELECT kills FROM matrix_stats_total WHERE id = ? AND server = ?"),

@@ -23,12 +23,12 @@ public class ServerCleanupTask implements Runnable {
 
     @Override
     public void run() {
-        api.getCache().getAllServers().values().forEach(serverInfos -> serverInfos.forEach(serverInfo -> {
-            long heartbeat = api.getCache().getLastHeartbeat(serverInfo);
+        api.getServerManager().getAllServers().join().values().forEach(serverInfos -> serverInfos.forEach(serverInfo -> {
+            long heartbeat = api.getServerManager().getLastHeartbeat(serverInfo).join().orElse(0);
             if (slowHeartbeats.containsKey(serverInfo.getServerName())) {
                 if (slowHeartbeats.get(serverInfo.getServerName()) <= System.currentTimeMillis() - DEAD_HEARTBEAT) {
                     slowHeartbeats.remove(serverInfo.getServerName());
-                    api.getCache().removeServer(serverInfo);
+                    api.getServerManager().removeServer(serverInfo);
                     Matrix.getLogger().info("Removed " + serverInfo.getServerName() + " since heartbeat is dead");
                 } else {
                     if (heartbeat < System.currentTimeMillis() - NORMAL_HEARTBEAT) {

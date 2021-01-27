@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.bungee.listener;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import java.util.UUID;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.event.user.UserDataRecalculateEvent;
@@ -23,15 +22,16 @@ public class PermissionListener {
         if (proxiedPlayer == null) {
             return;
         }
-        MatrixPlayer matrixPlayer = Matrix.getAPI().getPlayer(uniqueId);
-        boolean admin = matrixPlayer.isAdmin();
-        if (proxiedPlayer.hasPermission("matrix.admin")) {
-            if (admin) {
-                return;
+        Matrix.getAPI().getPlayerManager().getPlayer(uniqueId).thenAccept(matrixPlayer -> {
+            boolean admin = matrixPlayer.isAdmin();
+            if (proxiedPlayer.hasPermission("matrix.admin")) {
+                if (admin) {
+                    return;
+                }
+                matrixPlayer.setAdmin(true);
+            } else if (admin) {
+                matrixPlayer.setAdmin(false);
             }
-            matrixPlayer.setAdmin(true);
-        } else if (admin) {
-            matrixPlayer.setAdmin(false);
-        }
+        });
     }
 }

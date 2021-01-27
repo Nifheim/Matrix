@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.bungee.plugin;
 
-import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.command.BungeeCommandSource;
 import com.github.beelzebu.matrix.api.command.CommandSource;
@@ -12,12 +12,13 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import net.md_5.bungee.api.CommandSender;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -25,6 +26,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     private final MatrixBungeeBootstrap bootstrap;
     private final CommandSource console = new BungeeCommandSource(ProxyServer.getInstance().getConsole());
+    private MatrixBungeeAPI api;
 
     public MatrixPluginBungee(MatrixBungeeBootstrap bootstrap) {
         this.bootstrap = bootstrap;
@@ -41,21 +43,6 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public void runAsync(Runnable rn) {
-        ProxyServer.getInstance().getScheduler().runAsync(bootstrap, rn);
-    }
-
-    @Override
-    public void runAsync(Runnable rn, Integer timer) {
-        ProxyServer.getInstance().getScheduler().schedule(bootstrap, rn, 0, timer, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void runSync(Runnable rn) {
-        rn.run();
-    }
-
-    @Override
     public void executeCommand(String cmd) {
         ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), cmd);
     }
@@ -63,17 +50,6 @@ public class MatrixPluginBungee implements MatrixPlugin {
     @Override
     public CommandSource getConsole() {
         return console;
-    }
-
-    @Override
-    public void sendMessage(Object sender, BaseComponent[] msg) {
-        if (sender instanceof CommandSender) {
-            ((CommandSender) sender).sendMessage(msg);
-        } else if (sender instanceof CommandSource) {
-            ((CommandSource) sender).sendMessage(TextComponent.toLegacyText(msg));
-        } else {
-            Matrix.getLogger().debug(new IllegalArgumentException("Can't cast " + sender.getClass() + " to CommandSender"));
-        }
     }
 
     @Override
@@ -103,26 +79,28 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public boolean isOnline(String name, boolean here) {
-        return isOnline(here, ProxyServer.getInstance().getPlayer(name), Matrix.getAPI().getPlayer(name));
-    }
-
-    @Override
-    public boolean isOnline(UUID uuid, boolean here) {
-        return isOnline(here, ProxyServer.getInstance().getPlayer(uuid), Matrix.getAPI().getPlayer(uuid));
-    }
-
-    private boolean isOnline(boolean here, ProxiedPlayer proxiedPlayer, MatrixPlayer matrixPlayer) {
+        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(name);
         if (here) {
             return proxiedPlayer != null && proxiedPlayer.isConnected();
         } else {
             if (proxiedPlayer != null) {
                 return proxiedPlayer.isConnected();
             }
-            if (matrixPlayer != null) {
-                return matrixPlayer.isLoggedIn();
-            }
+            return api.getPlayerManager().isOnlineByName(name, null, null).join();
         }
-        return false;
+    }
+
+    @Override
+    public boolean isOnline(UUID uniqueId, boolean here) {
+        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uniqueId);
+        if (here) {
+            return proxiedPlayer != null && proxiedPlayer.isConnected();
+        } else {
+            if (proxiedPlayer != null) {
+                return proxiedPlayer.isConnected();
+            }
+            return api.getPlayerManager().isOnline(uniqueId, null, null).join();
+        }
     }
 
     @Override
@@ -158,6 +136,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
         kickPlayer(matrixPlayer.getName(), reason);
     }
 
+    @Override
     public MatrixBungeeBootstrap getBootstrap() {
         return bootstrap;
     }
@@ -170,7 +149,38 @@ public class MatrixPluginBungee implements MatrixPlugin {
         }
     }
 
+    @Override
+    public CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
+        return CompletableFuture.supplyAsync(() -> ProxyServer.getInstance().getPlayers().stream().map(proxiedPlayer -> api.getPlayerManager().getPlayer(proxiedPlayer).join()).collect(Collectors.toSet()), bootstrap.getScheduler().async());
+    }
+
+    @Override
+    public Optional<String> getHexId(UUID uniqueId) {
+        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uniqueId);
+        if (proxiedPlayer != null) {
+            return Optional.ofNullable(api.getMetaInjector().getId(proxiedPlayer));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<String> getHexId(String name) {
+        ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(name);
+        if (proxiedPlayer != null) {
+            return Optional.ofNullable(api.getMetaInjector().getId(proxiedPlayer));
+        }
+        return Optional.empty();
+    }
+
     public String toString() {
         return "MatrixPluginBungee(bootstrap=" + bootstrap + ", console=" + getConsole() + ")";
+    }
+
+    public MatrixBungeeAPI getApi() {
+        return api;
+    }
+
+    public void setApi(MatrixBungeeAPI api) {
+        this.api = api;
     }
 }

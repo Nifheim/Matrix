@@ -12,14 +12,14 @@
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven13" />
-      <option name="name" value="maven13" />
-      <option name="url" value="https://ci.filoghost.me/plugin/repository/everything/" />
+      <option name="id" value="MavenLocal" />
+      <option name="name" value="MavenLocal" />
+      <option name="url" value="file:/$MAVEN_REPOSITORY$/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven8" />
-      <option name="name" value="maven8" />
-      <option name="url" value="https://repo.destroystokyo.com/repository/maven-snapshots/" />
+      <option name="id" value="maven3" />
+      <option name="name" value="maven3" />
+      <option name="url" value="https://oss.sonatype.org/content/repositories/snapshots" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="MavenRepo" />
@@ -27,79 +27,9 @@
       <option name="url" value="https://repo.maven.apache.org/maven2/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven3" />
-      <option name="name" value="maven3" />
-      <option name="url" value="https://repo.lucko.me/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven4" />
-      <option name="name" value="maven4" />
-      <option name="url" value="http://repo.maven.apache.org/maven2" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven7" />
-      <option name="name" value="maven7" />
-      <option name="url" value="http://repo.extendedclip.com/content/repositories/placeholderapi/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven12" />
-      <option name="name" value="maven12" />
-      <option name="url" value="http://simonsator.de/repo/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven9" />
-      <option name="name" value="maven9" />
-      <option name="url" value="http://maven.sk89q.com/artifactory/repo" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven11" />
-      <option name="name" value="maven11" />
-      <option name="url" value="http://nexus.ghac.de/content/repositories/snapshots/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven14" />
-      <option name="name" value="maven14" />
-      <option name="url" value="https://repo.parallelblock.com/repository/maven-public/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="maven" />
       <option name="name" value="maven" />
-      <option name="url" value="https://repo.nifheim.net/repository/nifheim/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="MavenLocal" />
-      <option name="name" value="MavenLocal" />
-      <option name="url" value="file:/$MAVEN_REPOSITORY$/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven10" />
-      <option name="name" value="maven10" />
-      <option name="url" value="http://repo.dmulloy2.net/nexus/repository/public/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven6" />
-      <option name="name" value="maven6" />
-      <option name="url" value="http://repo.md-5.net/content/repositories/snapshots/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven5" />
-      <option name="name" value="maven5" />
-      <option name="url" value="https://oss.sonatype.org/content/repositories/snapshots" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven15" />
-      <option name="name" value="maven15" />
-      <option name="url" value="http://maven.elmakers.com/repository/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven2" />
-      <option name="name" value="maven2" />
-      <option name="url" value="https://repo.nifheim.net/repository/nifheim-snapshots/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven14" />
-      <option name="name" value="maven14" />
-      <option name="url" value="https://dl.bintray.com/ichbinjoe/public/" />
+      <option name="url" value="https://repo.lucko.me/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven2" />
@@ -107,29 +37,9 @@
       <option name="url" value="https://repo.maven.apache.org/maven2" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven15" />
-      <option name="name" value="maven15" />
-      <option name="url" value="https://dl.bintray.com/deanveloper/SkullCreator" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven13" />
-      <option name="name" value="maven13" />
-      <option name="url" value="https://maven.elmakers.com/repository/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven10" />
-      <option name="name" value="maven10" />
-      <option name="url" value="https://simonsator.de/repo/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven9" />
-      <option name="name" value="maven9" />
-      <option name="url" value="https://nexus.ghac.de/content/repositories/snapshots/" />
-    </remote-repository>
-    <remote-repository>
       <option name="id" value="maven8" />
       <option name="name" value="maven8" />
-      <option name="url" value="https://repo.dmulloy2.net/nexus/repository/public/" />
+      <option name="url" value="https://dl.bintray.com/ichbinjoe/public/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven5" />
@@ -137,48 +47,33 @@
       <option name="url" value="https://repo.extendedclip.com/content/repositories/placeholderapi/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="maven7" />
+      <option name="name" value="maven7" />
+      <option name="url" value="https://repo.dmulloy2.net/nexus/repository/public/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="maven4" />
       <option name="name" value="maven4" />
       <option name="url" value="https://repo.md-5.net/content/repositories/snapshots/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven7" />
-      <option name="name" value="maven7" />
-      <option name="url" value="https://maven.sk89q.com/artifactory/repo" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="indiopikaro-repo" />
-      <option name="name" value="indiopikaro-repo" />
-      <option name="url" value="http://venus.indiopikaro.cl/nexus/repository/maven-public/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="indiopikaro-repo2" />
-      <option name="name" value="indiopikaro-repo2" />
-      <option name="url" value="http://venus.indiopikaro.cl/nexus/repository/maven-snapshots/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven16" />
-      <option name="name" value="maven16" />
-      <option name="url" value="https://plugins.gradle.org/m2/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven11" />
-      <option name="name" value="maven11" />
+      <option name="id" value="maven9" />
+      <option name="name" value="maven9" />
       <option name="url" value="https://jitpack.io/" />
     </remote-repository>
     <remote-repository>
-      <option name="id" value="maven" />
-      <option name="name" value="maven" />
-      <option name="url" value="https://venus.indiopikaro.cl/nexus/repository/maven-public/" />
+      <option name="id" value="maven6" />
+      <option name="name" value="maven6" />
+      <option name="url" value="https://repo.destroystokyo.com/repository/maven-snapshots/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven10" />
+      <option name="name" value="maven10" />
+      <option name="url" value="https://repo.codemc.org/repository/maven-public/" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="maven11" />
       <option name="name" value="maven11" />
-      <option name="url" value="https://repo.codemc.org/repository/maven-public/" />
-    </remote-repository>
-    <remote-repository>
-      <option name="id" value="maven12" />
-      <option name="name" value="maven12" />
       <option name="url" value="https://repo.nukkitx.com/maven-snapshots" />
     </remote-repository>
   </component>

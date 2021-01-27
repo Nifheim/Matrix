@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     api project(':matrix-common')
-    api 'cl.indiopikaro:coreutils:1.0.1-SNAPSHOT'
+    implementation 'cl.indiopikaro:coreutils:1.0.1-SNAPSHOT'
     implementation 'redis.clients:jedis:3.3.0'
     implementation 'com.github.ben-manes.caffeine:caffeine:2.8.4'
     implementation 'org.apache.commons:commons-pool2:2.6.2'
@@ -26,8 +26,8 @@ shadowJar {
     getArchiveVersion().set(null)
 
     dependencies {
-        include(dependency('cl.indiopikaro:jMatrix'))
-        include(dependency('cl.indiopikaro:coreutils'))
+        include(dependency('com.github.beelzebu:jMatrix:2.0-SNAPSHOT'))
+        include(dependency('cl.indiopikaro:coreutils:1.0.1-SNAPSHOT'))
         include(project(':matrix-common'))
     }
 

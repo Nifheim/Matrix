@@ -41,7 +41,7 @@ public class ServerListListener implements Listener {
     @EventHandler(priority = 127)
     public void onPing(ProxyPingEvent e) {
         e.registerIntent((Plugin) Matrix.getAPI().getPlugin().getBootstrap());
-        Matrix.getAPI().getPlugin().runAsync(() -> {
+        Matrix.getAPI().getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
             try {
                 if (e.getConnection().getVirtualHost() == null) {
                     e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\nPor favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
@@ -84,10 +84,14 @@ public class ServerListListener implements Listener {
                     playerInfos[i] = new ServerPing.PlayerInfo(StringUtils.replace(playerHover[i]), emptyUUID);
                 }
                 e.getResponse().getPlayers().setSample(playerInfos);
-                Favicon favicon = favicons.get(host, k -> {
+                String faviconName = host.split("\\.", 2)[1];
+                if (!faviconName.contains("\\.")) {
+                    faviconName = host;
+                }
+                Favicon favicon = favicons.get(faviconName, k -> {
                     BufferedImage bufferedImage;
                     try {
-                        File imageFile = new File(plugin.getDataFolder(), host + ".png");
+                        File imageFile = new File(new File(plugin.getDataFolder(), "favicons"), k + ".png");
                         if (!imageFile.exists()) {
                             return null;
                         }
