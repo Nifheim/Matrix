@@ -6,6 +6,15 @@ repositories {
     maven {
         url = 'https://repo.codemc.org/repository/maven-public/'
     }
+
+    maven {
+        url = 'https://repo.opencollab.dev/maven-releases/'
+    }
+
+    maven {
+        url = 'https://repo.opencollab.dev/maven-snapshots/'
+    }
+
     maven {
         url = 'https://repo.nukkitx.com/maven-snapshots'
     }

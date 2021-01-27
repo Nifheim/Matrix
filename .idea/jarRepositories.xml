@@ -76,5 +76,10 @@
       <option name="name" value="maven11" />
       <option name="url" value="https://repo.nukkitx.com/maven-snapshots" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="maven" />
+      <option name="name" value="maven" />
+      <option name="url" value="https://venus.indiopikaro.cl/nexus/repository/maven-public/" />
+    </remote-repository>
   </component>
 </project>
