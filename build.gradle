@@ -17,6 +17,15 @@ buildscript {
             mavenCentral()
 
             maven {
+                url = 'https://venus.indiopikaro.cl/nexus/repository/maven-public/'
+
+                credentials {
+                    username "${mavenUser}"
+                    password "${mavenPassword}"
+                }
+            }
+
+            maven {
                 url = 'https://repo.lucko.me/'
             }
 
