@@ -182,12 +182,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             try {
                 Class.forName("com.destroystokyo.paper.PaperConfig");
-                if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
-                    if (PaperConfig.savePlayerData) {
-                        getLogger().warning("SavePlayerData is enabled in paper config, forcing it to false.");
-                        PaperConfig.savePlayerData = false;
-                    }
-                }
                 if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
                     if (PaperConfig.enablePlayerCollisions) {
                         getLogger().warning("EnablePlayerCollisions is enabled in paper config, forcing it to false.");
@@ -227,7 +221,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         return false;
     }
 
-    public MatrixAPIImpl getApi() {
+    public MatrixBukkitAPI getApi() {
         return api;
     }
 

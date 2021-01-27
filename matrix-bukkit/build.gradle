@@ -11,8 +11,8 @@ dependencies {
     implementation 'org.mongodb:mongo-java-driver:3.12.5'
     implementation 'dev.morphia.morphia:core:1.6.0'
     implementation 'com.zaxxer:HikariCP:3.4.5'
-    implementation 'com.destroystokyo.paper:paper-api:1.15.2-R0.1-SNAPSHOT'
-    implementation 'com.destroystokyo.paper:paper:1.15.2-R0.1-SNAPSHOT'
+    implementation 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
+    implementation 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
     implementation 'me.clip:placeholderapi:2.10.9'
     implementation 'com.vexsoftware:nuvotifier-universal:2.6.0'
 }
