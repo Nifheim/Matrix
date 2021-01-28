@@ -43,7 +43,7 @@ public class VanishListener implements Listener {
     public void onGameModeChangeEvent(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
         plugin.getApi().getDatabase().getPlayer(player.getUniqueId()).thenAccept(matrixPlayer -> {
-            if (player.hasPermission(VanishCommand.PERMISSION)) {
+            if (player.hasPermission(VanishCommand.PERMISSION) || matrixPlayer.isVanished()) {
                 boolean toVanish = event.getNewGameMode() == GameMode.SPECTATOR;
                 if (matrixPlayer.isVanished()) {
                     if (player.getGameMode() != GameMode.SPECTATOR &&
@@ -70,8 +70,6 @@ public class VanishListener implements Listener {
                 player.setGameMode(GameMode.SPECTATOR);
                 player.setAllowFlight(true);
                 player.setFlying(true);
-            } else {
-                player.setGameMode(GameMode.valueOf(matrixPlayer.getGameMode(plugin.getApi().getServerInfo().getGroupName()).toString()));
             }
         });
     }
