@@ -149,9 +149,11 @@ public class ServerManagerImpl implements ServerManager {
 
     @Override
     public CompletableFuture<Void> heartbeat(ServerInfo serverInfo) {
+        Matrix.getLogger().info("Sending heartbeat");
         return CompletableFuture.runAsync(() -> {
             try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
                 jedis.set(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName(), String.valueOf(System.currentTimeMillis()));
+                Matrix.getLogger().info("Heartbeat sent");
             }
         }, api.getPlugin().getBootstrap().getScheduler().async());
     }
