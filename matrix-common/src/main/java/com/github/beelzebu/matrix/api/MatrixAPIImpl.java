@@ -65,6 +65,7 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
                     .name("serverType").value(value.getServerType().name())
                     .name("gameMode").value(value.getDefaultGameMode().toString())
                     .name("unique").value(value.isUnique())
+                    .name("lobby").value(value.getLobbyServer().join())
                     .endObject();
         }
 
@@ -77,6 +78,7 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
                     jsonObject.get("serverName").getAsString(),
                     GameMode.valueOf(jsonObject.get("gameMode").getAsString()),
                     jsonObject.get("unique").getAsBoolean(),
+                    jsonObject.get("lobby").getAsString(),
                     true
             );
         }
@@ -98,11 +100,9 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
         plugin.getDataFolder().mkdirs();
         DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
         dependencyManager.loadInternalDependencies();
-        //database = new MongoStorage(plugin.getConfig().getString("Database.Host"), 27017, "admin", "matrix", plugin.getConfig().getString("Database.Password"), "admin");
         redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
         database = new MatrixDatabaseImpl(new StorageImpl(this), new CacheProviderImpl(this), plugin.getBootstrap().getScheduler());
         messaging = new RedisMessaging(redisManager, r -> plugin.getBootstrap().getScheduler().executeAsync(r));
-        //mySQLStorage = new MySQLStorage(this, plugin.getConfig().getString("mysql.host"), plugin.getConfig().getInt("mysql.port"), plugin.getConfig().getString("mysql.database"), plugin.getConfig().getString("mysql.user"), plugin.getConfig().getString("mysql.password"), plugin.getConfig().getInt("mysql.pool", 8));
         Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
         maintenanceManager = new MaintenanceManager(redisManager);
         if (plugin.getConfig().getString("server-info.game-mode") == null) {

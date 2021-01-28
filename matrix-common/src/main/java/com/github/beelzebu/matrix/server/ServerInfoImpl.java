@@ -24,13 +24,13 @@ public class ServerInfoImpl extends ServerInfo {
     private final ServerType serverType;
     private final GameMode gameMode;
     private final boolean unique;
-    private SingleCachedValue<String> lobby;
+    private final SingleCachedValue<String> lobby;
 
     public ServerInfoImpl(ServerType serverType, String groupName, String serverName, GameMode gameMode, boolean unique) {
-        this(serverType, groupName, serverName, gameMode, unique, false);
+        this(serverType, groupName, serverName, gameMode, unique, Matrix.getAPI().getConfig().getString("server-info.lobby"), false);
     }
 
-    public ServerInfoImpl(ServerType serverType, String groupName, String serverName, GameMode gameMode, boolean unique, boolean decoded) {
+    public ServerInfoImpl(ServerType serverType, String groupName, String serverName, GameMode gameMode, boolean unique, String lobby, boolean decoded) {
         this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
         this.groupName = Objects.requireNonNull(groupName, "groupName can't be null").toLowerCase();
         this.unique = !Objects.isNull(serverName) && unique;
@@ -40,8 +40,9 @@ public class ServerInfoImpl extends ServerInfo {
             this.serverName = generateServerName(serverType, groupName, serverName);
         }
         this.gameMode = gameMode == null ? (serverType == ServerType.SURVIVAL ? GameMode.SURVIVAL : GameMode.ADVENTURE) : gameMode;
-        String lobby = Matrix.getAPI().getConfig().getString("server-info.lobby");
-        if (lobby != null) {
+        if (serverType == ServerType.PROXY || serverType == ServerType.AUTH) {
+            this.lobby = new FinalCachedValue<>(() -> null);
+        } else if (lobby != null) {
             this.lobby = new FinalCachedValue<>(() -> lobby);
         } else {
             this.lobby = new SingleCachedValue<>(() -> ServerInfo.findLobbyForServer(this).join(), 10, TimeUnit.MINUTES);
@@ -50,14 +51,7 @@ public class ServerInfoImpl extends ServerInfo {
 
     @Deprecated
     public ServerInfoImpl(String name, Map<String, String> data) {
-        String groupName = data.get("group");
-        ServerType serverType = ServerType.valueOf(Objects.requireNonNull(data.get("servertype")));
-        GameMode gameMode = GameMode.valueOf(Objects.requireNonNull(data.get("gamemode")));
-        this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
-        this.groupName = Objects.requireNonNull(groupName, "groupName can't be null");
-        this.unique = Boolean.parseBoolean(data.get("unique"));
-        this.serverName = name;
-        this.gameMode = gameMode;
+        this(ServerType.valueOf(Objects.requireNonNull(data.get("servertype"))), Objects.requireNonNull(data.get("group"), "groupName can't be null"), name, GameMode.valueOf(Objects.requireNonNull(data.get("gamemode"))), Boolean.parseBoolean(data.get("unique")), Objects.requireNonNull(data.get("lobby")), true);
     }
 
     /**
