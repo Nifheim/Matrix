@@ -19,7 +19,9 @@ public class SingleCachedValue <T> {
     public SingleCachedValue(Supplier<T> supplier, long cacheTime, TimeUnit timeUnit) {
         this.supplier = supplier;
         value = new WeakReference<>(supplier.get());
-        EXECUTOR.scheduleAtFixedRate(this::refresh, 0, cacheTime, timeUnit);
+        if (refresh() != null) {
+            EXECUTOR.scheduleAtFixedRate(this::refresh, 0, cacheTime, timeUnit);
+        }
     }
 
     public CompletableFuture<T> get() {
