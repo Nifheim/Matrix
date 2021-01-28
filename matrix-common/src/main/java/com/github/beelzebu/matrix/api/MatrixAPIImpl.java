@@ -100,16 +100,28 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
         plugin.getDataFolder().mkdirs();
         DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
         dependencyManager.loadInternalDependencies();
-        redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
-        database = new MatrixDatabaseImpl(new StorageImpl(this), new CacheProviderImpl(this), plugin.getBootstrap().getScheduler());
-        messaging = new RedisMessaging(redisManager, r -> plugin.getBootstrap().getScheduler().executeAsync(r));
         Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
+        Matrix.getLogger().info("Initializing redis manager...");
+        redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
+        Matrix.getLogger().info("Redis manager initialized!");
+        Matrix.getLogger().info("Initializing database manager..");
+        database = new MatrixDatabaseImpl(new StorageImpl(this), new CacheProviderImpl(this), plugin.getBootstrap().getScheduler());
+        Matrix.getLogger().info("Database manager initialized!");
+        Matrix.getLogger().info("Initializing messaging service...");
+        messaging = new RedisMessaging(redisManager, r -> plugin.getBootstrap().getScheduler().executeAsync(r));
+        Matrix.getLogger().info("Messaging service initialized!");
+        Matrix.getLogger().info("Initializing maintenance manager...");
         maintenanceManager = new MaintenanceManager(redisManager);
+        Matrix.getLogger().info("Maintenance manager initialized!");
         if (plugin.getConfig().getString("server-info.game-mode") == null) {
             Matrix.getLogger().info("server-info.game-mode config option is missing, please add it to config.yml");
         }
+        Matrix.getLogger().info("Providing Matrix API instance...");
         Matrix.setAPI(this);
+        Matrix.getLogger().info("Initializing server manager...");
         serverManager = new ServerManagerImpl(this);
+        Matrix.getLogger().info("Server manager initialized!");
+        Matrix.getLogger().info("Creating server info for current server...");
         serverInfo = new ServerInfoImpl(
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
                 plugin.getConfig().getString("server-info.group", null),
@@ -117,6 +129,8 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
                 plugin.getConfig().get("server-info.game-mode") != null ? GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode").toUpperCase()) : null,
                 plugin.getConfig().getBoolean("server-info.unique", false)
         );
+        Matrix.getLogger().info("Server info created!");
+        Matrix.getLogger().info("Matrix API is now fully initialized.");
     }
 
     public MaintenanceManager getMaintenanceManager() {

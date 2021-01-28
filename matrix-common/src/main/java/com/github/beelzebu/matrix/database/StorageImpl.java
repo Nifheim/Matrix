@@ -37,12 +37,10 @@ public class StorageImpl {
     private final Cache<Statistic, TopEntry[]> statsTotalCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
     private final Cache<Statistic, TopEntry[]> statsWeeklyCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
     private final Cache<Statistic, TopEntry[]> statsMonthlyCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
-    private final MatrixAPIImpl<?> api;
     private HikariDataSource dataSource;
     private final Datastore datastore;
 
     public StorageImpl(MatrixAPIImpl<?> api) {
-        this.api = api;
         MongoClient client = new MongoClient(new ServerAddress(api.getConfig().getString("Database.Host"), 27017), MongoCredential.createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()), MongoClientOptions.builder().build());
         Morphia morphia = new Morphia();
         morphia.getMapper().getConverters().addConverter(new UUIDConverter());
