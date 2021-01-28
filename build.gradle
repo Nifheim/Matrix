@@ -1,7 +1,7 @@
 buildscript {
     allprojects {
         group = 'com.github.beelzebu'
-        version = '1.1.0-b-' + (System.getenv("BUILD_NUMBER") != null ? System.getenv("BUILD_NUMBER") : 'unknown')
+        version = '1.1.' + (System.getenv("BUILD_NUMBER") != null ? System.getenv("BUILD_NUMBER") : 'unknown')
 
         repositories {
             mavenLocal()
