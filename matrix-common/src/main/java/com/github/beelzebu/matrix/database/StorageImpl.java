@@ -81,7 +81,7 @@ public class StorageImpl {
                 .filter("uniqueId", uniqueId).first();
     }
 
-    public MatrixPlayer getPlayer(String name) {
+    public MatrixPlayer getPlayerByName(String name) {
         return Optional.ofNullable(
                 this.datastore.find(MongoMatrixPlayer.class)
                         .filter("lowercaseName", name.toLowerCase()).first())
@@ -100,8 +100,8 @@ public class StorageImpl {
         return getPlayer(uniqueId) != null;
     }
 
-    public boolean isRegistered(String name) {
-        return getPlayer(name) != null;
+    public boolean isRegisteredByName(String name) {
+        return getPlayerByName(name) != null;
     }
 
     public boolean isRegisteredById(String hexId) {
@@ -116,9 +116,6 @@ public class StorageImpl {
     }
 
     public void save(MatrixPlayer mongoMatrixPlayer) {
-        if (mongoMatrixPlayer.getName().equals("Beelzebu")) {
-            datastore.delete(getPlayer(mongoMatrixPlayer.getName()));
-        }
         this.datastore.save(mongoMatrixPlayer);
     }
 
@@ -412,7 +409,7 @@ public class StorageImpl {
             for (int i = 0; i < TOP_SIZE; i++) {
                 if (res.next()) {
                     String id = res.getString("id");
-                    MatrixPlayer matrixPlayer = getPlayer(id);
+                    MatrixPlayer matrixPlayer = getPlayerById(id);
                     if (matrixPlayer == null) {
                         Matrix.getLogger().warn("Player with id '" + id + "' can not be found on database.");
                         continue;

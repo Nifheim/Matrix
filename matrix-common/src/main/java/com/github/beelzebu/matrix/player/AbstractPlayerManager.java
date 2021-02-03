@@ -58,22 +58,22 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
 
     @Override
     public CompletableFuture<String> getHexIdByName(String name) {
-        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getHexIdByName(name).orElse(api.getDatabase().getStorage().getPlayer(name).getId()));
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getHexIdByName(name).orElse(api.getDatabase().getStorage().getPlayerByName(name).getId()));
     }
 
     @Override
     public CompletableFuture<UUID> getUniqueIdById(String hexId) {
-        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdById(hexId).orElse(api.getDatabase().getStorage().getPlayer(hexId).getUniqueId()));
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdById(hexId).orElse(api.getDatabase().getStorage().getPlayerById(hexId).getUniqueId()));
     }
 
     @Override
     public CompletableFuture<UUID> getUniqueIdByName(String name) {
-        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdByName(name).orElse(api.getDatabase().getStorage().getPlayer(name).getUniqueId()));
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdByName(name).orElse(api.getDatabase().getStorage().getPlayerByName(name).getUniqueId()));
     }
 
     @Override
     public CompletableFuture<String> getNameById(String hexId) {
-        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getNameById(hexId).orElse(api.getDatabase().getStorage().getPlayer(hexId).getName()));
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getNameById(hexId).orElse(api.getDatabase().getStorage().getPlayerById(hexId).getName()));
     }
 
     @Override
@@ -190,7 +190,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         }
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             String hexId = api.getDatabase().getCacheProvider().getHexIdByName(name).orElseGet(() -> {
-                MatrixPlayer matrixPlayer = api.getDatabase().getStorage().getPlayer(name);
+                MatrixPlayer matrixPlayer = api.getDatabase().getStorage().getPlayerByName(name);
                 if (matrixPlayer != null) {
                     return matrixPlayer.getId();
                 }

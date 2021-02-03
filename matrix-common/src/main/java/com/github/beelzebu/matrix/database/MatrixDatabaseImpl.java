@@ -45,7 +45,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             Matrix.getLogger().debug("Requesting player by name " + name);
             return cacheProvider.getPlayerByName(name).orElseGet(() -> {
                 Matrix.getLogger().debug("Player not found on cache, falling back to storage " + name);
-                return storage.getPlayer(name);
+                return storage.getPlayerByName(name);
             });
         });
     }
@@ -73,7 +73,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayer(name).isRegistered();
+            return storage.getPlayerByName(name).isRegistered();
         });
     }
 
@@ -84,7 +84,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayer(hexId).isRegistered();
+            return storage.getPlayerById(hexId).isRegistered();
         });
     }
 
