@@ -1,8 +1,13 @@
 package com.github.beelzebu.matrix.scheduler;
 
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerTask;
+import com.github.beelzebu.matrix.api.util.Throwing;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,12 +15,15 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Beelzebu
  */
 public abstract class AbstractJavaScheduler implements SchedulerAdapter {
 
+    private final AtomicInteger futureCount = new AtomicInteger(0);
+    private final AtomicInteger futureRunnableCount = new AtomicInteger(0);
     private final ScheduledThreadPoolExecutor scheduler;
     private final ErrorReportingExecutor schedulerWorkerPool;
     private final ForkJoinPool worker;
@@ -70,6 +78,42 @@ public abstract class AbstractJavaScheduler implements SchedulerAdapter {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public <T> CompletableFuture<T> makeFuture(Callable<T> supplier) {
+        return CompletableFuture.supplyAsync(() -> {
+            int current = futureCount.getAndIncrement();
+            Matrix.getLogger().debug("Starting future " + current);
+            try {
+                return supplier.call();
+            } catch (Exception e) {
+                if (e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
+                }
+                throw new CompletionException(e);
+            } finally {
+                Matrix.getLogger().debug("Ending future " + current);
+            }
+        }, async());
+    }
+
+    @Override
+    public CompletableFuture<Void> makeFuture(Throwing.Runnable runnable) {
+        return CompletableFuture.runAsync(() -> {
+            int current = futureRunnableCount.getAndIncrement();
+            Matrix.getLogger().debug("Starting future runnable " + current);
+            try {
+                runnable.run();
+            } catch (Exception e) {
+                if (e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
+                }
+                throw new CompletionException(e);
+            } finally {
+                Matrix.getLogger().debug("Ending future runnable " + current);
+            }
+        }, async());
     }
 
     private static final class ErrorReportingExecutor implements Executor {

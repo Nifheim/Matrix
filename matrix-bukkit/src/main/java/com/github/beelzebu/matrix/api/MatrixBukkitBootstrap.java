@@ -261,9 +261,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
-            StatsPlaceholders statsPlaceholders = new StatsPlaceholders(api);
-            statsPlaceholders.register();
-            new OnlinePlaceholders(this).register();
+            new StatsPlaceholders(api).register();
+            new OnlinePlaceholders(api).register();
         } else {
             Bukkit.shutdown();
         }

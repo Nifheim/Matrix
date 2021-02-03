@@ -40,12 +40,15 @@ public class ServerInfoImpl extends ServerInfo {
             this.serverName = generateServerName(serverType, groupName, serverName);
         }
         this.gameMode = gameMode == null ? (serverType == ServerType.SURVIVAL ? GameMode.SURVIVAL : GameMode.ADVENTURE) : gameMode;
-        if (serverType == ServerType.PROXY || serverType == ServerType.AUTH) {
+        if (serverType == ServerType.PROXY || serverType == ServerType.AUTH || serverType == ServerType.LOBBY) {
             this.lobby = new FinalCachedValue<>(() -> null);
         } else if (lobby != null) {
             this.lobby = new FinalCachedValue<>(() -> lobby);
         } else {
-            this.lobby = new SingleCachedValue<>(() -> ServerInfo.findLobbyForServer(this).join(), 10, TimeUnit.MINUTES);
+            this.lobby = new SingleCachedValue<>(() -> {
+                Matrix.getLogger().debug("Finding lobby for server");
+                return Matrix.getAPI().getServerManager().getLobbyForGroup(groupName);
+            }, 10, TimeUnit.MINUTES);
         }
     }
 
@@ -73,15 +76,17 @@ public class ServerInfoImpl extends ServerInfo {
      * @see #formatServerNamePrefix(ServerType, String, String)
      */
     private String generateServerName(ServerType serverType, String groupName, @Nullable String serverName) {
-        if (isUnique()) {
+        Matrix.getLogger().debug("Generating server name: " + serverType + " " + groupName + " " + serverName);
+        if (unique) {
+            Matrix.getLogger().debug("Server is unique, returning default name");
             return formatServerNamePrefix(serverType, groupName, null);
         }
         String name;
-        List<String> servers = Matrix.getAPI().getServerManager().getServers(groupName).join().stream()
+        List<String> servers = Matrix.getAPI().getServerManager().getServers(groupName).thenApply(serverInfos -> serverInfos.stream()
                 .map(ServerInfo::getServerName)
                 .filter(n ->
                         n.startsWith(formatServerNamePrefix(serverType, groupName, serverName))
-                ).collect(Collectors.toList());
+                ).collect(Collectors.toList())).join();
 
         for (int i = 1; ; ) {
             name = formatServerNamePrefix(serverType, groupName, null) + i;

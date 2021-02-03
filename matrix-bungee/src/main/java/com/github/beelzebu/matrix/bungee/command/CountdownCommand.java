@@ -21,7 +21,7 @@ public class CountdownCommand extends Command {
             return;
         }
         /*
-        try (Jedis jedis = RedisManager.getInstance().getPool().getResource()) {
+        try (Jedis jedis = RedisManager.getInstance().getResource()) {
             Countdown c = new Countdown(args[0], System.currentTimeMillis(), System.currentTimeMillis() + (Long.parseLong(args[1]) * 60000));
             jedis.set("countdown:" + c.getId(), Matrix.GSON.toJson(c));
         }

@@ -1,5 +1,6 @@
 package com.github.beelzebu.matrix.util;
 
+import com.github.beelzebu.matrix.api.util.Throwing;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

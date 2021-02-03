@@ -320,6 +320,21 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public long getExp() {
+        return Matrix.getAPI().getLevelProvider().getExpByUniqueId(uniqueId);
+    }
+
+    @Override
+    public void setExp(long l) {
+        Matrix.getAPI().getLevelProvider().setExpByUniqueId(uniqueId, l);
+    }
+
+    @Override
+    public int getLevel() {
+        return (int) Matrix.getAPI().getLevelProvider().getLevelByUniqueId(uniqueId);
+    }
+
+    @Override
     public Set<PlayerOptionType> getOptions() {
         return options;
     }

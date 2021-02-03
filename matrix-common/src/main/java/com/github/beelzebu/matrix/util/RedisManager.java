@@ -14,9 +14,11 @@ public class RedisManager {
 
     public RedisManager(String host, int port, String password) {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMinIdle(1);
-        config.setMaxTotal(101);
+        config.setMinIdle(3);
+        config.setMaxTotal(30);
         config.setBlockWhenExhausted(true);
+        config.setTestOnBorrow(true);
+        config.setTestWhileIdle(true);
         if (password == null || password.trim().isEmpty()) {
             pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, null, 2);
         } else {
@@ -27,8 +29,8 @@ public class RedisManager {
         }
     }
 
-    public JedisPool getPool() {
-        return pool;
+    public Jedis getResource() {
+        return pool.getResource();
     }
 
     public void shutdown() {

@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.messaging;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.messaging.MessageListener;
 import com.github.beelzebu.matrix.api.messaging.Messaging;
 import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
@@ -54,7 +53,7 @@ public class RedisMessaging implements Messaging {
 
     @Override
     public void sendMessage(Message message) {
-        sendMessage(MATRIX_MESSAGING, MatrixAPIImpl.GSON.toJson(message));
+        sendMessage(MATRIX_MESSAGING, Matrix.GSON.toJson(message));
     }
 
     public void registerListener(RedisMessageListener<? extends RedisMessage> redisMessageListener) {
@@ -75,7 +74,7 @@ public class RedisMessaging implements Messaging {
     }
 
     public void sendMessage(String channel, String message) {
-        try (Jedis jedis = redisManager.getPool().getResource()) {
+        try (Jedis jedis = redisManager.getResource()) {
             jedis.publish(channel, message);
         } catch (JedisException ex) {
             Matrix.getLogger().debug(ex);
@@ -93,7 +92,7 @@ public class RedisMessaging implements Messaging {
         @Override
         public void run() {
             boolean broken = false;
-            try (Jedis jedis = redisManager.getPool().getResource()) {
+            try (Jedis jedis = redisManager.getResource()) {
                 try {
                     jpsh = new JedisPubSubHandler();
                     jedis.subscribe(jpsh, MATRIX_MESSAGING);

@@ -53,45 +53,45 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
 
     @Override
     public CompletableFuture<String> getHexId(UUID uniqueId) {
-        return CompletableFuture.supplyAsync(() -> api.getDatabase().getCacheProvider().getHexId(uniqueId).orElse(api.getDatabase().getStorage().getPlayer(uniqueId).getId()), api.getPlugin().getBootstrap().getScheduler().async());
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getHexId(uniqueId).orElse(api.getDatabase().getStorage().getPlayer(uniqueId).getId()));
     }
 
     @Override
     public CompletableFuture<String> getHexIdByName(String name) {
-        return CompletableFuture.supplyAsync(() -> api.getDatabase().getCacheProvider().getHexIdByName(name).orElse(api.getDatabase().getStorage().getPlayer(name).getId()), api.getPlugin().getBootstrap().getScheduler().async());
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getHexIdByName(name).orElse(api.getDatabase().getStorage().getPlayer(name).getId()));
     }
 
     @Override
     public CompletableFuture<UUID> getUniqueIdById(String hexId) {
-        return CompletableFuture.supplyAsync(() -> api.getDatabase().getCacheProvider().getUniqueIdById(hexId).orElse(api.getDatabase().getStorage().getPlayer(hexId).getUniqueId()), api.getPlugin().getBootstrap().getScheduler().async());
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdById(hexId).orElse(api.getDatabase().getStorage().getPlayer(hexId).getUniqueId()));
     }
 
     @Override
     public CompletableFuture<UUID> getUniqueIdByName(String name) {
-        return CompletableFuture.supplyAsync(() -> api.getDatabase().getCacheProvider().getUniqueIdByName(name).orElse(api.getDatabase().getStorage().getPlayer(name).getUniqueId()), api.getPlugin().getBootstrap().getScheduler().async());
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdByName(name).orElse(api.getDatabase().getStorage().getPlayer(name).getUniqueId()));
     }
 
     @Override
     public CompletableFuture<String> getNameById(String hexId) {
-        return CompletableFuture.supplyAsync(() -> api.getDatabase().getCacheProvider().getNameById(hexId).orElse(api.getDatabase().getStorage().getPlayer(hexId).getName()), api.getPlugin().getBootstrap().getScheduler().async());
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getNameById(hexId).orElse(api.getDatabase().getStorage().getPlayer(hexId).getName()));
     }
 
     @Override
     public CompletableFuture<String> getName(UUID uniqueId) {
-        return CompletableFuture.supplyAsync(() -> api.getDatabase().getCacheProvider().getName(uniqueId).orElse(api.getDatabase().getStorage().getPlayer(uniqueId).getName()), api.getPlugin().getBootstrap().getScheduler().async());
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getName(uniqueId).orElse(api.getDatabase().getStorage().getPlayer(uniqueId).getName()));
     }
 
     @Override
     public CompletableFuture<Set<UUID>> getOnlinePlayers() {
-        return CompletableFuture.supplyAsync(() -> {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Set<UUID> onlinePlayers = new HashSet<>();
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 for (String uuidString : jedis.smembers(ONLINE_PLAYERS_TOTAL_KEY)) {
                     onlinePlayers.add(UUID.fromString(uuidString));
                 }
             }
             return onlinePlayers;
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -108,42 +108,48 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
 
     @NotNull
     private CompletableFuture<Set<UUID>> getPlayers(String where, String keyPrefix) {
-        return CompletableFuture.supplyAsync(() -> {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Set<UUID> onlinePlayers = new HashSet<>();
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 for (String uuidString : jedis.smembers(keyPrefix + where)) {
                     onlinePlayers.add(UUID.fromString(uuidString));
                 }
             }
             return onlinePlayers;
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<Integer> getOnlinePlayerCount() {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 return Math.toIntExact(jedis.scard(ONLINE_PLAYERS_TOTAL_KEY));
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
+    }
+
+    public int getOnlinePlayerCountSync() {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
+            return Math.toIntExact(jedis.scard(ONLINE_PLAYERS_TOTAL_KEY));
+        }
     }
 
     @Override
     public CompletableFuture<Integer> getOnlinePlayerCountInServer(String server) {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 return Math.toIntExact(jedis.scard(ONLINE_PLAYERS_SERVER_KEY_PREFIX + server));
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<Integer> getOnlinePlayerCountInGroup(String group) {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 return Math.toIntExact(jedis.scard(ONLINE_PLAYERS_GROUP_KEY_PREFIX + group));
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -151,7 +157,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (uniqueId == null) {
             return CompletableFuture.completedFuture(false);
         }
-        return CompletableFuture.supplyAsync(() -> {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             String hexId = api.getDatabase().getCacheProvider().getHexId(uniqueId).orElseGet(() -> {
                 MatrixPlayer matrixPlayer = api.getDatabase().getStorage().getPlayer(uniqueId);
                 if (matrixPlayer != null) {
@@ -162,7 +168,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             if (hexId == null) {
                 return false;
             }
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 if (groupName == null) {
                     return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, String.valueOf(hexId));
                 } else {
@@ -174,7 +180,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
                     }
                 }
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -182,7 +188,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (name == null) {
             return CompletableFuture.completedFuture(false);
         }
-        return CompletableFuture.supplyAsync(() -> {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             String hexId = api.getDatabase().getCacheProvider().getHexIdByName(name).orElseGet(() -> {
                 MatrixPlayer matrixPlayer = api.getDatabase().getStorage().getPlayer(name);
                 if (matrixPlayer != null) {
@@ -193,7 +199,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             if (hexId == null) {
                 return false;
             }
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 if (groupName == null) {
                     return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, String.valueOf(hexId));
                 } else {
@@ -205,7 +211,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
                     }
                 }
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -213,8 +219,8 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(false);
         }
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 if (groupName == null) {
                     return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, hexId);
                 } else {
@@ -226,7 +232,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
                     }
                 }
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -234,11 +240,11 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 jedis.sadd(ONLINE_PLAYERS_TOTAL_KEY, hexId);
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -246,8 +252,8 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 String serverName = jedis.get(PLAYER_SERVER_KEY_PREFIX + hexId);
                 String serverGroup = jedis.get(PLAYER_GROUP_KEY_PREFIX + hexId);
                 try (Pipeline pipeline = jedis.pipelined()) {
@@ -257,7 +263,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
                     pipeline.sync();
                 }
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -265,11 +271,11 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 return jedis.get(PLAYER_SERVER_KEY_PREFIX + hexId);
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -277,13 +283,13 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
                 pipeline.set(PLAYER_SERVER_KEY_PREFIX + hexId, serverName);
                 pipeline.sadd(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
                 pipeline.sync();
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -291,11 +297,11 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 return jedis.get(PLAYER_GROUP_KEY_PREFIX + hexId);
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -303,12 +309,12 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
                 pipeline.set(PLAYER_GROUP_KEY_PREFIX + hexId, groupName);
                 pipeline.sadd(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
                 pipeline.sync();
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 }

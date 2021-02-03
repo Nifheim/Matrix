@@ -1,10 +1,10 @@
 package com.github.beelzebu.matrix.api;
 
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.player.PlayerManager;
 import com.github.beelzebu.matrix.bukkit.player.BukkitPlayerManager;
 import com.github.beelzebu.matrix.bukkit.plugin.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.bukkit.util.BukkitMetaInjector;
+import com.github.beelzebu.matrix.player.AbstractPlayerManager;
 import com.github.beelzebu.matrix.util.MetaInjector;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class MatrixBukkitAPI extends MatrixAPIImpl<Player> {
     }
 
     @Override
-    public PlayerManager<Player> getPlayerManager() {
+    public AbstractPlayerManager<Player> getPlayerManager() {
         return playerManager;
     }
 

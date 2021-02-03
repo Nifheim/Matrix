@@ -44,7 +44,7 @@ public final class MotdManager {
         return null;
         // TODO: enable
         /*
-        try (Jedis jedis = RedisManager.getInstance().getPool().getResource()) {
+        try (Jedis jedis = RedisManager.getInstance().getResource()) {
             if (!jedis.exists("countdown:" + id)) {
                 return null;
             }

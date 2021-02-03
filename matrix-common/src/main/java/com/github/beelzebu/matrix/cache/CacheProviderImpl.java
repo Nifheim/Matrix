@@ -57,7 +57,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public Optional<UUID> getUniqueIdByName(@NotNull String name) {
         name = name.toLowerCase();
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             String uuidString = jedis.get(UUID_KEY_PREFIX + name);
             return Optional.ofNullable(uuidString != null ? UUID.fromString(uuidString) : null);
         } catch (JedisException | JsonParseException ex) {
@@ -68,7 +68,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<UUID> getUniqueIdById(String hexId) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             String uuidString = jedis.get(UUID_KEY_PREFIX + hexId);
             return Optional.ofNullable(uuidString != null ? UUID.fromString(uuidString) : null);
         } catch (JedisException | JsonParseException ex) {
@@ -79,7 +79,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<String> getName(@NotNull UUID uniqueId) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return Optional.ofNullable(jedis.get(NAME_KEY_PREFIX + uniqueId));
         } catch (JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
@@ -89,7 +89,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<String> getNameById(String hexId) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return Optional.ofNullable(jedis.get(NAME_KEY_PREFIX + hexId));
         } catch (JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
@@ -99,7 +99,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<String> getHexId(@NotNull UUID uniqueId) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return getHexId(jedis, uniqueId);
         }
     }
@@ -111,7 +111,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<String> getHexIdByName(@NotNull String name) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return getHexId(jedis, name);
         }
     }
@@ -130,7 +130,7 @@ public class CacheProviderImpl implements CacheProvider {
         UUID oldUniqueId = null;
         String oldName = null;
 
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             if (jedis.exists(uuidStoreKey)) { // check for old uuid to update
                 oldUniqueId = UUID.fromString(jedis.get(uuidStoreKey));
                 if (oldUniqueId != uniqueId) { // check if old and new are the same
@@ -161,12 +161,12 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public Optional<MatrixPlayer> getPlayer(@NotNull UUID uniqueId) {
         String hexId = api.getPlugin().getHexId(uniqueId).orElse(null);
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return getPlayer(jedis, hexId != null ? hexId : getHexId(jedis, uniqueId).orElse(null));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return getPlayer(jedis, hexId);
         } catch (Exception e) {
             e.printStackTrace();
@@ -183,7 +183,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<MatrixPlayer> getPlayerById(String hexId) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return getPlayer(jedis, hexId);
         }
     }
@@ -207,9 +207,9 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public @NotNull Set<MatrixPlayer> getPlayers() {
         Set<MatrixPlayer> players = new HashSet<>();
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;
-            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(100));
             do {
                 for (String playerKey : scan.getResult()) {
                     MatrixPlayer matrixPlayer = getPlayer(jedis, playerKey.replaceFirst(USER_KEY_PREFIX, "")).orElse(null);
@@ -219,7 +219,7 @@ public class CacheProviderImpl implements CacheProvider {
                     }
                     players.add(matrixPlayer);
                 }
-                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(100));
             } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
         } catch (JedisException ex) {
             Matrix.getLogger().log("An error has occurred getting all players from cache.");
@@ -230,7 +230,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void removePlayer(MatrixPlayer player) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             MongoMatrixPlayer cachedPlayer = (MongoMatrixPlayer) getPlayer(player.getUniqueId()).orElse(player);
             try {
                 if (player.isPremium()) {
@@ -253,21 +253,21 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public boolean isCached(@NotNull UUID uniqueId) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return isCached(jedis, getHexId(jedis, uniqueId).orElse(null));
         }
     }
 
     @Override
     public boolean isCachedByName(@NotNull String name) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return isCached(jedis, getHexId(jedis, name).orElse(null));
         }
     }
 
     @Override
     public boolean isCachedById(String hexId) {
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             return isCached(jedis, hexId);
         }
     }
@@ -296,7 +296,7 @@ public class CacheProviderImpl implements CacheProvider {
             Matrix.getLogger().debug("Trying to save a null uuid for " + hexId);
             return null;
         }
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             String jsonValue = Matrix.GSON.toJson(value);
             Matrix.getLogger().debug("Updating " + hexId + " field `" + field + "' with value `" + jsonValue + "'");
             if (value != null) {
@@ -320,7 +320,7 @@ public class CacheProviderImpl implements CacheProvider {
         if (Objects.isNull(matrixPlayer.getLowercaseName())) {
             matrixPlayer.setName(matrixPlayer.getName());
         }
-        try (Jedis jedis = api.getRedisManager().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
+        try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
             MongoMatrixPlayer.FIELDS.forEach((id, field) -> {
                 try {
                     if (field.get(matrixPlayer) != null) {
@@ -340,14 +340,14 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public void purgeForAllPlayers(@NotNull String field) {
         Set<UUID> playerUUIDs = new HashSet<>();
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;
-            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(100));
             do {
                 for (String playerKey : scan.getResult()) {
                     playerUUIDs.add(UUID.fromString(playerKey.replaceFirst(USER_KEY_PREFIX, "")));
                 }
-                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(100));
             } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
             Iterator<UUID> it = playerUUIDs.iterator();
             while (it.hasNext()) {
@@ -368,9 +368,9 @@ public class CacheProviderImpl implements CacheProvider {
 
     public Set<MatrixPlayer> getPlayers(ServerInfo serverInfo) {
         Set<MatrixPlayer> players = new HashSet<>();
-        try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;
-            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(100));
             do {
                 for (String playerKey : scan.getResult()) {
                     try {
@@ -390,7 +390,7 @@ public class CacheProviderImpl implements CacheProvider {
                         e.printStackTrace();
                     }
                 }
-                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+                scan = jedis.scan(cursor, new ScanParams().match(USER_KEY_PREFIX + "*").count(100));
             } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
         } catch (JedisException ex) {
             Matrix.getLogger().log("An error has occurred getting online players from cache.");

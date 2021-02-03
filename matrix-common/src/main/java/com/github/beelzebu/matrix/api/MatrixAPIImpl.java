@@ -2,6 +2,7 @@ package com.github.beelzebu.matrix.api;
 
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
+import com.github.beelzebu.matrix.api.level.LevelProvider;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerManager;
@@ -25,14 +26,10 @@ import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
 import com.github.beelzebu.matrix.util.MetaInjector;
 import com.github.beelzebu.matrix.util.RedisManager;
+import com.github.beelzebu.matrix.util.adapter.ChatColorTypeAdapter;
+import com.github.beelzebu.matrix.util.adapter.ServerInfoTypeAdapter;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -49,40 +46,6 @@ import net.md_5.bungee.api.ChatColor;
  */
 public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
 
-    public static final Gson GSON = new GsonBuilder().enableComplexMapKeySerialization().registerTypeAdapter(ChatColor.class, new TypeAdapter<ChatColor>() {
-        public void write(JsonWriter out, ChatColor value) throws IOException {
-            out.value(value.name());
-        }
-
-        public ChatColor read(JsonReader in) throws IOException {
-            return ChatColor.valueOf(in.nextString());
-        }
-    }).registerTypeAdapter(ServerInfo.class, new TypeAdapter<ServerInfo>() {
-        @Override
-        public void write(JsonWriter out, ServerInfo value) throws IOException {
-            out.beginObject().name("groupName").value(value.getGroupName())
-                    .name("serverName").value(value.getServerName())
-                    .name("serverType").value(value.getServerType().name())
-                    .name("gameMode").value(value.getDefaultGameMode().toString())
-                    .name("unique").value(value.isUnique())
-                    .name("lobby").value(value.getLobbyServer().join())
-                    .endObject();
-        }
-
-        @Override
-        public ServerInfo read(JsonReader in) {
-            JsonObject jsonObject = new JsonParser().parse(in).getAsJsonObject();
-            return new ServerInfoImpl(
-                    ServerType.valueOf(jsonObject.get("serverType").getAsString()),
-                    jsonObject.get("groupName").getAsString(),
-                    jsonObject.get("serverName").getAsString(),
-                    GameMode.valueOf(jsonObject.get("gameMode").getAsString()),
-                    jsonObject.get("unique").getAsBoolean(),
-                    jsonObject.get("lobby").getAsString(),
-                    true
-            );
-        }
-    }).setDateFormat(DateFormat.LONG).create();
     public static final String DOMAIN_NAME = "mc.indiopikaro.net";
     public static final Set<String> DOMAIN_NAMES = ImmutableSet.of(DOMAIN_NAME, ".net", ".cl", ".com");
     private final MatrixPlugin plugin;
@@ -93,9 +56,17 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
     private final MaintenanceManager maintenanceManager;
     private final ServerManager serverManager;
     private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
+    private LevelProvider levelProvider;
 
     public MatrixAPIImpl(MatrixPlugin plugin) {
-        Matrix.GSON = GSON;
+        GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization()
+                .registerTypeAdapter(ChatColor.class, new ChatColorTypeAdapter())
+                .registerTypeAdapter(ServerInfo.class, new ServerInfoTypeAdapter())
+                .setDateFormat(DateFormat.LONG);
+        if (plugin.getConfig().getBoolean("Debug")) {
+            gsonBuilder.setPrettyPrinting();
+        }
+        Matrix.GSON = gsonBuilder.create();
         this.plugin = plugin;
         plugin.getDataFolder().mkdirs();
         DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
@@ -256,5 +227,18 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
      */
     void shutdown() {
         motd();
+    }
+
+    @Override
+    public LevelProvider getLevelProvider() {
+        if (levelProvider == null) {
+            throw new UnsupportedOperationException();
+        }
+        return levelProvider;
+    }
+
+    @Override
+    public void setLevelProvider(LevelProvider levelProvider) {
+        this.levelProvider = levelProvider;
     }
 }

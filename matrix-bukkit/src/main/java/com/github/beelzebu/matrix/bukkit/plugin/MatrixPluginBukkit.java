@@ -141,7 +141,7 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
-        return CompletableFuture.supplyAsync(() -> Bukkit.getOnlinePlayers().stream().map(player -> api.getPlayerManager().getPlayer(player).join()).collect(Collectors.toSet()), bootstrap.getScheduler().async());
+        return bootstrap.getScheduler().makeFuture(() -> Bukkit.getOnlinePlayers().stream().map(player -> api.getPlayerManager().getPlayer(player).join()).collect(Collectors.toSet()));
     }
 
     @Override

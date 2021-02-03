@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.bungee.scheduler;
 
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
-import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerTask;
+import com.github.beelzebu.matrix.scheduler.AbstractJavaScheduler;
 import com.github.beelzebu.matrix.util.Iterators;
 import java.util.Collections;
 import java.util.Set;
@@ -14,7 +14,7 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 /**
  * @author Beelzebu
  */
-public class BungeeSchedulerAdapter implements SchedulerAdapter {
+public class BungeeSchedulerAdapter extends AbstractJavaScheduler {
 
     private final MatrixBungeeBootstrap bootstrap;
 

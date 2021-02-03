@@ -1,7 +1,6 @@
 # server info, always updated
 server-info:
   group: 'lobby'
-  game-type: 'none'
   server-type: 'lobby' # lobby minigame_bungee minigame_multiarena survival
   game-mode: 'adventure' # adventure, survival, creative, spectator
 

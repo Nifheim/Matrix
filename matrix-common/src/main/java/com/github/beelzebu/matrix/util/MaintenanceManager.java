@@ -23,7 +23,7 @@ public class MaintenanceManager {
         if (lastCheck >= System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(30)) {
             return maintenance;
         }
-        try (Jedis jedis = redisManager.getPool().getResource()) {
+        try (Jedis jedis = redisManager.getResource()) {
             lastCheck = System.currentTimeMillis();
             return (maintenance = jedis.exists(MAINTENANCE_KEY));
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class MaintenanceManager {
     }
 
     public void setMaintenance(boolean maintenance) {
-        try (Jedis jedis = redisManager.getPool().getResource()) {
+        try (Jedis jedis = redisManager.getResource()) {
             if (maintenance) {
                 jedis.set(MAINTENANCE_KEY, "0");
             } else {

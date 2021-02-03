@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerManager;
+import com.github.beelzebu.matrix.api.server.ServerType;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,13 +41,18 @@ public class ServerManagerImpl implements ServerManager {
 
     @Override
     public CompletableFuture<Map<String, Set<ServerInfo>>> getAllServers() {
-        return CompletableFuture.supplyAsync(() -> {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            Matrix.getLogger().debug("Getting all servers");// TODO: remove debug
             Map<String, Set<ServerInfo>> servers = new HashMap<>();
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 String cursor = ScanParams.SCAN_POINTER_START;
-                ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+                ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + "*").count(100));
+                int iterations = 0;
                 do {
+                    iterations++;
+                    Matrix.getLogger().debug("Iteration: " + iterations);
                     for (String serverKey : scan.getResult()) {
+                        Matrix.getLogger().debug("Result: " + serverKey);
                         try {
                             String serverName = serverKey.replaceFirst(SERVER_INFO_KEY_PREFIX, "");
                             ServerInfo serverInfo = new ServerInfoImpl(serverName, jedis.hgetAll(serverKey));
@@ -57,49 +63,53 @@ public class ServerManagerImpl implements ServerManager {
                             e.printStackTrace();
                         }
                     }
-                    scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+                    scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + "*").count(100));
                 } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+                Matrix.getLogger().debug("Ended iterations.");
             } catch (JedisException ex) {
                 Matrix.getLogger().log("An error has occurred getting all servers from cache.");
                 Matrix.getLogger().debug(ex);
             }
             return servers;
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<Set<ServerInfo>> getServers(String groupName) {
-        return CompletableFuture.supplyAsync(() -> {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            Matrix.getLogger().debug("Getting servers on group " + groupName);// TODO: remove debug
             Set<ServerInfo> servers = new HashSet<>();
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 String cursor = ScanParams.SCAN_POINTER_START;
-                ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+                ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*").count(100));
+                int iterations = 0;
                 do {
+                    iterations++;
+                    Matrix.getLogger().debug("Iteration: " + iterations);
                     for (String serverKey : scan.getResult()) {
+                        Matrix.getLogger().debug("Result: " + serverKey);
                         try {
                             String serverName = serverKey.replaceFirst(SERVER_INFO_KEY_PREFIX, "");
                             ServerInfo serverInfo = new ServerInfoImpl(serverName, jedis.hgetAll(serverKey));
-                            if (Objects.equals(groupName, serverInfo.getGroupName())) {
-                                servers.add(serverInfo);
-                            }
+                            servers.add(serverInfo);
                         } catch (IllegalArgumentException e) {
                             e.printStackTrace();
                         }
                     }
-                    scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + "*").count(Integer.MAX_VALUE));
+                    scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*").count(100));
                 } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
             } catch (JedisException ex) {
                 Matrix.getLogger().log("An error has occurred getting servers for group " + groupName + " from cache.");
                 Matrix.getLogger().debug(ex);
             }
             return servers;
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<Optional<ServerInfo>> getServer(String name) {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 ServerInfo serverInfo = new ServerInfoImpl(name, jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name));
                 return Optional.of(serverInfo);
             } catch (JedisException | NullPointerException | IllegalArgumentException ex) {
@@ -107,7 +117,7 @@ public class ServerManagerImpl implements ServerManager {
                 Matrix.getLogger().debug(ex);
             }
             return Optional.empty();
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
@@ -117,8 +127,8 @@ public class ServerManagerImpl implements ServerManager {
 
     @Override
     public CompletableFuture<Void> addServers(ServerInfo[] serverInfos) {
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
                 for (ServerInfo serverInfo : serverInfos) {
                     // group     : string
                     // gametype  : string
@@ -131,37 +141,37 @@ public class ServerManagerImpl implements ServerManager {
                 pipeline.sync();
                 checkServerGroups(jedis);
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<Void> removeServer(ServerInfo serverInfo) {
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource(); Pipeline pipeline = jedis.pipelined()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
                 pipeline.srem(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
                 pipeline.del(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName());
                 pipeline.del(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName());
                 pipeline.sync();
                 checkServerGroups(jedis);
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<Void> heartbeat(ServerInfo serverInfo) {
-        Matrix.getLogger().info("Sending heartbeat");
-        return CompletableFuture.runAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            Matrix.getLogger().info("Sending heartbeat");
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 jedis.set(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName(), String.valueOf(System.currentTimeMillis()));
                 Matrix.getLogger().info("Heartbeat sent");
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<OptionalLong> getLastHeartbeat(ServerInfo serverInfo) {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 String longString = jedis.get(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName());
                 if (longString == null) {
                     return OptionalLong.empty();
@@ -169,22 +179,22 @@ public class ServerManagerImpl implements ServerManager {
                 return OptionalLong.of(Long.parseLong(longString));
             } catch (NumberFormatException e) {
                 Matrix.getLogger().info("Error getting heartbeat for: " + serverInfo.getServerName());
-                try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+                try (Jedis jedis = api.getRedisManager().getResource()) {
                     jedis.hgetAll(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName()).forEach((k, v) -> Matrix.getLogger().info(k + ":" + v));
                 }
                 Matrix.getLogger().debug(e);
             }
             return OptionalLong.empty();
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     @Override
     public CompletableFuture<Set<String>> getGroupsNames() {
-        return CompletableFuture.supplyAsync(() -> {
-            try (Jedis jedis = api.getRedisManager().getPool().getResource()) {
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
+            try (Jedis jedis = api.getRedisManager().getResource()) {
                 return jedis.smembers(SERVER_GROUPS_KEY);
             }
-        }, api.getPlugin().getBootstrap().getScheduler().async());
+        });
     }
 
     private void checkServerGroups(Jedis jedis) {
@@ -214,5 +224,41 @@ public class ServerManagerImpl implements ServerManager {
             }
             pipeline.sync();
         }
+    }
+
+    @Override
+    public String getLobbyForGroup(String groupName) {
+        Matrix.getLogger().debug("Finding lobby for " + groupName); // TODO: remove debug
+        try {
+            throw new RuntimeException();
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+        try (Jedis jedis = api.getRedisManager().getResource()) {
+            String cursor = ScanParams.SCAN_POINTER_START;
+            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*lobby*").count(100));
+            int iterations = 0;
+            do {
+                iterations++;
+                Matrix.getLogger().debug("Iteration: " + iterations);
+                for (String serverKey : scan.getResult()) {
+                    Matrix.getLogger().debug("Result: " + serverKey);
+                    try {
+                        String serverName = serverKey.replaceFirst(SERVER_INFO_KEY_PREFIX, "");
+                        ServerInfo serverInfo = new ServerInfoImpl(serverName, jedis.hgetAll(serverKey));
+                        if (serverInfo.getServerType() == ServerType.LOBBY) {
+                            return serverName;
+                        }
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    }
+                }
+                scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*lobby*").count(100));
+            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+        } catch (JedisException ex) {
+            Matrix.getLogger().log("An error has occurred getting servers for group " + groupName + " from cache.");
+            Matrix.getLogger().debug(ex);
+        }
+        return null;
     }
 }

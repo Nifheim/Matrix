@@ -151,7 +151,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
-        return CompletableFuture.supplyAsync(() -> ProxyServer.getInstance().getPlayers().stream().map(proxiedPlayer -> api.getPlayerManager().getPlayer(proxiedPlayer).join()).collect(Collectors.toSet()), bootstrap.getScheduler().async());
+        return getBootstrap().getScheduler().makeFuture(() -> ProxyServer.getInstance().getPlayers().stream().map(proxiedPlayer -> api.getPlayerManager().getPlayer(proxiedPlayer).join()).collect(Collectors.toSet()));
     }
 
     @Override

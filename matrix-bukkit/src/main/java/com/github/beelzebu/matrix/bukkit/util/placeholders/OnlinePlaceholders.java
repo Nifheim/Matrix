@@ -1,16 +1,17 @@
 package com.github.beelzebu.matrix.bukkit.util.placeholders;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class OnlinePlaceholders extends PlaceholderExpansion {
 
-    private volatile int bungeeCount = 0;
+    private AtomicInteger bungeeCount = new AtomicInteger(0);
     private final LoadingCache<String, String> status = Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).weakValues().build(new CacheLoader<String, String>() {
         @Override
         public @Nullable String load(@NonNull String key) throws Exception {
@@ -56,8 +57,8 @@ public class OnlinePlaceholders extends PlaceholderExpansion {
         }
     });
 
-    public OnlinePlaceholders(Plugin plugin) {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> Matrix.getAPI().getPlayerManager().getOnlinePlayerCount().thenAccept(count -> bungeeCount = count), 0, 60);
+    public OnlinePlaceholders(MatrixBukkitAPI api) {
+        Matrix.getAPI().getPlugin().getBootstrap().getScheduler().asyncRepeating(() -> bungeeCount.set(api.getPlayerManager().getOnlinePlayerCountSync()), 5, TimeUnit.SECONDS);
     }
 
     @Override
