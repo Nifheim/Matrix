@@ -105,7 +105,7 @@ public class ServerInfoImpl extends ServerInfo {
         if (serverName != null && !Objects.equals(groupName, serverName)) {
             name.append(":").append(serverName);
         }
-        if (!Objects.equals(serverType.getFriendlyName(), groupName) && (serverType == ServerType.MINIGAME_BUNGEE || serverType == ServerType.MINIGAME_MULTIARENA)) {
+        if (!Objects.equals(serverType.getFriendlyName(), groupName) && !(serverType == ServerType.PROXY || serverType == ServerType.AUTH)) {
             name.append(":").append(serverType.getFriendlyName());
         }
         return name.toString().toLowerCase();

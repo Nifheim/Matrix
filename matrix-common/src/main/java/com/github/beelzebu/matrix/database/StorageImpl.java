@@ -91,7 +91,6 @@ public class StorageImpl {
     }
 
     public MatrixPlayer getPlayerById(@NotNull String hexId) {
-        Matrix.getLogger().info(hexId);
         return this.datastore.find(MongoMatrixPlayer.class)
                 .filter("_id", new ObjectId(hexId)).first();
     }

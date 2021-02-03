@@ -61,6 +61,7 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
     public MatrixAPIImpl(MatrixPlugin plugin) {
         GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization()
                 .registerTypeAdapter(ChatColor.class, new ChatColorTypeAdapter())
+                .registerTypeAdapter(ServerInfoImpl.class, new ServerInfoTypeAdapter())
                 .registerTypeAdapter(ServerInfo.class, new ServerInfoTypeAdapter())
                 .setDateFormat(DateFormat.LONG);
         if (plugin.getConfig().getBoolean("Debug")) {
