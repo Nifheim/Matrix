@@ -14,7 +14,7 @@ pipeline {
             }
             post {
                 success {
-                    sh 'mv out/matrix-bungee*.jar out/matrix-bungee.jar'
+                    sh 'mv out/matrix-bungee*.jar out/matrix-bungee.jar; mv out/matrix-bukkit*.jar out/matrix-bukkit.jar'
                     archiveArtifacts artifacts: 'out/matrix-*.jar', fingerprint: true
                 }
                 always {
