@@ -79,7 +79,7 @@ public class ServerInfoImpl extends ServerInfo {
         Matrix.getLogger().debug("Generating server name: " + serverType + " " + groupName + " " + serverName);
         if (unique) {
             Matrix.getLogger().debug("Server is unique, returning default name");
-            return formatServerNamePrefix(serverType, groupName, null);
+            return formatServerNamePrefix(serverType, groupName, serverName);
         }
         String name;
         List<String> servers = Matrix.getAPI().getServerManager().getServers(groupName).thenApply(serverInfos -> serverInfos.stream()
