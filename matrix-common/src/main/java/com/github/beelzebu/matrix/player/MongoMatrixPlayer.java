@@ -112,7 +112,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public String getId() {
-        if (Objects.equals(idString, "")) {
+        if (!Objects.equals(idString, "")) {
             return idString = id.toHexString();
         }
         return idString;
@@ -260,8 +260,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (this.loggedIn == loggedIn) {
             return;
         }
-        this.loggedIn = loggedIn;
-        updateCached("loggedIn");
+        updateCached("loggedIn", loggedIn).thenAccept(val -> this.loggedIn = val);
         if (loggedIn) {
             Matrix.getAPI().getPlayerManager().setOnlineById(getId());
         } else {
