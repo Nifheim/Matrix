@@ -11,6 +11,7 @@ import com.github.beelzebu.matrix.bungee.command.CrackedCommand;
 import com.github.beelzebu.matrix.bungee.command.HelpOpCommand;
 import com.github.beelzebu.matrix.bungee.command.MaintenanceCommand;
 import com.github.beelzebu.matrix.bungee.command.MatrixCommand;
+import com.github.beelzebu.matrix.bungee.command.MatrixServersCommand;
 import com.github.beelzebu.matrix.bungee.command.PlayerInfoCommand;
 import com.github.beelzebu.matrix.bungee.command.PremiumCommand;
 import com.github.beelzebu.matrix.bungee.command.ReplyCommand;
@@ -84,7 +85,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerCommand(new PremiumCommand(this));
         registerCommand(new CrackedCommand());
         registerCommand(new BungeeTPCommand());
-        //registerCommand(new MatrixServersCommand());
+        registerCommand(new MatrixServersCommand(api));
         registerCommand(new MatrixCommand(this));
         //0registerCommand(new StaffListCommand());
         new PermissionListener();

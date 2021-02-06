@@ -85,15 +85,15 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
         Matrix.getLogger().info("Initializing maintenance manager...");
         maintenanceManager = new MaintenanceManager(redisManager);
         Matrix.getLogger().info("Maintenance manager initialized!");
-        if (plugin.getConfig().getString("server-info.game-mode") == null) {
-            Matrix.getLogger().info("server-info.game-mode config option is missing, please add it to config.yml");
-        }
         Matrix.getLogger().info("Providing Matrix API instance...");
         Matrix.setAPI(this);
         Matrix.getLogger().info("Initializing server manager...");
         serverManager = new ServerManagerImpl(this);
         Matrix.getLogger().info("Server manager initialized!");
         Matrix.getLogger().info("Creating server info for current server...");
+        if (plugin.getConfig().getString("server-info.game-mode") == null) {
+            Matrix.getLogger().info("server-info.game-mode config option is missing, please add it to config.yml");
+        }
         serverInfo = new ServerInfoImpl(
                 ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
                 plugin.getConfig().getString("server-info.group", null),

@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.bukkit.util;
 
-import com.github.beelzebu.matrix.api.Matrix;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -9,7 +8,17 @@ import org.bukkit.plugin.Plugin;
  */
 public class PluginsUtility {
 
-    private final String[] pluginNames = {"TAB", "ClearLag", "Spartan", "NoCheatPlus", "SkinsRestorer", "40ServidoresMC", "IPWhiteList", "SuperLobby", "LuckPerms-GUI", "ChangeSlots"};
+    private final String[] pluginNames = {
+            "TAB",
+            "Spartan",
+            "NoCheatPlus",
+            "SkinsRestorer",
+            "40ServidoresMC",
+            "IPWhiteList",
+            "LuckPerms-GUI",
+            "ChangeSlots",
+            "Skript"
+    };
 
     public PluginsUtility() {
 
@@ -20,7 +29,7 @@ public class PluginsUtility {
         for (Plugin plugin : plugins) {
             for (String name : pluginNames) {
                 if (plugin.getName().equalsIgnoreCase(name)) {
-                    Matrix.getLogger().info("&4" + plugin.getName() + "&7 should be removed.");
+                    Bukkit.getPluginManager().disablePlugin(plugin);
                 }
             }
         }
