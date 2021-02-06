@@ -228,12 +228,7 @@ public class ServerManagerImpl implements ServerManager {
 
     @Override
     public String getLobbyForGroup(String groupName) {
-        Matrix.getLogger().debug("Finding lobby for " + groupName); // TODO: remove debug
-        try {
-            throw new RuntimeException();
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-        }
+        Matrix.getLogger().debug("Finding lobby for " + groupName);
         try (Jedis jedis = api.getRedisManager().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;
             ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*lobby*").count(100));
