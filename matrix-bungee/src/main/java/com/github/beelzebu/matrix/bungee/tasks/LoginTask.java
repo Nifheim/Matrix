@@ -64,7 +64,7 @@ public class LoginTask implements IndioLoginTask {
             PendingConnection pendingConnection = event.getConnection();
             if (player == null) {
                 player = new MongoMatrixPlayer(pendingConnection.getUniqueId(), pendingConnection.getName());
-                player.save();
+                player.save().join();
                 firstJoin = true;
             }
             if (FloodgateAPI.isBedrockPlayer(player.getUniqueId())) {
@@ -91,7 +91,6 @@ public class LoginTask implements IndioLoginTask {
                     player.setRegistered(true);
                     player.setLoggedIn(true);
                 }
-
                 if (firstJoin) {
                     player.setOption(PlayerOptionType.SPEED, true);
                 }
