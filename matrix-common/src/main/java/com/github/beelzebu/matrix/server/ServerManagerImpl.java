@@ -201,7 +201,7 @@ public class ServerManagerImpl implements ServerManager {
         Set<String> deadGroups = new HashSet<>();
         Map<String, Set<String>> deadServers = new HashMap<>();
         for (String groupName : jedis.smembers(SERVER_GROUPS_KEY)) {
-            Set<String> servers = jedis.smembers(SERVER_GROUPS_KEY + groupName);
+            Set<String> servers = jedis.smembers(SERVER_GROUP_KEY_PREFIX + groupName);
             if (servers.isEmpty()) {
                 deadGroups.add(groupName);
                 return;
