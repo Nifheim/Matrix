@@ -32,8 +32,8 @@ public class PlayerInfoCommand extends Command implements TabExecutor {
             if (args.length == 0) {
                 sender.sendMessage(StringUtils.replace("%prefix% &6Por favor usa &e/" + getName() + " <nombre>"));
             } else {
-                if (bootstrap.getApi().getDatabase().isRegisteredByName(args[0]).join()) {
-                    MatrixPlayer player = bootstrap.getApi().getPlayerManager().getPlayerByName(args[0]).join();
+                MatrixPlayer player = bootstrap.getApi().getPlayerManager().getPlayerByName(args[0]).join();
+                if (player != null) {
                     if (args.length >= 2 && args[1].equalsIgnoreCase("json")) {
                         sender.sendMessage(TextComponent.fromLegacyText(new GsonBuilder().setPrettyPrinting().create().toJson(player, MongoMatrixPlayer.class)));
                     } else {
@@ -42,8 +42,6 @@ public class PlayerInfoCommand extends Command implements TabExecutor {
                                         + " \n"
                                         + " &cUUID &8• &7" + player.getUniqueId() + "&r\n"
                                         + " &cDisplay name &8• &7" + player.getDisplayName() + "&r\n"
-                                        + " &cLevel &8• &7" + player.getLevel() + "&r\n"
-                                        + " &cExperience &8• &7" + player.getExp() + "&r\n"
                                         + " &cRank &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "default" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"
                                         + " &cDiscord Id &8• &7" + (player.getDiscordId() != null ? player.getDiscordId() : "Not associated") + "&r\n"
                                         + " &cVanished &8• &7" + player.isVanished() + "&r\n"
