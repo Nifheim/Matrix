@@ -131,6 +131,10 @@ public class ServerInfoImpl extends ServerInfo {
         return lobby.get();
     }
 
+    public SingleCachedValue<String> getCachedLobby() {
+        return lobby;
+    }
+
     @Override
     public boolean isUnique() {
         return unique;

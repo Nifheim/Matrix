@@ -5,6 +5,7 @@ import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerManager;
 import com.github.beelzebu.matrix.api.server.ServerType;
+import com.github.beelzebu.matrix.util.FinalCachedValue;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -125,9 +126,14 @@ public class ServerManagerImpl implements ServerManager {
                     // gametype  : string
                     // gamemode  : string
                     // heartbeat : long
+                    pipeline.sadd(SERVER_GROUPS_KEY, serverInfo.getGroupName());
+                    pipeline.sadd(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
                     pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group", serverInfo.getGroupName());
                     pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "gamemode", serverInfo.getDefaultGameMode().toString());
                     pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "servertype", serverInfo.getServerType().name());
+                    if (((ServerInfoImpl) serverInfo).getCachedLobby() instanceof FinalCachedValue) {
+                        pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "lobby", serverInfo.getLobbyServer().join());
+                    }
                 }
                 pipeline.sync();
                 checkServerGroups(jedis);
