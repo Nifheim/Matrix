@@ -48,7 +48,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     @Id
     private ObjectId id;
     @Transient
-    private transient String idString;
+    private transient String idString = null;
     @Indexed(options = @IndexOptions(unique = true))
     private UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
@@ -112,7 +112,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public String getId() {
-        if (!Objects.equals(idString, "")) {
+        if (id != null && idString == null) {
             return idString = id.toHexString();
         }
         return idString;
