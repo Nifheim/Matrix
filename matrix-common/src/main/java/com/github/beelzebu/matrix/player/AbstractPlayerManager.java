@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 
 /**
  * @author Beelzebu
@@ -121,11 +122,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
 
     @Override
     public CompletableFuture<Integer> getOnlinePlayerCount() {
-        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
-            try (Jedis jedis = api.getRedisManager().getResource()) {
-                return Math.toIntExact(jedis.scard(ONLINE_PLAYERS_TOTAL_KEY));
-            }
-        });
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(this::getOnlinePlayerCountSync);
     }
 
     public int getOnlinePlayerCountSync() {
@@ -170,13 +167,13 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             }
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 if (groupName == null) {
-                    return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, String.valueOf(hexId));
+                    return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, hexId);
                 } else {
                     if (serverName == null) {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, String.valueOf(hexId));
+                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
                     } else {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, String.valueOf(hexId))
-                                && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, String.valueOf(hexId));
+                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId)
+                                && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
                     }
                 }
             }
@@ -201,13 +198,13 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             }
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 if (groupName == null) {
-                    return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, String.valueOf(hexId));
+                    return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, hexId);
                 } else {
                     if (serverName == null) {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, String.valueOf(hexId));
+                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
                     } else {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, String.valueOf(hexId))
-                                && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, String.valueOf(hexId));
+                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId)
+                                && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
                     }
                 }
             }
@@ -284,10 +281,20 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             return CompletableFuture.completedFuture(null);
         }
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
-            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
-                pipeline.set(PLAYER_SERVER_KEY_PREFIX + hexId, serverName);
-                pipeline.sadd(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
-                pipeline.sync();
+            try (Jedis jedis = api.getRedisManager().getResource()) {
+                Response<String> cachedServerName = null;
+                try (Pipeline pipeline = jedis.pipelined()) {
+                    if (serverName != null) {
+                        pipeline.set(PLAYER_SERVER_KEY_PREFIX + hexId, serverName);
+                        pipeline.sadd(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
+                    } else {
+                        cachedServerName = pipeline.get(PLAYER_SERVER_KEY_PREFIX + hexId);
+                    }
+                    pipeline.sync();
+                }
+                if (cachedServerName != null) {
+                    jedis.srem(ONLINE_PLAYERS_SERVER_KEY_PREFIX + cachedServerName.get(), hexId);
+                }
             }
         });
     }
@@ -310,10 +317,20 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             return CompletableFuture.completedFuture(null);
         }
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
-            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
-                pipeline.set(PLAYER_GROUP_KEY_PREFIX + hexId, groupName);
-                pipeline.sadd(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
-                pipeline.sync();
+            try (Jedis jedis = api.getRedisManager().getResource()) {
+                Response<String> cachedGroupName = null;
+                try (Pipeline pipeline = jedis.pipelined()) {
+                    if (groupName != null) {
+                        pipeline.set(PLAYER_GROUP_KEY_PREFIX + hexId, groupName);
+                        pipeline.sadd(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
+                    } else {
+                        cachedGroupName = pipeline.get(PLAYER_GROUP_KEY_PREFIX + hexId);
+                    }
+                    pipeline.sync();
+                }
+                if (cachedGroupName != null) {
+                    jedis.srem(ONLINE_PLAYERS_GROUP_KEY_PREFIX + cachedGroupName.get(), hexId);
+                }
             }
         });
     }

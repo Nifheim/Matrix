@@ -97,6 +97,7 @@ public class LoginTask implements IndioLoginTask {
                 player.setLastLogin(new Date());
             }
         } catch (Exception e) {
+            // TODO: update message
             event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
