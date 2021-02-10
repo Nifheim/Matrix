@@ -4,10 +4,11 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.cache.CacheProvider;
 import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
-import com.github.beelzebu.matrix.api.messaging.message.NameUpdatedMessage;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.gson.JsonParseException;
 import com.mongodb.DuplicateKeyException;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
@@ -33,16 +35,17 @@ public class CacheProviderImpl implements CacheProvider {
     public static final String UUID_KEY_PREFIX = "matrixuuid:";
     public static final String NAME_KEY_PREFIX = "matrixname:";
     public static final String USER_KEY_PREFIX = "matrixuser:";
+    private final Cache<String, MatrixPlayer> cachedPlayers = Caffeine.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES).weakValues().build();
     /*
       player keys:
 
       uuid<->id<->name
-      matrixid:<uuid>
-      matrixid:<name>
-      matrixuuid:<name>
-      matrixuuid:<mongoid>
-      matrixname:<uuid>
-      matrixname:<mongoid>
+      matrixid:<uuid>       -> id
+      matrixid:<name>       -> id
+      matrixuuid:<name>     -> uuid
+      matrixuuid:<mongoid>  -> uuid
+      matrixname:<uuid>     -> name
+      matrixname:<mongoid>  -> name
 
       matrixuser:<mongoid>
         key: value
@@ -122,15 +125,23 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public void update(@NotNull String name, @NotNull UUID uniqueId, String hexId) {
+    public void update(@NotNull String name, @NotNull UUID uniqueId, @NotNull String hexId) {
         // TODO: update hex id too
-        String uuidStoreKey = UUID_KEY_PREFIX + name;
-        String nameStoreKey = NAME_KEY_PREFIX + uniqueId;
+        String uuidById = UUID_KEY_PREFIX + hexId;
+        String uuidByName = UUID_KEY_PREFIX + name;
+        String nameById = NAME_KEY_PREFIX + hexId;
+        String nameByUuid = NAME_KEY_PREFIX + uniqueId;
+        String idByUuid = ID_KEY_PREFIX + uniqueId;
+        String idByName = ID_KEY_PREFIX + name;
 
-        UUID oldUniqueId = null;
-        String oldName = null;
-
-        try (Jedis jedis = api.getRedisManager().getResource()) {
+        try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
+            pipeline.set(uuidById, uniqueId.toString());
+            pipeline.set(uuidByName, uniqueId.toString());
+            pipeline.set(nameById, name);
+            pipeline.set(nameByUuid, name);
+            pipeline.set(idByUuid, hexId);
+            pipeline.set(idByName, hexId);
+            /*
             if (jedis.exists(uuidStoreKey)) { // check for old uuid to update
                 oldUniqueId = UUID.fromString(jedis.get(uuidStoreKey));
                 if (oldUniqueId != uniqueId) { // check if old and new are the same
@@ -150,12 +161,14 @@ public class CacheProviderImpl implements CacheProvider {
             } else { // store name because it doesn't exists.
                 jedis.set(nameStoreKey, name);
             }
+             */
         }
-
+        /*
         if (Objects.equals(name, oldName == null ? name : oldName) && Objects.equals(uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId)) {
             return;
         }
         new NameUpdatedMessage(name, oldName == null ? name : oldName, uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId).send();
+        */
     }
 
     @Override
@@ -183,6 +196,10 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<MatrixPlayer> getPlayerById(String hexId) {
+        MatrixPlayer cachedPlayer = cachedPlayers.getIfPresent(hexId);
+        if (cachedPlayer != null) {
+            return Optional.of(cachedPlayer);
+        }
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return getPlayer(jedis, hexId);
         }
@@ -191,6 +208,10 @@ public class CacheProviderImpl implements CacheProvider {
     private Optional<MatrixPlayer> getPlayer(Jedis jedis, String hexId) {
         if (hexId == null) {
             return Optional.empty();
+        }
+        MatrixPlayer cachedPlayer = cachedPlayers.getIfPresent(hexId);
+        if (cachedPlayer != null) {
+            return Optional.of(cachedPlayer);
         }
         try {
             Map<String, String> jsonPlayer = jedis.hgetAll(UUID_KEY_PREFIX + hexId);
@@ -230,6 +251,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void removePlayer(MatrixPlayer player) {
+        cachedPlayers.invalidate(player.getId());
         try (Jedis jedis = api.getRedisManager().getResource()) {
             MongoMatrixPlayer cachedPlayer = (MongoMatrixPlayer) getPlayer(player.getUniqueId()).orElse(player);
             try {
@@ -267,6 +289,9 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public boolean isCachedById(String hexId) {
+        if (cachedPlayers.getIfPresent(hexId) != null) {
+            return true;
+        }
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return isCached(jedis, hexId);
         }
