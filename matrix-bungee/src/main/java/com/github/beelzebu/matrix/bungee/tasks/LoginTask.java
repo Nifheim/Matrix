@@ -65,6 +65,7 @@ public class LoginTask implements IndioLoginTask {
             if (player == null) {
                 player = new MongoMatrixPlayer(pendingConnection.getUniqueId(), pendingConnection.getName());
                 player.save().join();
+                player.setLastLocale("es");
                 firstJoin = true;
             }
             if (FloodgateAPI.isBedrockPlayer(player.getUniqueId())) {
