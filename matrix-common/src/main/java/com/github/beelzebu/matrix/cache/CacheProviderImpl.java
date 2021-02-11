@@ -214,7 +214,7 @@ public class CacheProviderImpl implements CacheProvider {
             return Optional.of(cachedPlayer);
         }
         try {
-            Map<String, String> jsonPlayer = jedis.hgetAll(UUID_KEY_PREFIX + hexId);
+            Map<String, String> jsonPlayer = jedis.hgetAll(USER_KEY_PREFIX + hexId);
             if (jsonPlayer == null || jsonPlayer.isEmpty()) {
                 return Optional.empty();
             }
