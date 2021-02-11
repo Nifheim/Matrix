@@ -126,7 +126,9 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public void update(@NotNull String name, @NotNull UUID uniqueId, @NotNull String hexId) {
-        // TODO: update hex id too
+        Objects.requireNonNull(name, "name");
+        Objects.requireNonNull(uniqueId, "uniqueId");
+        Objects.requireNonNull(hexId, "hexId");
         String uuidById = UUID_KEY_PREFIX + hexId;
         String uuidByName = UUID_KEY_PREFIX + name;
         String nameById = NAME_KEY_PREFIX + hexId;
@@ -162,6 +164,7 @@ public class CacheProviderImpl implements CacheProvider {
                 jedis.set(nameStoreKey, name);
             }
              */
+            pipeline.sync();
         }
         /*
         if (Objects.equals(name, oldName == null ? name : oldName) && Objects.equals(uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId)) {
