@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
 import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
+import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import java.util.Collection;
 import java.util.Objects;
 import net.md_5.bungee.Util;
@@ -33,11 +34,11 @@ public class ServerRegisterListener implements RedisMessageListener<ServerRegist
             }
         }
         ProxyServer.getInstance().getServers().put(message.getServerInfo().getServerName(), serverInfo);
-        if (message.getServerInfo().getServerName().startsWith("auth")) {
+        if (message.getServerInfo().getServerName().startsWith(ServerInfoImpl.AUTH_GROUP)) {
             Collection<ListenerInfo> listenerInfos = ProxyServer.getInstance().getConfig().getListeners();
             for (ListenerInfo listenerInfo : listenerInfos) {
                 listenerInfo.getServerPriority().add(message.getServerInfo().getServerName());
-                listenerInfo.getServerPriority().removeIf(server -> !server.toLowerCase().contains("auth"));
+                listenerInfo.getServerPriority().removeIf(server -> !server.startsWith(ServerInfoImpl.AUTH_GROUP));
             }
         }
     }
