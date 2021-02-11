@@ -177,6 +177,12 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public Optional<MatrixPlayer> getPlayer(@NotNull UUID uniqueId) {
         String hexId = api.getPlugin().getHexId(uniqueId).orElse(null);
+        if (hexId != null) {
+            MatrixPlayer matrixPlayer = cachedPlayers.getIfPresent(hexId);
+            if (matrixPlayer != null) {
+                return Optional.of(matrixPlayer);
+            }
+        }
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return getPlayer(jedis, hexId != null ? hexId : getHexId(jedis, uniqueId).orElse(null));
         } catch (Exception e) {
@@ -192,8 +198,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<MatrixPlayer> getPlayerByName(@NotNull String name) {
-        // TODO: query local data first, then fallback to cache
-        UUID uniqueId = getUniqueIdByName(name).orElse(api.getPlugin().getUniqueId(name));
+        UUID uniqueId = Optional.ofNullable(api.getPlugin().getUniqueId(name)).orElse(getUniqueIdByName(name).orElse(null));
         return uniqueId != null ? getPlayer(uniqueId) : Optional.empty();
     }
 
