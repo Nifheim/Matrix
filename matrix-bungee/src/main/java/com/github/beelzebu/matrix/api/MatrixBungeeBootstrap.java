@@ -91,7 +91,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         new PermissionListener();
         MotdManager.onEnable();
         new BasicCommands(api);
-        ProxyServer.getInstance().getScheduler().schedule(this, () -> matrixPlugin.getLoggedInPlayers().thenAccept(matrixPlayers -> {
+        ProxyServer.getInstance().getScheduler().schedule(this, () -> matrixPlugin.getLoggedInPlayers().thenAcceptAsync(matrixPlayers -> {
             for (MatrixPlayer matrixPlayer : matrixPlayers) {
                 if (matrixPlayer.isLoggedIn()) {
                     continue;

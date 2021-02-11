@@ -17,11 +17,14 @@ public class PreLoginTask implements IndioLoginTask {
 
     private final MatrixBungeeAPI api;
     private final PreLoginEvent event;
-    private final MongoMatrixPlayer player;
 
     public PreLoginTask(MatrixBungeeAPI api, PreLoginEvent event) {
         this.api = api;
         this.event = event;
+    }
+
+    @Override
+    public void run() {
         MongoMatrixPlayer player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
         Profile profile = null;
         try {
@@ -45,11 +48,6 @@ public class PreLoginTask implements IndioLoginTask {
         if (player == null) {
             Matrix.getLogger().info("Player null pre login name: " + event.getConnection().getName());
         }
-        this.player = player;
-    }
-
-    @Override
-    public void run() {
         try {
             String host = event.getConnection().getVirtualHost().getHostName();
             if (host == null) {
@@ -86,18 +84,18 @@ public class PreLoginTask implements IndioLoginTask {
                 event.setCancelled(true);
                 return;
             }
-            for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
-                if (host.equals("premium." + domain)) {
-                    if (!player.isBedrock()) {
-                        event.getConnection().setOnlineMode(true);
-                    }
-                    if (!player.isPremium()) {
-                        player.setPremium(true);
-                    }
-                    break;
-                }
-            }
             if (player != null) {
+                for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
+                    if (host.equals("premium." + domain)) {
+                        if (!player.isBedrock()) {
+                            event.getConnection().setOnlineMode(true);
+                        }
+                        if (!player.isPremium()) {
+                            player.setPremium(true);
+                        }
+                        break;
+                    }
+                }
                 if (player.isPremium() && !player.isBedrock()) {
                     event.getConnection().setOnlineMode(true);
                 }

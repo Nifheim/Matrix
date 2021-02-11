@@ -230,7 +230,7 @@ public class ChatListener implements Listener {
         if (!(e.getSender() instanceof ProxiedPlayer)) {
             return;
         }
-        api.getPlayerManager().getPlayer((ProxiedPlayer) e.getSender()).thenAccept(matrixPlayer -> {
+        api.getPlayerManager().getPlayer((ProxiedPlayer) e.getSender()).thenAcceptAsync(matrixPlayer -> {
             String command = e.getMessage().toLowerCase().replaceFirst("/", "").split(" ", 2)[0];
             if (command.split(":").length > 1) {
                 e.setMessage(e.getMessage().replaceFirst(command.split(":")[0] + ":", ""));

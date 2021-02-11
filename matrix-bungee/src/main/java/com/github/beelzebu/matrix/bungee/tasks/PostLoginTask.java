@@ -18,16 +18,15 @@ public class PostLoginTask implements IndioLoginTask {
 
     private final MatrixBungeeAPI api;
     private final PostLoginEvent event;
-    private final MatrixPlayer player;
 
     public PostLoginTask(MatrixBungeeAPI api, PostLoginEvent event) {
         this.api = api;
         this.event = event;
-        this.player = api.getPlayerManager().getPlayer(event.getPlayer().getUniqueId()).join();
     }
 
     @Override
     public void run() {
+        MatrixPlayer player = api.getPlayerManager().getPlayer(event.getPlayer().getUniqueId()).join();
         try {
             if (player == null) {
                 event.getPlayer().disconnect(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));

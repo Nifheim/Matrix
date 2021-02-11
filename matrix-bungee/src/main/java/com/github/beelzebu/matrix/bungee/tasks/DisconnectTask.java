@@ -15,16 +15,15 @@ public class DisconnectTask implements Runnable {
 
     private final MatrixBungeeAPI api;
     private final PlayerDisconnectEvent event;
-    private final MatrixPlayer player;
 
     public DisconnectTask(MatrixBungeeAPI api, PlayerDisconnectEvent event) {
         this.api = api;
         this.event = event;
-        this.player = api.getPlayerManager().getPlayer(event.getPlayer()).join();
     }
 
     @Override
     public void run() {
+        MatrixPlayer player = api.getPlayerManager().getPlayer(event.getPlayer()).join();
         try {
             player.setLoggedIn(false);
             if (player.isAdmin() && !event.getPlayer().hasPermission("matrix.admin")) {

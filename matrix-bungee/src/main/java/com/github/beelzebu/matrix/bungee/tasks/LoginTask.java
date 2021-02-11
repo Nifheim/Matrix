@@ -4,7 +4,6 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
@@ -26,13 +25,16 @@ public class LoginTask implements IndioLoginTask {
 
     private final MatrixBungeeAPI api;
     private final LoginEvent event;
-    private MongoMatrixPlayer player;
     private boolean firstJoin = false;
 
     public LoginTask(MatrixBungeeAPI api, LoginEvent event) {
         this.api = api;
         this.event = event;
-        MatrixPlayer player = api.getPlayerManager().getPlayer(event.getConnection().getUniqueId()).join();
+    }
+
+    @Override
+    public void run() {
+        MongoMatrixPlayer player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(event.getConnection().getUniqueId()).join();
         if (player == null) {
             Matrix.getLogger().info("Player null login name: " + event.getConnection().getName() + " uuid: " + event.getConnection().getUniqueId());
             if (event.getConnection().getName() != null) {
@@ -43,7 +45,7 @@ public class LoginTask implements IndioLoginTask {
                     e.printStackTrace();
                 }
                 if (profile != null) {
-                    player = api.getPlayerManager().getPlayer(profile.getId()).join();
+                    player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(profile.getId()).join();
                     if (player != null) {
                         if (event.getConnection().getName() != null && !Objects.equals(player.getName(), event.getConnection().getName())) {
                             player.setName(event.getConnection().getName());
@@ -51,15 +53,10 @@ public class LoginTask implements IndioLoginTask {
                     }
                 }
                 if (player == null) {
-                    player = api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
+                    player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
                 }
             }
         }
-        this.player = (MongoMatrixPlayer) player;
-    }
-
-    @Override
-    public void run() {
         try {
             PendingConnection pendingConnection = event.getConnection();
             if (player == null) {
