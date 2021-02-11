@@ -48,7 +48,7 @@ public class PostLoginTask implements IndioLoginTask {
             }
             api.getMetaInjector().setMeta(event.getPlayer(), MetaInjector.ID_KEY, player.getId());
         } catch (Exception e) {
-            event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
+            event.getPlayer().disconnect(new TextComponent("There was a problem processing your login, error code: " + ErrorCodes.UNKNOWN.getId()));
             Matrix.getLogger().debug(e);
         }
     }

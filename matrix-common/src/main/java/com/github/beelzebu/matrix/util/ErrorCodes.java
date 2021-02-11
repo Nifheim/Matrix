@@ -7,7 +7,8 @@ public enum ErrorCodes {
 
     NULL_PLAYER(1),
     UUID_DONTMATCH(2),
-    CANT_UPDATE_UUID(3);
+    CANT_UPDATE_UUID(3),
+    UNKNOWN(4);
 
     private final int id;
 

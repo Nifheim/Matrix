@@ -95,8 +95,7 @@ public class LoginTask implements IndioLoginTask {
                 player.setLastLogin(new Date());
             }
         } catch (Exception e) {
-            // TODO: update message
-            event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
+            event.setCancelReason(new TextComponent("There was a problem processing your login, error code: " + ErrorCodes.UNKNOWN.getId()));
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
         } finally {

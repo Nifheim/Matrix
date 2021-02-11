@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
+import com.github.beelzebu.matrix.util.ErrorCodes;
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import java.io.IOException;
@@ -102,7 +103,7 @@ public class PreLoginTask implements IndioLoginTask {
                 api.getDatabase().save(event.getConnection().getUniqueId(), player);
             }
         } catch (Exception e) {
-            event.setCancelReason(new TextComponent(e.getLocalizedMessage()));
+            event.setCancelReason(new TextComponent("There was a problem processing your login, error code: " + ErrorCodes.UNKNOWN.getId()));
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
         } finally {
