@@ -3,13 +3,16 @@ package com.github.beelzebu.matrix.bungee.listener;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.util.SpamUtils;
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonObject;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -35,7 +39,7 @@ public class ChatListener implements Listener {
 
     private final MatrixBungeeAPI api;
     private final String[] blockedCommands = {"version", "icanhasbukkit", "ver", "about", "luckperms", "lp", "perm", "perms", "permission", "permissions", "lpb", "pp", "pex", "powerfulperms", "permissionsex", "bungee", "plugins", "pl", "plugman"};
-    private final String[] disabledServerGroups = {"auth"};
+    private final String[] disabledServerGroups = {ServerInfoImpl.AUTH_GROUP};
     private final Cache<UUID, String> messageEquals = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
     private final Cache<UUID, Boolean> messageCooldown = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.SECONDS).build();
     private final ListMultimap<Integer, String> punishments = ArrayListMultimap.create();
@@ -55,8 +59,6 @@ public class ChatListener implements Listener {
         }
     }
 
-    //TODO: re-enable
-/*
     @EventHandler(priority = 127)
     public void onChat(ChatEvent e) { // censoring
         if (e.isCancelled() || e.isCommand()) {
@@ -66,12 +68,8 @@ public class ChatListener implements Listener {
             return;
         }
         if (e.getSender() instanceof ProxiedPlayer) {
-            if (((ProxiedPlayer) e.getSender()).hasPermission("matrix.helper")) {
-                return;
-            }
             for (String group : disabledServerGroups) {
-                Set<String> servers = api.getCache().getServers(group);
-                if (servers.contains(((ProxiedPlayer) e.getSender()).getServer().getInfo().getName())) {
+                if (((ProxiedPlayer) e.getSender()).getServer().getInfo().getName().startsWith(group + ":")) {
                     return;
                 }
             }
@@ -80,15 +78,16 @@ public class ChatListener implements Listener {
                 String word = e.getMessage().replaceAll(e.getMessage().replaceAll(regex, ""), "");
                 broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), BroadcastType.CENSORING);
                 e.setMessage(e.getMessage().replaceAll(regex, Strings.repeat("*", word.length())));
-                MatrixPlayer matrixPlayer = api.getPlayer(((ProxiedPlayer) e.getSender()).getUniqueId());
-                if (matrixPlayer != null) {
-                    matrixPlayer.incrCensoringLevel();
-                    int level = matrixPlayer.getCensoringLevel();
-                    punishments.get(punishments.containsKey(level) ? level : punishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", ((ProxiedPlayer) e.getSender()).getName()).replace("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(word, ""), "")).replace("%count%", String.valueOf(level))));
-                    api.getConfig().getStringList("Messages.Censored").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(regex, ""), ""))))));
-                } else {
-                    throw new RuntimeException(((ProxiedPlayer) e.getSender()).getName() + " doesn't exists in the database");
-                }
+                api.getPlayerManager().getPlayer((ProxiedPlayer) e.getSender()).thenAccept(matrixPlayer -> {
+                    if (matrixPlayer != null) {
+                        matrixPlayer.incrCensoringLevel();
+                        int level = matrixPlayer.getCensoringLevel();
+                        punishments.get(punishments.containsKey(level) ? level : punishments.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList()).get(0)).forEach(k -> ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), k.replace("%name%", ((ProxiedPlayer) e.getSender()).getName()).replace("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(word, ""), "")).replace("%count%", String.valueOf(level))));
+                        api.getConfig().getStringList("Messages.Censored").forEach(line -> ((ProxiedPlayer) e.getSender()).sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', line.replaceAll("%word%", e.getMessage().replaceAll(e.getMessage().replaceAll(regex, ""), ""))))));
+                    } else {
+                        throw new RuntimeException(((ProxiedPlayer) e.getSender()).getName() + " doesn't exists in the database");
+                    }
+                });
             }
         }
     }
@@ -103,8 +102,7 @@ public class ChatListener implements Listener {
                 return;
             }
             for (String group : disabledServerGroups) {
-                Set<String> servers = api.getCache().getServers(group);
-                if (servers.contains(((ProxiedPlayer) e.getSender()).getServer().getInfo().getName())) {
+                if (((ProxiedPlayer) e.getSender()).getServer().getInfo().getName().startsWith(group + ":")) {
                     return;
                 }
             }
@@ -124,7 +122,6 @@ public class ChatListener implements Listener {
             messageEquals.put(pp.getUniqueId(), e.getMessage());
         }
     }
-    */
 
     @EventHandler(priority = 125)
     public void onChat3(ChatEvent e) { // lowercase
@@ -165,7 +162,7 @@ public class ChatListener implements Listener {
             }
         }
     }
-/*
+
     @EventHandler(priority = 120)
     public void onChat4(ChatEvent e) { // spam
         if (!(e.getSender() instanceof ProxiedPlayer)) {
@@ -186,8 +183,7 @@ public class ChatListener implements Listener {
             return;
         }
         for (String group : disabledServerGroups) {
-            Set<String> servers = api.getCache().getServers(group);
-            if (servers.contains(((ProxiedPlayer) e.getSender()).getServer().getInfo().getName())) {
+            if (((ProxiedPlayer) e.getSender()).getServer().getInfo().getName().startsWith(group + ":")) {
                 return;
             }
         }
@@ -207,7 +203,6 @@ public class ChatListener implements Listener {
             broadcast((ProxiedPlayer) e.getSender(), e.getMessage(), BroadcastType.SPAM);
         }
     }
- */
 
     @EventHandler
     public void onMessage(PluginMessageEvent e) {
@@ -338,7 +333,7 @@ public class ChatListener implements Listener {
     }
 
     private void broadcast(ProxiedPlayer spamer, String message, BroadcastType broadcastType) {
-        ProxyServer.getInstance().getPlayers().stream().filter(p -> p.hasPermission("matrix.helper") && !p.getServer().getInfo().getName().contains("Auth")).forEach(p -> {
+        ProxyServer.getInstance().getPlayers().stream().filter(p -> p.hasPermission("matrix.helper") && !p.getServer().getInfo().getName().startsWith(ServerInfoImpl.AUTH_GROUP)).forEach(p -> {
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&8&m--------------------&R &c&lANTISPAM &8&M-------------------")));
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&7El jugador &b" + spamer.getName() + " &r&7 ha dicho algo inapropiado")));
             p.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&7Tipo: " + broadcastType)));
