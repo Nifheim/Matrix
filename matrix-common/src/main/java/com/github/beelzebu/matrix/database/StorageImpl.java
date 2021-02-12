@@ -104,7 +104,7 @@ public class StorageImpl {
     }
 
     public boolean isRegisteredById(String hexId) {
-        if (hexId ==null){
+        if (hexId == null) {
             return false;
         }
         return getPlayerById(hexId) != null;
@@ -114,12 +114,9 @@ public class StorageImpl {
         this.datastore.createUpdateOperations(MongoMatrixPlayer.class).unset(field);
     }
 
-    public void save(MatrixPlayer mongoMatrixPlayer) {
-        this.datastore.save(mongoMatrixPlayer);
-    }
-
-    public void _delete(MongoMatrixPlayer mongoMatrixPlayer) {
-        this.datastore.delete(mongoMatrixPlayer);
+    public <T extends MatrixPlayer> T save(T matrixPlayer) {
+        this.datastore.save(matrixPlayer);
+        return matrixPlayer;
     }
 
     public void addFailedLogin(UUID uniqueId, String server, String message) {

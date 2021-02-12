@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
@@ -62,7 +63,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayer(uniqueId).isRegistered();
+            return storage.isRegistered(uniqueId);
         });
     }
 
@@ -73,7 +74,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayerByName(name).isRegistered();
+            return storage.isRegisteredByName(name);
         });
     }
 
@@ -84,7 +85,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayerById(hexId).isRegistered();
+            return storage.isRegisteredById(hexId);
         });
     }
 
@@ -165,12 +166,13 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     }
 
     @Override
-    public <T extends MatrixPlayer> CompletableFuture<Boolean> save(UUID uniqueId, T mongoMatrixPlayer) {
+    public <T extends MatrixPlayer> CompletableFuture<Boolean> save(@Nullable String hexId, T mongoMatrixPlayer) {
         return schedulerAdapter.makeFuture(() -> {
             try {
-                cacheProvider.update(mongoMatrixPlayer.getName(), mongoMatrixPlayer.getUniqueId(), mongoMatrixPlayer.getId());
-                cacheProvider.saveToCache(mongoMatrixPlayer);
-                storage.save(cacheProvider.getPlayer(uniqueId).orElse(mongoMatrixPlayer));
+                if (hexId != null) {
+                    cacheProvider.update(mongoMatrixPlayer.getName(), mongoMatrixPlayer.getUniqueId(), hexId);
+                }
+                cacheProvider.saveToCache(storage.save(mongoMatrixPlayer));
             } catch (Exception e) {
                 Matrix.getLogger().debug(e);
                 return false;

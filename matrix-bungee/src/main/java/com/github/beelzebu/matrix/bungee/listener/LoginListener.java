@@ -49,7 +49,7 @@ public class LoginListener implements Listener {
     }
 
     @EventHandler(priority = -128)
-    public void onLogin(PostLoginEvent e) {
+    public void onPostLogin(PostLoginEvent e) {
         api.getPlugin().getBootstrap().getScheduler().executeAsync(new PostLoginTask(api, e));
     }
 
