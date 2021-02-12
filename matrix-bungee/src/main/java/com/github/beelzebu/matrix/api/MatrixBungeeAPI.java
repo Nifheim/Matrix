@@ -15,7 +15,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
  */
 public class MatrixBungeeAPI extends MatrixAPIImpl<ProxiedPlayer> {
 
-    public static final ServerInfo BUNGEE_SERVER_INFO = new ServerInfoImpl(ServerType.PROXY, ServerInfoImpl.PROXY_GROUP, null, null, false, null, false);
+    public static ServerInfo BUNGEE_SERVER_INFO;
     private final BungeeMetaInjector metaInjector;
     private final BungeePlayerManager bungeePlayerManager;
 
@@ -24,6 +24,7 @@ public class MatrixBungeeAPI extends MatrixAPIImpl<ProxiedPlayer> {
         metaInjector = new BungeeMetaInjector(this);
         plugin.setApi(this);
         bungeePlayerManager = new BungeePlayerManager(this);
+        BUNGEE_SERVER_INFO = new ServerInfoImpl(ServerType.PROXY, ServerInfoImpl.PROXY_GROUP, null, null, false, null, false);
     }
 
     @Override
