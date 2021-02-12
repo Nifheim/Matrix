@@ -356,7 +356,7 @@ public class ChatListener implements Listener {
     }
 
     private String normalize(String string) {
-        return string.toLowerCase().replaceAll("[^\\w]", "");
+        return string.toLowerCase().replaceAll("[^a-z0-9]", "");
     }
 
     private boolean compare(String oldMessage, String newMessage) {
