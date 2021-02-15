@@ -51,10 +51,6 @@ public class PreLoginTask implements IndioLoginTask {
                 } else {
                     Matrix.getLogger().info(name + " is not premium on the server");
                 }
-            } else {
-                if (player != null) {
-                    player.setPremium(false);
-                }
             }
             if (player == null) {
                 player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(name).join();
@@ -67,6 +63,9 @@ public class PreLoginTask implements IndioLoginTask {
                     if (player.isPremium() && profile != null) {
                         player.setUniqueId(profile.getId());
                     }
+                }
+                if (profile == null) {
+                    player.setPremium(false);
                 }
             }
             String host = event.getConnection().getVirtualHost().getHostName();
