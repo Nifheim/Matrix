@@ -49,7 +49,11 @@ public class PreLoginTask implements IndioLoginTask {
                         event.getConnection().setOnlineMode(true);
                     }
                 } else {
-                    Matrix.getLogger().info( name + " is not premium on the server");
+                    Matrix.getLogger().info(name + " is not premium on the server");
+                }
+            } else {
+                if (player != null) {
+                    player.setPremium(false);
                 }
             }
             if (player == null) {
@@ -59,6 +63,10 @@ public class PreLoginTask implements IndioLoginTask {
                     player.save().join(); // block until player is saved
                     player.setOption(PlayerOptionType.SPEED, true);
                     player.setLastLocale("es");
+                } else {
+                    if (player.isPremium() && profile != null) {
+                        player.setUniqueId(profile.getId());
+                    }
                 }
             }
             String host = event.getConnection().getVirtualHost().getHostName();
