@@ -45,8 +45,8 @@ public class PreLoginTask implements IndioLoginTask {
                     player.setPremium(true);
                     player.setName(name);
                     if (!player.isBedrock()) {
-                        event.getConnection().setOnlineMode(true);
                         event.getConnection().setUniqueId(profile.getId());
+                        event.getConnection().setOnlineMode(true);
                     }
                 } else {
                     Matrix.getLogger().info( name + " is not premium on the server");
