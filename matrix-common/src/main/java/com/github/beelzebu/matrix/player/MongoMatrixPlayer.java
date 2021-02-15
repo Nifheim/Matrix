@@ -125,9 +125,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(this.uniqueId, uniqueId)) {
             return;
         }
-        if (premium) {
-            throw new RuntimeException("Can't update UUID for premium player");
-        }
         this.uniqueId = uniqueId;
         updateCached("uniqueId");
     }
