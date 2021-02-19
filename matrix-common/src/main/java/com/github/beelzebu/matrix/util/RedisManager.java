@@ -14,8 +14,9 @@ public class RedisManager {
 
     public RedisManager(String host, int port, String password) {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMinIdle(3);
+        config.setMinIdle(30);
         config.setMaxTotal(30);
+        config.setMaxWaitMillis(1000);
         config.setBlockWhenExhausted(true);
         config.setTestOnBorrow(true);
         config.setTestWhileIdle(true);
