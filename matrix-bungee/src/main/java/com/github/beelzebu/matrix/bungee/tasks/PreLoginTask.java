@@ -117,7 +117,6 @@ public class PreLoginTask implements IndioLoginTask {
             if (player.isPremium() && !player.isBedrock()) {
                 event.getConnection().setOnlineMode(true);
             }
-            api.getDatabase().save(player.getId(), player);
         } catch (Exception e) {
             event.setCancelReason(new TextComponent("There was a problem processing your login, error code: " + (player == null ? ErrorCodes.NULL_PLAYER.getId() : ErrorCodes.UNKNOWN.getId())));
             event.setCancelled(true);
