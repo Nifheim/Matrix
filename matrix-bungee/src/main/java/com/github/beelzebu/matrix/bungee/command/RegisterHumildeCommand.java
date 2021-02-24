@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Date;
 import java.util.UUID;
+import net.luckperms.api.LuckPermsProvider;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Command;
@@ -24,7 +25,6 @@ public class RegisterHumildeCommand extends Command {
     public void execute(CommandSender commandSender, String[] strings) {
         try {
             Files.readAllLines(new File(Matrix.getAPI().getPlugin().getDataFolder(), "miembros.txt").toPath()).forEach(line -> {
-                ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "lpb user " + line + " parent add humilde humildadcraft");
                 Matrix.getAPI().getDatabase().getPlayerByName(line).thenAccept(matrixPlayer -> {
                     if (matrixPlayer == null) {
                         matrixPlayer = new MongoMatrixPlayer(UUID.nameUUIDFromBytes(("OfflinePlayer:" + line).getBytes()), line);
@@ -33,6 +33,8 @@ public class RegisterHumildeCommand extends Command {
                     matrixPlayer.setPremium(true);
                     matrixPlayer.setRegistered(true);
                     matrixPlayer.save().join();
+                    LuckPermsProvider.get().getUserManager().savePlayerData(matrixPlayer.getUniqueId(), matrixPlayer.getName()).join();
+                    ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "lpb user " + line + " parent add humilde humildadcraft");
                 });
             });
         } catch (IOException e) {
