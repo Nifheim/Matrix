@@ -29,8 +29,8 @@ public class RegisterHumildeCommand extends Command {
                     }
                     matrixPlayer.setPremium(true);
                     matrixPlayer.save().join();
-                    ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "lp user " + line + " parent add humilde humildadcraft");
                 });
+                ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "lp user " + line + " parent add humilde humildadcraft");
             });
         } catch (IOException e) {
             e.printStackTrace();
