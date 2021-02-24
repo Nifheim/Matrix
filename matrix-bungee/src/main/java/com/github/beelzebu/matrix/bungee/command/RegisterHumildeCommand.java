@@ -24,7 +24,7 @@ public class RegisterHumildeCommand extends Command {
     public void execute(CommandSender commandSender, String[] strings) {
         try {
             Files.readAllLines(new File(Matrix.getAPI().getPlugin().getDataFolder(), "miembros.txt").toPath()).forEach(line -> {
-                ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "lp user " + line + " parent add humilde humildadcraft");
+                ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), "lpb user " + line + " parent add humilde humildadcraft");
                 Matrix.getAPI().getDatabase().getPlayerByName(line).thenAccept(matrixPlayer -> {
                     if (matrixPlayer == null) {
                         matrixPlayer = new MongoMatrixPlayer(UUID.nameUUIDFromBytes(("OfflinePlayer:" + line).getBytes()), line);
