@@ -143,6 +143,7 @@ public class CacheProviderImpl implements CacheProvider {
             pipeline.set(nameByUuid, name);
             pipeline.set(idByUuid, hexId);
             pipeline.set(idByName, hexId);
+            pipeline.sync();
             /*
             if (jedis.exists(uuidStoreKey)) { // check for old uuid to update
                 oldUniqueId = UUID.fromString(jedis.get(uuidStoreKey));
@@ -164,7 +165,6 @@ public class CacheProviderImpl implements CacheProvider {
                 jedis.set(nameStoreKey, name);
             }
              */
-            pipeline.sync();
         }
         /*
         if (Objects.equals(name, oldName == null ? name : oldName) && Objects.equals(uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId)) {

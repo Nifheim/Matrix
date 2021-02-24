@@ -125,6 +125,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(this.uniqueId, uniqueId)) {
             return;
         }
+        if (premium && uniqueId.version() != 4) {
+            throw new IllegalArgumentException("Only random uuids are allowed for premium players");
+        } else if (!premium && uniqueId.version() != 3) {
+            throw new IllegalArgumentException("Can not use a random generated UUID for a cracked player");
+        }
         this.uniqueId = uniqueId;
         updateCached("uniqueId");
     }
