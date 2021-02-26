@@ -32,6 +32,14 @@ public class LoginTask implements IndioLoginTask {
         try {
             MongoMatrixPlayer player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(event.getConnection().getUniqueId()).join();
             if (player == null) {
+                player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
+                if (event.getConnection().getUniqueId().version() == 4) {
+                    player.setPremium(true);
+                    player.setUniqueId(event.getConnection().getUniqueId());
+                    player.save().join();
+                }
+            }
+            if (player == null) {
                 Matrix.getLogger().info("Player null login name: " + event.getConnection().getName() + " uuid: " + event.getConnection().getUniqueId());
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));
@@ -52,19 +60,18 @@ public class LoginTask implements IndioLoginTask {
                 event.setCancelReason(TextComponent.fromLegacyText(I18n.tl(Message.MAINTENANCE, player.getLastLocale())));
                 return;
             }
-            if (pendingConnection.getUniqueId() != null && pendingConnection.getName() != null) {
-                if (player.getUniqueId() == null || player.getUniqueId() != pendingConnection.getUniqueId()) {
-                    player.setUniqueId(pendingConnection.getUniqueId());
-                }
-                player.setName(pendingConnection.getName());
-                if (pendingConnection.isOnlineMode() || player.isBedrock()) {
-                    player.setPremium(true);
-                    player.setRegistered(true);
-                    player.setLoggedIn(true);
-                }
-                player.setLastLogin(new Date());
+            if (player.getUniqueId() == null || (pendingConnection.getUniqueId().version() == 4 && player.getUniqueId() != pendingConnection.getUniqueId())) {
+                player.setUniqueId(pendingConnection.getUniqueId());
             }
-        } catch (Exception e) {
+            player.setName(pendingConnection.getName());
+            if (pendingConnection.isOnlineMode() || player.isBedrock()) {
+                player.setPremium(true);
+                player.setRegistered(true);
+                player.setLoggedIn(true);
+            }
+            player.setLastLogin(new Date());
+        } catch (
+                Exception e) {
             event.setCancelReason(new TextComponent("There was a problem processing your login, error code: " + ErrorCodes.UNKNOWN.getId()));
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
