@@ -120,7 +120,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     private Optional<String> getHexId(Jedis jedis, @NotNull String name) {
-        String hexId = jedis.get(ID_KEY_PREFIX + name);
+        String hexId = jedis.get(ID_KEY_PREFIX + name.toLowerCase());
         return Optional.ofNullable(hexId);
     }
 
@@ -129,6 +129,7 @@ public class CacheProviderImpl implements CacheProvider {
         Objects.requireNonNull(name, "name");
         Objects.requireNonNull(uniqueId, "uniqueId");
         Objects.requireNonNull(hexId, "hexId");
+        name = name.toLowerCase();
         String uuidById = UUID_KEY_PREFIX + hexId;
         String uuidByName = UUID_KEY_PREFIX + name;
         String nameById = NAME_KEY_PREFIX + hexId;
@@ -198,6 +199,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public Optional<MatrixPlayer> getPlayerByName(@NotNull String name) {
+        name = name.toLowerCase();
         UUID uniqueId = Optional.ofNullable(api.getPlugin().getUniqueId(name)).orElse(getUniqueIdByName(name).orElse(null));
         return uniqueId != null ? getPlayer(uniqueId) : Optional.empty();
     }
@@ -290,6 +292,7 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public boolean isCachedByName(@NotNull String name) {
+        name = name.toLowerCase();
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return isCached(jedis, getHexId(jedis, name).orElse(null));
         }

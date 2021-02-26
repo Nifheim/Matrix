@@ -23,13 +23,14 @@ public class CrackedCommand extends Command {
             return;
         }
         String name = args[0];
+        sender.sendMessage("Buscando la cuenta de " + name + "...");
         Matrix.getAPI().getPlayerManager().getPlayerByName(name).thenAccept(matrixPlayer -> {
             if (matrixPlayer == null) {
                 sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.GENERAL_NO_TARGET, I18n.DEFAULT_LOCALE).replace("%target%", name)));
                 return;
             }
             matrixPlayer.setPremium(false);
-            sender.sendMessage("cracked");
+            sender.sendMessage("La cuenta de " + matrixPlayer.getName() + " fue establecida como no premium.");
         });
     }
 }

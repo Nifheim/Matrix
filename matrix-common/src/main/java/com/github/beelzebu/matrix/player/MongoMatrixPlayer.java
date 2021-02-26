@@ -130,8 +130,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         } else if (!premium && uniqueId.version() != 3) {
             throw new IllegalArgumentException("Can not use a random generated UUID for a cracked player");
         }
-        this.uniqueId = uniqueId;
-        updateCached("uniqueId");
+        updateCached("uniqueId", uniqueId).thenAccept(val -> this.uniqueId = val);
     }
 
     @Override
@@ -203,8 +202,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (!premium) {
             setUniqueId(UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes()));
         }
-        this.premium = premium;
-        updateCached("premium");
+        updateCached("premium", premium).thenAccept(val -> this.premium = val);
     }
 
     @Override
