@@ -1,7 +1,7 @@
 buildscript {
     allprojects {
         group = 'com.github.beelzebu'
-        version = '1.1.' + (System.getenv("BUILD_NUMBER") != null ? System.getenv("BUILD_NUMBER") : 'unknown')
+        version = '1.2.' + (System.getenv("BUILD_NUMBER") != null ? System.getenv("BUILD_NUMBER") : 'unknown')
 
         repositories {
             mavenLocal()
@@ -64,7 +64,7 @@ buildscript {
 
         dependencies {
             implementation 'net.luckperms:api:5.1'
-            implementation 'com.github.beelzebu:jMatrix:2.0'
+            implementation 'com.github.beelzebu:jMatrix:2.1-SNAPSHOT'
             implementation 'com.google.guava:guava:21.0'
             implementation 'org.jetbrains:annotations:20.1.0'
         }
