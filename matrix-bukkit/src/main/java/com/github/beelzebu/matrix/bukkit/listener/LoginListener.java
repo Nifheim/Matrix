@@ -7,6 +7,7 @@ import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.util.MetaInjector;
 import com.github.beelzebu.matrix.util.PermsUtils;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.util.HashMap;
@@ -59,6 +60,7 @@ public class LoginListener implements Listener {
                     }
                 }
             }
+            api.getMetaInjector().setMeta(player, MetaInjector.ID_KEY, matrixPlayer.getId());
         });
         // Async task
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {

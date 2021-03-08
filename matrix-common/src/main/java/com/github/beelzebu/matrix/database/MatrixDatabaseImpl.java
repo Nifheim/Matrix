@@ -19,11 +19,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class MatrixDatabaseImpl implements MatrixDatabase {
 
-    private final StorageImpl storage;
+    private final StorageProvider storage;
     private final CacheProvider cacheProvider;
     private final SchedulerAdapter schedulerAdapter;
 
-    public MatrixDatabaseImpl(StorageImpl storage, CacheProvider cacheProvider, SchedulerAdapter schedulerAdapter) {
+    public MatrixDatabaseImpl(StorageProvider storage, CacheProvider cacheProvider, SchedulerAdapter schedulerAdapter) {
         this.storage = storage;
         this.cacheProvider = cacheProvider;
         this.schedulerAdapter = schedulerAdapter;
@@ -196,7 +196,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
         return cacheProvider;
     }
 
-    public StorageImpl getStorage() {
+    public StorageProvider getStorage() {
         return storage;
     }
 }

@@ -13,7 +13,7 @@ import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.github.beelzebu.matrix.database.MatrixDatabaseImpl;
-import com.github.beelzebu.matrix.database.StorageImpl;
+import com.github.beelzebu.matrix.database.StorageProvider;
 import com.github.beelzebu.matrix.dependency.DependencyManager;
 import com.github.beelzebu.matrix.dependency.DependencyRegistry;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
@@ -77,7 +77,7 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
         redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
         Matrix.getLogger().info("Redis manager initialized!");
         Matrix.getLogger().info("Initializing database manager..");
-        database = new MatrixDatabaseImpl(new StorageImpl(this), new CacheProviderImpl(this), plugin.getBootstrap().getScheduler());
+        database = new MatrixDatabaseImpl(new StorageProvider(this), new CacheProviderImpl(this), plugin.getBootstrap().getScheduler());
         Matrix.getLogger().info("Database manager initialized!");
         Matrix.getLogger().info("Initializing messaging service...");
         messaging = new RedisMessaging(redisManager, r -> plugin.getBootstrap().getScheduler().executeAsync(r));

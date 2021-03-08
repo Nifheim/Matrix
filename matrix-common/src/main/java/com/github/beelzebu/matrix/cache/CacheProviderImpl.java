@@ -31,6 +31,7 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 public class CacheProviderImpl implements CacheProvider {
 
+    public static final int CACHE_SECONDS = 60_000;
     public static final String ID_KEY_PREFIX = "matrixid:";
     public static final String UUID_KEY_PREFIX = "matrixuuid:";
     public static final String NAME_KEY_PREFIX = "matrixname:";
@@ -138,41 +139,14 @@ public class CacheProviderImpl implements CacheProvider {
         String idByName = ID_KEY_PREFIX + name;
 
         try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
-            pipeline.set(uuidById, uniqueId.toString());
-            pipeline.set(uuidByName, uniqueId.toString());
-            pipeline.set(nameById, name);
-            pipeline.set(nameByUuid, name);
-            pipeline.set(idByUuid, hexId);
-            pipeline.set(idByName, hexId);
+            pipeline.setex(uuidById, CACHE_SECONDS, uniqueId.toString());
+            pipeline.setex(uuidByName, CACHE_SECONDS, uniqueId.toString());
+            pipeline.setex(nameById, CACHE_SECONDS, name);
+            pipeline.setex(nameByUuid, CACHE_SECONDS, name);
+            pipeline.setex(idByUuid, CACHE_SECONDS, hexId);
+            pipeline.setex(idByName, CACHE_SECONDS, hexId);
             pipeline.sync();
-            /*
-            if (jedis.exists(uuidStoreKey)) { // check for old uuid to update
-                oldUniqueId = UUID.fromString(jedis.get(uuidStoreKey));
-                if (oldUniqueId != uniqueId) { // check if old and new are the same
-                    // this is caused when player changed from cracked to premium
-                    jedis.del(NAME_KEY_PREFIX + oldUniqueId);
-                    jedis.set(uuidStoreKey, uniqueId.toString());
-                }
-            } else { // store uuid because it doesn't exists.
-                jedis.set(uuidStoreKey, uniqueId.toString());
-            }
-            if (jedis.exists(nameStoreKey)) { // check for old name to update
-                oldName = jedis.get(nameStoreKey);
-                if (!Objects.equals(oldName, name)) { // check if old and new are the same
-                    jedis.del(UUID_KEY_PREFIX + oldName);
-                    jedis.set(nameStoreKey, name);
-                }
-            } else { // store name because it doesn't exists.
-                jedis.set(nameStoreKey, name);
-            }
-             */
         }
-        /*
-        if (Objects.equals(name, oldName == null ? name : oldName) && Objects.equals(uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId)) {
-            return;
-        }
-        new NameUpdatedMessage(name, oldName == null ? name : oldName, uniqueId, oldUniqueId == null ? uniqueId : oldUniqueId).send();
-        */
     }
 
     @Override
