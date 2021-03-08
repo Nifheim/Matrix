@@ -12,17 +12,18 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
  */
 public class MatrixDatabaseImpl implements MatrixDatabase {
 
-    private final StorageImpl storage;
+    private final StorageProvider storage;
     private final CacheProvider cacheProvider;
     private final SchedulerAdapter schedulerAdapter;
 
-    public MatrixDatabaseImpl(StorageImpl storage, CacheProvider cacheProvider, SchedulerAdapter schedulerAdapter) {
+    public MatrixDatabaseImpl(StorageProvider storage, CacheProvider cacheProvider, SchedulerAdapter schedulerAdapter) {
         this.storage = storage;
         this.cacheProvider = cacheProvider;
         this.schedulerAdapter = schedulerAdapter;
@@ -62,7 +63,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayer(uniqueId).isRegistered();
+            return storage.isRegistered(uniqueId);
         });
     }
 
@@ -73,7 +74,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayerByName(name).isRegistered();
+            return storage.isRegisteredByName(name);
         });
     }
 
@@ -84,7 +85,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
             if (cached) {
                 return true;
             }
-            return storage.getPlayerById(hexId).isRegistered();
+            return storage.isRegisteredById(hexId);
         });
     }
 
@@ -165,12 +166,13 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     }
 
     @Override
-    public <T extends MatrixPlayer> CompletableFuture<Boolean> save(UUID uniqueId, T mongoMatrixPlayer) {
+    public <T extends MatrixPlayer> CompletableFuture<Boolean> save(@Nullable String hexId, T mongoMatrixPlayer) {
         return schedulerAdapter.makeFuture(() -> {
             try {
-                cacheProvider.update(mongoMatrixPlayer.getName(), mongoMatrixPlayer.getUniqueId(), mongoMatrixPlayer.getId());
-                cacheProvider.saveToCache(mongoMatrixPlayer);
-                storage.save(cacheProvider.getPlayer(uniqueId).orElse(mongoMatrixPlayer));
+                if (hexId != null) {
+                    cacheProvider.update(mongoMatrixPlayer.getName(), mongoMatrixPlayer.getUniqueId(), hexId);
+                }
+                cacheProvider.saveToCache(storage.save(mongoMatrixPlayer));
             } catch (Exception e) {
                 Matrix.getLogger().debug(e);
                 return false;
@@ -194,7 +196,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
         return cacheProvider;
     }
 
-    public StorageImpl getStorage() {
+    public StorageProvider getStorage() {
         return storage;
     }
 }

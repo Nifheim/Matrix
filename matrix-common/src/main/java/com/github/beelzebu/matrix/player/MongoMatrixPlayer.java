@@ -95,9 +95,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             String id = ent.getKey(); // field id
             Field field = ent.getValue(); // field object
             try {
-                if (Objects.equals(id, "name") || Objects.equals(id, "uniqueId")) {
-                    Objects.requireNonNull(hash.get(id), id + " can't be null");
-                }
                 if (hash.containsKey(id)) { // hash contains field
                     mongoMatrixPlayer.setField(field, hash.get(id));
                 }
@@ -128,11 +125,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (Objects.equals(this.uniqueId, uniqueId)) {
             return;
         }
-        if (premium) {
-            throw new RuntimeException("Can't update UUID for premium player");
+        if (premium && uniqueId.version() != 4) {
+            throw new IllegalArgumentException("Only random uuids are allowed for premium players");
+        } else if (!premium && uniqueId.version() != 3) {
+            throw new IllegalArgumentException("Can not use a random generated UUID for a cracked player");
         }
-        this.uniqueId = uniqueId;
-        updateCached("uniqueId");
+        updateCached("uniqueId", uniqueId).thenAccept(val -> this.uniqueId = val);
     }
 
     @Override
@@ -204,8 +202,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (!premium) {
             setUniqueId(UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes()));
         }
-        this.premium = premium;
-        updateCached("premium");
+        updateCached("premium", premium).thenAccept(val -> this.premium = val);
     }
 
     @Override
@@ -567,7 +564,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (lowercaseName == null) {
             setName(name);
         }
-        return Matrix.getAPI().getDatabase().save(uniqueId, this);
+        return Matrix.getAPI().getDatabase().save(getId(), this);
     }
 
     @Override
@@ -623,6 +620,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     @SuppressWarnings("unchecked")
     private void setField(Field field, String json) {
         try {
+            if (field.getName().equals("name")) {
+                Objects.requireNonNull(json, "name");
+            }
+            if (field.getName().equals("uniqueId")) {
+                Objects.requireNonNull(json, "name");
+            }
             if (field.getName().equals("options")) {
                 Object value = Matrix.GSON.fromJson(json, new TypeToken<HashSet<PlayerOptionType>>() {
                 }.getType());

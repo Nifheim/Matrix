@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 
-public class StorageImpl {
+public class StorageProvider {
 
     public static final int TOP_SIZE = 10;
     private final Cache<Statistic, TopEntry[]> statsTotalCache = Caffeine.newBuilder().weakValues().expireAfterWrite(5, TimeUnit.MINUTES).build();
@@ -40,7 +40,7 @@ public class StorageImpl {
     private HikariDataSource dataSource;
     private final Datastore datastore;
 
-    public StorageImpl(MatrixAPIImpl<?> api) {
+    public StorageProvider(MatrixAPIImpl<?> api) {
         MongoClient client = new MongoClient(new ServerAddress(api.getConfig().getString("Database.Host"), 27017), MongoCredential.createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()), MongoClientOptions.builder().build());
         Morphia morphia = new Morphia();
         morphia.getMapper().getConverters().addConverter(new UUIDConverter());
@@ -104,7 +104,7 @@ public class StorageImpl {
     }
 
     public boolean isRegisteredById(String hexId) {
-        if (hexId ==null){
+        if (hexId == null) {
             return false;
         }
         return getPlayerById(hexId) != null;
@@ -114,12 +114,9 @@ public class StorageImpl {
         this.datastore.createUpdateOperations(MongoMatrixPlayer.class).unset(field);
     }
 
-    public void save(MatrixPlayer mongoMatrixPlayer) {
-        this.datastore.save(mongoMatrixPlayer);
-    }
-
-    public void _delete(MongoMatrixPlayer mongoMatrixPlayer) {
-        this.datastore.delete(mongoMatrixPlayer);
+    public <T extends MatrixPlayer> T save(T matrixPlayer) {
+        this.datastore.save(matrixPlayer);
+        return matrixPlayer;
     }
 
     public void addFailedLogin(UUID uniqueId, String server, String message) {

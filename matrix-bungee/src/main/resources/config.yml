@@ -1,7 +1,6 @@
 # server info, always updated
 server-info:
   group: 'proxy'
-  game-type: 'none'
   server-type: 'proxy'
 
 # storage and caching settings

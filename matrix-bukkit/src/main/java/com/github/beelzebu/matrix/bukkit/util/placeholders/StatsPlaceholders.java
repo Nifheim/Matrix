@@ -5,7 +5,7 @@ import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.player.TopEntry;
-import com.github.beelzebu.matrix.database.StorageImpl;
+import com.github.beelzebu.matrix.database.StorageProvider;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.HashMap;
@@ -56,8 +56,8 @@ public class StatsPlaceholders extends PlaceholderExpansion {
                 if (topPosition < 1) {
                     topPosition = 1;
                 }
-                if (topPosition >= StorageImpl.TOP_SIZE) {
-                    topPosition = StorageImpl.TOP_SIZE;
+                if (topPosition >= StorageProvider.TOP_SIZE) {
+                    topPosition = StorageProvider.TOP_SIZE;
                 }
                 topPosition--; // we use array index here, so we need to start from 0
                 switch (statType) {

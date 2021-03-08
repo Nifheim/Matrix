@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.listener.antigrief;
 
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
+import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -31,8 +32,8 @@ public class AntiGriefLoginListener implements Listener {
                 api.getDatabase().addFailedLogin(e.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on AsyncPlayerPreLoginEvent(1)", e.getName(), e.getAddress().getHostAddress()));
                 return;
             }
-            if (!matrixPlayer.isLoggedIn() && !api.getServerInfo().getGroupName().equals("auth")) {
-                if (matrixPlayer.isPremium() && api.getServerInfo().getGroupName().equals("lobby")) {
+            if (!matrixPlayer.isLoggedIn() && !api.getServerInfo().getGroupName().equals(ServerInfoImpl.AUTH_GROUP)) {
+                if (matrixPlayer.isPremium() && api.getServerInfo().getGroupName().equals(ServerInfoImpl.MAIN_LOBBY_GROUP)) {
                     premiumPlayer.add(e.getUniqueId());
                     return;
                 }

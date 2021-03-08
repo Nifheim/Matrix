@@ -1,5 +1,6 @@
 package com.github.beelzebu.matrix.bungee.util;
 
+import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import java.util.Objects;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -20,7 +21,7 @@ public final class ServerUtil {
                     continue;
                 }
             }
-            if (!Objects.equals(serverInfo.getName().toLowerCase(), "lobby") && serverInfo.getName().toLowerCase().startsWith("lobby")) {
+            if (!Objects.equals(serverInfo.getName().toLowerCase(), "lobby") && serverInfo.getName().startsWith(ServerInfoImpl.MAIN_LOBBY_GROUP)) {
                 return serverInfo;
             }
         }

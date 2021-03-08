@@ -15,29 +15,30 @@ public class DisconnectTask implements Runnable {
 
     private final MatrixBungeeAPI api;
     private final PlayerDisconnectEvent event;
-    private final MatrixPlayer player;
 
     public DisconnectTask(MatrixBungeeAPI api, PlayerDisconnectEvent event) {
         this.api = api;
         this.event = event;
-        this.player = api.getPlayerManager().getPlayer(event.getPlayer()).join();
     }
 
     @Override
     public void run() {
-        try {
-            player.setLoggedIn(false);
-            if (player.isAdmin() && !event.getPlayer().hasPermission("matrix.admin")) {
-                player.setAdmin(false);
+        MatrixPlayer player = api.getPlayerManager().getPlayer(event.getPlayer()).join();
+        if (player != null) {
+            try {
+                player.setLoggedIn(false);
+                if (player.isAdmin() && !event.getPlayer().hasPermission("matrix.admin")) {
+                    player.setAdmin(false);
+                }
+                if (player.getLastLogin() != null && player.getRegistration() != null && player.getRegistration().after(player.getLastLogin())) {
+                    ((MongoMatrixPlayer) player).setRegistration(player.getLastLogin());
+                }
+                player.setLastLogin(new Date());
+                api.getDatabase().cleanUp(player);
+            } catch (Exception e) {
+                event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
+                Matrix.getLogger().debug(e);
             }
-            if (player.getLastLogin() != null && player.getRegistration() != null && player.getRegistration().after(player.getLastLogin())) {
-                ((MongoMatrixPlayer) player).setRegistration(player.getLastLogin());
-            }
-            player.setLastLogin(new Date());
-            api.getDatabase().cleanUp(player);
-        } catch (Exception e) {
-            event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
-            Matrix.getLogger().debug(e);
         }
     }
 }

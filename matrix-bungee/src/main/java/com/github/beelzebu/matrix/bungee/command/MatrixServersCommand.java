@@ -3,6 +3,7 @@ package com.github.beelzebu.matrix.bungee.command;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,9 @@ public class MatrixServersCommand extends Command {
             components.add(TextComponent.fromLegacyText(StringUtils.replace("&6Jugadores en linea: &a" + api.getPlayerManager().getOnlinePlayerCount().join())));
             for (Map.Entry<String, Set<ServerInfo>> entry : groupServers.entrySet()) {
                 String groupName = entry.getKey();
+                if (groupName.equals(ServerInfoImpl.PROXY_GROUP)) {
+                    continue;
+                }
                 Set<ServerInfo> serverInfos = entry.getValue();
                 components.add(TextComponent.fromLegacyText(StringUtils.replace("&7Grupo: &6" + groupName + " &7(&a" + api.getPlayerManager().getOnlinePlayerCountInGroup(groupName).join() + "&7)")));
                 for (ServerInfo serverInfo : serverInfos) {

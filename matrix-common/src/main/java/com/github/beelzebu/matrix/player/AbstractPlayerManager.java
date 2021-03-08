@@ -1,5 +1,6 @@
 package com.github.beelzebu.matrix.player;
 
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerManager;
@@ -246,13 +247,16 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
 
     @Override
     public CompletableFuture<Void> setOfflineById(String hexId) {
-        if (hexId == null) {
-            return CompletableFuture.completedFuture(null);
-        }
+        Objects.requireNonNull(hexId);
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 String serverName = jedis.get(PLAYER_SERVER_KEY_PREFIX + hexId);
                 String serverGroup = jedis.get(PLAYER_GROUP_KEY_PREFIX + hexId);
+                if (serverName == null || serverGroup == null) {
+                    Matrix.getLogger().info("id: " + hexId);
+                    Matrix.getLogger().info("name: " + serverName);
+                    Matrix.getLogger().info("group: " + serverGroup);
+                }
                 try (Pipeline pipeline = jedis.pipelined()) {
                     pipeline.srem(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
                     pipeline.srem(ONLINE_PLAYERS_GROUP_KEY_PREFIX + serverGroup, hexId);

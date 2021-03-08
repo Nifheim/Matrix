@@ -100,6 +100,9 @@ public class ServerListListener implements Listener {
                         ioException.printStackTrace();
                         return null;
                     }
+                    if (bufferedImage == null){
+                        return null;
+                    }
                     return Favicon.create(bufferedImage);
                 });
                 if (favicon != null) {
