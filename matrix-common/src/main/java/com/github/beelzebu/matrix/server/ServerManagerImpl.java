@@ -34,9 +34,9 @@ public class ServerManagerImpl implements ServerManager {
     public static final String SERVER_GROUP_KEY_PREFIX = "matrix:servergroup:"; // set
     public static final String SERVER_INFO_KEY_PREFIX = "matrix:serverinfo:"; // hash
     public static final String SERVER_HEARTBEAT_KEY_PREFIX = "matrix:serverheartbeat:"; // value
-    private final MatrixAPIImpl<?> api;
+    private final MatrixAPIImpl api;
 
-    public ServerManagerImpl(MatrixAPIImpl<?> api) {
+    public ServerManagerImpl(MatrixAPIImpl api) {
         this.api = api;
     }
 

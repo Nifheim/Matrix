@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 /**
  * @author Beelzebu
  */
-public class MatrixBukkitAPI extends MatrixAPIImpl<Player> {
+public class MatrixBukkitAPI extends MatrixAPIImpl {
 
     private final BukkitMetaInjector bukkitMetaInjector;
     private final BukkitPlayerManager playerManager;

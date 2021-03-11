@@ -8,9 +8,9 @@ import com.github.beelzebu.matrix.api.MatrixAPIImpl;
  */
 public class HeartbeatTask implements Runnable {
 
-    private final MatrixAPIImpl<?> api;
+    private final MatrixAPIImpl api;
 
-    public HeartbeatTask(MatrixAPIImpl<?> api) {
+    public HeartbeatTask(MatrixAPIImpl api) {
         this.api = api;
     }
 

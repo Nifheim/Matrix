@@ -52,9 +52,9 @@ public class CacheProviderImpl implements CacheProvider {
         key: value
      */
     //public static final String DISCORD_CODE_KEY_PREFIX = "matrixdiscord:";
-    private final MatrixAPIImpl<?> api;
+    private final MatrixAPIImpl api;
 
-    public CacheProviderImpl(MatrixAPIImpl<?> api) {
+    public CacheProviderImpl(MatrixAPIImpl api) {
         this.api = api;
     }
 

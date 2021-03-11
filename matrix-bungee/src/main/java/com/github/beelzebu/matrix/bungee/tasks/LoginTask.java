@@ -53,7 +53,7 @@ public class LoginTask implements IndioLoginTask {
                 LinkedPlayer linkedPlayer = floodgatePlayer.getLinkedPlayer();
                 if (player.isPremium()) {
                     if (linkedPlayer == null) {
-//TODO: inform player about link
+                        // TODO: inform player about link
                     } else {
                         player.setBedrock(true);
                     }

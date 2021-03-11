@@ -8,12 +8,11 @@ import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.util.BungeeMetaInjector;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * @author Beelzebu
  */
-public class MatrixBungeeAPI extends MatrixAPIImpl<ProxiedPlayer> {
+public class MatrixBungeeAPI extends MatrixAPIImpl {
 
     public static ServerInfo BUNGEE_SERVER_INFO;
     private final BungeeMetaInjector metaInjector;

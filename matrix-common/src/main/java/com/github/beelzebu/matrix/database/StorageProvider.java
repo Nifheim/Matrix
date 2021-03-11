@@ -40,7 +40,7 @@ public class StorageProvider {
     private HikariDataSource dataSource;
     private final Datastore datastore;
 
-    public StorageProvider(MatrixAPIImpl<?> api) {
+    public StorageProvider(MatrixAPIImpl api) {
         MongoClient client = new MongoClient(new ServerAddress(api.getConfig().getString("Database.Host"), 27017), MongoCredential.createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()), MongoClientOptions.builder().build());
         Morphia morphia = new Morphia();
         morphia.getMapper().getConverters().addConverter(new UUIDConverter());
@@ -130,22 +130,24 @@ public class StorageProvider {
         }
     }
 
-    public void incrStatById(String hexId, String groupName, Statistic stat, long value) {
+    public long incrStatById(String hexId, String groupName, Statistic stat, long value) {
         if (value == 0) {
-            return;
+            return getStatById(hexId, groupName, stat);
         }
         try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
             setDefaultStatsParams(callableStatement, hexId, groupName);
             setStatParam(callableStatement, stat, value);
             callableStatement.executeUpdate();
+            return getStatById(hexId, groupName, stat, c);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
+        return getStatById(hexId, groupName, stat);
     }
 
-    public void incrStatsById(String hexId, String groupName, Map<Statistic, Long> stats) {
+    public Map<Statistic,Long> incrStatsById(String hexId, String groupName, Map<Statistic, Long> stats) {
         if (stats.isEmpty()) {
-            return;
+            return getStatsById();
         }
         try (Connection c = dataSource.getConnection(); CallableStatement callableStatement = c.prepareCall(SQLQuery.INSERT_STATS.getQuery())) {
             setDefaultStatsParams(callableStatement, hexId, groupName);
@@ -173,36 +175,41 @@ public class StorageProvider {
 
     public long getStatById(String hexId, String groupName, Statistic statistic) {
         try (Connection c = dataSource.getConnection()) {
-            PreparedStatement preparedStatement = null;
-            switch (statistic) {
-                case KILLS:
-                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_TOTAL.getQuery());
-                    break;
-                case MOB_KILLS:
-                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_TOTAL.getQuery());
-                    break;
-                case DEATHS:
-                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_TOTAL.getQuery());
-                    break;
-                case BLOCKS_BROKEN:
-                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_TOTAL.getQuery());
-                    break;
-                case BLOCKS_PLACED:
-                    preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOTAL.getQuery());
-                    break;
-            }
-            if (preparedStatement != null) {
-                preparedStatement.setString(1, hexId);
-                preparedStatement.setString(2, trimServerName(groupName));
-                ResultSet res = preparedStatement.executeQuery();
-                if (res.next()) {
-                    return res.getLong(1);
-                }
-            }
+            return getStatById(hexId, groupName, statistic, c);
         } catch (SQLException throwable) {
             throwable.printStackTrace();
         }
         return 0L;
+    }
+
+    public long getStatById(String hexId, String groupName, Statistic statistic, Connection c) throws SQLException {
+        PreparedStatement preparedStatement = null;
+        switch (statistic) {
+            case KILLS:
+                preparedStatement = c.prepareStatement(SQLQuery.SELECT_KILLS_TOTAL.getQuery());
+                break;
+            case MOB_KILLS:
+                preparedStatement = c.prepareStatement(SQLQuery.SELECT_MOB_KILLS_TOTAL.getQuery());
+                break;
+            case DEATHS:
+                preparedStatement = c.prepareStatement(SQLQuery.SELECT_DEATHS_TOTAL.getQuery());
+                break;
+            case BLOCKS_BROKEN:
+                preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_BROKEN_TOTAL.getQuery());
+                break;
+            case BLOCKS_PLACED:
+                preparedStatement = c.prepareStatement(SQLQuery.SELECT_BLOCKS_PLACED_TOTAL.getQuery());
+                break;
+        }
+        if (preparedStatement != null) {
+            preparedStatement.setString(1, hexId);
+            preparedStatement.setString(2, trimServerName(groupName));
+            ResultSet res = preparedStatement.executeQuery();
+            if (res.next()) {
+                return res.getLong(1);
+            }
+        }
+        return 0;
     }
 
     public long getStatWeeklyById(String hexId, String groupName, Statistic statistic) {

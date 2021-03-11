@@ -30,11 +30,11 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     public static final String PLAYER_SERVER_KEY_PREFIX = "matrix:player:server:"; // key // matrix:player:server:<id> = serverName
     // This key is used to save current server group for a player
     public static final String PLAYER_GROUP_KEY_PREFIX = "matrix:player:group:"; // key // matrix:player:group:<id> = groupName
-    protected final MatrixAPIImpl<P> api;
+    protected final MatrixAPIImpl api;
 
     // TODO: check usage of meta injector for most data instead of the external cache
 
-    public AbstractPlayerManager(MatrixAPIImpl<P> api) {
+    public AbstractPlayerManager(MatrixAPIImpl api) {
         this.api = api;
     }
 

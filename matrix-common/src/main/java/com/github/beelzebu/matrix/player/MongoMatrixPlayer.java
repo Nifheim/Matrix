@@ -578,8 +578,43 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
+    public long getStat(Statistic statistic) {
+        return getStat(Matrix.getAPI().getServerInfo().getGroupName(), statistic);
+    }
+
+    @Override
     public long getStat(String serverGroup, Statistic statistic) {
         return Matrix.getAPI().getDatabase().getStatById(getId(), serverGroup, statistic).join(); // TODO: check
+    }
+
+    @Override
+    public void setStat(Statistic statistic, long value) {
+        setStat(Matrix.getAPI().getServerInfo().getGroupName(), statistic, value);
+    }
+
+    @Override
+    public void setStat(String serverGroup, Statistic statistic, long value) {
+        Matrix.getAPI().getDatabase().setStatById(getId(), serverGroup, statistic, value);
+    }
+
+    @Override
+    public void increaseStat(Statistic statistic, long value) {
+        Matrix.getAPI().getDatabase().incrStatById(getId(), Matrix.getAPI().getServerInfo().getGroupName(), statistic, value);
+    }
+
+    @Override
+    public void increaseStat(String serverGroup, Statistic statistic, long value) {
+        Matrix.getAPI().getDatabase().incrStatById(getId(), serverGroup, statistic, value);
+    }
+
+    @Override
+    public CompletableFuture<Long> increaseStatAndGet(Statistic statistic, long value) {
+        return increaseStatAndGet(Matrix.getAPI().getServerInfo().getGroupName(), statistic, value);
+    }
+
+    @Override
+    public CompletableFuture<Long> increaseStatAndGet(String groupName, Statistic statistic, long value) {
+        return Matrix.getAPI().getDatabase().incrStatById(getId(), groupName, statistic, value);
     }
 
     @Deprecated

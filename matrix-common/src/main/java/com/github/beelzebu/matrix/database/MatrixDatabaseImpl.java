@@ -100,12 +100,12 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     }
 
     @Override
-    public CompletableFuture<Void> incrStatById(String hexId, String groupName, Statistic statistic, long value) {
+    public CompletableFuture<Long> incrStatById(String hexId, String groupName, Statistic statistic, long value) {
         return schedulerAdapter.makeFuture(() -> storage.incrStatById(hexId, groupName, statistic, value));
     }
 
     @Override
-    public CompletableFuture<Void> incrStatsById(String hexId, String groupName, Map<Statistic, Long> stats) {
+    public CompletableFuture<Map<Statistic, Long>> incrStatsById(String hexId, String groupName, Map<Statistic, Long> stats) {
         return schedulerAdapter.makeFuture(() -> {
             if (stats.isEmpty()) {
                 return;

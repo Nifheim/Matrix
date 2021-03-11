@@ -44,7 +44,7 @@ import net.md_5.bungee.api.ChatColor;
 /**
  * @author Beelzebu
  */
-public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
+public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public static final String DOMAIN_NAME = "mc.indiopikaro.net";
     public static final Set<String> DOMAIN_NAMES = ImmutableSet.of(DOMAIN_NAME, ".net", ".cl", ".com");
@@ -133,7 +133,7 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
     }
 
     @Override
-    public abstract PlayerManager<P> getPlayerManager();
+    public abstract PlayerManager<?> getPlayerManager();
 
     @Override
     public abstract boolean hasPermission(MatrixPlayer player, String permission);
@@ -155,7 +155,7 @@ public abstract class MatrixAPIImpl <P> extends MatrixAPI<P> {
         return redisManager;
     }
 
-    public abstract MetaInjector<P> getMetaInjector();
+    public abstract MetaInjector<?> getMetaInjector();
 
     /**
      * Setup this api instance
