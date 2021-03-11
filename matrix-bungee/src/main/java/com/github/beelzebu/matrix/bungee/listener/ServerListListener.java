@@ -90,6 +90,7 @@ public class ServerListListener implements Listener {
                 }
                 Favicon favicon = favicons.get(faviconName, k -> {
                     BufferedImage bufferedImage;
+                    Matrix.getLogger().info("Searching favicon: " + k);
                     try {
                         File imageFile = new File(new File(plugin.getDataFolder(), "favicons"), k + ".png");
                         if (!imageFile.exists()) {
@@ -100,7 +101,7 @@ public class ServerListListener implements Listener {
                         ioException.printStackTrace();
                         return null;
                     }
-                    if (bufferedImage == null){
+                    if (bufferedImage == null) {
                         return null;
                     }
                     return Favicon.create(bufferedImage);
