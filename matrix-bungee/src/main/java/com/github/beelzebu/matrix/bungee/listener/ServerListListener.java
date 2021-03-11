@@ -85,7 +85,7 @@ public class ServerListListener implements Listener {
                 }
                 e.getResponse().getPlayers().setSample(playerInfos);
                 String faviconName = host.split("\\.", 2)[1];
-                if (!faviconName.contains("\\.")) {
+                if (!faviconName.contains(".")) {
                     faviconName = host;
                 }
                 Favicon favicon = favicons.get(faviconName, k -> {
