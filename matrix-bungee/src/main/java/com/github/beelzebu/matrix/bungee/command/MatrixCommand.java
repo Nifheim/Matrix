@@ -22,12 +22,11 @@ public class MatrixCommand extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (args.length >= 1) {
             if ("reload".equals(args[0])) {
+                bungeeBootstrap.getApi().reload();
                 MotdManager.onEnable();
                 bungeeBootstrap.getInfluencerManager().reloadInfluencers();
-                bungeeBootstrap.getApi().reload();
                 TablistManager.init();
             }
         }
-
     }
 }
