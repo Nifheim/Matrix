@@ -6,8 +6,9 @@ import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bungee.motd.Motd;
 import com.github.beelzebu.matrix.bungee.motd.MotdManager;
-import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,8 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * @author Beelzebu
@@ -31,7 +34,27 @@ public class ServerListListener implements Listener {
     private final MatrixBungeeBootstrap plugin;
     private final UUID emptyUUID = UUID.fromString("0-0-0-0-0");
     private final String[] playerHover;
-    private final Cache<String, Favicon> favicons = Caffeine.newBuilder().weakValues().expireAfterWrite(10, TimeUnit.MINUTES).build();
+    private final LoadingCache<String, Favicon> favicons = Caffeine.newBuilder().weakValues().expireAfterWrite(10, TimeUnit.MINUTES).build(new CacheLoader<String, Favicon>() {
+        @Override
+        public @Nullable Favicon load(@NonNull String key) {
+            BufferedImage bufferedImage;
+            Matrix.getLogger().info("Searching favicon: " + key);
+            try {
+                File imageFile = new File(new File(plugin.getDataFolder(), "favicons"), key + ".png");
+                if (!imageFile.exists()) {
+                    return null;
+                }
+                bufferedImage = ImageIO.read(imageFile);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+                return null;
+            }
+            if (bufferedImage == null) {
+                return null;
+            }
+            return Favicon.create(bufferedImage);
+        }
+    });
 
     public ServerListListener(MatrixBungeeBootstrap plugin, String[] playerHover) {
         this.plugin = plugin;
@@ -88,24 +111,7 @@ public class ServerListListener implements Listener {
                 if (!faviconName.contains(".")) {
                     faviconName = host;
                 }
-                Favicon favicon = favicons.get(faviconName, k -> {
-                    BufferedImage bufferedImage;
-                    Matrix.getLogger().info("Searching favicon: " + k);
-                    try {
-                        File imageFile = new File(new File(plugin.getDataFolder(), "favicons"), k + ".png");
-                        if (!imageFile.exists()) {
-                            return null;
-                        }
-                        bufferedImage = ImageIO.read(imageFile);
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                        return null;
-                    }
-                    if (bufferedImage == null) {
-                        return null;
-                    }
-                    return Favicon.create(bufferedImage);
-                });
+                Favicon favicon = favicons.get(faviconName);
                 if (favicon != null) {
                     e.getResponse().setFavicon(favicon);
                 }
