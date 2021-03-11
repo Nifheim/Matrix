@@ -564,7 +564,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (lowercaseName == null) {
             setName(name);
         }
-        return Matrix.getAPI().getDatabase().save(getId(), this);
+        return Matrix.getAPI().getDatabase().save(id == null ? null : getId(), this);
     }
 
     @Override
