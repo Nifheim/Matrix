@@ -112,7 +112,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (id != null && idString == null) {
             return idString = id.toHexString();
         }
-        return idString;
+        return Objects.requireNonNull(idString);
     }
 
     @Override
