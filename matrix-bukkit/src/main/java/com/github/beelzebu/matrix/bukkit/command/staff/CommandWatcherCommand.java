@@ -11,8 +11,10 @@ import org.bukkit.entity.Player;
  */
 public class CommandWatcherCommand extends MatrixCommand {
 
+    public static String PERMISSION = "matrix.command.commandwatcher";
+
     public CommandWatcherCommand() {
-        super("cw", "matrix.command.commandwatcher", "vc");
+        super("cw", PERMISSION, "vc");
     }
 
     @Override
