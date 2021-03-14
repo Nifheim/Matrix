@@ -63,7 +63,6 @@ buildscript {
         }
 
         dependencies {
-            implementation 'net.luckperms:api:5.1'
             implementation 'com.github.beelzebu:jMatrix:2.0'
             implementation 'com.google.guava:guava:21.0'
             implementation 'org.jetbrains:annotations:20.1.0'

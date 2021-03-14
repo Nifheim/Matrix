@@ -251,14 +251,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     }
 
     private void loadManagers() {
-        if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
-            if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
-                Matrix.getLogger().info("LuckPerms found, hooking into it.");
-            } else {
-                Bukkit.shutdown();
-                return;
-            }
-        }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
             new StatsPlaceholders(api).register();
