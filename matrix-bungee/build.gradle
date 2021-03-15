@@ -30,7 +30,6 @@ dependencies {
     implementation 'com.zaxxer:HikariCP:3.4.5'
     implementation 'cl.indiopikaro:indiofall-api:1.16-R0.4-SNAPSHOT'
     implementation 'com.github.games647:craftapi:0.4'
-    implementation 'org.geysermc:floodgate-bungee:1.0-SNAPSHOT'
 }
 
 artifacts {

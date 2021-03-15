@@ -12,7 +12,6 @@ import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.LoginEvent;
-import org.geysermc.floodgate.FloodgateAPI;
 
 /**
  * @author Beelzebu
@@ -46,9 +45,6 @@ public class LoginTask implements IndioLoginTask {
                 return;
             }
             PendingConnection pendingConnection = event.getConnection();
-            if (FloodgateAPI.isBedrockPlayer(player.getUniqueId())) {
-                player.setBedrock(true);
-            }
             if (!player.isPremium() && !Objects.equals(player.getUniqueId(), UUID.nameUUIDFromBytes(("OfflinePlayer:" + event.getConnection().getName()).getBytes()))) {
                 event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n\nYour UUID doesn't match with the UUID associated to your name in our database.\nThis login attempt was recorded for security reasons."));
                 event.setCancelled(true);
