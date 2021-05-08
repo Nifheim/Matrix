@@ -130,6 +130,9 @@ public class ServerManagerImpl implements ServerManager {
                     // gametype  : string
                     // gamemode  : string
                     // heartbeat : long
+                    if (serverInfo.getGroupName().trim().isEmpty()) { // skip empty groups
+                        continue;
+                    }
                     pipeline.sadd(SERVER_GROUPS_KEY, serverInfo.getGroupName());
                     pipeline.sadd(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
                     pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group", serverInfo.getGroupName());
