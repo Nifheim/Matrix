@@ -99,6 +99,14 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         bukkitCoreUtils.disable();
         if (serverRegisterMessage != null) { // check if server was registered first
             new ServerUnregisterMessage().send();
+            int players = Bukkit.getOnlinePlayers().size();
+            if (players != 0) {
+                try {
+                    Thread.sleep(500 + players * 50L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         getScheduler().shutdownExecutor();
         getScheduler().shutdownScheduler();
