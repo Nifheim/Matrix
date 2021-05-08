@@ -5,16 +5,11 @@ import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.bungee.command.BasicCommands;
-import com.github.beelzebu.matrix.bungee.command.BungeeTPCommand;
 import com.github.beelzebu.matrix.bungee.command.CountdownCommand;
-import com.github.beelzebu.matrix.bungee.command.CrackedCommand;
 import com.github.beelzebu.matrix.bungee.command.HelpOpCommand;
 import com.github.beelzebu.matrix.bungee.command.MaintenanceCommand;
 import com.github.beelzebu.matrix.bungee.command.MatrixCommand;
-import com.github.beelzebu.matrix.bungee.command.MatrixServersCommand;
-import com.github.beelzebu.matrix.bungee.command.PlayerInfoCommand;
 import com.github.beelzebu.matrix.bungee.command.PremiumCommand;
-import com.github.beelzebu.matrix.bungee.command.ReplyCommand;
 import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.bungee.influencer.InfluencerManager;
 import com.github.beelzebu.matrix.bungee.listener.ChatListener;
@@ -76,16 +71,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         registerListener(new ChatListener(api));
         registerListener(new ServerListListener(this, config.getStringList("Motd Hover").toArray(new String[0])));
         registerListener(new LoginListener(api));
-        registerListener(new LocaleListener());
+        registerListener(new LocaleListener(api));
         registerCommand(new HelpOpCommand(this));
-        registerCommand(new PlayerInfoCommand(this));
         registerCommand(new MaintenanceCommand(api));
-        registerCommand(new ReplyCommand(this));
         registerCommand(new CountdownCommand());
         registerCommand(new PremiumCommand(this));
-        registerCommand(new CrackedCommand());
-        registerCommand(new BungeeTPCommand());
-        registerCommand(new MatrixServersCommand(api));
         registerCommand(new MatrixCommand(this));
         //0registerCommand(new StaffListCommand());
         new PermissionListener();
@@ -129,9 +119,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     public void onDisable() {
         ProxyServer.getInstance().getConfig().getListeners().forEach(listenerInfo -> listenerInfo.getServerPriority().set(0, "lobby"));
         for (ProxiedPlayer proxiedPlayer : ProxyServer.getInstance().getPlayers()) {
-            MatrixPlayer matrixPlayer = api.getDatabase().getPlayerById(
-                    api.getMetaInjector().getId(proxiedPlayer)
-            ).join();
+            MatrixPlayer matrixPlayer = api.getPlayerManager().getPlayer(proxiedPlayer).join();
             matrixPlayer.setLoggedIn(false);
             api.getDatabase().cleanUp(matrixPlayer);
         }

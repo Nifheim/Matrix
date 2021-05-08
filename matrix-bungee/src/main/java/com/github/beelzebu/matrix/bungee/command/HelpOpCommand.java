@@ -25,12 +25,16 @@ public class HelpOpCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof ProxiedPlayer)) {
+            return;
+        }
+        ProxiedPlayer proxiedPlayer = (ProxiedPlayer) sender;
+        UUID uniqueId = proxiedPlayer.getUniqueId();
+        if (args.length <= 1) {
+            sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.HELPOP_HELP_USAGE, proxiedPlayer.getLocale().getLanguage().split("_")[0])));
+            return;
+        }
         bootstrap.getApi().getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
-            if (!(sender instanceof ProxiedPlayer)) {
-                return;
-            }
-            ProxiedPlayer pp = (ProxiedPlayer) sender;
-            UUID uniqueId = pp.getUniqueId();
             MatrixPlayer matrixPlayer = bootstrap.getApi().getPlayerManager().getPlayer(uniqueId).join();
             StringBuilder message = new StringBuilder();
             for (String arg : args) {
@@ -48,9 +52,7 @@ public class HelpOpCommand extends Command {
                 String helpopMessageFormatted = I18n.tl(Message.HELPOP_FORMAT, matrixPlayer.getLastLocale()).replace("%server%", ((ProxiedPlayer) sender).getServer().getInfo().getName()).replace("%player_name%", matrixPlayer.getDisplayName()).replace("%message%", message);
                 new StaffChatMessage("matrix.helpop.read", helpopMessageFormatted).send();
                 sender.sendMessage(TextComponent.fromLegacyText(helpopMessageFormatted));
-                if (!sender.hasPermission("matrix.helper")) {
-                    timer.put(uniqueId, System.currentTimeMillis() + 30000);
-                }
+                timer.put(uniqueId, System.currentTimeMillis() + 30000);
             }
         });
     }

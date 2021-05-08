@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.command.user;
 
-import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
-import cl.indiopikaro.bukkitutil.api.menu.GUIManager;
 import com.github.beelzebu.matrix.bukkit.menus.ProfileGUI;
+import net.nifheim.bukkit.util.command.MatrixCommand;
+import net.nifheim.bukkit.util.menu.GUIManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

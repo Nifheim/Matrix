@@ -1,41 +1,36 @@
-package com.github.beelzebu.matrix.bungee.command;
+package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
 import com.github.beelzebu.matrix.api.util.StringUtils;
-import com.github.beelzebu.matrix.util.PermsUtils;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
+import net.nifheim.bukkit.util.command.MatrixCommand;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-public class ReplyCommand extends Command {
+public class ReplyCommand extends MatrixCommand {
 
-    private final MatrixBungeeBootstrap bootstrap;
-
-    public ReplyCommand(MatrixBungeeBootstrap bootstrap) {
+    public ReplyCommand() {
         super("responder", "matrix.command.reply", "reply");
-        this.bootstrap = bootstrap;
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length < 2) {
             sender.sendMessage(StringUtils.replace("&cPor favor ingresa un usuario y mensaje para enviar."));
             return;
         }
-        bootstrap.getApi().getPlayerManager().getPlayerByName(args[0]).thenAccept(target -> {
+        api.getPlayerManager().getPlayerByName(args[0]).thenAccept(target -> {
             if (target == null) {
                 sender.sendMessage(StringUtils.replace("&cEl usuario al que intentas responder no existe."));
                 return;
             }
-            if (bootstrap.getApi().getPlugin().isOnline(target.getUniqueId(), false)) {
+            if (api.getPlugin().isOnline(target.getUniqueId(), false)) {
                 String name;
-                if (sender instanceof ProxiedPlayer) {
-                    if (target.getUniqueId() == ((ProxiedPlayer) sender).getUniqueId()) {
+                if (sender instanceof Player) {
+                    if (target.getUniqueId() == ((Player) sender).getUniqueId()) {
                         sender.sendMessage(StringUtils.replace("&cNo te puedes responder a ti mismo."));
                         return;
                     }
-                    name = PermsUtils.getPrefix(((ProxiedPlayer) sender).getUniqueId()) + bootstrap.getApi().getPlayerManager().getPlayer((ProxiedPlayer) sender).join().getDisplayName();
+                    name = api.getPlayerManager().getPlayer((Player) sender).join().getDisplayName();
                 } else {
                     name = sender.getName();
                 }

@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bungee.tasks;
+package com.github.beelzebu.matrix.bungee.listener.tasks;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
@@ -16,7 +16,7 @@ import net.md_5.bungee.api.event.LoginEvent;
 /**
  * @author Beelzebu
  */
-public class LoginTask implements IndioLoginTask {
+public class LoginTask implements Runnable {
 
     private final MatrixBungeeAPI api;
     private final LoginEvent event;

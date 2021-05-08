@@ -29,7 +29,7 @@ public class PlayerCommandPreprocessListener implements Listener {
                 if (!matrixPlayer.isWatcher()) {
                     return;
                 }
-                if (!player.hasPermission(CommandWatcherCommand.PERMISSION)){
+                if (!player.hasPermission(CommandWatcherCommand.PERMISSION)) {
                     matrixPlayer.setWatcher(false);
                     return;
                 }
