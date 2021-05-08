@@ -13,6 +13,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
@@ -36,7 +38,7 @@ public final class MotdManager {
         return ImmutableList.copyOf(MOTD_LIST);
     }
 
-    public static Countdown getCountdown(String id) {
+    public static @Nullable Countdown getCountdown(String id) {
         Countdown cachedCountdown = COUNTDOWN_CACHE.getIfPresent(id);
         if (cachedCountdown != null) {
             return cachedCountdown;
@@ -54,11 +56,11 @@ public final class MotdManager {
         }*/
     }
 
-    public static Motd getRandomMotd() {
+    public static @NotNull Motd getRandomMotd() {
         return getRandomMotd(true);
     }
 
-    public static Motd getForcedMotd(String host) {
+    public static @Nullable Motd getForcedMotd(String host) {
         for (Motd motd : FORCED_MOTD) {
             if (Objects.equals(motd.getId(), host)) {
                 return motd;
@@ -67,7 +69,7 @@ public final class MotdManager {
         return null;
     }
 
-    public static Motd getRandomMotd(boolean firstAttempt) {
+    public static @Nullable Motd getRandomMotd(boolean firstAttempt) {
         Motd motd = null;
         for (Motd value : MOTD_LIST) {
             if (RANDOM.nextBoolean()) {

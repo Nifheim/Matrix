@@ -5,6 +5,7 @@ import com.github.beelzebu.matrix.bungee.motd.MotdManager;
 import com.github.beelzebu.matrix.bungee.tablist.TablistManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -19,7 +20,7 @@ public class MatrixCommand extends Command {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String @NotNull [] args) {
         if (args.length >= 1) {
             if ("reload".equals(args[0])) {
                 bungeeBootstrap.getApi().reload();

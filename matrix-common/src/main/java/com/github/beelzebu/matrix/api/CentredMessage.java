@@ -1,12 +1,14 @@
 package com.github.beelzebu.matrix.api;
 
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CentredMessage {
 
     private final static int CENTER_PX = 154;
 
-    public static String generate(String message) {
+    public static @NotNull String generate(@Nullable String message) {
         if (message == null || message.equals("")) {
             return "";
         }
@@ -147,7 +149,7 @@ public class CentredMessage {
             this.length = length;
         }
 
-        public static DefaultFontSize getDefaultFontSize(char c) {
+        public static @NotNull DefaultFontSize getDefaultFontSize(char c) {
             for (DefaultFontSize dFI : DefaultFontSize.values()) {
                 if (dFI.getCharacter() == c) {
                     return dFI;

@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.logging.Level;
+import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -24,7 +25,7 @@ public final class MatrixLoggerImpl implements MatrixLogger {
     }
 
     @Override
-    public void log(Level level, String msg) {
+    public void log(@NotNull Level level, String msg) {
         Objects.requireNonNull(msg);
         if (level.intValue() <= Level.FINE.intValue()) {
             if (!debug) {
@@ -61,7 +62,7 @@ public final class MatrixLoggerImpl implements MatrixLogger {
     }
 
     @Override
-    public void debug(SQLException ex) {
+    public void debug(@NotNull SQLException ex) {
         log("SQLException: ");
         log("   Database state: " + ex.getSQLState());
         log("   Error code: " + ex.getErrorCode());
@@ -70,13 +71,13 @@ public final class MatrixLoggerImpl implements MatrixLogger {
     }
 
     @Override
-    public void debug(Exception ex) {
+    public void debug(@NotNull Exception ex) {
         log(ex.getClass().getName() + ": ");
         log("   Error message: " + ex.getLocalizedMessage());
         log("   Stacktrace:\n" + getStacktrace(ex));
     }
 
-    public void debug(JedisException ex) {
+    public void debug(@NotNull JedisException ex) {
         log("JedisException: ");
         log("   Error message: " + ex.getLocalizedMessage());
         log("   Stacktrace:\n" + getStacktrace(ex));
@@ -86,7 +87,7 @@ public final class MatrixLoggerImpl implements MatrixLogger {
         this.debug = debug;
     }
 
-    private String getStacktrace(Exception ex) {
+    private String getStacktrace(@NotNull Exception ex) {
         try (StringWriter stringWriter = new StringWriter(); PrintWriter printWriter = new PrintWriter(stringWriter)) {
             ex.printStackTrace(printWriter);
             return stringWriter.toString();

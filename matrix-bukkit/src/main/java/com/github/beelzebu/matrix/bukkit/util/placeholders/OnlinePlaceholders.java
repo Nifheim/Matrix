@@ -57,7 +57,7 @@ public class OnlinePlaceholders extends PlaceholderExpansion {
     });
     private final AtomicInteger bungeeCount = new AtomicInteger(0);
 
-    public OnlinePlaceholders(MatrixBukkitAPI api) {
+    public OnlinePlaceholders(@NotNull MatrixBukkitAPI api) {
         Matrix.getAPI().getPlugin().getBootstrap().getScheduler().asyncRepeating(() -> bungeeCount.set(api.getPlayerManager().getOnlinePlayerCountSync()), 5, TimeUnit.SECONDS);
     }
 
@@ -82,7 +82,7 @@ public class OnlinePlaceholders extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, @NotNull String params) {
+    public @org.jetbrains.annotations.Nullable String onPlaceholderRequest(@NotNull Player player, @NotNull String params) {
         if (params.startsWith("status_")) {
             String server = params.replaceFirst("status_", "");
             status.refresh(server);

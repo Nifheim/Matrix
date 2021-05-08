@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -25,7 +26,7 @@ public class FreezeCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String @NotNull [] args) {
         String senderLocale = sender instanceof Player ? ((Player) sender).getLocale().substring(0, 2) : I18n.DEFAULT_LOCALE;
         if (args.length < 1) {
             sender.sendMessage(I18n.tl(Message.ESSENTIALS_FREEZE_USAGE, senderLocale));

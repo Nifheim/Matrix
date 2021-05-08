@@ -5,6 +5,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -18,17 +19,17 @@ public class BungeeCommandSource implements CommandSource {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return sender.getName();
     }
 
     @Override
-    public void execute(String command) {
+    public void execute(@NotNull String command) {
         ProxyServer.getInstance().getPluginManager().dispatchCommand(sender, command);
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(@NotNull String message) {
         sender.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', StringUtils.replace(message))));
     }
 }

@@ -6,6 +6,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.SettingsChangedEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -19,7 +20,7 @@ public class LocaleListener implements Listener {
     }
 
     @EventHandler(priority = 127)
-    public void onPlayerJoin(PostLoginEvent e) {
+    public void onPlayerJoin(@NotNull PostLoginEvent e) {
         api.getPlayerManager().getPlayer(e.getPlayer()).thenAccept(matrixPlayer -> {
             if (matrixPlayer != null) {
                 matrixPlayer.setLastLocale(e.getPlayer().getLocale());
@@ -28,7 +29,7 @@ public class LocaleListener implements Listener {
     }
 
     @EventHandler
-    public void onLocaleChange(SettingsChangedEvent e) {
+    public void onLocaleChange(@NotNull SettingsChangedEvent e) {
         api.getPlayerManager().getPlayer(e.getPlayer()).thenAccept(matrixPlayer -> {
             if (matrixPlayer != null) {
                 matrixPlayer.setLastLocale(e.getPlayer().getLocale());
@@ -37,7 +38,7 @@ public class LocaleListener implements Listener {
     }
 
     @EventHandler(priority = 127)
-    public void onDisconnect(PlayerDisconnectEvent e) {
+    public void onDisconnect(@NotNull PlayerDisconnectEvent e) {
         api.getPlayerManager().getPlayer(e.getPlayer()).thenAccept(matrixPlayer -> {
             if (matrixPlayer != null) {
                 matrixPlayer.setLastLocale(e.getPlayer().getLocale());

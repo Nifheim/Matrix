@@ -10,6 +10,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -17,7 +18,7 @@ import java.io.IOException;
 public class ServerInfoTypeAdapter extends TypeAdapter<ServerInfo> {
 
     @Override
-    public void write(JsonWriter out, ServerInfo value) throws IOException {
+    public void write(@NotNull JsonWriter out, @NotNull ServerInfo value) throws IOException {
         out.beginObject().name("groupName").value(value.getGroupName())
                 .name("serverName").value(value.getServerName())
                 .name("serverType").value(value.getServerType().name())
@@ -28,7 +29,7 @@ public class ServerInfoTypeAdapter extends TypeAdapter<ServerInfo> {
     }
 
     @Override
-    public ServerInfo read(JsonReader in) {
+    public @NotNull ServerInfo read(@NotNull JsonReader in) {
         JsonObject jsonObject = new JsonParser().parse(in).getAsJsonObject();
         return new ServerInfoImpl(
                 ServerType.valueOf(jsonObject.get("serverType").getAsString()),

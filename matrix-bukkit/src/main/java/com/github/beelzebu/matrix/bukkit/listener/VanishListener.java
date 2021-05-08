@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -25,22 +26,22 @@ public class VanishListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerJoin(PlayerJoinEvent e) {
+    public void onPlayerJoin(@NotNull PlayerJoinEvent e) {
         checkVanish(e.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoin(PlayerTeleportEvent e) {
+    public void onPlayerJoin(@NotNull PlayerTeleportEvent e) {
         checkVanish(e.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onWorldChange(PlayerChangedWorldEvent event) {
+    public void onWorldChange(@NotNull PlayerChangedWorldEvent event) {
         checkVanish(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onGameModeChangeEvent(PlayerGameModeChangeEvent event) {
+    public void onGameModeChangeEvent(@NotNull PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
         plugin.getApi().getPlayerManager().getPlayer(player).thenAccept(matrixPlayer -> {
             if (player.hasPermission(VanishCommand.PERMISSION) || matrixPlayer.isVanished()) {
@@ -60,7 +61,7 @@ public class VanishListener implements Listener {
         });
     }
 
-    private void checkVanish(Player player) {
+    private void checkVanish(@NotNull Player player) {
         if (player.hasMetadata("NPC")) {
             return;
         }

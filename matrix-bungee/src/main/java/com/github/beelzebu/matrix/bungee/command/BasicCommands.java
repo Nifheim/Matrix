@@ -11,6 +11,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -18,16 +19,16 @@ import net.md_5.bungee.api.plugin.Command;
 public class BasicCommands {
 
     private static final String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private final MatrixBungeeAPI api;
+    private final @NotNull MatrixBungeeAPI api;
     private final Set<Command> commands = new HashSet<>();
 
-    public BasicCommands(MatrixBungeeAPI api) {
+    public BasicCommands(@NotNull MatrixBungeeAPI api) {
         this.api = api;
         createCommands();
         commands.forEach(cmd -> ProxyServer.getInstance().getPluginManager().registerCommand(api.getPlugin().getBootstrap(), cmd));
     }
 
-    public static String randomAlphaNumeric(int count) {
+    public static @NotNull String randomAlphaNumeric(int count) {
         StringBuilder builder = new StringBuilder();
         while (count-- != 0) {
             int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
@@ -75,7 +76,7 @@ public class BasicCommands {
         });
         commands.add(new Command("discord") {
             @Override
-            public void execute(CommandSender sender, String[] args) {
+            public void execute(CommandSender sender, String @NotNull [] args) {
                 if (args.length == 0) {
                     if (sender instanceof ProxiedPlayer) {
                         api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {

@@ -21,6 +21,7 @@ package com.github.beelzebu.matrix.dependency;
 import com.github.beelzebu.matrix.dependency.relodaction.Relocation;
 import java.util.Collections;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -53,15 +54,15 @@ public enum Dependency {
     private final String version;
     private final List<Relocation> relocations;
 
-    Dependency(String groupId, String artifactId, String version) {
+    Dependency(@NotNull String groupId, @NotNull String artifactId, String version) {
         this(String.format(MAVEN_CENTRAL_FORMAT, groupId.replace("{}", ".").replace(".", "/"), artifactId.replace("{}", "."), version, artifactId.replace("{}", "."), version), version, Collections.emptyList());
     }
 
-    Dependency(String groupId, String artifactId, String version, Relocation relocations) {
+    Dependency(@NotNull String groupId, @NotNull String artifactId, String version, Relocation relocations) {
         this(String.format(MAVEN_CENTRAL_FORMAT, groupId.replace("{}", ".").replace(".", "/"), artifactId.replace("{}", "."), version, artifactId.replace("{}", "."), version), version, Collections.singletonList(relocations));
     }
 
-    Dependency(String groupId, String artifactId, String version, List<Relocation> relocations) {
+    Dependency(@NotNull String groupId, @NotNull String artifactId, String version, List<Relocation> relocations) {
         this(String.format(MAVEN_CENTRAL_FORMAT, groupId.replace("{}", ".").replace(".", "/"), artifactId.replace("{}", "."), version, artifactId.replace("{}", "."), version), version, relocations);
     }
 

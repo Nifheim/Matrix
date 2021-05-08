@@ -18,12 +18,14 @@
  */
 package com.github.beelzebu.matrix.dependency;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Beelzebu
  */
 public final class DependencyRegistry {
 
-    public boolean shouldAutoLoad(Dependency dependency) {
+    public boolean shouldAutoLoad(@NotNull Dependency dependency) {
         switch (dependency) {
             case ASM:
             case ASM_COMMONS:

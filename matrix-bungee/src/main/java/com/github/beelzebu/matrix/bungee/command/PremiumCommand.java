@@ -14,6 +14,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -36,7 +37,7 @@ public class PremiumCommand extends Command {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String @NotNull [] args) {
         if (sender instanceof ProxiedPlayer) {
             Matrix.getAPI().getPlayerManager().getPlayerByName(sender.getName()).thenAccept(matrixPlayer -> {
                 if (matrixPlayer.isRegistered() && !matrixPlayer.isLoggedIn()) {

@@ -8,6 +8,7 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.jetbrains.annotations.NotNull;
 
 public class VotifierListener implements Listener {
 
@@ -18,7 +19,7 @@ public class VotifierListener implements Listener {
     }
 
     @EventHandler
-    public void onVotifier(VotifierEvent e) {
+    public void onVotifier(@NotNull VotifierEvent e) {
         Vote vote = e.getVote();
         if (vote.getServiceName().contains("40")) {
             Bukkit.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {

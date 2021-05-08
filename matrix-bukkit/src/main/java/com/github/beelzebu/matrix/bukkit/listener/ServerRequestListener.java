@@ -5,6 +5,7 @@ import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
 import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -29,7 +30,7 @@ public class ServerRequestListener implements RedisMessageListener<ServerRequest
     }
 
     @Override
-    public RedisMessageType getType() {
+    public @NotNull RedisMessageType getType() {
         return RedisMessageType.SERVER_REQUEST;
     }
 }

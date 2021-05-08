@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -36,10 +37,10 @@ import java.util.Set;
 public class RelocationHandler {
 
     private final Set<Dependency> dependencies = EnumSet.of(Dependency.ASM, Dependency.ASM_COMMONS, Dependency.JAR_RELOCATOR);
-    private final Constructor<?> relocatorConstructor;
-    private final Method relocatorMethod;
+    private final @NotNull Constructor<?> relocatorConstructor;
+    private final @NotNull Method relocatorMethod;
 
-    public RelocationHandler(DependencyManager dependencyManager) {
+    public RelocationHandler(@NotNull DependencyManager dependencyManager) {
         try {
             dependencyManager.loadDependencies(dependencies);
             Class<?> relocator = dependencyManager.obtainClassLoaderWith(dependencies).loadClass("me.lucko.jarrelocator.JarRelocator");
@@ -52,7 +53,7 @@ public class RelocationHandler {
         }
     }
 
-    public void remap(Path input, Path output, List<Relocation> relocations) throws Exception {
+    public void remap(@NotNull Path input, @NotNull Path output, @NotNull List<Relocation> relocations) throws Exception {
         Map<String, String> mappings = new HashMap<>();
         for (Relocation relocation : relocations) {
             mappings.put(relocation.getPattern(), relocation.getRelocatedPattern());

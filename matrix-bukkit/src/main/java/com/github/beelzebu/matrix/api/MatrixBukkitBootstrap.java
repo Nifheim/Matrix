@@ -34,12 +34,10 @@ import com.github.beelzebu.matrix.bukkit.listener.PlayerDeathListener;
 import com.github.beelzebu.matrix.bukkit.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.bukkit.listener.VanishListener;
 import com.github.beelzebu.matrix.bukkit.listener.VotifierListener;
-import com.github.beelzebu.matrix.bukkit.listener.stats.StatsListener;
 import com.github.beelzebu.matrix.bukkit.plugin.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.bukkit.scheduler.BukkitSchedulerAdapter;
 import com.github.beelzebu.matrix.bukkit.util.PluginsUtility;
 import com.github.beelzebu.matrix.bukkit.util.placeholders.OnlinePlaceholders;
-import com.github.beelzebu.matrix.bukkit.util.placeholders.StatsPlaceholders;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.io.File;
 import java.util.Date;
@@ -56,6 +54,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 import org.spigotmc.SpigotConfig;
 
 /**
@@ -90,7 +89,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 getLogger().warning("Debug is enabled in spigot config, forcing it to false.");
                 SpigotConfig.debug = false;
             }
-        } catch (NoSuchFieldException | ClassNotFoundException ignore) {
+        } catch (@NotNull NoSuchFieldException | ClassNotFoundException ignore) {
         }
         saveResource("config.yml", false);
         configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
@@ -141,7 +140,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
         }
-        registerEvents(new StatsListener(api));
         if (isVotifier()) {
             registerEvents(new VotifierListener(this));
         }
@@ -201,7 +199,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         api.getMessaging().registerListener(new ServerRequestListener(this));
         new PlayerOptionChangeEvent.PlayerOptionChangeListener() {
             @Override
-            public void onPlayerOptionChange(PlayerOptionChangeEvent e) {
+            public void onPlayerOptionChange(@NotNull PlayerOptionChangeEvent e) {
                 Player player = Bukkit.getPlayer(e.getMatrixPlayer().getUniqueId());
                 if (player != null && player.isOnline()) {
                     switch (e.getOptionType()) {
@@ -245,11 +243,11 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     }
 
     @Override
-    public SchedulerAdapter getScheduler() {
+    public @NotNull SchedulerAdapter getScheduler() {
         return scheduler;
     }
 
-    public MatrixPluginBukkit getMatrixPlugin() {
+    public @NotNull MatrixPluginBukkit getMatrixPlugin() {
         return matrixPlugin;
     }
 
@@ -260,14 +258,13 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     private void loadManagers() {
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
-            new StatsPlaceholders(api).register();
             new OnlinePlaceholders(api).register();
         } else {
             Bukkit.shutdown();
         }
     }
 
-    private void registerEvents(Listener listener) {
+    private void registerEvents(@NotNull Listener listener) {
         Bukkit.getPluginManager().registerEvents(listener, this);
     }
 }

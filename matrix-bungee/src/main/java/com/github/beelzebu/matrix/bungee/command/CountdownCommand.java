@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Command;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -15,7 +16,7 @@ public class CountdownCommand extends Command {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(@NotNull CommandSender sender, String @NotNull [] args) {
         if (args.length < 2) {
             sender.sendMessage(TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', "&cUsa &f/countdown <id> <minutos>")));
             return;

@@ -1,11 +1,13 @@
 package com.github.beelzebu.matrix.bungee.player;
 
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.bungee.util.BungeeMetaInjector;
 import com.github.beelzebu.matrix.player.AbstractPlayerManager;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,49 +15,41 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BungeePlayerManager extends AbstractPlayerManager<ProxiedPlayer> {
 
-    public BungeePlayerManager(MatrixBungeeAPI api) {
-        super(api);
+    public BungeePlayerManager(MatrixBungeeAPI api, BungeeMetaInjector metaInjector) {
+        super(api, metaInjector);
     }
 
     @Override
-    public CompletableFuture<MatrixPlayer> getPlayer(ProxiedPlayer proxiedPlayer) {
-        String hexId = api.getMetaInjector().getId(proxiedPlayer);
-        if (hexId != null) {
-            return getPlayerById(hexId);
+    public @NotNull UUID getUniqueId(@NotNull ProxiedPlayer proxiedPlayer) {
+        return proxiedPlayer.getUniqueId();
+    }
+
+    @Override
+    public @NotNull String getName(@NotNull ProxiedPlayer proxiedPlayer) {
+        return proxiedPlayer.getName();
+    }
+
+    @Override
+    protected @Nullable ProxiedPlayer getPlatformPlayer(UUID uniqueId) {
+        return ProxyServer.getInstance().getPlayer(uniqueId);
+    }
+
+    @Override
+    protected @Nullable ProxiedPlayer getPlatformPlayerByName(String name) {
+        return ProxyServer.getInstance().getPlayer(name);
+    }
+
+    @Override
+    protected @Nullable ProxiedPlayer getPlatformPlayerById(String hexId) {
+        for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+            String playerId = getMetaInjector().getId(player);
+            if (playerId == null) {
+                continue;
+            }
+            if (Objects.equals(playerId, hexId)) {
+                return player;
+            }
         }
-        return getPlayer(proxiedPlayer.getUniqueId());
-    }
-
-    @Override
-    public CompletableFuture<String> getHexId(ProxiedPlayer proxiedPlayer) {
-        return CompletableFuture.completedFuture(api.getMetaInjector().getId(proxiedPlayer));
-    }
-
-    @Override
-    public CompletableFuture<UUID> getUniqueId(ProxiedPlayer proxiedPlayer) {
-        return CompletableFuture.completedFuture(proxiedPlayer.getUniqueId());
-    }
-
-    @Override
-    public CompletableFuture<String> getName(ProxiedPlayer proxiedPlayer) {
-        return CompletableFuture.completedFuture(proxiedPlayer.getName());
-    }
-
-    @Override
-    public CompletableFuture<Boolean> isOnline(ProxiedPlayer proxiedPlayer, @Nullable String groupName, @Nullable String serverName) {
-        if (groupName == null && serverName == null) {
-            return CompletableFuture.completedFuture(proxiedPlayer.isConnected());
-        }
-        return isOnlineById(api.getMetaInjector().getId(proxiedPlayer), groupName, serverName);
-    }
-
-    @Override
-    public CompletableFuture<Void> setOnline(ProxiedPlayer proxiedPlayer) {
-        return setOnlineById(api.getMetaInjector().getId(proxiedPlayer));
-    }
-
-    @Override
-    public CompletableFuture<Void> setOffline(ProxiedPlayer proxiedPlayer) {
-        return setOfflineById(api.getMetaInjector().getId(proxiedPlayer));
+        return null;
     }
 }

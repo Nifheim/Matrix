@@ -20,6 +20,7 @@ package com.github.beelzebu.matrix.dependency.relodaction;
 
 import java.util.Arrays;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -34,11 +35,11 @@ public final class Relocation {
         this.relocatedPattern = relocatedPattern;
     }
 
-    public static Relocation of(String id, String pattern) {
+    public static @NotNull Relocation of(String id, @NotNull String pattern) {
         return new Relocation(pattern.replace("{}", "."), "com.github.beelzebu.lib." + id);
     }
 
-    public static List<Relocation> allOf(Relocation... relocations) {
+    public static @NotNull List<Relocation> allOf(Relocation... relocations) {
         return Arrays.asList(relocations);
     }
 

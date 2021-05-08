@@ -11,6 +11,7 @@ import net.md_5.bungee.Util;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -18,7 +19,7 @@ import net.md_5.bungee.api.config.ServerInfo;
 public class ServerRegisterListener implements RedisMessageListener<ServerRegisterMessage> {
 
     @Override
-    public void onMessage(ServerRegisterMessage message) {
+    public void onMessage(@NotNull ServerRegisterMessage message) {
         if (ProxyServer.getInstance().getServers().containsKey(message.getServerInfo().getServerName())) {
             Matrix.getLogger().info("Server already registered: " + message.getServerInfo().getServerName());
             return;
@@ -44,7 +45,7 @@ public class ServerRegisterListener implements RedisMessageListener<ServerRegist
     }
 
     @Override
-    public RedisMessageType getType() {
+    public @NotNull RedisMessageType getType() {
         return RedisMessageType.SERVER_REGISTER;
     }
 }

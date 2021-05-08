@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bukkit.util.placeholders;
+package com.github.beelzebu.matrix.bukkit.util.placeholders.stats;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
@@ -92,7 +92,7 @@ public class StatsPlaceholders extends PlaceholderExpansion {
                         for (String sType : sTypes) {
                             Map<Statistic, Long> values = new HashMap<>();
                             for (Statistic populatingStatistic : Statistic.values()) {
-                                api.getDatabase().getStatById(api.getMetaInjector().getId(p), api.getServerInfo().getGroupName(), statistic).thenAccept(value -> values.put(populatingStatistic, value));
+                                api.getDatabase().getStatById(api.getPlayerManager().getMetaInjector().getId(p), api.getServerInfo().getGroupName(), statistic).thenAccept(value -> values.put(populatingStatistic, value));
                             }
                             statsMap.put(sType, values);
                         }

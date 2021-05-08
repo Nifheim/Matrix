@@ -5,13 +5,14 @@ import com.github.beelzebu.matrix.api.i18n.Message;
 import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
  */
 public class CommandWatcherCommand extends MatrixCommand {
 
-    public static String PERMISSION = "matrix.command.commandwatcher";
+    public static @NotNull String PERMISSION = "matrix.command.commandwatcher";
 
     public CommandWatcherCommand() {
         super("cw", PERMISSION, "vc");
@@ -22,7 +23,7 @@ public class CommandWatcherCommand extends MatrixCommand {
         if (!(sender instanceof Player)) {
             return;
         }
-        api.getPlayerManager().getPlayer((Player) sender).thenAccept(matrixPlayer -> {
+        api.getPlayerManager().getPlayer(((Player) sender).getUniqueId()).thenAccept(matrixPlayer -> {
             boolean status = !matrixPlayer.isWatcher();
             matrixPlayer.setWatcher(status);
             if (status) {

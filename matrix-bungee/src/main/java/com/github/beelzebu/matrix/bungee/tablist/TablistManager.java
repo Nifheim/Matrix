@@ -8,6 +8,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -38,11 +39,11 @@ public final class TablistManager {
         Matrix.getAPI().getConfig().getStringList("server alias").forEach(line -> SERVER_ALIASES.put(line.split(":::")[0], line.split(":::")[1]));
     }
 
-    public static BaseComponent[] getTabHeader(ProxiedPlayer proxiedPlayer) {
+    public static BaseComponent[] getTabHeader(@NotNull ProxiedPlayer proxiedPlayer) {
         return getComponents(proxiedPlayer, TAB_HEADER);
     }
 
-    public static BaseComponent[] getTabFooter(ProxiedPlayer proxiedPlayer) {
+    public static BaseComponent[] getTabFooter(@NotNull ProxiedPlayer proxiedPlayer) {
         return getComponents(proxiedPlayer, TAB_FOOTER);
     }
 
@@ -56,7 +57,7 @@ public final class TablistManager {
         return server;
     }
 
-    private static BaseComponent[] getComponents(ProxiedPlayer proxiedPlayer, String[] lines) {
+    private static BaseComponent[] getComponents(@NotNull ProxiedPlayer proxiedPlayer, String @NotNull [] lines) {
         StringBuilder header = new StringBuilder();
         for (int i = 0; i < lines.length; i++) {
             String line = ChatColor.translateAlternateColorCodes('&', lines[i].replace("%server%", getServerAlias(proxiedPlayer.getServer().getInfo().getName())).replace("%player%", proxiedPlayer.getName()));

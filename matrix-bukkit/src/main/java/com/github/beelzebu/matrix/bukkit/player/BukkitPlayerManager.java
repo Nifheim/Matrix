@@ -1,11 +1,13 @@
 package com.github.beelzebu.matrix.bukkit.player;
 
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.bukkit.util.BukkitMetaInjector;
 import com.github.beelzebu.matrix.player.AbstractPlayerManager;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,45 +15,41 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BukkitPlayerManager extends AbstractPlayerManager<Player> {
 
-    public BukkitPlayerManager(MatrixBukkitAPI api) {
-        super(api);
+    public BukkitPlayerManager(MatrixBukkitAPI api, BukkitMetaInjector metaInjector) {
+        super(api, metaInjector);
     }
 
     @Override
-    public CompletableFuture<MatrixPlayer> getPlayer(Player player) {
-        return getPlayerById(api.getMetaInjector().getId(player));
+    public @NotNull UUID getUniqueId(@NotNull Player player) {
+        return player.getUniqueId();
     }
 
     @Override
-    public CompletableFuture<String> getHexId(Player player) {
-        return CompletableFuture.completedFuture(api.getMetaInjector().getId(player));
+    public @NotNull String getName(@NotNull Player player) {
+        return player.getName();
     }
 
     @Override
-    public CompletableFuture<UUID> getUniqueId(Player player) {
-        return CompletableFuture.completedFuture(player.getUniqueId());
+    protected @Nullable Player getPlatformPlayer(@NotNull UUID uniqueId) {
+        return Bukkit.getPlayer(uniqueId);
     }
 
     @Override
-    public CompletableFuture<String> getName(Player player) {
-        return CompletableFuture.completedFuture(player.getName());
+    protected @Nullable Player getPlatformPlayerByName(@NotNull String name) {
+        return Bukkit.getPlayer(name);
     }
 
     @Override
-    public CompletableFuture<Boolean> isOnline(Player player, @Nullable String groupName, @Nullable String serverName) {
-        if (groupName == null && serverName == null) {
-            return CompletableFuture.completedFuture(player.isOnline());
+    protected @Nullable Player getPlatformPlayerById(String hexId) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            String playerId = getMetaInjector().getId(player);
+            if (playerId == null) {
+                continue;
+            }
+            if (Objects.equals(playerId, hexId)) {
+                return player;
+            }
         }
-        return isOnlineById(api.getMetaInjector().getId(player), groupName, serverName);
-    }
-
-    @Override
-    public CompletableFuture<Void> setOnline(Player player) {
-        return setOnlineById(api.getMetaInjector().getId(player));
-    }
-
-    @Override
-    public CompletableFuture<Void> setOffline(Player player) {
-        return setOfflineById(api.getMetaInjector().getId(player));
+        return null;
     }
 }

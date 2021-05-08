@@ -6,13 +6,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
  */
 public class ReflectionClassLoader {
 
-    private static final Method ADD_URL_METHOD;
+    private static final @NotNull Method ADD_URL_METHOD;
 
     static {
         try {
@@ -23,9 +24,9 @@ public class ReflectionClassLoader {
         }
     }
 
-    private final URLClassLoader classLoader;
+    private final @NotNull URLClassLoader classLoader;
 
-    public ReflectionClassLoader(Object plugin) throws IllegalStateException {
+    public ReflectionClassLoader(@NotNull Object plugin) throws IllegalStateException {
         ClassLoader clazzLoader = plugin.getClass().getClassLoader();
         if (clazzLoader instanceof URLClassLoader) {
             classLoader = (URLClassLoader) clazzLoader;
@@ -37,12 +38,12 @@ public class ReflectionClassLoader {
     public void loadJar(URL url) {
         try {
             ADD_URL_METHOD.invoke(classLoader, url);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (@NotNull IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void loadJar(Path file) {
+    public void loadJar(@NotNull Path file) {
         try {
             loadJar(file.toUri().toURL());
         } catch (MalformedURLException e) {

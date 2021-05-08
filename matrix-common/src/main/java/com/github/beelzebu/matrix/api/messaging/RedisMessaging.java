@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisException;
@@ -26,9 +27,9 @@ public class RedisMessaging implements Messaging {
     private final Set<RedisMessageListener<? extends RedisMessage>> redisListeners = new LinkedHashSet<>();
     private final Set<MessageListener> messageListeners = new LinkedHashSet<>();
     private final RedisManager redisManager;
-    private final PubSubListener pubSubListener;
+    private final @NotNull PubSubListener pubSubListener;
 
-    public RedisMessaging(RedisManager redisManager, Consumer<Runnable> runnableConsumer) {
+    public RedisMessaging(RedisManager redisManager, @NotNull Consumer<Runnable> runnableConsumer) {
         this.redisManager = redisManager;
         runnableConsumer.accept(pubSubListener = new PubSubListener());
     }
@@ -40,7 +41,7 @@ public class RedisMessaging implements Messaging {
      *
      * @param redisMessage message to send though redis.
      */
-    public void sendMessage(RedisMessage redisMessage) {
+    public void sendMessage(@NotNull RedisMessage redisMessage) {
         Objects.requireNonNull(redisMessage.getUniqueId(), "Can't send a message with null id");
         messages.add(redisMessage.getUniqueId());
         String jsonMessage = Matrix.GSON.toJson(redisMessage);
@@ -78,7 +79,7 @@ public class RedisMessaging implements Messaging {
         }
     }
 
-    public PubSubListener getPubSubListener() {
+    public @NotNull PubSubListener getPubSubListener() {
         return pubSubListener;
     }
 

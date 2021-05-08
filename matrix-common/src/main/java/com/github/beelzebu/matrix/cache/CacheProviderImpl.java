@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.ScanParams;
@@ -59,68 +60,68 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public Optional<UUID> getUniqueIdByName(@NotNull String name) {
+    public @NotNull Optional<UUID> getUniqueIdByName(@NotNull String name) {
         name = name.toLowerCase();
         try (Jedis jedis = api.getRedisManager().getResource()) {
             String uuidString = jedis.get(UUID_KEY_PREFIX + name);
             return Optional.ofNullable(uuidString != null ? UUID.fromString(uuidString) : null);
-        } catch (JedisException | JsonParseException ex) {
+        } catch (@NotNull JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<UUID> getUniqueIdById(String hexId) {
+    public @NotNull Optional<UUID> getUniqueIdById(String hexId) {
         try (Jedis jedis = api.getRedisManager().getResource()) {
             String uuidString = jedis.get(UUID_KEY_PREFIX + hexId);
             return Optional.ofNullable(uuidString != null ? UUID.fromString(uuidString) : null);
-        } catch (JedisException | JsonParseException ex) {
+        } catch (@NotNull JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<String> getName(@NotNull UUID uniqueId) {
+    public @NotNull Optional<String> getName(@NotNull UUID uniqueId) {
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return Optional.ofNullable(jedis.get(NAME_KEY_PREFIX + uniqueId));
-        } catch (JedisException | JsonParseException ex) {
+        } catch (@NotNull JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<String> getNameById(String hexId) {
+    public @NotNull Optional<String> getNameById(String hexId) {
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return Optional.ofNullable(jedis.get(NAME_KEY_PREFIX + hexId));
-        } catch (JedisException | JsonParseException ex) {
+        } catch (@NotNull JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<String> getHexId(@NotNull UUID uniqueId) {
+    public @NotNull Optional<String> getHexId(@NotNull UUID uniqueId) {
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return getHexId(jedis, uniqueId);
         }
     }
 
-    private Optional<String> getHexId(Jedis jedis, @NotNull UUID uniqueId) {
+    private Optional<String> getHexId(@NotNull Jedis jedis, @NotNull UUID uniqueId) {
         String hexId = jedis.get(ID_KEY_PREFIX + uniqueId);
         return Optional.ofNullable(hexId);
     }
 
     @Override
-    public Optional<String> getHexIdByName(@NotNull String name) {
+    public @NotNull Optional<String> getHexIdByName(@NotNull String name) {
         try (Jedis jedis = api.getRedisManager().getResource()) {
             return getHexId(jedis, name);
         }
     }
 
-    private Optional<String> getHexId(Jedis jedis, @NotNull String name) {
+    private Optional<String> getHexId(@NotNull Jedis jedis, @NotNull String name) {
         String hexId = jedis.get(ID_KEY_PREFIX + name.toLowerCase());
         return Optional.ofNullable(hexId);
     }
@@ -150,7 +151,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public Optional<MatrixPlayer> getPlayer(@NotNull UUID uniqueId) {
+    public @NotNull Optional<MatrixPlayer> getPlayer(@NotNull UUID uniqueId) {
         String hexId = api.getPlugin().getHexId(uniqueId).orElse(null);
         if (hexId != null) {
             MatrixPlayer matrixPlayer = cachedPlayers.getIfPresent(hexId);
@@ -172,14 +173,14 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public Optional<MatrixPlayer> getPlayerByName(@NotNull String name) {
+    public @NotNull Optional<MatrixPlayer> getPlayerByName(@NotNull String name) {
         name = name.toLowerCase();
         UUID uniqueId = Optional.ofNullable(api.getPlugin().getUniqueId(name)).orElse(getUniqueIdByName(name).orElse(null));
         return uniqueId != null ? getPlayer(uniqueId) : Optional.empty();
     }
 
     @Override
-    public Optional<MatrixPlayer> getPlayerById(String hexId) {
+    public @NotNull Optional<MatrixPlayer> getPlayerById(@NotNull String hexId) {
         MatrixPlayer cachedPlayer = cachedPlayers.getIfPresent(hexId);
         if (cachedPlayer != null) {
             return Optional.of(cachedPlayer);
@@ -189,7 +190,7 @@ public class CacheProviderImpl implements CacheProvider {
         }
     }
 
-    private Optional<MatrixPlayer> getPlayer(Jedis jedis, String hexId) {
+    private Optional<MatrixPlayer> getPlayer(@NotNull Jedis jedis, @Nullable String hexId) {
         if (hexId == null) {
             return Optional.empty();
         }
@@ -203,7 +204,7 @@ public class CacheProviderImpl implements CacheProvider {
                 return Optional.empty();
             }
             return Optional.ofNullable(MongoMatrixPlayer.fromHash(jsonPlayer));
-        } catch (JedisException | JsonParseException e) {
+        } catch (@NotNull JedisException | JsonParseException e) {
             e.printStackTrace();
         }
         return Optional.empty();
@@ -234,7 +235,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public void removePlayer(MatrixPlayer player) {
+    public void removePlayer(@NotNull MatrixPlayer player) {
         cachedPlayers.invalidate(player.getId());
         try (Jedis jedis = api.getRedisManager().getResource()) {
             MongoMatrixPlayer cachedPlayer = (MongoMatrixPlayer) getPlayer(player.getUniqueId()).orElse(player);
@@ -252,7 +253,7 @@ public class CacheProviderImpl implements CacheProvider {
             } catch (DuplicateKeyException e) {
                 e.printStackTrace();
             }
-        } catch (JedisException | JsonParseException ex) {
+        } catch (@NotNull JedisException | JsonParseException ex) {
             Matrix.getLogger().debug(ex);
         }
     }
@@ -273,7 +274,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public boolean isCachedById(String hexId) {
+    public boolean isCachedById(@NotNull String hexId) {
         if (cachedPlayers.getIfPresent(hexId) != null) {
             return true;
         }
@@ -282,7 +283,7 @@ public class CacheProviderImpl implements CacheProvider {
         }
     }
 
-    private boolean isCached(Jedis jedis, String hexId) {
+    private boolean isCached(@NotNull Jedis jedis, @Nullable String hexId) {
         if (hexId == null) { // hex id was not found using name or uuid, so we don't event query redis again
             return false;
         }
@@ -290,7 +291,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public <T> T updateCachedFieldById(String hexId, @NotNull String field, T value) {
+    public <T> @NotNull T updateCachedFieldById(@Nullable String hexId, @NotNull String field, @NotNull T value) {
         if (hexId == null) {
             return value;
         }
@@ -320,7 +321,7 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public @NotNull MatrixPlayer saveToCache(MatrixPlayer matrixPlayer) {
+    public @NotNull MatrixPlayer saveToCache(@NotNull MatrixPlayer matrixPlayer) {
         Objects.requireNonNull(matrixPlayer.getUniqueId(), "UUID can't be null");
         Objects.requireNonNull(matrixPlayer.getName(), "name can't be null");
         if (isCached(matrixPlayer.getUniqueId())) {
@@ -376,7 +377,7 @@ public class CacheProviderImpl implements CacheProvider {
         api.getServerManager().removeServer(api.getServerInfo());
     }
 
-    public Set<MatrixPlayer> getPlayers(ServerInfo serverInfo) {
+    public @NotNull Set<MatrixPlayer> getPlayers(@NotNull ServerInfo serverInfo) {
         Set<MatrixPlayer> players = new HashSet<>();
         try (Jedis jedis = api.getRedisManager().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;
@@ -409,7 +410,7 @@ public class CacheProviderImpl implements CacheProvider {
         return players;
     }
 
-    private String getUserKey(String hexId) {
+    private @NotNull String getUserKey(String hexId) {
         return USER_KEY_PREFIX + hexId;
     }
 }

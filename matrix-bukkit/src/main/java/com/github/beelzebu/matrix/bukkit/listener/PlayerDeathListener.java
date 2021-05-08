@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerDeathListener implements Listener {
 
@@ -20,7 +21,7 @@ public class PlayerDeathListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onDeath(PlayerDeathEvent e) {
+    public void onDeath(@NotNull PlayerDeathEvent e) {
         int stay = api.getConfig().getInt("Death Titles.Stay", 60);
         Player player = e.getEntity();
         if (!CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {

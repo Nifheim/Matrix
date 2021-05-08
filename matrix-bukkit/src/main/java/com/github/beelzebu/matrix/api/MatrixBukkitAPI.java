@@ -3,37 +3,28 @@ package com.github.beelzebu.matrix.api;
 import com.github.beelzebu.matrix.bukkit.player.BukkitPlayerManager;
 import com.github.beelzebu.matrix.bukkit.plugin.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.bukkit.util.BukkitMetaInjector;
-import com.github.beelzebu.matrix.player.AbstractPlayerManager;
-import com.github.beelzebu.matrix.util.MetaInjector;
-import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
  */
 public class MatrixBukkitAPI extends MatrixAPIImpl {
 
-    private final BukkitMetaInjector bukkitMetaInjector;
-    private final BukkitPlayerManager playerManager;
+    private final @NotNull BukkitPlayerManager playerManager;
 
-    public MatrixBukkitAPI(MatrixPluginBukkit plugin) {
+    public MatrixBukkitAPI(@NotNull MatrixPluginBukkit plugin) {
         super(plugin);
-        this.playerManager = new BukkitPlayerManager(this);
-        bukkitMetaInjector = new BukkitMetaInjector(this);
+        this.playerManager = new BukkitPlayerManager(this, new BukkitMetaInjector(this));
         plugin.setApi(this);
     }
 
     @Override
-    public MatrixPluginBukkit getPlugin() {
+    public @NotNull MatrixPluginBukkit getPlugin() {
         return (MatrixPluginBukkit) super.getPlugin();
     }
 
     @Override
-    public AbstractPlayerManager<Player> getPlayerManager() {
+    public @NotNull BukkitPlayerManager getPlayerManager() {
         return playerManager;
-    }
-
-    @Override
-    public MetaInjector<Player> getMetaInjector() {
-        return bukkitMetaInjector;
     }
 }

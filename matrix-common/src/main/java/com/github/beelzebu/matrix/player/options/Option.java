@@ -5,6 +5,7 @@ import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class Option {
 
@@ -17,7 +18,7 @@ public abstract class Option {
         this.enabled = enabled;
     }
 
-    public final String getStatus() {
+    public final @NotNull String getStatus() {
         return enabled ? I18n.tl(Message.MENU_OPTIONS_STATUS_ENABLED, p.getLastLocale()) : I18n.tl(Message.MENU_OPTIONS_STATUS_DISABLED, p.getLastLocale());
     }
 

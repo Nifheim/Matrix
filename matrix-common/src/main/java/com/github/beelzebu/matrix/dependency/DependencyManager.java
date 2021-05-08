@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -75,7 +76,7 @@ public final class DependencyManager {
         loadDependencies(dependencies);
     }
 
-    public void loadDependencies(Set<Dependency> dependencies) {
+    public void loadDependencies(@NotNull Set<Dependency> dependencies) {
         Path saveDirectory = getSaveDirectory();
         List<Source> sources = new ArrayList<>();
         dependencies.stream().filter(dependency -> !loaded.containsKey(dependency)).forEachOrdered(dependency -> {
@@ -125,7 +126,7 @@ public final class DependencyManager {
         });
     }
 
-    public IsolatedClassLoader obtainClassLoaderWith(Set<Dependency> dependencies) {
+    public IsolatedClassLoader obtainClassLoaderWith(@NotNull Set<Dependency> dependencies) {
         ImmutableSet<Dependency> set = ImmutableSet.copyOf(dependencies);
         dependencies.stream().filter(dependency -> !loaded.containsKey(dependency)).forEachOrdered(dependency -> {
             throw new IllegalStateException("Dependency " + dependency + " is not loaded.");
@@ -149,7 +150,7 @@ public final class DependencyManager {
     }
 
 
-    private Path getSaveDirectory() {
+    private @NotNull Path getSaveDirectory() {
         Path saveDirectory = new File(plugin.getDataFolder(), "lib").toPath();
         try {
             Files.createDirectories(saveDirectory);
@@ -160,7 +161,7 @@ public final class DependencyManager {
     }
 
 
-    private Path downloadDependency(Path saveDirectory, Dependency dependency) throws Exception {
+    private @NotNull Path downloadDependency(@NotNull Path saveDirectory, @NotNull Dependency dependency) throws Exception {
         String fileName = dependency.name().toLowerCase() + "-" + dependency.getVersion() + ".jar";
         Path file = saveDirectory.resolve(fileName);
         if (Files.exists(file)) {

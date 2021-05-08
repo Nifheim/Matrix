@@ -6,7 +6,6 @@ import com.github.beelzebu.matrix.api.level.LevelProvider;
 import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.player.PlayerManager;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerManager;
@@ -19,12 +18,12 @@ import com.github.beelzebu.matrix.dependency.DependencyManager;
 import com.github.beelzebu.matrix.dependency.DependencyRegistry;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
+import com.github.beelzebu.matrix.player.AbstractPlayerManager;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.server.ServerManagerImpl;
 import com.github.beelzebu.matrix.task.HeartbeatTask;
 import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
-import com.github.beelzebu.matrix.util.MetaInjector;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.github.beelzebu.matrix.util.adapter.ChatColorTypeAdapter;
 import com.github.beelzebu.matrix.util.adapter.ServerInfoTypeAdapter;
@@ -40,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -48,17 +48,17 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public static final String DOMAIN_NAME = "mc.indiopikaro.net";
     public static final Set<String> DOMAIN_NAMES = ImmutableSet.of(DOMAIN_NAME, ".net", ".cl", ".com");
-    private final MatrixPlugin plugin;
-    private final MatrixDatabaseImpl database;
-    private final RedisManager redisManager;
-    private final RedisMessaging messaging;
-    private final ServerInfo serverInfo;
-    private final MaintenanceManager maintenanceManager;
-    private final ServerManager serverManager;
+    private final @NotNull MatrixPlugin plugin;
+    private final @NotNull MatrixDatabaseImpl database;
+    private final @NotNull RedisManager redisManager;
+    private final @NotNull RedisMessaging messaging;
+    private final @NotNull ServerInfo serverInfo;
+    private final @NotNull MaintenanceManager maintenanceManager;
+    private final @NotNull ServerManager serverManager;
     private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
     private LevelProvider levelProvider;
 
-    public MatrixAPIImpl(MatrixPlugin plugin) {
+    public MatrixAPIImpl(@NotNull MatrixPlugin plugin) {
         GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization()
                 .registerTypeAdapter(ChatColor.class, new ChatColorTypeAdapter())
                 .registerTypeAdapter(ServerInfoImpl.class, new ServerInfoTypeAdapter())
@@ -105,35 +105,35 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         Matrix.getLogger().info("Matrix API is now fully initialized.");
     }
 
-    public MaintenanceManager getMaintenanceManager() {
+    public @NotNull MaintenanceManager getMaintenanceManager() {
         return maintenanceManager;
     }
 
     @Override
-    public RedisMessaging getMessaging() {
+    public @NotNull RedisMessaging getMessaging() {
         return messaging;
     }
 
     @Override
-    public MatrixDatabaseImpl getDatabase() {
+    public @NotNull MatrixDatabaseImpl getDatabase() {
         return database;
     }
 
-    public MatrixPlugin getPlugin() {
+    public @NotNull MatrixPlugin getPlugin() {
         return plugin;
     }
 
-    public ServerInfo getServerInfo() {
+    public @NotNull ServerInfo getServerInfo() {
         return serverInfo;
     }
 
     @Override
-    public ServerManager getServerManager() {
+    public @NotNull ServerManager getServerManager() {
         return serverManager;
     }
 
     @Override
-    public abstract PlayerManager<?> getPlayerManager();
+    public abstract @NotNull AbstractPlayerManager<?> getPlayerManager();
 
     @Override
     @Deprecated
@@ -154,11 +154,9 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         Matrix.getLogger().info("Reloaded config and messages.");
     }
 
-    public RedisManager getRedisManager() {
+    public @NotNull RedisManager getRedisManager() {
         return redisManager;
     }
-
-    public abstract MetaInjector<?> getMetaInjector();
 
     /**
      * Setup this api instance
@@ -234,7 +232,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     }
 
     @Override
-    public LevelProvider getLevelProvider() {
+    public @NotNull LevelProvider getLevelProvider() {
         if (levelProvider == null) {
             throw new UnsupportedOperationException();
         }

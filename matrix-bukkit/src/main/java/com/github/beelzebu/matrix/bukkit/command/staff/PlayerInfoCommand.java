@@ -10,6 +10,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerInfoCommand extends MatrixCommand {
 
@@ -18,7 +19,7 @@ public class PlayerInfoCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(@NotNull CommandSender sender, String @NotNull [] args) {
         api.getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
             if (args.length == 0) {
                 sender.sendMessage(StringUtils.replace("%prefix% &6Por favor usa &e/" + getName() + " <nombre>"));
@@ -57,7 +58,7 @@ public class PlayerInfoCommand extends MatrixCommand {
         });
     }
 
-    private String createList(Collection<String> collection) {
+    private @NotNull String createList(@NotNull Collection<String> collection) {
         StringBuilder list = new StringBuilder();
         collection.forEach(entry -> list.append(StringUtils.replace("  &f- &7" + entry + "\n")));
         return list.toString();

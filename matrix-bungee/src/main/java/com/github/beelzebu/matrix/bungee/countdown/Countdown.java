@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.bungee.countdown;
 
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -17,7 +18,7 @@ public class Countdown {
         this.end = end;
     }
 
-    private static String formatTime(long millis) {
+    private static @NotNull String formatTime(long millis) {
         long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
         long minutes = TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis));
         long hours = TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millis));
@@ -35,7 +36,7 @@ public class Countdown {
         return b.toString();
     }
 
-    public String getCountdown() {
+    public @NotNull String getCountdown() {
         return formatTime(end - System.currentTimeMillis());
     }
 

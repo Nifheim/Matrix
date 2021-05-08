@@ -4,6 +4,8 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.bungee.countdown.Countdown;
 import java.util.List;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
@@ -11,10 +13,10 @@ import java.util.Objects;
 public class Motd {
 
     private final String id;
-    private final List<String> lines;
+    private final @NotNull List<String> lines;
     private String countdown;
 
-    public Motd(String id, List<String> lines, String countdown) {
+    public Motd(String id, @NotNull List<String> lines, String countdown) {
         if (lines.size() == 0) {
             throw new IllegalArgumentException("Can't create a motd without lines.");
         }
@@ -26,11 +28,11 @@ public class Motd {
         }
     }
 
-    public Motd(String id, List<String> lines) {
+    public Motd(String id, @NotNull List<String> lines) {
         this(id, lines, null);
     }
 
-    public Countdown getCountdown() {
+    public @Nullable Countdown getCountdown() {
         return countdown == null ? null : MotdManager.getCountdown(countdown);
     }
 
@@ -42,11 +44,11 @@ public class Motd {
         return id;
     }
 
-    public List<String> getLines() {
+    public @NotNull List<String> getLines() {
         return lines;
     }
 
-    public String toString() {
+    public @NotNull String toString() {
         return "Motd(id=" + id + ", lines=" + lines + ", countdown=" + getCountdown() + ")";
     }
 

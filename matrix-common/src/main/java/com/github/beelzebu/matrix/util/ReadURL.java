@@ -6,13 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.jetbrains.annotations.NotNull;
 
 public class ReadURL {
 
     public ReadURL() {
     }
 
-    public static String read(String urlString) throws Exception {
+    public static @NotNull String read(@NotNull String urlString) throws Exception {
         URL url = new URL(urlString);
         HttpURLConnection request1 = (HttpURLConnection) url.openConnection();
         request1.setRequestMethod("GET");

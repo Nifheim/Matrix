@@ -25,6 +25,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -62,7 +63,7 @@ public class ServerListListener implements Listener {
     }
 
     @EventHandler(priority = 127)
-    public void onPing(ProxyPingEvent e) {
+    public void onPing(@NotNull ProxyPingEvent e) {
         e.registerIntent((Plugin) Matrix.getAPI().getPlugin().getBootstrap());
         Matrix.getAPI().getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
             try {

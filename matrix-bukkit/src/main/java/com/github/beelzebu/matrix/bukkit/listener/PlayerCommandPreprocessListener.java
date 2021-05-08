@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class PlayerCommandPreprocessListener implements Listener {
 
@@ -20,7 +21,7 @@ public class PlayerCommandPreprocessListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onCommand(PlayerCommandPreprocessEvent e) {
+    public void onCommand(@NotNull PlayerCommandPreprocessEvent e) {
         if (e.getPlayer().hasPermission("matrix.admin")) {
             return;
         }

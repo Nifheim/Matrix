@@ -34,6 +34,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -135,11 +136,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     }
 
     @Override
-    public SchedulerAdapter getScheduler() {
+    public @NotNull SchedulerAdapter getScheduler() {
         return scheduler;
     }
 
-    public MatrixPluginBungee getMatrixPlugin() {
+    public @NotNull MatrixPluginBungee getMatrixPlugin() {
         return matrixPlugin;
     }
 
@@ -154,11 +155,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     private void loadManagers() {
     }
 
-    private void registerListener(Listener listener) {
+    private void registerListener(@NotNull Listener listener) {
         ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
     }
 
-    private void registerCommand(Command command) {
+    private void registerCommand(@NotNull Command command) {
         ProxyServer.getInstance().getPluginManager().registerCommand(this, command);
     }
 }

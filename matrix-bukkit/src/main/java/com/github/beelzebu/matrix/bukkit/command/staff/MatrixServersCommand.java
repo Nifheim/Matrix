@@ -14,6 +14,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -25,7 +26,7 @@ public class MatrixServersCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender commandSender, String[] args) {
+    public void onCommand(@NotNull CommandSender commandSender, String @NotNull [] args) {
         api.getServerManager().getAllServers().thenAcceptAsync(groupServers -> {
             List<BaseComponent[]> components = new ArrayList<>();
             components.add(TextComponent.fromLegacyText(StringUtils.replace("&6Jugadores en linea: &a" + api.getPlayerManager().getOnlinePlayerCount().join())));

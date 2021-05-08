@@ -10,6 +10,8 @@ import java.util.Set;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
@@ -24,13 +26,13 @@ public class BukkitMetaInjector extends MetaInjector<Player> {
     }
 
     @Override
-    public <T> void setMeta(Player player, String key, T meta) {
+    public <T> void setMeta(@NotNull Player player, @NotNull String key, T meta) {
         registeredKeys.add(key);
         player.setMetadata(key, new FixedMetadataValue(api.getPlugin().getBootstrap(), meta));
     }
 
     @Override
-    public <T> T getMeta(Player player, String key, Class<T> clazz) {
+    public <T> @Nullable T getMeta(@NotNull Player player, @NotNull String key, @NotNull Class<T> clazz) {
         for (MetadataValue metadatum : player.getMetadata(key)) {
             if (metadatum.getOwningPlugin() == api.getPlugin().getBootstrap()) {
                 Object value = metadatum.value();
@@ -43,7 +45,7 @@ public class BukkitMetaInjector extends MetaInjector<Player> {
     }
 
     @Override
-    public <T> Collection<T> getMeta(Player player, Class<T> clazz) {
+    public <T> @NotNull Collection<T> getMeta(@NotNull Player player, @NotNull Class<T> clazz) {
         List<T> metadata = new ArrayList<>();
         for (String registeredKey : registeredKeys) {
             for (MetadataValue metadatum : player.getMetadata(registeredKey)) {

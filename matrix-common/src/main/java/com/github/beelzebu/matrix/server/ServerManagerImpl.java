@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
@@ -42,7 +43,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<Map<String, Set<ServerInfo>>> getAllServers() {
+    public @NotNull CompletableFuture<Map<String, Set<ServerInfo>>> getAllServers() {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Map<String, Set<ServerInfo>> servers = new HashMap<>();
             try (Jedis jedis = api.getRedisManager().getResource()) {
@@ -63,7 +64,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<Set<ServerInfo>> getServers(String groupName) {
+    public @NotNull CompletableFuture<Set<ServerInfo>> getServers(String groupName) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Matrix.getLogger().debug("Getting servers on group " + groupName);// TODO: remove debug
             Set<ServerInfo> servers = new HashSet<>();
@@ -95,7 +96,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<Optional<ServerInfo>> getServer(String name) {
+    public @NotNull CompletableFuture<Optional<ServerInfo>> getServer(@NotNull String name) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 return Optional.ofNullable(getServer(name, jedis));
@@ -103,13 +104,13 @@ public class ServerManagerImpl implements ServerManager {
         });
     }
 
-    public @Nullable ServerInfo getServer(String name, Jedis jedis) {
+    public @Nullable ServerInfo getServer(@NotNull String name, @NotNull Jedis jedis) {
         try {
             Map<String, String> data = jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name);
             if (data != null && !data.isEmpty()) {
                 return new ServerInfoImpl(name, data);
             }
-        } catch (JedisException | NullPointerException | IllegalArgumentException ex) {
+        } catch (@NotNull JedisException | NullPointerException | IllegalArgumentException ex) {
             Matrix.getLogger().log("An error has occurred getting server with name " + name + "  from cache.");
             Matrix.getLogger().debug(ex);
         }
@@ -117,12 +118,12 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<Void> addServer(ServerInfo serverInfo) {
+    public @NotNull CompletableFuture<Void> addServer(ServerInfo serverInfo) {
         return addServers(new ServerInfo[]{serverInfo});
     }
 
     @Override
-    public CompletableFuture<Void> addServers(ServerInfo[] serverInfos) {
+    public @NotNull CompletableFuture<Void> addServers(ServerInfo @NotNull [] serverInfos) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
                 for (ServerInfo serverInfo : serverInfos) {
@@ -149,7 +150,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<Void> removeServer(ServerInfo serverInfo) {
+    public @NotNull CompletableFuture<Void> removeServer(@NotNull ServerInfo serverInfo) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
                 pipeline.srem(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
@@ -162,7 +163,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<Void> heartbeat(ServerInfo serverInfo) {
+    public @NotNull CompletableFuture<Void> heartbeat(@NotNull ServerInfo serverInfo) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Matrix.getLogger().debug("Sending heartbeat");
             try (Jedis jedis = api.getRedisManager().getResource()) {
@@ -173,7 +174,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<OptionalLong> getLastHeartbeat(ServerInfo serverInfo) {
+    public @NotNull CompletableFuture<OptionalLong> getLastHeartbeat(@NotNull ServerInfo serverInfo) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 String longString = jedis.get(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName());
@@ -193,7 +194,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public CompletableFuture<Set<String>> getGroupsNames() {
+    public @NotNull CompletableFuture<Set<String>> getGroupsNames() {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 return jedis.smembers(SERVER_GROUPS_KEY);
@@ -201,7 +202,7 @@ public class ServerManagerImpl implements ServerManager {
         });
     }
 
-    private void checkServerGroups(Jedis jedis) {
+    private void checkServerGroups(@NotNull Jedis jedis) {
         Set<String> deadGroups = new HashSet<>();
         Map<String, Set<String>> deadServers = new HashMap<>();
         for (String groupName : jedis.smembers(SERVER_GROUPS_KEY)) {
@@ -231,7 +232,7 @@ public class ServerManagerImpl implements ServerManager {
     }
 
     @Override
-    public String getLobbyForGroup(String groupName) {
+    public @NotNull String getLobbyForGroup(String groupName) {
         Matrix.getLogger().debug("Finding lobby for " + groupName);
         try (Jedis jedis = api.getRedisManager().getResource()) {
             String cursor = ScanParams.SCAN_POINTER_START;

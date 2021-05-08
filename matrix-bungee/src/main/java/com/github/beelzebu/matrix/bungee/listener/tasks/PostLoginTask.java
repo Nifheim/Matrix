@@ -38,7 +38,7 @@ public class PostLoginTask implements Runnable {
             if (!player.isPremium()) {
                 player.sendMessage(I18n.tl(Message.PREMIUM_SUGGESTION, player.getLastLocale()));
             }
-            api.getMetaInjector().setMeta(event.getPlayer(), MetaInjector.ID_KEY, player.getId());
+            api.getPlayerManager().getMetaInjector().setMeta(event.getPlayer(), MetaInjector.ID_KEY, player.getId());
         } catch (Exception e) {
             event.getPlayer().disconnect(new TextComponent("There was a problem processing your login, error code: " + ErrorCodes.UNKNOWN.getId()));
             Matrix.getLogger().debug(e);

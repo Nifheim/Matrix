@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -15,7 +16,7 @@ public final class Iterators {
     private Iterators() {
     }
 
-    public static <E> boolean tryIterate(Iterable<E> iterable, Throwing.Consumer<E> action) {
+    public static <E> boolean tryIterate(@NotNull Iterable<E> iterable, Throwing.@NotNull Consumer<E> action) {
         boolean success = true;
         for (E element : iterable) {
             try {
@@ -28,7 +29,7 @@ public final class Iterators {
         return success;
     }
 
-    public static <I, O> boolean tryIterate(Iterable<I> iterable, Function<I, O> mapping, Consumer<O> action) {
+    public static <I, O> boolean tryIterate(@NotNull Iterable<I> iterable, @NotNull Function<I, O> mapping, @NotNull Consumer<O> action) {
         boolean success = true;
         for (I element : iterable) {
             try {
@@ -41,7 +42,7 @@ public final class Iterators {
         return success;
     }
 
-    public static <E> boolean tryIterate(E[] array, Consumer<E> action) {
+    public static <E> boolean tryIterate(E @NotNull [] array, @NotNull Consumer<E> action) {
         boolean success = true;
         for (E element : array) {
             try {
@@ -54,7 +55,7 @@ public final class Iterators {
         return success;
     }
 
-    public static <I, O> boolean tryIterate(I[] array, Function<I, O> mapping, Consumer<O> action) {
+    public static <I, O> boolean tryIterate(I @NotNull [] array, @NotNull Function<I, O> mapping, @NotNull Consumer<O> action) {
         boolean success = true;
         for (I element : array) {
             try {
@@ -67,7 +68,7 @@ public final class Iterators {
         return success;
     }
 
-    public static <E> List<List<E>> divideIterable(Iterable<E> source, int size) {
+    public static <E> @NotNull List<List<E>> divideIterable(@NotNull Iterable<E> source, int size) {
         List<List<E>> lists = new ArrayList<>();
         Iterator<E> it = source.iterator();
         while (it.hasNext()) {

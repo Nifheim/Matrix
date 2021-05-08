@@ -18,6 +18,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TODO: remove
@@ -27,18 +28,18 @@ import org.bukkit.inventory.meta.SkullMeta;
 @SuppressWarnings("deprecation")
 public class ProfileGUI extends BaseMenu {
 
-    private final MatrixPlayer matrixPlayer;
+    private final @NotNull MatrixPlayer matrixPlayer;
     private final Set<Item> items = new HashSet<>();
-    private final String locale;
+    private final @NotNull String locale;
 
-    public ProfileGUI(MatrixPlayer matrixPlayer) {
+    public ProfileGUI(@NotNull MatrixPlayer matrixPlayer) {
         super(54, I18n.tl(Message.MENU_SOCIAL_TITLE, matrixPlayer.getLastLocale()));
         this.matrixPlayer = matrixPlayer;
         this.locale = matrixPlayer.getLastLocale();
         setItems();
     }
 
-    private void socialItems(Inventory inv) {
+    private void socialItems(@NotNull Inventory inv) {
         ItemStack purpleGlassPane = new ItemBuilder(CompatUtil.getInstance().getPurpleGlassPane()).build();
         ItemStack profileItem = new ItemBuilder(CompatUtil.getInstance().getPlayerHead()).amount(1).displayname(I18n.tl(Message.MENU_SOCIAL_PROFILE_NAME, locale)).build();
         SkullMeta profileMeta = (SkullMeta) profileItem.getItemMeta();

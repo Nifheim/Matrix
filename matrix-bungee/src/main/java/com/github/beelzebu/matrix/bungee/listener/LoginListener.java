@@ -13,6 +13,7 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 
 public class LoginListener implements Listener {
 
@@ -23,14 +24,14 @@ public class LoginListener implements Listener {
     }
 
     @EventHandler(priority = Byte.MAX_VALUE)
-    public void onServerSwitch(ServerSwitchEvent e) {
+    public void onServerSwitch(@NotNull ServerSwitchEvent e) {
         if (e.getPlayer().isConnected()) {
             e.getPlayer().setTabHeader(TablistManager.getTabHeader(e.getPlayer()), TablistManager.getTabFooter(e.getPlayer()));
         }
     }
 
     @EventHandler(priority = Byte.MAX_VALUE)
-    public void onPreLogin(PreLoginEvent e) {
+    public void onPreLogin(@NotNull PreLoginEvent e) {
         if (e.isCancelled()) {
             return;
         }
@@ -39,7 +40,7 @@ public class LoginListener implements Listener {
     }
 
     @EventHandler(priority = Byte.MAX_VALUE)
-    public void onLogin(LoginEvent e) {
+    public void onLogin(@NotNull LoginEvent e) {
         if (e.isCancelled()) {
             return;
         }

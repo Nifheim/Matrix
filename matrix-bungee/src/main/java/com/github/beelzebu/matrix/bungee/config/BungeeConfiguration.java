@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 public class BungeeConfiguration extends MatrixConfig {
 
@@ -20,12 +21,12 @@ public class BungeeConfiguration extends MatrixConfig {
     }
 
     @Override
-    public Object get(String path) {
+    public @NotNull Object get(@NotNull String path) {
         return config.get(path);
     }
 
     @Override
-    public Collection<String> getKeys(String path) {
+    public @NotNull Collection<String> getKeys(@NotNull String path) {
         return config.getSection(path).getKeys();
     }
 

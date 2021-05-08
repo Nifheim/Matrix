@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPortalEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class DupepatchListener implements Listener {
 
@@ -16,7 +17,7 @@ public class DupepatchListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPortal(EntityPortalEvent e) {
+    public void onPortal(@NotNull EntityPortalEvent e) {
         if (!e.isCancelled()) {
             if (plugin.getConfig().getBoolean("PortalFix.Strict Mode")) {
                 if (e.getEntityType().equals(EntityType.PLAYER)) {

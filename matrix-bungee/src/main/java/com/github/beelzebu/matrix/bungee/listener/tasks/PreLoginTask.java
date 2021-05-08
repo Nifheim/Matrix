@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -39,7 +40,7 @@ public class PreLoginTask implements Runnable {
             try {
                 profile = RESOLVER.findProfile(name).orElse(null);
                 fetchedProfile = true;
-            } catch (RateLimitException | IOException e) {
+            } catch (@NotNull RateLimitException | IOException e) {
                 e.printStackTrace();
             }
             if (profile != null) {

@@ -23,6 +23,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * TODO: remove
@@ -31,11 +32,11 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class OptionsGUI extends BaseMenu {
 
-    private final MatrixAPI<?> api = Matrix.getAPI();
-    private final MatrixPlayer matrixPlayer;
-    private final String locale;
+    private final MatrixAPI api = Matrix.getAPI();
+    private final @NotNull MatrixPlayer matrixPlayer;
+    private final @NotNull String locale;
 
-    public OptionsGUI(MatrixPlayer matrixPlayer) {
+    public OptionsGUI(@NotNull MatrixPlayer matrixPlayer) {
         super(27, I18n.tl(Message.MENU_OPTIONS_TITLE, matrixPlayer.getLastLocale()));
         this.matrixPlayer = matrixPlayer;
         locale = matrixPlayer.getLastLocale();
@@ -119,7 +120,7 @@ public class OptionsGUI extends BaseMenu {
          */
     }
 
-    private String rep(String str, Option opt) {
+    private @NotNull String rep(@NotNull String str, @NotNull Option opt) {
         return StringUtils.replace(str.replaceAll("%status%", opt.getStatus()));
     }
 }

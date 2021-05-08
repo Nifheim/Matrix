@@ -6,8 +6,7 @@ import com.github.beelzebu.matrix.bungee.player.BungeePlayerManager;
 import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.util.BungeeMetaInjector;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
-import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -15,34 +14,27 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class MatrixBungeeAPI extends MatrixAPIImpl {
 
     public static ServerInfo BUNGEE_SERVER_INFO;
-    private final BungeeMetaInjector metaInjector;
-    private final BungeePlayerManager bungeePlayerManager;
+    private final @NotNull BungeePlayerManager bungeePlayerManager;
 
-    public MatrixBungeeAPI(MatrixPluginBungee plugin) {
+    public MatrixBungeeAPI(@NotNull MatrixPluginBungee plugin) {
         super(plugin);
-        metaInjector = new BungeeMetaInjector(this);
         plugin.setApi(this);
-        bungeePlayerManager = new BungeePlayerManager(this);
+        bungeePlayerManager = new BungeePlayerManager(this, new BungeeMetaInjector(this));
         BUNGEE_SERVER_INFO = new ServerInfoImpl(ServerType.PROXY, ServerInfoImpl.PROXY_GROUP, null, null, false, null, false);
     }
 
     @Override
-    public BungeeMetaInjector getMetaInjector() {
-        return metaInjector;
-    }
-
-    @Override
-    public MatrixPluginBungee getPlugin() {
+    public @NotNull MatrixPluginBungee getPlugin() {
         return (MatrixPluginBungee) super.getPlugin();
     }
 
     @Override
-    public BungeePlayerManager getPlayerManager() {
+    public @NotNull BungeePlayerManager getPlayerManager() {
         return bungeePlayerManager;
     }
 
     @Override
-    public ServerInfo getServerInfo() {
+    public @NotNull ServerInfo getServerInfo() {
         return BUNGEE_SERVER_INFO;
     }
 }

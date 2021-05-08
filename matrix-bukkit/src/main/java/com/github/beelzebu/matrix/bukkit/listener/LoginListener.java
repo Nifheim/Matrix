@@ -23,6 +23,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -30,19 +31,19 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class LoginListener implements Listener {
 
     private final MatrixBukkitBootstrap plugin;
-    private final MatrixBukkitAPI api;
-    private final ServerInfo serverInfo;
+    private final @NotNull MatrixBukkitAPI api;
+    private final @NotNull ServerInfo serverInfo;
     private final Map<UUID, Long> playTime = new HashMap<>();
     private boolean firstJoin = true;
 
-    public LoginListener(MatrixBukkitAPI api, MatrixBukkitBootstrap plugin) {
+    public LoginListener(@NotNull MatrixBukkitAPI api, MatrixBukkitBootstrap plugin) {
         this.api = api;
         serverInfo = api.getServerInfo();
         this.plugin = plugin;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onPlayerJoinEvent(PlayerJoinEvent e) {
+    public void onPlayerJoinEvent(@NotNull PlayerJoinEvent e) {
         e.setJoinMessage(null);
         Player player = e.getPlayer();
         api.getPlayerManager().getPlayer(player.getUniqueId()).thenAccept(matrixPlayer -> {
@@ -60,7 +61,7 @@ public class LoginListener implements Listener {
                     }
                 }
             }
-            api.getMetaInjector().setMeta(player, MetaInjector.ID_KEY, matrixPlayer.getId());
+            api.getPlayerManager().getMetaInjector().setMeta(player, MetaInjector.ID_KEY, matrixPlayer.getId());
         });
         // Async task
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
@@ -85,7 +86,7 @@ public class LoginListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(PlayerQuitEvent e) {
+    public void onPlayerQuit(@NotNull PlayerQuitEvent e) {
         e.setQuitMessage(null);
         if (api.getServerInfo().getServerType() == ServerType.LOBBY || api.getServerInfo().getServerType() == ServerType.AUTH) {
             return;

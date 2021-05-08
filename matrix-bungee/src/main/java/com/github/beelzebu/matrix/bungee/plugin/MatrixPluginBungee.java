@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.jetbrains.annotations.NotNull;
 
 public class MatrixPluginBungee implements MatrixPlugin {
 
@@ -33,47 +34,47 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public MatrixConfig getConfig() {
+    public @NotNull MatrixConfig getConfig() {
         return bootstrap.getConfig();
     }
 
     @Override
-    public AbstractConfig getFileAsConfig(File file) {
+    public @NotNull AbstractConfig getFileAsConfig(File file) {
         return new BungeeConfiguration(file);
     }
 
     @Override
-    public void executeCommand(String cmd) {
+    public void executeCommand(@NotNull String cmd) {
         ProxyServer.getInstance().getPluginManager().dispatchCommand(ProxyServer.getInstance().getConsole(), cmd);
     }
 
     @Override
-    public CommandSource getConsole() {
+    public @NotNull CommandSource getConsole() {
         return console;
     }
 
     @Override
-    public void sendMessage(String name, String message) {
+    public void sendMessage(String name, @NotNull String message) {
         ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
     }
 
     @Override
-    public void sendMessage(UUID uuid, String message) {
+    public void sendMessage(UUID uuid, @NotNull String message) {
         ProxyServer.getInstance().getPlayer(uuid).sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
     }
 
     @Override
-    public File getDataFolder() {
+    public @NotNull File getDataFolder() {
         return bootstrap.getDataFolder();
     }
 
     @Override
-    public InputStream getResource(String filename) {
+    public @NotNull InputStream getResource(String filename) {
         return bootstrap.getResourceAsStream(filename);
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return bootstrap.getDescription().getVersion();
     }
 
@@ -104,7 +105,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public UUID getUniqueId(String name) {
+    public @NotNull UUID getUniqueId(String name) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(name);
         if (proxiedPlayer != null) {
             return proxiedPlayer.getUniqueId();
@@ -113,7 +114,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public void kickPlayer(UUID uniqueId, String reason) {
+    public void kickPlayer(UUID uniqueId, @NotNull String reason) {
         Objects.requireNonNull(uniqueId, "UUID can't be null.");
         Objects.requireNonNull(reason, "Kick reason can't be null");
         if (isOnline(uniqueId, true)) {
@@ -122,7 +123,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public void kickPlayer(String name, String reason) {
+    public void kickPlayer(String name, @NotNull String reason) {
         Objects.requireNonNull(name, "Name can't be null.");
         Objects.requireNonNull(reason, "Kick reason can't be null");
         if (isOnline(name, true)) {
@@ -131,18 +132,18 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public void kickPlayer(MatrixPlayer matrixPlayer, String reason) {
+    public void kickPlayer(@NotNull MatrixPlayer matrixPlayer, @NotNull String reason) {
         Objects.requireNonNull(matrixPlayer, "Player can't be null");
         kickPlayer(matrixPlayer.getName(), reason);
     }
 
     @Override
-    public MatrixBungeeBootstrap getBootstrap() {
+    public @NotNull MatrixBungeeBootstrap getBootstrap() {
         return bootstrap;
     }
 
     @Override
-    public void dispatchCommand(CommandSource commandSource, String command) {
+    public void dispatchCommand(@NotNull CommandSource commandSource, @NotNull String command) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(commandSource.getName());
         if (proxiedPlayer != null && proxiedPlayer.isConnected()) {
             ProxyServer.getInstance().getPluginManager().dispatchCommand(proxiedPlayer, command);
@@ -150,29 +151,29 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
+    public @NotNull CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
         return getBootstrap().getScheduler().makeFuture(() -> ProxyServer.getInstance().getPlayers().stream().map(proxiedPlayer -> api.getPlayerManager().getPlayer(proxiedPlayer).join()).collect(Collectors.toSet()));
     }
 
     @Override
-    public Optional<String> getHexId(UUID uniqueId) {
+    public @NotNull Optional<String> getHexId(UUID uniqueId) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(uniqueId);
         if (proxiedPlayer != null) {
-            return Optional.ofNullable(api.getMetaInjector().getId(proxiedPlayer));
+            return Optional.ofNullable(api.getPlayerManager().getMetaInjector().getId(proxiedPlayer));
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<String> getHexId(String name) {
+    public @NotNull Optional<String> getHexId(String name) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(name);
         if (proxiedPlayer != null) {
-            return Optional.ofNullable(api.getMetaInjector().getId(proxiedPlayer));
+            return Optional.ofNullable(api.getPlayerManager().getMetaInjector().getId(proxiedPlayer));
         }
         return Optional.empty();
     }
 
-    public String toString() {
+    public @NotNull String toString() {
         return "MatrixPluginBungee(bootstrap=" + bootstrap + ", console=" + getConsole() + ")";
     }
 

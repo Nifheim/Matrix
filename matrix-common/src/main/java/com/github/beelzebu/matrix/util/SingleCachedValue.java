@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -14,9 +15,9 @@ public class SingleCachedValue <T> {
 
     private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(2);
     private WeakReference<T> value;
-    private final Supplier<T> supplier;
+    private final @NotNull Supplier<T> supplier;
 
-    public SingleCachedValue(Supplier<T> supplier, long cacheTime, TimeUnit timeUnit) {
+    public SingleCachedValue(@NotNull Supplier<T> supplier, long cacheTime, @NotNull TimeUnit timeUnit) {
         this.supplier = supplier;
         value = new WeakReference<>(supplier.get());
         if (get().join() != null) {

@@ -14,15 +14,16 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
  */
 public abstract class AbstractJavaScheduler implements SchedulerAdapter {
 
-    private final ScheduledThreadPoolExecutor scheduler;
-    private final ErrorReportingExecutor schedulerWorkerPool;
-    private final ForkJoinPool worker;
+    private final @NotNull ScheduledThreadPoolExecutor scheduler;
+    private final @NotNull ErrorReportingExecutor schedulerWorkerPool;
+    private final @NotNull ForkJoinPool worker;
 
     public AbstractJavaScheduler() {
         this.scheduler = new ScheduledThreadPoolExecutor(1, new ThreadFactoryBuilder()
@@ -40,18 +41,18 @@ public abstract class AbstractJavaScheduler implements SchedulerAdapter {
     }
 
     @Override
-    public Executor async() {
+    public @NotNull Executor async() {
         return this.worker;
     }
 
     @Override
-    public SchedulerTask asyncLater(Runnable task, long delay, TimeUnit unit) {
+    public @NotNull SchedulerTask asyncLater(Runnable task, long delay, TimeUnit unit) {
         ScheduledFuture<?> future = this.scheduler.schedule(() -> this.schedulerWorkerPool.execute(task), delay, unit);
         return () -> future.cancel(false);
     }
 
     @Override
-    public SchedulerTask asyncRepeating(Runnable task, long interval, TimeUnit unit) {
+    public @NotNull SchedulerTask asyncRepeating(Runnable task, long interval, TimeUnit unit) {
         ScheduledFuture<?> future = this.scheduler.scheduleAtFixedRate(() -> this.schedulerWorkerPool.execute(task), 0, interval, unit);
         return () -> future.cancel(false);
     }
@@ -77,7 +78,7 @@ public abstract class AbstractJavaScheduler implements SchedulerAdapter {
     }
 
     @Override
-    public <T> CompletableFuture<T> makeFuture(Callable<T> supplier) {
+    public <T> @NotNull CompletableFuture<T> makeFuture(@NotNull Callable<T> supplier) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return supplier.call();
@@ -91,7 +92,7 @@ public abstract class AbstractJavaScheduler implements SchedulerAdapter {
     }
 
     @Override
-    public CompletableFuture<Void> makeFuture(Throwing.Runnable runnable) {
+    public @NotNull CompletableFuture<Void> makeFuture(Throwing.@NotNull Runnable runnable) {
         return CompletableFuture.runAsync(() -> {
             try {
                 runnable.run();

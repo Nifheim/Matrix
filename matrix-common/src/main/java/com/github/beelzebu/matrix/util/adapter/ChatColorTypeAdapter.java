@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -12,12 +13,12 @@ import net.md_5.bungee.api.ChatColor;
 public class ChatColorTypeAdapter extends TypeAdapter<ChatColor> {
 
     @Override
-    public void write(JsonWriter out, ChatColor value) throws IOException {
+    public void write(@NotNull JsonWriter out, @NotNull ChatColor value) throws IOException {
         out.value(value.name());
     }
 
     @Override
-    public ChatColor read(JsonReader in) throws IOException {
+    public ChatColor read(@NotNull JsonReader in) throws IOException {
         return ChatColor.valueOf(in.nextString());
     }
 }

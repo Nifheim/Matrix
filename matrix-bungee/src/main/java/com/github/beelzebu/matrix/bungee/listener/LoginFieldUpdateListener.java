@@ -9,6 +9,7 @@ import com.github.beelzebu.matrix.bungee.util.ServerUtil;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -19,7 +20,7 @@ public class LoginFieldUpdateListener implements RedisMessageListener<FieldUpdat
     }
 
     @Override
-    public void onMessage(FieldUpdate message) {
+    public void onMessage(@NotNull FieldUpdate message) {
         if (message.getField().equalsIgnoreCase("loggedIn")) {
             ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(message.getPlayer());
             boolean value = Matrix.GSON.fromJson(message.getJsonValue(), boolean.class);
@@ -33,7 +34,7 @@ public class LoginFieldUpdateListener implements RedisMessageListener<FieldUpdat
     }
 
     @Override
-    public RedisMessageType getType() {
+    public @NotNull RedisMessageType getType() {
         return RedisMessageType.FIELD_UPDATE;
     }
 }

@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerManager;
+import com.github.beelzebu.matrix.util.MetaInjector;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -29,61 +30,90 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     public static final String PLAYER_SERVER_KEY_PREFIX = "matrix:player:server:"; // key // matrix:player:server:<id> = serverName
     // This key is used to save current server group for a player
     public static final String PLAYER_GROUP_KEY_PREFIX = "matrix:player:group:"; // key // matrix:player:group:<id> = groupName
-    protected final MatrixAPIImpl api;
+    private final MatrixAPIImpl api;
+    private final MetaInjector<P> metaInjector;
 
-    // TODO: check usage of meta injector for most data instead of the external cache
-
-    public AbstractPlayerManager(MatrixAPIImpl api) {
+    public AbstractPlayerManager(MatrixAPIImpl api, MetaInjector<P> metaInjector) {
         this.api = api;
+        this.metaInjector = metaInjector;
+    }
+
+    public final MetaInjector<P> getMetaInjector() {
+        return metaInjector;
+    }
+
+    protected abstract @Nullable P getPlatformPlayer(UUID uniqueId);
+
+    protected abstract @Nullable P getPlatformPlayerByName(String name);
+
+    protected abstract @Nullable P getPlatformPlayerById(String hexId);
+
+    @Override
+    public final @NotNull CompletableFuture<MatrixPlayer> getPlayer(@NotNull P player) {
+        String hexId = getMetaInjector().getId(player);
+        if (hexId != null) {
+            return getPlayerById(hexId);
+        }
+        return getPlayer(getUniqueId(player));
     }
 
     @Override
-    public CompletableFuture<MatrixPlayer> getPlayerById(String hexId) {
+    public final @NotNull CompletableFuture<MatrixPlayer> getPlayerById(@NotNull String hexId) {
         return api.getDatabase().getPlayerById(hexId);
     }
 
     @Override
-    public CompletableFuture<MatrixPlayer> getPlayer(UUID uniqueId) {
+    public final @NotNull CompletableFuture<MatrixPlayer> getPlayer(@NotNull UUID uniqueId) {
         return api.getDatabase().getPlayer(uniqueId);
     }
 
     @Override
-    public CompletableFuture<MatrixPlayer> getPlayerByName(String name) {
+    public final @NotNull CompletableFuture<MatrixPlayer> getPlayerByName(@NotNull String name) {
         return api.getDatabase().getPlayerByName(name);
     }
 
     @Override
-    public CompletableFuture<String> getHexId(UUID uniqueId) {
+    public final @NotNull CompletableFuture<String> getHexId(@NotNull P player) {
+        String hexId = getMetaInjector().getId(player);
+        if (hexId != null) {
+            return CompletableFuture.completedFuture(hexId);
+        }
+        UUID uniqueId = getUniqueId(player);
+        return getHexId(uniqueId);
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<String> getHexId(@NotNull UUID uniqueId) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getHexId(uniqueId).orElse(api.getDatabase().getStorage().getPlayer(uniqueId).getId()));
     }
 
     @Override
-    public CompletableFuture<String> getHexIdByName(String name) {
+    public final @NotNull CompletableFuture<String> getHexIdByName(@NotNull String name) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getHexIdByName(name).orElse(api.getDatabase().getStorage().getPlayerByName(name).getId()));
     }
 
     @Override
-    public CompletableFuture<UUID> getUniqueIdById(String hexId) {
+    public final @NotNull CompletableFuture<UUID> getUniqueIdById(@NotNull String hexId) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdById(hexId).orElse(api.getDatabase().getStorage().getPlayerById(hexId).getUniqueId()));
     }
 
     @Override
-    public CompletableFuture<UUID> getUniqueIdByName(String name) {
+    public final @NotNull CompletableFuture<UUID> getUniqueIdByName(@NotNull String name) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getUniqueIdByName(name).orElse(api.getDatabase().getStorage().getPlayerByName(name).getUniqueId()));
     }
 
     @Override
-    public CompletableFuture<String> getNameById(String hexId) {
+    public final @NotNull CompletableFuture<String> getNameById(@NotNull String hexId) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getNameById(hexId).orElse(api.getDatabase().getStorage().getPlayerById(hexId).getName()));
     }
 
     @Override
-    public CompletableFuture<String> getName(UUID uniqueId) {
+    public final @NotNull CompletableFuture<String> getName(@NotNull UUID uniqueId) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> api.getDatabase().getCacheProvider().getName(uniqueId).orElse(api.getDatabase().getStorage().getPlayer(uniqueId).getName()));
     }
 
     @Override
-    public CompletableFuture<Set<UUID>> getOnlinePlayers() {
+    public final @NotNull CompletableFuture<Set<UUID>> getOnlinePlayers() {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Set<UUID> onlinePlayers = new HashSet<>();
             try (Jedis jedis = api.getRedisManager().getResource()) {
@@ -96,13 +126,13 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Set<UUID>> getOnlinePlayersInServer(String server) {
+    public final @NotNull CompletableFuture<Set<UUID>> getOnlinePlayersInServer(String server) {
         Objects.requireNonNull(server, "Server can't be null");
         return getPlayers(server, ONLINE_PLAYERS_SERVER_KEY_PREFIX);
     }
 
     @Override
-    public CompletableFuture<Set<UUID>> getOnlinePlayersInGroup(String group) {
+    public final @NotNull CompletableFuture<Set<UUID>> getOnlinePlayersInGroup(String group) {
         Objects.requireNonNull(group, "Group can't be null");
         return getPlayers(group, ONLINE_PLAYERS_GROUP_KEY_PREFIX);
     }
@@ -121,7 +151,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Integer> getOnlinePlayerCount() {
+    public final @NotNull CompletableFuture<Integer> getOnlinePlayerCount() {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(this::getOnlinePlayerCountSync);
     }
 
@@ -132,7 +162,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Integer> getOnlinePlayerCountInServer(String server) {
+    public final @NotNull CompletableFuture<Integer> getOnlinePlayerCountInServer(String server) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 return Math.toIntExact(jedis.scard(ONLINE_PLAYERS_SERVER_KEY_PREFIX + server));
@@ -141,7 +171,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Integer> getOnlinePlayerCountInGroup(String group) {
+    public final @NotNull CompletableFuture<Integer> getOnlinePlayerCountInGroup(String group) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 return Math.toIntExact(jedis.scard(ONLINE_PLAYERS_GROUP_KEY_PREFIX + group));
@@ -150,9 +180,37 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Boolean> isOnline(UUID uniqueId, @Nullable String groupName, @Nullable String serverName) {
+    public final @NotNull CompletableFuture<Boolean> isOnline(@NotNull P player, @Nullable String serverGroup, @Nullable String serverName) {
+        String playerServerGroup = getMetaInjector().getServerGroup(player);
+        if (playerServerGroup == null) {
+            throw new IllegalStateException("Server group meta not injected yet.");
+        }
+        String playerServerName = getMetaInjector().getServerName(player);
+        if (playerServerName == null) {
+            throw new IllegalStateException("Server server meta not injected yet.");
+        }
+        if (serverGroup == null) {
+            return CompletableFuture.completedFuture(true);
+        } else if (serverName == null) {
+            return CompletableFuture.completedFuture(Objects.equals(serverGroup, playerServerGroup));
+        } else {
+            return CompletableFuture.completedFuture(Objects.equals(serverGroup, playerServerGroup)
+                    && Objects.equals(serverName, playerServerName));
+        }
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<Boolean> isOnline(@Nullable UUID uniqueId, @Nullable String groupName, @Nullable String serverName) {
         if (uniqueId == null) {
             return CompletableFuture.completedFuture(false);
+        }
+        try {
+            P player = getPlatformPlayer(uniqueId);
+            if (player != null) {
+                return isOnline(player, groupName, serverName);
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             String hexId = api.getDatabase().getCacheProvider().getHexId(uniqueId).orElseGet(() -> {
@@ -165,25 +223,22 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             if (hexId == null) {
                 return false;
             }
-            try (Jedis jedis = api.getRedisManager().getResource()) {
-                if (groupName == null) {
-                    return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, hexId);
-                } else {
-                    if (serverName == null) {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
-                    } else {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId)
-                                && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
-                    }
-                }
-            }
+            return isOnline(hexId, groupName, serverName);
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> isOnlineByName(String name, @Nullable String groupName, @Nullable String serverName) {
+    public final @NotNull CompletableFuture<Boolean> isOnlineByName(@Nullable String name, @Nullable String groupName, @Nullable String serverName) {
         if (name == null) {
             return CompletableFuture.completedFuture(false);
+        }
+        try {
+            P player = getPlatformPlayerByName(name);
+            if (player != null) {
+                return isOnline(player, groupName, serverName);
+            }
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
         }
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             String hexId = api.getDatabase().getCacheProvider().getHexIdByName(name).orElseGet(() -> {
@@ -196,44 +251,40 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
             if (hexId == null) {
                 return false;
             }
-            try (Jedis jedis = api.getRedisManager().getResource()) {
-                if (groupName == null) {
-                    return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, hexId);
-                } else {
-                    if (serverName == null) {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
-                    } else {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId)
-                                && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
-                    }
-                }
-            }
+            return isOnline(hexId, groupName, serverName);
         });
     }
 
     @Override
-    public CompletableFuture<Boolean> isOnlineById(String hexId, @Nullable String groupName, @Nullable String serverName) {
+    public final @NotNull CompletableFuture<Boolean> isOnlineById(@Nullable String hexId, @Nullable String groupName, @Nullable String serverName) {
         if (hexId == null) {
             return CompletableFuture.completedFuture(false);
         }
-        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
-            try (Jedis jedis = api.getRedisManager().getResource()) {
-                if (groupName == null) {
-                    return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, hexId);
+        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> isOnline(hexId, groupName, serverName));
+    }
+
+    private boolean isOnline(@NotNull String hexId, @Nullable String groupName, @Nullable String serverName) {
+        try (Jedis jedis = api.getRedisManager().getResource()) {
+            if (groupName == null) {
+                return jedis.sismember(ONLINE_PLAYERS_TOTAL_KEY, hexId);
+            } else {
+                if (serverName == null) {
+                    return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
                 } else {
-                    if (serverName == null) {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
-                    } else {
-                        return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId)
-                                && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
-                    }
+                    return jedis.sismember(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId)
+                            && jedis.sismember(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
                 }
             }
-        });
+        }
     }
 
     @Override
-    public CompletableFuture<Void> setOnlineById(String hexId) {
+    public final @NotNull CompletableFuture<Void> setOnline(@NotNull P player) {
+        return setOnlineById(getMetaInjector().getId(player));
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<Void> setOnlineById(@Nullable String hexId) {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -245,7 +296,12 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Void> setOfflineById(String hexId) {
+    public final @NotNull CompletableFuture<Void> setOffline(@NotNull P player) {
+        return setOfflineById(getMetaInjector().getId(player));
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<Void> setOfflineById(String hexId) {
         Objects.requireNonNull(hexId);
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
@@ -267,7 +323,16 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<String> getServerById(String hexId) {
+    public final @NotNull CompletableFuture<String> getServer(@NotNull P player) {
+        String serverName = getMetaInjector().getServerName(player);
+        if (serverName != null) {
+            return CompletableFuture.completedFuture(serverName);
+        }
+        return getServerById(getMetaInjector().getId(player));
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<String> getServerById(@Nullable String hexId) {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -279,15 +344,37 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Void> setServerById(String hexId, String serverName) {
+    public final @NotNull CompletableFuture<Void> setServer(@NotNull P player, String serverName) {
+        String hexId = getMetaInjector().getId(player);
+        if (hexId == null) {
+            throw new IllegalStateException("HexID not injected yet.");
+        }
+        return setServerById(hexId, serverName);
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<Void> setServerById(@Nullable String hexId, String serverName) {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
+        }
+        P player = getPlatformPlayerById(hexId);
+        if (player != null) {
+            getMetaInjector().setMeta(player, MetaInjector.SERVER_NAME_KEY, serverName);
         }
         return updateOnline(hexId, serverName, PLAYER_SERVER_KEY_PREFIX, ONLINE_PLAYERS_SERVER_KEY_PREFIX);
     }
 
     @Override
-    public CompletableFuture<String> getGroupById(String hexId) {
+    public final @NotNull CompletableFuture<String> getGroup(@NotNull P player) {
+        String serverGroup = getMetaInjector().getServerGroup(player);
+        if (serverGroup != null) {
+            return CompletableFuture.completedFuture(serverGroup);
+        }
+        return getServerById(getMetaInjector().getId(player));
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<String> getGroupById(@Nullable String hexId) {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
@@ -299,11 +386,27 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
     }
 
     @Override
-    public CompletableFuture<Void> setGroupById(String hexId, String groupName) {
+    public final @NotNull CompletableFuture<Void> setGroup(@NotNull P player, String groupName) {
+        String hexId = getMetaInjector().getId(player);
+        if (hexId == null) {
+            throw new IllegalStateException("HexID not injected yet.");
+        }
+        return setGroupById(hexId, groupName);
+    }
+
+    @Override
+    public final @NotNull CompletableFuture<Void> setGroupById(@Nullable String hexId, String groupName) {
+        if (hexId == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        P player = getPlatformPlayerById(hexId);
+        if (player != null) {
+            getMetaInjector().setMeta(player, MetaInjector.SERVER_GROUP_KEY, groupName);
+        }
         return updateOnline(hexId, groupName, PLAYER_GROUP_KEY_PREFIX, ONLINE_PLAYERS_GROUP_KEY_PREFIX);
     }
 
-    private CompletableFuture<Void> updateOnline(String hexId, String where, String playerKeyPrefix, String onlinePlayersKeyPrefix) {
+    private @NotNull CompletableFuture<Void> updateOnline(String hexId, @Nullable String where, String playerKeyPrefix, String onlinePlayersKeyPrefix) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 String cachedGroupName = jedis.get(playerKeyPrefix + hexId);

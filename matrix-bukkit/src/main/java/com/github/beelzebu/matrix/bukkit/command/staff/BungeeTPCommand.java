@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -19,7 +20,7 @@ public class BungeeTPCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String @NotNull [] args) {
         if (sender instanceof Player) {
             if (args.length == 1) {
                 Player player = (Player) sender;

@@ -10,14 +10,15 @@ import net.md_5.bungee.api.event.TabCompleteEvent;
 import net.md_5.bungee.api.event.TabCompleteResponseEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 
 public class ChatListener implements Listener {
 
-    private final MatrixBungeeAPI api;
+    private final @NotNull MatrixBungeeAPI api;
     private final String[] blockedCommands = {"version", "icanhasbukkit", "ver", "about", "luckperms", "lp", "perm", "perms", "permission", "permissions", "lpb", "pp", "pex", "powerfulperms", "permissionsex", "bungee", "plugins", "pl", "plugman"};
     private final Set<String> loggedCommands = new HashSet<>();
 
-    public ChatListener(MatrixBungeeAPI api) {
+    public ChatListener(@NotNull MatrixBungeeAPI api) {
         this.api = api;
         for (String command : api.getConfig().getStringList("logged-commands")) {
             if (command.startsWith("/")) {
@@ -28,7 +29,7 @@ public class ChatListener implements Listener {
     }
 
     @EventHandler(priority = 127)
-    public void onBlockedCommand(ChatEvent e) {
+    public void onBlockedCommand(@NotNull ChatEvent e) {
         if (e.isCancelled()) {
             return;
         }
@@ -61,7 +62,7 @@ public class ChatListener implements Listener {
     }
 
     @EventHandler(priority = 127)
-    public void onBlockedCommand(TabCompleteEvent e) {
+    public void onBlockedCommand(@NotNull TabCompleteEvent e) {
         if (e.isCancelled()) {
             return;
         }
@@ -94,11 +95,11 @@ public class ChatListener implements Listener {
     }
 
     @EventHandler(priority = 127)
-    public void onBlockedCommand(TabCompleteResponseEvent e) {
+    public void onBlockedCommand(@NotNull TabCompleteResponseEvent e) {
         if (e.isCancelled()) {
             return;
         }
-        api.getPlayerManager().getPlayerById(api.getMetaInjector().getId((ProxiedPlayer) e.getReceiver())).thenAccept(matrixPlayer -> {
+        api.getPlayerManager().getPlayerById(api.getPlayerManager().getMetaInjector().getId((ProxiedPlayer) e.getReceiver())).thenAccept(matrixPlayer -> {
             if (matrixPlayer.isAdmin()) {
                 return;
             }

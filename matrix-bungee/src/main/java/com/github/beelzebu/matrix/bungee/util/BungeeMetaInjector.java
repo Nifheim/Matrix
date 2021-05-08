@@ -13,6 +13,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
@@ -20,22 +22,22 @@ import net.md_5.bungee.event.EventHandler;
 public class BungeeMetaInjector extends MetaInjector<ProxiedPlayer> implements Listener {
 
     private final Map<UUID, Map<String, Object>> cachedMeta = new HashMap<>();
-    private final MatrixBungeeAPI api;
+    private final @NotNull MatrixBungeeAPI api;
 
-    public BungeeMetaInjector(MatrixBungeeAPI api) {
+    public BungeeMetaInjector(@NotNull MatrixBungeeAPI api) {
         this.api = api;
         ProxyServer.getInstance().getPluginManager().registerListener(api.getPlugin().getBootstrap(), this);
     }
 
     @Override
-    public <T> void setMeta(ProxiedPlayer player, String key, T meta) {
+    public <T> void setMeta(@NotNull ProxiedPlayer player, @NotNull String key, T meta) {
         Map<String, Object> playerMeta = cachedMeta.computeIfAbsent(player.getUniqueId(), uuid -> new HashMap<>());
         playerMeta.put(key, meta);
         cachedMeta.put(player.getUniqueId(), playerMeta);
     }
 
     @Override
-    public <T> T getMeta(ProxiedPlayer player, String key, Class<T> clazz) {
+    public <T> @Nullable T getMeta(@NotNull ProxiedPlayer player, @NotNull String key, @NotNull Class<T> clazz) {
         Map<String, Object> meta = cachedMeta.get(player.getUniqueId());
         if (meta == null) {
             return null;
@@ -44,12 +46,12 @@ public class BungeeMetaInjector extends MetaInjector<ProxiedPlayer> implements L
     }
 
     @Override
-    public <T> Collection<T> getMeta(ProxiedPlayer player, Class<T> clazz) {
+    public <T> @NotNull Collection<T> getMeta(@NotNull ProxiedPlayer player, @NotNull Class<T> clazz) {
         return (Collection<T>) cachedMeta.get(player.getUniqueId()).values().stream().filter(clazz::isInstance).collect(Collectors.toList());
     }
 
     @EventHandler
-    public void onDisconnect(PlayerDisconnectEvent e) {
+    public void onDisconnect(@NotNull PlayerDisconnectEvent e) {
         ProxiedPlayer proxiedPlayer = e.getPlayer();
         ProxyServer.getInstance().getScheduler().schedule(api.getPlugin().getBootstrap(), () -> {
             if (proxiedPlayer.isConnected()) {

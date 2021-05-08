@@ -12,6 +12,7 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+import org.jetbrains.annotations.NotNull;
 
 public class HelpOpCommand extends Command {
 
@@ -24,7 +25,7 @@ public class HelpOpCommand extends Command {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void execute(CommandSender sender, String @NotNull [] args) {
         if (!(sender instanceof ProxiedPlayer)) {
             return;
         }

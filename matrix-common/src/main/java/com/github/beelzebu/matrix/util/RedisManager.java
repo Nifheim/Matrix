@@ -1,5 +1,7 @@
 package com.github.beelzebu.matrix.util;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -10,9 +12,9 @@ import redis.clients.jedis.Protocol;
  */
 public class RedisManager {
 
-    private final JedisPool pool;
+    private final @NotNull JedisPool pool;
 
-    public RedisManager(String host, int port, String password) {
+    public RedisManager(String host, int port, @Nullable String password) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMinIdle(30);
         config.setMaxTotal(30);

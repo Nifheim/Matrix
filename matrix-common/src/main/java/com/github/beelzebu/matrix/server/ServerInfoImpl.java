@@ -20,18 +20,18 @@ public class ServerInfoImpl extends ServerInfo {
     public static final String AUTH_GROUP = ServerType.AUTH.getFriendlyName();
     public static final String PROXY_GROUP = ServerType.PROXY.getFriendlyName();
     public static final String MAIN_LOBBY_GROUP = ServerType.LOBBY.getFriendlyName();
-    private final String groupName;
+    private final @NotNull String groupName;
     private final String serverName;
     private final ServerType serverType;
-    private final GameMode gameMode;
+    private final @NotNull GameMode gameMode;
     private final boolean unique;
-    private final SingleCachedValue<String> lobby;
+    private final @NotNull SingleCachedValue<String> lobby;
 
-    public ServerInfoImpl(ServerType serverType, String groupName, String serverName, GameMode gameMode, boolean unique) {
+    public ServerInfoImpl(@NotNull ServerType serverType, @NotNull String groupName, @NotNull String serverName, GameMode gameMode, boolean unique) {
         this(serverType, groupName, serverName, gameMode, unique, Matrix.getAPI().getConfig().getString("server-info.lobby"), false);
     }
 
-    public ServerInfoImpl(ServerType serverType, String groupName, String serverName, GameMode gameMode, boolean unique, String lobby, boolean decoded) {
+    public ServerInfoImpl(@NotNull ServerType serverType, @NotNull String groupName, @NotNull String serverName, @Nullable GameMode gameMode, boolean unique, @Nullable String lobby, boolean decoded) {
         this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
         this.groupName = Objects.requireNonNull(groupName, "groupName can't be null").toLowerCase();
         this.unique = !Objects.isNull(serverName) && unique;
@@ -57,7 +57,7 @@ public class ServerInfoImpl extends ServerInfo {
     }
 
     @Deprecated
-    public ServerInfoImpl(String name, Map<String, String> data) {
+    public ServerInfoImpl(@NotNull String name, @NotNull Map<String, String> data) {
         this(ServerType.valueOf(Objects.requireNonNull(data.get("servertype"))),
                 Objects.requireNonNull(data.get("group"), "groupName can't be null"),
                 name,
@@ -79,7 +79,7 @@ public class ServerInfoImpl extends ServerInfo {
      * @return the generated name.
      * @see #formatServerName(ServerType, String, String)
      */
-    private String generateServerName(ServerType serverType, String groupName, @Nullable String serverName) {
+    private String generateServerName(@NotNull ServerType serverType, @NotNull String groupName, @Nullable String serverName) {
         Matrix.getLogger().debug("Generating server name: " + serverType + " " + groupName + " " + serverName);
         if (unique) {
             Matrix.getLogger().debug("Server is unique, returning default name");
@@ -103,7 +103,7 @@ public class ServerInfoImpl extends ServerInfo {
         return name;
     }
 
-    private String formatServerName(@NotNull ServerType serverType, @NotNull String groupName, @Nullable String serverName) {
+    private @NotNull String formatServerName(@NotNull ServerType serverType, @NotNull String groupName, @Nullable String serverName) {
         StringBuilder name = new StringBuilder();
         name.append(groupName);
         if (serverName != null && !Objects.equals(groupName, serverName)) {
@@ -116,26 +116,26 @@ public class ServerInfoImpl extends ServerInfo {
     }
 
     @Override
-    public GameMode getDefaultGameMode() {
+    public @NotNull GameMode getDefaultGameMode() {
         return this.gameMode != null ? this.gameMode : GameMode.ADVENTURE;
     }
 
     @Override
-    public String getGroupName() {
+    public @NotNull String getGroupName() {
         return this.groupName;
     }
 
     @Override
-    public String getServerName() {
+    public @NotNull String getServerName() {
         return this.serverName;
     }
 
     @Override
-    public CompletableFuture<String> getLobbyServer() {
+    public @NotNull CompletableFuture<String> getLobbyServer() {
         return lobby.get();
     }
 
-    public SingleCachedValue<String> getCachedLobby() {
+    public @NotNull SingleCachedValue<String> getCachedLobby() {
         return lobby;
     }
 
@@ -145,7 +145,7 @@ public class ServerInfoImpl extends ServerInfo {
     }
 
     @Override
-    public ServerType getServerType() {
+    public @NotNull ServerType getServerType() {
         return this.serverType;
     }
 }

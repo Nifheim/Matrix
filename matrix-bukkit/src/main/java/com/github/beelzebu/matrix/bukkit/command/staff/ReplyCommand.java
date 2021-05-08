@@ -5,6 +5,7 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class ReplyCommand extends MatrixCommand {
 
@@ -13,7 +14,7 @@ public class ReplyCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(@NotNull CommandSender sender, String @NotNull [] args) {
         if (args.length < 2) {
             sender.sendMessage(StringUtils.replace("&cPor favor ingresa un usuario y mensaje para enviar."));
             return;
@@ -30,7 +31,7 @@ public class ReplyCommand extends MatrixCommand {
                         sender.sendMessage(StringUtils.replace("&cNo te puedes responder a ti mismo."));
                         return;
                     }
-                    name = api.getPlayerManager().getPlayer((Player) sender).join().getDisplayName();
+                    name = api.getPlayerManager().getPlayer(((Player) sender).getUniqueId()).join().getDisplayName();
                 } else {
                     name = sender.getName();
                 }

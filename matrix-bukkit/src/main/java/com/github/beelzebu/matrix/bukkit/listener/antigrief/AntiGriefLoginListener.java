@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -25,7 +26,7 @@ public class AntiGriefLoginListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onLogin(AsyncPlayerPreLoginEvent e) {
+    public void onLogin(@NotNull AsyncPlayerPreLoginEvent e) {
         api.getPlayerManager().getPlayer(e.getUniqueId()).thenAcceptAsync(matrixPlayer -> {
             if (matrixPlayer == null) { // si el usuario aún no existe en la base de datos es porque no ha entrado por el proxy
                 e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, "Se ha detectado un acceso no autorizado.");
@@ -50,7 +51,7 @@ public class AntiGriefLoginListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerJoinEvent e) {
+    public void onPlayerJoin(@NotNull PlayerJoinEvent e) {
         e.setJoinMessage(null);
         Player player = e.getPlayer();
         if (player.isOp()) {

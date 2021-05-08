@@ -1,5 +1,7 @@
 package com.github.beelzebu.matrix.util;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * @author Beelzebu
  */
@@ -16,7 +18,7 @@ public enum ErrorCodes {
         this.id = id;
     }
 
-    public String getId() {
+    public @NotNull String getId() {
         return id < 100 ? id < 9 ? "00" + id : "0" + id : Integer.toString(id);
     }
 }

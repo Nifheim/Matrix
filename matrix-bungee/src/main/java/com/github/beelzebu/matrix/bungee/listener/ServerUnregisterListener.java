@@ -10,6 +10,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -17,7 +18,7 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 public class ServerUnregisterListener implements RedisMessageListener<ServerUnregisterMessage> {
 
     @Override
-    public void onMessage(ServerUnregisterMessage message) {
+    public void onMessage(@NotNull ServerUnregisterMessage message) {
         Matrix.getLogger().info("Received unregister message for server: " + message.getServerInfo().getServerName());
         if (message.getServerInfo().getServerType() != ServerType.AUTH) {
             ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(message.getServerInfo().getServerName());
@@ -33,7 +34,7 @@ public class ServerUnregisterListener implements RedisMessageListener<ServerUnre
     }
 
     @Override
-    public RedisMessageType getType() {
+    public @NotNull RedisMessageType getType() {
         return RedisMessageType.SERVER_UNREGISTER;
     }
 }

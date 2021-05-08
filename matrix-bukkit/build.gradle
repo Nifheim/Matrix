@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     api project(':matrix-common')
-    implementation 'net.nifheim:coreutils:1.0.4-SNAPSHOT'
+    implementation 'net.nifheim:coreutils:1.1.0-SNAPSHOT'
     implementation 'redis.clients:jedis:3.3.0'
     implementation 'com.github.ben-manes.caffeine:caffeine:2.8.4'
     implementation 'org.apache.commons:commons-pool2:2.6.2'
@@ -27,7 +27,7 @@ shadowJar {
 
     dependencies {
         include(dependency('com.github.beelzebu:jMatrix'))
-        include(dependency('net.nifheim:coreutils:1.0.4-SNAPSHOT'))
+        include(dependency('net.nifheim:coreutils'))
         include(project(':matrix-common'))
     }
 

@@ -4,20 +4,21 @@ import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.scheduler.AbstractJavaScheduler;
 import java.util.concurrent.Executor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
  */
 public class BukkitSchedulerAdapter extends AbstractJavaScheduler implements SchedulerAdapter {
 
-    private final Executor sync;
+    private final @NotNull Executor sync;
 
-    public BukkitSchedulerAdapter(MatrixBukkitBootstrap bootstrap) {
+    public BukkitSchedulerAdapter(@NotNull MatrixBukkitBootstrap bootstrap) {
         this.sync = r -> bootstrap.getServer().getScheduler().scheduleSyncDelayedTask(bootstrap, r);
     }
 
     @Override
-    public Executor sync() {
+    public @NotNull Executor sync() {
         return sync;
     }
 }

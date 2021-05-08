@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -38,7 +39,7 @@ public class MatrixManagerCommand extends MatrixCommand {
         return true;
     }
 
-    private ItemStack book(String title, String author, List<List<String>> pages) {
+    private @NotNull ItemStack book(String title, String author, @NotNull List<List<String>> pages) {
         ItemStack is = new ItemStack(Material.WRITTEN_BOOK, 1);
         BookMeta meta = (BookMeta) is.getItemMeta();
         meta.setAuthor(author);

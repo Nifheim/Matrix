@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -36,12 +37,12 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public MatrixConfig getConfig() {
+    public @NotNull MatrixConfig getConfig() {
         return bootstrap.getConfiguration();
     }
 
     @Override
-    public AbstractConfig getFileAsConfig(File file) {
+    public @NotNull AbstractConfig getFileAsConfig(@NotNull File file) {
         return new BukkitConfiguration(file);
     }
 
@@ -51,52 +52,52 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public CommandSource getConsole() {
+    public @NotNull CommandSource getConsole() {
         return console;
     }
 
     @Override
-    public void sendMessage(String name, String message) {
+    public void sendMessage(@NotNull String name, @NotNull String message) {
         Bukkit.getPlayer(name).sendMessage(StringUtils.replace(message));
     }
 
     @Override
-    public void sendMessage(UUID uuid, String message) {
+    public void sendMessage(@NotNull UUID uuid, @NotNull String message) {
         Bukkit.getPlayer(uuid).sendMessage(StringUtils.replace(message));
     }
 
     @Override
-    public File getDataFolder() {
+    public @NotNull File getDataFolder() {
         return bootstrap.getDataFolder();
     }
 
     @Override
-    public InputStream getResource(String file) {
+    public @NotNull InputStream getResource(@NotNull String file) {
         return bootstrap.getResource(file);
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return bootstrap.getDescription().getVersion();
     }
 
     @Override
-    public boolean isOnline(String name, boolean here) {
+    public boolean isOnline(@NotNull String name, boolean here) {
         return Bukkit.getPlayer(name) != null && Bukkit.getPlayer(name).isOnline();
     }
 
     @Override
-    public boolean isOnline(UUID uuid, boolean here) {
+    public boolean isOnline(@NotNull UUID uuid, boolean here) {
         return Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline();
     }
 
     @Override
-    public UUID getUniqueId(String name) {
+    public @NotNull UUID getUniqueId(@NotNull String name) {
         return isOnline(name, true) ? Bukkit.getPlayer(name).getUniqueId() : null;
     }
 
     @Override
-    public void kickPlayer(UUID uniqueId, String reason) {
+    public void kickPlayer(@NotNull UUID uniqueId, @NotNull String reason) {
         Objects.requireNonNull(uniqueId, "UUID can't be null.");
         Objects.requireNonNull(reason, "Kick reason can't be null");
         Player player = Bukkit.getPlayer(uniqueId);
@@ -109,7 +110,7 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public void kickPlayer(String name, String reason) {
+    public void kickPlayer(@NotNull String name, @NotNull String reason) {
         Objects.requireNonNull(name, "Name can't be null.");
         Objects.requireNonNull(reason, "Kick reason can't be null");
         Player player = Bukkit.getPlayer(name);
@@ -122,17 +123,17 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public void kickPlayer(MatrixPlayer matrixPlayer, String reason) {
+    public void kickPlayer(@NotNull MatrixPlayer matrixPlayer, @NotNull String reason) {
         Objects.requireNonNull(matrixPlayer, "Player can't be null");
         kickPlayer(matrixPlayer.getName(), reason);
     }
 
-    public MatrixBukkitBootstrap getBootstrap() {
+    public @NotNull MatrixBukkitBootstrap getBootstrap() {
         return bootstrap;
     }
 
     @Override
-    public void dispatchCommand(CommandSource commandSource, String command) {
+    public void dispatchCommand(@NotNull CommandSource commandSource, @NotNull String command) {
         Player player = Bukkit.getPlayer(commandSource.getName());
         if (player != null && player.isOnline()) {
             Bukkit.dispatchCommand(player, command);
@@ -140,29 +141,29 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
+    public @NotNull CompletableFuture<Collection<MatrixPlayer>> getLoggedInPlayers() {
         return bootstrap.getScheduler().makeFuture(() -> Bukkit.getOnlinePlayers().stream().map(player -> api.getPlayerManager().getPlayer(player).join()).collect(Collectors.toSet()));
     }
 
     @Override
-    public Optional<String> getHexId(UUID uniqueId) {
+    public @NotNull Optional<String> getHexId(@NotNull UUID uniqueId) {
         Player player = Bukkit.getPlayer(uniqueId);
         if (player != null) {
-            return Optional.ofNullable(api.getMetaInjector().getId(player));
+            return Optional.ofNullable(api.getPlayerManager().getMetaInjector().getId(player));
         }
         return Optional.empty();
     }
 
     @Override
-    public Optional<String> getHexId(String name) {
+    public @NotNull Optional<String> getHexId(@NotNull String name) {
         Player player = Bukkit.getPlayer(name);
         if (player != null) {
-            return Optional.ofNullable(api.getMetaInjector().getId(player));
+            return Optional.ofNullable(api.getPlayerManager().getMetaInjector().getId(player));
         }
         return Optional.empty();
     }
 
-    public String toString() {
+    public @NotNull String toString() {
         return "MatrixPluginBukkit(bootstrap=" + bootstrap + ", console=" + getConsole() + ")";
     }
 

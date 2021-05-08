@@ -9,6 +9,7 @@ import java.util.Set;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Command;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -60,10 +61,10 @@ public class InfluencerManager {
         loadInfluencers();
     }
 
-    public void createCommand(Influencer influencer) {
+    public void createCommand(@NotNull Influencer influencer) {
         Command command = new Command(influencer.getName()) {
             @Override
-            public void execute(CommandSender sender, String[] args) {
+            public void execute(@NotNull CommandSender sender, String[] args) {
                 // TODO: update command content
                 sender.sendMessage(influencer.getSocialNetwork());
             }

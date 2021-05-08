@@ -5,7 +5,6 @@ import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
-import com.github.beelzebu.matrix.api.player.Statistic;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;
@@ -31,6 +30,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Stream;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
@@ -48,14 +49,14 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     @Id
     private ObjectId id;
     @Transient
-    private transient String idString = null;
+    private transient @Nullable String idString = null;
     @Indexed(options = @IndexOptions(unique = true))
     private UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
     private String name;
     @Indexed(options = @IndexOptions(unique = true))
     private String lowercaseName;
-    private Set<String> knownNames = new HashSet<>();
+    private @NotNull Set<String> knownNames = new HashSet<>();
     private String displayName;
     private boolean premium;
     private boolean bedrock;
@@ -66,19 +67,19 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private String lastLocale;
     private String staffChannel;
     private boolean watcher;
-    private HashSet<PlayerOptionType> options = new HashSet<>();
+    private @NotNull HashSet<PlayerOptionType> options = new HashSet<>();
     @Indexed
     private String IP;
-    private Set<String> ipHistory = new LinkedHashSet<>();
+    private @NotNull Set<String> ipHistory = new LinkedHashSet<>();
     private Date lastLogin;
     private Date registration;
     private String discordId;
     private int censoringLevel;
     private int spammingLevel;
     private boolean vanished;
-    private HashMap<String, GameMode> gameModeByGame = new HashMap<>();
+    private @NotNull HashMap<String, GameMode> gameModeByGame = new HashMap<>();
 
-    public MongoMatrixPlayer(UUID uniqueId, String name) {
+    public MongoMatrixPlayer(UUID uniqueId, @NotNull String name) {
         this();
         this.uniqueId = uniqueId;
         this.name = name;
@@ -89,7 +90,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private MongoMatrixPlayer() {
     }
 
-    public static MongoMatrixPlayer fromHash(Map<String, String> hash) {
+    public static @Nullable MongoMatrixPlayer fromHash(@NotNull Map<String, String> hash) {
         MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer();
         for (Map.Entry<String, Field> ent : FIELDS.entrySet()) {
             String id = ent.getKey(); // field id
@@ -98,7 +99,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                 if (hash.containsKey(id)) { // hash contains field
                     mongoMatrixPlayer.setField(field, hash.get(id));
                 }
-            } catch (IllegalArgumentException | NullPointerException | JsonSyntaxException e) {
+            } catch (@NotNull IllegalArgumentException | NullPointerException | JsonSyntaxException e) {
                 Matrix.getLogger().debug(e);
                 e.printStackTrace();
                 return null;
@@ -108,7 +109,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         if (id != null && idString == null) {
             return idString = id.toHexString();
         }
@@ -116,12 +117,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public UUID getUniqueId() {
+    public @NotNull UUID getUniqueId() {
         return uniqueId;
     }
 
     @Override
-    public void setUniqueId(UUID uniqueId) {
+    public void setUniqueId(@NotNull UUID uniqueId) {
         if (Objects.equals(this.uniqueId, uniqueId)) {
             return;
         }
@@ -134,12 +135,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
 
     @Override
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         if (Objects.equals(this.name, name)) {
             return;
         }
@@ -160,12 +161,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void sendMessage(String message) {
+    public void sendMessage(@NotNull String message) {
         Matrix.getAPI().getPlugin().sendMessage(getName(), StringUtils.replace(message));
     }
 
     @Override
-    public String getLowercaseName() {
+    public @NotNull String getLowercaseName() {
         if (!Objects.equals(lowercaseName, getName().toLowerCase())) {
             lowercaseName = getName().toLowerCase();
         }
@@ -173,7 +174,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getDisplayName() {
+    public @NotNull String getDisplayName() {
         return displayName != null ? displayName : getName();
     }
 
@@ -234,7 +235,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getHashedPassword() {
+    public @NotNull String getHashedPassword() {
         return hashedPassword;
     }
 
@@ -266,12 +267,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getLastLocale() {
+    public @NotNull String getLastLocale() {
         return lastLocale;
     }
 
     @Override
-    public void setLastLocale(Locale lastLocale) {
+    public void setLastLocale(@NotNull Locale lastLocale) {
         if (Objects.isNull(lastLocale)) {
             return;
         }
@@ -288,7 +289,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getStaffChannel() {
+    public @NotNull String getStaffChannel() {
         return staffChannel;
     }
 
@@ -331,7 +332,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public Set<PlayerOptionType> getOptions() {
+    public @NotNull Set<PlayerOptionType> getOptions() {
         return options;
     }
 
@@ -354,7 +355,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getIP() {
+    public @NotNull String getIP() {
         return IP;
     }
 
@@ -370,12 +371,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public Set<String> getIpHistory() {
+    public @NotNull Set<String> getIpHistory() {
         return ipHistory;
     }
 
     @Override
-    public Date getLastLogin() {
+    public @NotNull Date getLastLogin() {
         return lastLogin;
     }
 
@@ -389,7 +390,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public Date getRegistration() {
+    public @NotNull Date getRegistration() {
         return registration;
     }
 
@@ -402,7 +403,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public String getDiscordId() {
+    public @NotNull String getDiscordId() {
         return discordId;
     }
 
@@ -449,7 +450,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public GameMode getGameMode(String serverGroup) {
+    public @NotNull GameMode getGameMode(String serverGroup) {
         return gameModeByGame.getOrDefault(serverGroup, Matrix.getAPI().getServerInfo().getDefaultGameMode());
     }
 
@@ -463,7 +464,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public CompletableFuture<String> getLastServerGroup() {
+    public @NotNull CompletableFuture<String> getLastServerGroup() {
         return Matrix.getAPI().getPlayerManager().getGroupById(getId());
     }
 
@@ -473,7 +474,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public CompletableFuture<String> getLastServerName() {
+    public @NotNull CompletableFuture<String> getLastServerName() {
         return Matrix.getAPI().getPlayerManager().getServerById(getId());
     }
 
@@ -534,7 +535,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public Collection<String> getPlayedGames() {
+    public @NotNull Collection<String> getPlayedGames() {
         return ImmutableSet.of();//ImmutableSet.copyOf(playedGamesMap.keySet());
     }
 
@@ -555,7 +556,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public CompletableFuture<Boolean> save() {
+    public @NotNull CompletableFuture<Boolean> save() {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
         if (getDisplayName() == null) {
@@ -577,46 +578,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         setField(field, json);
     }
 
-    @Override
-    public long getStat(Statistic statistic) {
-        return getStat(Matrix.getAPI().getServerInfo().getGroupName(), statistic);
-    }
-
-    @Override
-    public long getStat(String serverGroup, Statistic statistic) {
-        return Matrix.getAPI().getDatabase().getStatById(getId(), serverGroup, statistic).join(); // TODO: check
-    }
-
-    @Override
-    public void setStat(Statistic statistic, long value) {
-        setStat(Matrix.getAPI().getServerInfo().getGroupName(), statistic, value);
-    }
-
-    @Override
-    public void setStat(String serverGroup, Statistic statistic, long value) {
-        Matrix.getAPI().getDatabase().setStatById(getId(), serverGroup, statistic, value);
-    }
-
-    @Override
-    public void increaseStat(Statistic statistic, long value) {
-        Matrix.getAPI().getDatabase().incrStatById(getId(), Matrix.getAPI().getServerInfo().getGroupName(), statistic, value);
-    }
-
-    @Override
-    public void increaseStat(String serverGroup, Statistic statistic, long value) {
-        Matrix.getAPI().getDatabase().incrStatById(getId(), serverGroup, statistic, value);
-    }
-
-    @Override
-    public CompletableFuture<Long> increaseStatAndGet(Statistic statistic, long value) {
-        return increaseStatAndGet(Matrix.getAPI().getServerInfo().getGroupName(), statistic, value);
-    }
-
-    @Override
-    public CompletableFuture<Long> increaseStatAndGet(String groupName, Statistic statistic, long value) {
-        return Matrix.getAPI().getDatabase().incrStatById(getId(), groupName, statistic, value);
-    }
-
     @Deprecated
     public void updateCached(String field) {
         try {
@@ -626,7 +587,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
-    public <T> CompletableFuture<T> updateCached(String field, T value) {
+    public <T> @NotNull CompletableFuture<T> updateCached(String field, T value) {
         try {
             return Matrix.getAPI().getDatabase().updateFieldById(getId(), field, value);
         } catch (CompletionException e) {
@@ -634,7 +595,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
-    public Set<String> getKnownNames() {
+    public @NotNull Set<String> getKnownNames() {
         return knownNames;
     }
 
@@ -653,7 +614,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @SuppressWarnings("unchecked")
-    private void setField(Field field, String json) {
+    private void setField(@NotNull Field field, String json) {
         try {
             if (field.getName().equals("name")) {
                 Objects.requireNonNull(json, "name");
@@ -673,7 +634,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
                     if (value != null) {
                         field.set(this, value);
                     }
-                } catch (JsonSyntaxException | IllegalStateException e) {
+                } catch (@NotNull JsonSyntaxException | IllegalStateException e) {
                     Matrix.getLogger().warn("Field: " + field.getName() + " Json: " + json);
                     e.printStackTrace();
                 }
