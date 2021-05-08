@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.ScanParams;
@@ -97,12 +98,12 @@ public class ServerManagerImpl implements ServerManager {
     public CompletableFuture<Optional<ServerInfo>> getServer(String name) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
-                return Optional.of(getServer(name, jedis));
+                return Optional.ofNullable(getServer(name, jedis));
             }
         });
     }
 
-    public ServerInfo getServer(String name, Jedis jedis) {
+    public @Nullable ServerInfo getServer(String name, Jedis jedis) {
         try {
             return new ServerInfoImpl(name, jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name));
         } catch (JedisException | NullPointerException | IllegalArgumentException ex) {
