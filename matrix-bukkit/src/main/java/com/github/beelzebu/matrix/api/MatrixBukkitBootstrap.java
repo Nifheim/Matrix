@@ -61,7 +61,6 @@ import org.spigotmc.SpigotConfig;
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
     private final BukkitCoreUtils bukkitCoreUtils = new BukkitCoreUtils();
-    private final String[] localAddresses = {"10.8.0.1", "10.8.0.2", "10.8.0.3", "10.8.0.4", "10.8.0.5"};
     private MatrixBukkitAPI api;
     private boolean chatMuted = false;
     private BukkitConfiguration configuration;
@@ -163,14 +162,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
         pluginsUtility = new PluginsUtility();
 
-        serverRegisterMessage = null;
-
-        for (String ip : localAddresses) {
-            if (Objects.equals(Bukkit.getIp(), ip)) {
-                serverRegisterMessage = new ServerRegisterMessage(api.getServerInfo(), ip, Bukkit.getPort());
-                break;
-            }
-        }
+        serverRegisterMessage = new ServerRegisterMessage(api.getServerInfo(), Bukkit.getIp(), Bukkit.getPort());
 
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             pluginsUtility.checkForPluginsToRemove();
