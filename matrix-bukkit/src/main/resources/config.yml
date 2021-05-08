@@ -1,0 +1,59 @@
+# server info, always updated
+server-info:
+  group: 'lobby'
+  server-type: 'lobby' # lobby minigame_bungee minigame_multiarena survival
+  game-mode: 'adventure' # adventure, survival, creative, spectator
+
+# storage and caching settings
+Database:
+  Host: 172.20.0.3
+  Password: ''
+
+mysql:
+  host: '172.20.0.3'
+  port: 3306
+  database: 'minecraft'
+  user: 'plugins'
+  password: ''
+  pool: 12
+
+Redis:
+  Host: 172.20.0.2
+  Port: 6379
+  Password: ''
+
+# World used as Lobby in MINIGAME_MULTIARENA
+Lobby World: Lobby
+
+# Enabling this means that the plugin will send debug messages to the console.
+Debug: false
+
+ChatControl:
+  Caps:
+    # Set the caps to lowercase.
+    Convert: true
+    # This is the max caps allowed per message.
+    # Default: 10
+    Max Caps: 10
+    # This is the min percentage of caps in a message before convert the caps.
+    # Default: 90
+    Min Percentage: 90
+
+# This prevents the portal duplication bugs denying the teleport of entities that aren't players
+# If Strict Mode is true, only Players can teleport, but if is false, only Exp Orbs are denied to be teleported.
+PortalFix:
+  Strict Mode: true
+
+# Commands on first join, this feature executes all the commands in the list the first time that
+# a player joins to the server after a reload of the matrixPlugin.
+Join cmds:
+- 'lagg clear'
+- 'lagg gc'
+
+# Death titles, this sends a title, subtitle and/or actionbar message when the player death
+# Possible modes: Always, PvP. Disabled.
+# In mode Always, the titles are send every time that a olayer dies, PvP is only for PvP and
+# Disabled is for disable this feature.
+Death Titles:
+  Mode: Always
+  Stay: 60

@@ -1,15 +1,20 @@
 buildscript {
     allprojects {
         group = 'com.github.beelzebu'
-        version = '1.0.19'
+        version = '1.1.' + (System.getenv("BUILD_NUMBER") != null ? System.getenv("BUILD_NUMBER") : 'unknown')
+
+        repositories {
+            mavenLocal()
+            mavenCentral()
+        }
     }
 
     subprojects {
         apply plugin: 'java-library'
 
         repositories {
-            mavenCentral()
             mavenLocal()
+            mavenCentral()
 
             maven {
                 url = 'https://venus.indiopikaro.cl/nexus/repository/maven-public/'
@@ -58,8 +63,9 @@ buildscript {
         }
 
         dependencies {
-            api 'cl.indiopikaro:jMatrix:1.2.1'
+            implementation 'com.github.beelzebu:jMatrix:2.0'
             implementation 'com.google.guava:guava:21.0'
+            implementation 'org.jetbrains:annotations:20.1.0'
         }
 
         sourceCompatibility = '1.8'
@@ -74,11 +80,6 @@ buildscript {
 
         clean {
             delete(file("$rootDir/out"))
-        }
-
-        sourceSets {
-            main.java.srcDirs = ['src/']
-            main.resources.srcDirs = ['src/resources']
         }
     }
 }
