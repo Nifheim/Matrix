@@ -1,12 +1,12 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,7 +33,7 @@ public class FreezeCommand extends MatrixCommand {
         }
         Player target = Bukkit.getPlayer(args[0]);
         if (target != null) {
-             api.getPlayerManager().getPlayer(target.getUniqueId()).thenAccept(targetMatrixPlayer -> {
+            api.getPlayerManager().getPlayer(target.getUniqueId()).thenAccept(targetMatrixPlayer -> {
                 if (FROZEN_PLAYERS.contains(target.getUniqueId())) {
                     FROZEN_PLAYERS.remove(target.getUniqueId());
                     target.setWalkSpeed(0.2f);
@@ -63,7 +63,7 @@ public class FreezeCommand extends MatrixCommand {
                         for (int i = 1; i < args.length; i++) {
                             sb.append(args[i]).append(" ");
                         }
-                        sender.sendMessage(StringUtils.replace("%prefix% &6" + sb.toString()));
+                        sender.sendMessage(StringUtils.replace("%prefix% &6" + sb));
                     }
                     sender.sendMessage(I18n.tl(Message.ESSENTIALS_FREEZE_SENDER, senderLocale));
                 }

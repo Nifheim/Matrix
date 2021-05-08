@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

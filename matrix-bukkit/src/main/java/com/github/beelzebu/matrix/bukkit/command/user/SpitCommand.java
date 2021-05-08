@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.bukkit.command.user;
 
-import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
+import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LlamaSpit;
 import org.bukkit.entity.Player;

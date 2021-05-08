@@ -42,7 +42,7 @@ public class VanishListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGameModeChangeEvent(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
-        plugin.getApi().getDatabase().getPlayer(player.getUniqueId()).thenAccept(matrixPlayer -> {
+        plugin.getApi().getPlayerManager().getPlayer(player).thenAccept(matrixPlayer -> {
             if (player.hasPermission(VanishCommand.PERMISSION) || matrixPlayer.isVanished()) {
                 boolean toVanish = event.getNewGameMode() == GameMode.SPECTATOR;
                 if (matrixPlayer.isVanished()) {
@@ -61,7 +61,10 @@ public class VanishListener implements Listener {
     }
 
     private void checkVanish(Player player) {
-        plugin.getApi().getDatabase().getPlayer(player.getUniqueId()).thenAccept(matrixPlayer -> {
+        if (player.hasMetadata("NPC")) {
+            return;
+        }
+        plugin.getApi().getPlayerManager().getPlayer(player).thenAccept(matrixPlayer -> {
             if (matrixPlayer == null) {
                 Matrix.getLogger().info("Null matrix player for: " + player.getName());
                 return;

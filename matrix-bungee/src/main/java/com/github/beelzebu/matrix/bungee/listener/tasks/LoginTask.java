@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bungee.tasks;
+package com.github.beelzebu.matrix.bungee.listener.tasks;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
@@ -12,14 +12,11 @@ import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.LoginEvent;
-import org.geysermc.floodgate.FloodgateAPI;
-import org.geysermc.floodgate.FloodgatePlayer;
-import org.geysermc.floodgate.LinkedPlayer;
 
 /**
  * @author Beelzebu
  */
-public class LoginTask implements IndioLoginTask {
+public class LoginTask implements Runnable {
 
     private final MatrixBungeeAPI api;
     private final LoginEvent event;
@@ -48,20 +45,6 @@ public class LoginTask implements IndioLoginTask {
                 return;
             }
             PendingConnection pendingConnection = event.getConnection();
-            if (FloodgateAPI.isBedrockPlayer(player.getUniqueId())) {
-                FloodgatePlayer floodgatePlayer = FloodgateAPI.getPlayerByConnection(pendingConnection);
-                LinkedPlayer linkedPlayer = floodgatePlayer.getLinkedPlayer();
-                if (player.isPremium()) {
-                    if (linkedPlayer == null) {
-                        // TODO: inform player about link
-                    } else {
-                        player.setBedrock(true);
-                    }
-                } else {
-                    player.setBedrock(true);
-                    pendingConnection.setUniqueId(UUID.nameUUIDFromBytes(("OfflinePlayer:" + floodgatePlayer.getJavaUsername()).getBytes()));
-                }
-            }
             if (!player.isPremium() && !Objects.equals(player.getUniqueId(), UUID.nameUUIDFromBytes(("OfflinePlayer:" + event.getConnection().getName()).getBytes()))) {
                 event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.UUID_DONTMATCH.getId() + "\n\nYour UUID doesn't match with the UUID associated to your name in our database.\nThis login attempt was recorded for security reasons."));
                 event.setCancelled(true);

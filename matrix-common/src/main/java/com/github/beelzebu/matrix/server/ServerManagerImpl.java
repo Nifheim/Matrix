@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.ScanParams;
@@ -97,14 +98,17 @@ public class ServerManagerImpl implements ServerManager {
     public CompletableFuture<Optional<ServerInfo>> getServer(String name) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
-                return Optional.of(getServer(name, jedis));
+                return Optional.ofNullable(getServer(name, jedis));
             }
         });
     }
 
-    public ServerInfo getServer(String name, Jedis jedis) {
+    public @Nullable ServerInfo getServer(String name, Jedis jedis) {
         try {
-            return new ServerInfoImpl(name, jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name));
+            Map<String, String> data = jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name);
+            if (data != null && !data.isEmpty()) {
+                return new ServerInfoImpl(name, data);
+            }
         } catch (JedisException | NullPointerException | IllegalArgumentException ex) {
             Matrix.getLogger().log("An error has occurred getting server with name " + name + "  from cache.");
             Matrix.getLogger().debug(ex);
@@ -126,6 +130,9 @@ public class ServerManagerImpl implements ServerManager {
                     // gametype  : string
                     // gamemode  : string
                     // heartbeat : long
+                    if (serverInfo.getGroupName().trim().isEmpty()) { // skip empty groups
+                        continue;
+                    }
                     pipeline.sadd(SERVER_GROUPS_KEY, serverInfo.getGroupName());
                     pipeline.sadd(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
                     pipeline.hset(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName(), "group", serverInfo.getGroupName());

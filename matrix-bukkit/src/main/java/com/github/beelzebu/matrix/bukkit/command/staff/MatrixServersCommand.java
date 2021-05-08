@@ -1,6 +1,5 @@
-package com.github.beelzebu.matrix.bungee.command;
+package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
@@ -8,28 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.plugin.Command;
+import net.nifheim.bukkit.util.command.MatrixCommand;
+import org.bukkit.command.CommandSender;
 
 /**
  * @author Beelzebu
  */
-public class MatrixServersCommand extends Command {
+public class MatrixServersCommand extends MatrixCommand {
 
-    private final MatrixBungeeAPI api;
-
-    public MatrixServersCommand(MatrixBungeeAPI api) {
+    public MatrixServersCommand() {
         super("mservers", "matrix.command.servers");
-        this.api = api;
     }
 
     @Override
-    public void execute(CommandSender commandSender, String[] args) {
+    public void onCommand(CommandSender commandSender, String[] args) {
         api.getServerManager().getAllServers().thenAcceptAsync(groupServers -> {
             List<BaseComponent[]> components = new ArrayList<>();
             components.add(TextComponent.fromLegacyText(StringUtils.replace("&6Jugadores en linea: &a" + api.getPlayerManager().getOnlinePlayerCount().join())));

@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.listener;
 
-import cl.indiopikaro.bukkitutil.util.CompatUtil;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import net.nifheim.bukkit.util.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

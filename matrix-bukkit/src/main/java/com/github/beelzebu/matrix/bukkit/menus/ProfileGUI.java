@@ -1,9 +1,5 @@
 package com.github.beelzebu.matrix.bukkit.menus;
 
-import cl.indiopikaro.bukkitutil.api.ItemBuilder;
-import cl.indiopikaro.bukkitutil.api.menu.BaseMenu;
-import cl.indiopikaro.bukkitutil.util.CompatUtil;
-import cl.indiopikaro.bukkitutil.util.SkullCreator;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
@@ -13,6 +9,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import net.nifheim.bukkit.util.CompatUtil;
+import net.nifheim.bukkit.util.ItemBuilder;
+import net.nifheim.bukkit.util.SkullCreator;
+import net.nifheim.bukkit.util.menu.BaseMenu;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +20,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 /**
+ * TODO: remove
+ *
  * @author Beelzebu
  */
 @SuppressWarnings("deprecation")

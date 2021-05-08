@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bungee.tasks;
+package com.github.beelzebu.matrix.bungee.listener.tasks;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
@@ -7,6 +7,7 @@ import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
 import com.github.games647.craftapi.model.Profile;
+import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import java.io.IOException;
 import java.util.Objects;
@@ -17,8 +18,9 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 /**
  * @author Beelzebu
  */
-public class PreLoginTask implements IndioLoginTask {
+public class PreLoginTask implements Runnable {
 
+    private static final MojangResolver RESOLVER = new MojangResolver();
     private final MatrixBungeeAPI api;
     private final PreLoginEvent event;
     private MongoMatrixPlayer player;
@@ -32,9 +34,11 @@ public class PreLoginTask implements IndioLoginTask {
     public void run() {
         try {
             String name = Objects.requireNonNull(event.getConnection().getName(), "name");
+            boolean fetchedProfile = false;
             Profile profile = null;
             try {
                 profile = RESOLVER.findProfile(name).orElse(null);
+                fetchedProfile = true;
             } catch (RateLimitException | IOException e) {
                 e.printStackTrace();
             }
@@ -64,7 +68,7 @@ public class PreLoginTask implements IndioLoginTask {
                         player.setUniqueId(profile.getId());
                     }
                 }
-                if (profile == null) {
+                if (fetchedProfile && profile == null) {
                     player.setPremium(false);
                 }
             }

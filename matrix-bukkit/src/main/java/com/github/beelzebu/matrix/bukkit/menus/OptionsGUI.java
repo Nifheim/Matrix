@@ -1,8 +1,5 @@
 package com.github.beelzebu.matrix.bukkit.menus;
 
-import cl.indiopikaro.bukkitutil.api.ItemBuilder;
-import cl.indiopikaro.bukkitutil.api.menu.BaseMenu;
-import cl.indiopikaro.bukkitutil.util.CompatUtil;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
@@ -17,6 +14,9 @@ import com.github.beelzebu.matrix.player.options.SpeedOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import net.nifheim.bukkit.util.CompatUtil;
+import net.nifheim.bukkit.util.ItemBuilder;
+import net.nifheim.bukkit.util.menu.BaseMenu;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -25,6 +25,8 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffectType;
 
 /**
+ * TODO: remove
+ *
  * @author Beelzebu
  */
 public class OptionsGUI extends BaseMenu {

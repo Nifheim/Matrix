@@ -40,7 +40,7 @@ public class StatsPlaceholders extends PlaceholderExpansion {
             return "Player needed!";
         }
         if (stat.equals("nick")) {
-            return api.getDatabase().getPlayer(p.getUniqueId()).join().getDisplayName();
+            return api.getPlayerManager().getPlayer(p).join().getDisplayName();
         }
         // <server>_top_<stat>_<type>_<request>_<pos>
         // 0        1   2      3      4         5
@@ -106,18 +106,6 @@ public class StatsPlaceholders extends PlaceholderExpansion {
         return "UNKNOWN STATISTIC OR SERVER";
     }
 
-    private String getValue(TopEntry entry, String request) {
-        switch (request) {
-            case "position":
-                return String.valueOf(entry.getPosition());
-            case "value":
-                return String.valueOf(entry.getValue());
-            case "name":
-            default:
-                return entry.getName();
-        }
-    }
-
     @Override
     public String getIdentifier() {
         return "matrix";
@@ -136,5 +124,17 @@ public class StatsPlaceholders extends PlaceholderExpansion {
     @Override
     public boolean persist() {
         return true;
+    }
+
+    private String getValue(TopEntry entry, String request) {
+        switch (request) {
+            case "position":
+                return String.valueOf(entry.getPosition());
+            case "value":
+                return String.valueOf(entry.getValue());
+            case "name":
+            default:
+                return entry.getName();
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.bukkit.listener;
 
-import cl.indiopikaro.bukkitutil.util.CompatUtil;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
@@ -8,13 +7,14 @@ import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.util.MetaInjector;
-import com.github.beelzebu.matrix.util.PermsUtils;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.clip.placeholderapi.PlaceholderAPI;
+import net.nifheim.bukkit.util.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -53,7 +53,7 @@ public class LoginListener implements Listener {
             if ((serverInfo.getServerType().equals(ServerType.LOBBY) || serverInfo.getServerType().equals(ServerType.SURVIVAL) || serverInfo.getServerType().equals(ServerType.MINIGAME_MULTIARENA))) {
                 if (!matrixPlayer.isVanished()) {
                     if (player.hasPermission("matrix.joinmessage")) {
-                        e.setJoinMessage(StringUtils.replace(" &8[&a+&8] &f" + PermsUtils.getPrefix(player.getUniqueId()) + matrixPlayer.getDisplayName() + " &ese ha unido al servidor"));
+                        e.setJoinMessage(StringUtils.replace(PlaceholderAPI.setPlaceholders(player, "&8[&a+&8] &f%vault_prefix%%player_name% &ese ha unido al servidor")));
                     }
                     if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
                         Bukkit.getOnlinePlayers().forEach(op -> op.playSound(op.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 10, 2));

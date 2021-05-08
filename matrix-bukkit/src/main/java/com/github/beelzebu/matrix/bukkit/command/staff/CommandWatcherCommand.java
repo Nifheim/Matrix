@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,8 +11,10 @@ import org.bukkit.entity.Player;
  */
 public class CommandWatcherCommand extends MatrixCommand {
 
+    public static String PERMISSION = "matrix.command.commandwatcher";
+
     public CommandWatcherCommand() {
-        super("cw", "matrix.command.commandwatcher", "vc");
+        super("cw", PERMISSION, "vc");
     }
 
     @Override

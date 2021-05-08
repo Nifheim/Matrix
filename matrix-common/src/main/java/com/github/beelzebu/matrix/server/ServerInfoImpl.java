@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerInfoImpl extends ServerInfo {
@@ -38,6 +39,9 @@ public class ServerInfoImpl extends ServerInfo {
             this.serverName = serverName.toLowerCase();
         } else {
             this.serverName = generateServerName(serverType, groupName, serverName);
+        }
+        if (this.serverName == null || this.serverName.trim().isEmpty()) {
+            throw new IllegalArgumentException("serverName");
         }
         this.gameMode = gameMode == null ? (serverType == ServerType.SURVIVAL ? GameMode.SURVIVAL : GameMode.ADVENTURE) : gameMode;
         if (serverType == ServerType.PROXY || serverType == ServerType.AUTH || serverType == ServerType.LOBBY) {
@@ -73,23 +77,23 @@ public class ServerInfoImpl extends ServerInfo {
      * @param groupName  name for the group of the server.
      * @param serverName name for the server.
      * @return the generated name.
-     * @see #formatServerNamePrefix(ServerType, String, String)
+     * @see #formatServerName(ServerType, String, String)
      */
     private String generateServerName(ServerType serverType, String groupName, @Nullable String serverName) {
         Matrix.getLogger().debug("Generating server name: " + serverType + " " + groupName + " " + serverName);
         if (unique) {
             Matrix.getLogger().debug("Server is unique, returning default name");
-            return formatServerNamePrefix(serverType, groupName, serverName);
+            return formatServerName(serverType, groupName, serverName);
         }
         String name;
         List<String> servers = Matrix.getAPI().getServerManager().getServers(groupName).thenApply(serverInfos -> serverInfos.stream()
                 .map(ServerInfo::getServerName)
                 .filter(n ->
-                        n.startsWith(formatServerNamePrefix(serverType, groupName, serverName))
+                        n.startsWith(formatServerName(serverType, groupName, serverName))
                 ).collect(Collectors.toList())).join();
 
         for (int i = 1; ; ) {
-            name = formatServerNamePrefix(serverType, groupName, null) + i;
+            name = formatServerName(serverType, groupName, null) + i;
             if (!servers.contains(name)) {
                 break;
             } else {
@@ -99,7 +103,7 @@ public class ServerInfoImpl extends ServerInfo {
         return name;
     }
 
-    private String formatServerNamePrefix(ServerType serverType, String groupName, @Nullable String serverName) {
+    private String formatServerName(@NotNull ServerType serverType, @NotNull String groupName, @Nullable String serverName) {
         StringBuilder name = new StringBuilder();
         name.append(groupName);
         if (serverName != null && !Objects.equals(groupName, serverName)) {

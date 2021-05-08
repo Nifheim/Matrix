@@ -1,38 +1,29 @@
-package com.github.beelzebu.matrix.bungee.command;
+package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import com.github.beelzebu.matrix.util.PermsUtils;
 import com.google.gson.GsonBuilder;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.stream.Collectors;
-import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.TabExecutor;
+import net.nifheim.bukkit.util.command.MatrixCommand;
+import org.bukkit.command.CommandSender;
 
-public class PlayerInfoCommand extends Command implements TabExecutor {
+public class PlayerInfoCommand extends MatrixCommand {
 
-    private final MatrixBungeeBootstrap bootstrap;
-
-    public PlayerInfoCommand(MatrixBungeeBootstrap bootstrap) {
+    public PlayerInfoCommand() {
         super("playerinfo", "matrix.command.pinfo", "pinfo", "lookup");
-        this.bootstrap = bootstrap;
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        bootstrap.getApi().getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
+    public void onCommand(CommandSender sender, String[] args) {
+        api.getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
             if (args.length == 0) {
                 sender.sendMessage(StringUtils.replace("%prefix% &6Por favor usa &e/" + getName() + " <nombre>"));
             } else {
-                MatrixPlayer player = bootstrap.getApi().getPlayerManager().getPlayerByName(args[0]).join();
+                MatrixPlayer player = api.getPlayerManager().getPlayerByName(args[0]).join();
                 if (player != null) {
                     if (args.length >= 2 && args[1].equalsIgnoreCase("json")) {
                         sender.sendMessage(TextComponent.fromLegacyText(new GsonBuilder().setPrettyPrinting().create().toJson(player, MongoMatrixPlayer.class)));
@@ -42,7 +33,6 @@ public class PlayerInfoCommand extends Command implements TabExecutor {
                                         + " \n"
                                         + " &cUUID &8• &7" + player.getUniqueId() + "&r\n"
                                         + " &cDisplay name &8• &7" + player.getDisplayName() + "&r\n"
-                                        + " &cRank &8• &7" + (PermsUtils.getPrefix(player.getUniqueId()).length() < 3 ? "default" : PermsUtils.getPrefix(player.getUniqueId())) + "&r\n"
                                         + " &cDiscord Id &8• &7" + (player.getDiscordId() != null ? player.getDiscordId() : "Not associated") + "&r\n"
                                         + " &cVanished &8• &7" + player.isVanished() + "&r\n"
                                         + " &cLast Locale &8• &7" + player.getLastLocale() + "&r\n"
@@ -65,11 +55,6 @@ public class PlayerInfoCommand extends Command implements TabExecutor {
                 }
             }
         });
-    }
-
-    @Override
-    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return ProxyServer.getInstance().getPlayers().stream().filter(proxiedPlayer -> proxiedPlayer.getName().toLowerCase().startsWith(args.length >= 1 ? args[0] : "")).map(ProxiedPlayer::getName).collect(Collectors.toSet());
     }
 
     private String createList(Collection<String> collection) {

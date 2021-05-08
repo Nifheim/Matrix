@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.command.utils;
 
-import cl.indiopikaro.bukkitutil.api.command.MatrixCommand;
 import java.util.List;
+import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;

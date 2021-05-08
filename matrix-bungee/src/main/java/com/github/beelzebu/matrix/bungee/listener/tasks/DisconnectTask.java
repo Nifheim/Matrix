@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bungee.tasks;
+package com.github.beelzebu.matrix.bungee.listener.tasks;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;

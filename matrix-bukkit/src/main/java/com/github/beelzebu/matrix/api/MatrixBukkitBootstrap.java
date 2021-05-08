@@ -1,8 +1,5 @@
 package com.github.beelzebu.matrix.api;
 
-import cl.indiopikaro.bukkitutil.BukkitCoreUtils;
-import cl.indiopikaro.bukkitutil.api.command.CommandAPI;
-import cl.indiopikaro.bukkitutil.util.CompatUtil;
 import com.destroystokyo.paper.PaperConfig;
 import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
@@ -10,10 +7,15 @@ import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.server.ServerType;
+import com.github.beelzebu.matrix.bukkit.command.staff.BungeeTPCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.CommandWatcherCommand;
+import com.github.beelzebu.matrix.bukkit.command.staff.CrackedCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.FreezeCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.MatrixReloadCommand;
+import com.github.beelzebu.matrix.bukkit.command.staff.MatrixServersCommand;
+import com.github.beelzebu.matrix.bukkit.command.staff.PlayerInfoCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.ReloadCommand;
+import com.github.beelzebu.matrix.bukkit.command.staff.ReplyCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.StopCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.VanishCommand;
 import com.github.beelzebu.matrix.bukkit.command.user.OptionsCommand;
@@ -23,7 +25,6 @@ import com.github.beelzebu.matrix.bukkit.command.utils.AddLoreCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.MatrixManagerCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.RemoveLoreCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.RenameCommand;
-import com.github.beelzebu.matrix.bukkit.command.utils.SyncCommand;
 import com.github.beelzebu.matrix.bukkit.config.BukkitConfiguration;
 import com.github.beelzebu.matrix.bukkit.listener.DupepatchListener;
 import com.github.beelzebu.matrix.bukkit.listener.InternalListener;
@@ -42,10 +43,12 @@ import com.github.beelzebu.matrix.bukkit.util.placeholders.StatsPlaceholders;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.io.File;
 import java.util.Date;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import net.nifheim.bukkit.util.BukkitCoreUtils;
+import net.nifheim.bukkit.util.CompatUtil;
+import net.nifheim.bukkit.util.command.CommandAPI;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -61,7 +64,6 @@ import org.spigotmc.SpigotConfig;
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
     private final BukkitCoreUtils bukkitCoreUtils = new BukkitCoreUtils();
-    private final String[] localAddresses = {"10.8.0.1", "10.8.0.2", "10.8.0.3", "10.8.0.4", "10.8.0.5"};
     private MatrixBukkitAPI api;
     private boolean chatMuted = false;
     private BukkitConfiguration configuration;
@@ -99,6 +101,14 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         bukkitCoreUtils.disable();
         if (serverRegisterMessage != null) { // check if server was registered first
             new ServerUnregisterMessage().send();
+            int players = Bukkit.getOnlinePlayers().size();
+            if (players != 0) {
+                try {
+                    Thread.sleep(500 + players * 50L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         getScheduler().shutdownExecutor();
         getScheduler().shutdownScheduler();
@@ -147,22 +157,19 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new RenameCommand());
         CommandAPI.registerCommand(this, new MatrixManagerCommand());
         CommandAPI.registerCommand(this, new SpitCommand());
-        CommandAPI.registerCommand(this, new SyncCommand());
         CommandAPI.registerCommand(this, new ReloadCommand());
         CommandAPI.registerCommand(this, new StopCommand());
         CommandAPI.registerCommand(this, new VanishCommand());
         CommandAPI.registerCommand(this, new ProfileCommand());
+        CommandAPI.registerCommand(this, new BungeeTPCommand());
+        CommandAPI.registerCommand(this, new CrackedCommand());
+        CommandAPI.registerCommand(this, new MatrixServersCommand());
+        CommandAPI.registerCommand(this, new PlayerInfoCommand());
+        CommandAPI.registerCommand(this, new ReplyCommand());
 
         pluginsUtility = new PluginsUtility();
 
-        serverRegisterMessage = null;
-
-        for (String ip : localAddresses) {
-            if (Objects.equals(Bukkit.getIp(), ip)) {
-                serverRegisterMessage = new ServerRegisterMessage(api.getServerInfo(), ip, Bukkit.getPort());
-                break;
-            }
-        }
+        serverRegisterMessage = new ServerRegisterMessage(api.getServerInfo(), Bukkit.getIp(), Bukkit.getPort());
 
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             pluginsUtility.checkForPluginsToRemove();
@@ -251,14 +258,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     }
 
     private void loadManagers() {
-        if (Bukkit.getPluginManager().getPlugin("LuckPerms") != null) {
-            if (Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
-                Matrix.getLogger().info("LuckPerms found, hooking into it.");
-            } else {
-                Bukkit.shutdown();
-                return;
-            }
-        }
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
             new StatsPlaceholders(api).register();

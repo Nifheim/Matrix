@@ -21,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class OnlinePlaceholders extends PlaceholderExpansion {
 
-    private AtomicInteger bungeeCount = new AtomicInteger(0);
     private final LoadingCache<String, String> status = Caffeine.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES).weakValues().build(new CacheLoader<String, String>() {
         @Override
         public @Nullable String load(@NonNull String key) throws Exception {
@@ -56,6 +55,7 @@ public class OnlinePlaceholders extends PlaceholderExpansion {
             return Matrix.getAPI().getPlayerManager().getOnlinePlayerCountInGroup(key);
         }
     });
+    private final AtomicInteger bungeeCount = new AtomicInteger(0);
 
     public OnlinePlaceholders(MatrixBukkitAPI api) {
         Matrix.getAPI().getPlugin().getBootstrap().getScheduler().asyncRepeating(() -> bungeeCount.set(api.getPlayerManager().getOnlinePlayerCountSync()), 5, TimeUnit.SECONDS);

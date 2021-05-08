@@ -3,6 +3,7 @@ package com.github.beelzebu.matrix.bukkit.listener;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.bukkit.command.staff.CommandWatcherCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +27,10 @@ public class PlayerCommandPreprocessListener implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             api.getPlayerManager().getPlayer(player).thenAccept(matrixPlayer -> {
                 if (!matrixPlayer.isWatcher()) {
+                    return;
+                }
+                if (!player.hasPermission(CommandWatcherCommand.PERMISSION)) {
+                    matrixPlayer.setWatcher(false);
                     return;
                 }
                 if (!matrixPlayer.isLoggedIn()) {

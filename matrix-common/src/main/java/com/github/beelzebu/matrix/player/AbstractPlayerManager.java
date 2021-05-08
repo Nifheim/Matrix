@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.Response;
 
 /**
  * @author Beelzebu
@@ -284,23 +283,7 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         if (hexId == null) {
             return CompletableFuture.completedFuture(null);
         }
-        return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
-            try (Jedis jedis = api.getRedisManager().getResource()) {
-                Response<String> cachedServerName = null;
-                try (Pipeline pipeline = jedis.pipelined()) {
-                    if (serverName != null) {
-                        pipeline.set(PLAYER_SERVER_KEY_PREFIX + hexId, serverName);
-                        pipeline.sadd(ONLINE_PLAYERS_SERVER_KEY_PREFIX + serverName, hexId);
-                    } else {
-                        cachedServerName = pipeline.get(PLAYER_SERVER_KEY_PREFIX + hexId);
-                    }
-                    pipeline.sync();
-                }
-                if (cachedServerName != null) {
-                    jedis.srem(ONLINE_PLAYERS_SERVER_KEY_PREFIX + cachedServerName.get(), hexId);
-                }
-            }
-        });
+        return updateOnline(hexId, serverName, PLAYER_SERVER_KEY_PREFIX, ONLINE_PLAYERS_SERVER_KEY_PREFIX);
     }
 
     @Override
@@ -317,23 +300,22 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
 
     @Override
     public CompletableFuture<Void> setGroupById(String hexId, String groupName) {
-        if (hexId == null) {
-            return CompletableFuture.completedFuture(null);
-        }
+        return updateOnline(hexId, groupName, PLAYER_GROUP_KEY_PREFIX, ONLINE_PLAYERS_GROUP_KEY_PREFIX);
+    }
+
+    private CompletableFuture<Void> updateOnline(String hexId, String where, String playerKeyPrefix, String onlinePlayersKeyPrefix) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             try (Jedis jedis = api.getRedisManager().getResource()) {
-                Response<String> cachedGroupName = null;
-                try (Pipeline pipeline = jedis.pipelined()) {
-                    if (groupName != null) {
-                        pipeline.set(PLAYER_GROUP_KEY_PREFIX + hexId, groupName);
-                        pipeline.sadd(ONLINE_PLAYERS_GROUP_KEY_PREFIX + groupName, hexId);
-                    } else {
-                        cachedGroupName = pipeline.get(PLAYER_GROUP_KEY_PREFIX + hexId);
+                String cachedGroupName = jedis.get(playerKeyPrefix + hexId);
+                if (where != null && !Objects.equals(cachedGroupName, where)) {
+                    try (Pipeline pipeline = jedis.pipelined()) {
+                        pipeline.set(playerKeyPrefix + hexId, where);
+                        pipeline.sadd(onlinePlayersKeyPrefix + where, hexId);
+                        pipeline.sync();
                     }
-                    pipeline.sync();
                 }
                 if (cachedGroupName != null) {
-                    jedis.srem(ONLINE_PLAYERS_GROUP_KEY_PREFIX + cachedGroupName.get(), hexId);
+                    jedis.srem(onlinePlayersKeyPrefix + cachedGroupName, hexId);
                 }
             }
         });
