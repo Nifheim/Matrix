@@ -105,7 +105,10 @@ public class ServerManagerImpl implements ServerManager {
 
     public @Nullable ServerInfo getServer(String name, Jedis jedis) {
         try {
-            return new ServerInfoImpl(name, jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name));
+            Map<String, String> data = jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name);
+            if (data != null && !data.isEmpty()) {
+                return new ServerInfoImpl(name, data);
+            }
         } catch (JedisException | NullPointerException | IllegalArgumentException ex) {
             Matrix.getLogger().log("An error has occurred getting server with name " + name + "  from cache.");
             Matrix.getLogger().debug(ex);
