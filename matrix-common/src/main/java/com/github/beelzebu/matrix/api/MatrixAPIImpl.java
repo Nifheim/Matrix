@@ -18,7 +18,7 @@ import com.github.beelzebu.matrix.dependency.DependencyManager;
 import com.github.beelzebu.matrix.dependency.DependencyRegistry;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
-import com.github.beelzebu.matrix.messaging.RedisMessaging;
+import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.server.ServerManagerImpl;
 import com.github.beelzebu.matrix.task.HeartbeatTask;

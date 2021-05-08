@@ -1,9 +1,6 @@
-package com.github.beelzebu.matrix.messaging;
+package com.github.beelzebu.matrix.api.messaging;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.messaging.MessageListener;
-import com.github.beelzebu.matrix.api.messaging.Messaging;
-import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessage;
 import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
@@ -119,6 +116,16 @@ public class RedisMessaging implements Messaging {
             JsonObject jobj = Matrix.GSON.fromJson(message, JsonObject.class);
             if (messages.contains(UUID.fromString(jobj.get("uniqueId").getAsString()))) {
                 return;
+            }
+            try {
+                Message matrixMessage = Matrix.GSON.fromJson(message, Message.class);
+                for (MessageListener messageListener : messageListeners) {
+                    if (messageListener.getMessageType() == matrixMessage.getMessageType()) {
+                        messageListener.onMessage(matrixMessage);
+                    }
+                }
+                return;
+            } catch (Exception ignored) {
             }
             RedisMessageType type = RedisMessageType.valueOf(jobj.get("redisMessageType").getAsString());
             Matrix.getLogger().debug("Redis Log: Received a message in channel: " + type);
