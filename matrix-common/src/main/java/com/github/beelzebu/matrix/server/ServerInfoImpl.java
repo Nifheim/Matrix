@@ -39,6 +39,9 @@ public class ServerInfoImpl extends ServerInfo {
         } else {
             this.serverName = generateServerName(serverType, groupName, serverName);
         }
+        if (this.serverName == null || this.serverName.trim().isEmpty()) {
+            throw new IllegalArgumentException("serverName");
+        }
         this.gameMode = gameMode == null ? (serverType == ServerType.SURVIVAL ? GameMode.SURVIVAL : GameMode.ADVENTURE) : gameMode;
         if (serverType == ServerType.PROXY || serverType == ServerType.AUTH || serverType == ServerType.LOBBY) {
             this.lobby = new FinalCachedValue<>(() -> null);
