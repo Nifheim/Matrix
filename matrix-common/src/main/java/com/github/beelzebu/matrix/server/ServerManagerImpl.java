@@ -156,8 +156,10 @@ public class ServerManagerImpl implements ServerManager {
     public @NotNull CompletableFuture<Void> heartbeat(@NotNull ServerInfo serverInfo) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Matrix.getLogger().debug("Sending heartbeat");
-            try (Jedis jedis = api.getRedisManager().getResource()) {
-                jedis.set(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName(), String.valueOf(System.currentTimeMillis()));
+            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
+                pipeline.sadd(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
+                pipeline.set(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName(), String.valueOf(System.currentTimeMillis()));
+                pipeline.sync();
                 Matrix.getLogger().debug("Heartbeat sent");
             }
         });
