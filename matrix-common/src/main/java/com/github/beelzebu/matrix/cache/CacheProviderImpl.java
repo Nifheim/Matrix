@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.exceptions.JedisException;
@@ -132,21 +133,45 @@ public class CacheProviderImpl implements CacheProvider {
         Objects.requireNonNull(uniqueId, "uniqueId");
         Objects.requireNonNull(hexId, "hexId");
         name = name.toLowerCase();
-        String uuidById = UUID_KEY_PREFIX + hexId;
-        String uuidByName = UUID_KEY_PREFIX + name;
-        String nameById = NAME_KEY_PREFIX + hexId;
-        String nameByUuid = NAME_KEY_PREFIX + uniqueId;
-        String idByUuid = ID_KEY_PREFIX + uniqueId;
-        String idByName = ID_KEY_PREFIX + name;
+        String UUID_BY_ID_KEY = UUID_KEY_PREFIX + hexId;
+        String UUID_BY_NAME_KEY = UUID_KEY_PREFIX + name;
+        String NAME_BY_ID_KEY = NAME_KEY_PREFIX + hexId;
+        String NAME_BY_UUID_KEY = NAME_KEY_PREFIX + uniqueId;
+        String ID_BY_UUID_KEY = ID_KEY_PREFIX + uniqueId;
+        String ID_BY_NAME_KEY = ID_KEY_PREFIX + name;
 
-        try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
-            pipeline.setex(uuidById, CACHE_SECONDS, uniqueId.toString());
-            pipeline.setex(uuidByName, CACHE_SECONDS, uniqueId.toString());
-            pipeline.setex(nameById, CACHE_SECONDS, name);
-            pipeline.setex(nameByUuid, CACHE_SECONDS, name);
-            pipeline.setex(idByUuid, CACHE_SECONDS, hexId);
-            pipeline.setex(idByName, CACHE_SECONDS, hexId);
-            pipeline.sync();
+        try (Jedis jedis = api.getRedisManager().getResource()) {
+            String oldUUID;
+            String oldName;
+            try (Pipeline pipeline = jedis.pipelined()) {
+                Response<String> oldUUIDResponse = pipeline.get(UUID_BY_ID_KEY);
+                Response<String> oldNameResponse = pipeline.get(NAME_BY_ID_KEY);
+                pipeline.sync();
+                oldUUID = oldUUIDResponse.get();
+                oldName = oldNameResponse.get();
+            }
+            if (oldName != null || oldUUID != null) {
+                try (Pipeline pipeline = jedis.pipelined()) {
+                    if (oldName != null) {
+                        pipeline.del(UUID_KEY_PREFIX + oldName);
+                        pipeline.del(ID_KEY_PREFIX + oldName);
+                    }
+                    if (oldUUID != null) {
+                        pipeline.del(NAME_KEY_PREFIX + oldUUID);
+                        pipeline.del(ID_KEY_PREFIX + oldUUID);
+                    }
+                    pipeline.sync();
+                }
+            }
+            try (Pipeline pipeline = jedis.pipelined()) {
+                pipeline.setex(UUID_BY_ID_KEY, CACHE_SECONDS, uniqueId.toString());
+                pipeline.setex(UUID_BY_NAME_KEY, CACHE_SECONDS, uniqueId.toString());
+                pipeline.setex(NAME_BY_ID_KEY, CACHE_SECONDS, name);
+                pipeline.setex(NAME_BY_UUID_KEY, CACHE_SECONDS, name);
+                pipeline.setex(ID_BY_UUID_KEY, CACHE_SECONDS, hexId);
+                pipeline.setex(ID_BY_NAME_KEY, CACHE_SECONDS, hexId);
+                pipeline.sync();
+            }
         }
     }
 
