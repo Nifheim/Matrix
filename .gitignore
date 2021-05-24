@@ -14,6 +14,7 @@ buildNumber.properties
 out/
 .gradle/
 */build/
+build/
 .idea/dataSources.local.xml
 .idea/dataSources/
 .idea/shelf/
