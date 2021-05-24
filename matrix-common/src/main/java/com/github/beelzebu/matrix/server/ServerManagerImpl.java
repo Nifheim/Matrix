@@ -69,24 +69,14 @@ public class ServerManagerImpl implements ServerManager {
             Matrix.getLogger().debug("Getting servers on group " + groupName);// TODO: remove debug
             Set<ServerInfo> servers = new HashSet<>();
             try (Jedis jedis = api.getRedisManager().getResource()) {
-                String cursor = ScanParams.SCAN_POINTER_START;
-                ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*").count(100));
-                int iterations = 0;
-                do {
-                    iterations++;
-                    Matrix.getLogger().debug("Iteration: " + iterations);
-                    for (String serverKey : scan.getResult()) {
-                        Matrix.getLogger().debug("Result: " + serverKey);
-                        try {
-                            String serverName = serverKey.replaceFirst(SERVER_INFO_KEY_PREFIX, "");
-                            ServerInfo serverInfo = new ServerInfoImpl(serverName, jedis.hgetAll(serverKey));
-                            servers.add(serverInfo);
-                        } catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        }
+                for (String serverName : jedis.smembers(SERVER_GROUP_KEY_PREFIX + groupName)) {
+                    try {
+                        ServerInfo serverInfo = new ServerInfoImpl(serverName, jedis.hgetAll(SERVER_INFO_KEY_PREFIX + serverName));
+                        servers.add(serverInfo);
+                    } catch (IllegalArgumentException | NullPointerException e) {
+                        e.printStackTrace();
                     }
-                    scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*").count(100));
-                } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
+                }
             } catch (JedisException ex) {
                 Matrix.getLogger().log("An error has occurred getting servers for group " + groupName + " from cache.");
                 Matrix.getLogger().debug(ex);
