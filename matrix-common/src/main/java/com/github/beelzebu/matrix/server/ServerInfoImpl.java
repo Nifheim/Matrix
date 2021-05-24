@@ -7,6 +7,7 @@ import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.util.FinalCachedValue;
 import com.github.beelzebu.matrix.util.SingleCachedValue;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -127,7 +128,7 @@ public class ServerInfoImpl extends ServerInfo {
 
     @Override
     public @NotNull String getServerName() {
-        return this.serverName;
+        return this.serverName.trim().toLowerCase(Locale.ROOT);
     }
 
     @Override
