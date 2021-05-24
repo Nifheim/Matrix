@@ -123,7 +123,13 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     private Optional<String> getHexId(@NotNull Jedis jedis, @NotNull String name) {
+        Matrix.getLogger().debug("Requesting hex id for " + name + " from cache.");
         String hexId = jedis.get(ID_KEY_PREFIX + name.toLowerCase());
+        if (hexId != null) {
+            Matrix.getLogger().debug("HexId " + hexId + " found for " + name);
+        } else {
+            Matrix.getLogger().debug("HexId not found for " + name);
+        }
         return Optional.ofNullable(hexId);
     }
 
@@ -199,9 +205,15 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public @NotNull Optional<MatrixPlayer> getPlayerByName(@NotNull String name) {
-        name = name.toLowerCase();
-        UUID uniqueId = Optional.ofNullable(api.getPlugin().getUniqueId(name)).orElse(getUniqueIdByName(name).orElse(null));
-        return uniqueId != null ? getPlayer(uniqueId) : Optional.empty();
+        Matrix.getLogger().debug("Requesting player " + name + " from cache.");
+        try (Jedis jedis = api.getRedisManager().getResource()) {
+            Optional<String> hexId = getHexId(jedis, name);
+            if (hexId.isPresent()) {
+                return getPlayerById(hexId.get());
+            }
+            Matrix.getLogger().debug("HexId was not found for " + name + " so we can't get it from cache");
+            return Optional.empty();
+        }
     }
 
     @Override

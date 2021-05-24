@@ -58,10 +58,10 @@ public class ServerInfoImpl extends ServerInfo {
 
     @Deprecated
     public ServerInfoImpl(@NotNull String name, @NotNull Map<String, String> data) {
-        this(ServerType.valueOf(Objects.requireNonNull(data.get("servertype"))),
-                Objects.requireNonNull(data.get("group"), "groupName can't be null"),
+        this(ServerType.valueOf(Objects.requireNonNull(data.get("servertype"), "servertype for " + name)),
+                Objects.requireNonNull(data.get("group"), "groupName can't be null for " + name),
                 name,
-                GameMode.valueOf(Objects.requireNonNull(data.get("gamemode"))),
+                GameMode.valueOf(Objects.requireNonNull(data.get("gamemode"), "gamemode for " + name)),
                 Boolean.parseBoolean(data.get("unique")),
                 data.get("lobby"),
                 true);

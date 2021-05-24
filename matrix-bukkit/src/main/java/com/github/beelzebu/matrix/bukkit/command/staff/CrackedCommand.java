@@ -30,6 +30,7 @@ public class CrackedCommand extends MatrixCommand {
                 sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.GENERAL_NO_TARGET, I18n.DEFAULT_LOCALE).replace("%target%", name)));
                 return;
             }
+            sender.sendMessage("La cuenta de " + matrixPlayer.getName() + " será establecida como no premium.");
             matrixPlayer.setPremium(false);
             sender.sendMessage("La cuenta de " + matrixPlayer.getName() + " fue establecida como no premium.");
         });
