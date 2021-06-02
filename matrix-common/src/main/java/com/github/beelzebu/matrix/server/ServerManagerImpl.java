@@ -32,8 +32,23 @@ public class ServerManagerImpl implements ServerManager {
     // gamemode  : string
     // servertype
     // heartbeat : long
+    /**
+     * Stores all registered server groups
+     */
     public static final String SERVER_GROUPS_KEY = "matrix:servergroup"; // set
+    /**
+     * Keys using this prefix are sets which contains all keys (without prefix) for the servers on the group
+     */
     public static final String SERVER_GROUP_KEY_PREFIX = "matrix:servergroup:"; // set
+    /**
+     * Keys using this prefix are hashes which store all info for the server, including but not limited to:
+     * <ul>
+     *     <li>group</li>
+     *     <li>gameemode</li>
+     *     <li>servertype</li>
+     *     <li>heartbeat</li>
+     * </ul>
+     */
     public static final String SERVER_INFO_KEY_PREFIX = "matrix:serverinfo:"; // hash
     public static final String SERVER_HEARTBEAT_KEY_PREFIX = "matrix:serverheartbeat:"; // value
     private final MatrixAPIImpl api;
@@ -66,12 +81,13 @@ public class ServerManagerImpl implements ServerManager {
     @Override
     public @NotNull CompletableFuture<Set<ServerInfo>> getServers(String groupName) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
-            Matrix.getLogger().debug("Getting servers on group " + groupName);// TODO: remove debug
+            Matrix.getLogger().debug("Getting servers on group " + groupName);
             Set<ServerInfo> servers = new HashSet<>();
             try (Jedis jedis = api.getRedisManager().getResource()) {
                 for (String serverName : jedis.smembers(SERVER_GROUP_KEY_PREFIX + groupName)) {
                     try {
                         ServerInfo serverInfo = new ServerInfoImpl(serverName, jedis.hgetAll(SERVER_INFO_KEY_PREFIX + serverName));
+                        Matrix.getLogger().debug("  Server " + serverInfo.getServerName() + " is on group " + groupName);
                         servers.add(serverInfo);
                     } catch (IllegalArgumentException | NullPointerException e) {
                         e.printStackTrace();
