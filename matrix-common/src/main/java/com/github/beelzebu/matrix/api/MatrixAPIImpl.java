@@ -46,7 +46,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class MatrixAPIImpl extends MatrixAPI {
 
-    public static final String DOMAIN_NAME = "mc.indiopikaro.net";
+    public static final String DOMAIN_NAME = "mc.hispanocraft.net";
     public static final Set<String> DOMAIN_NAMES = ImmutableSet.of(DOMAIN_NAME, ".net", ".cl", ".com");
     private final @NotNull MatrixPlugin plugin;
     private final @NotNull MatrixDatabaseImpl database;
