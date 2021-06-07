@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.bungee.listener;
 
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
-import com.github.beelzebu.matrix.bungee.tablist.TablistManager;
 import com.github.beelzebu.matrix.bungee.listener.tasks.DisconnectTask;
 import com.github.beelzebu.matrix.bungee.listener.tasks.LoginTask;
 import com.github.beelzebu.matrix.bungee.listener.tasks.PostLoginTask;
@@ -10,7 +9,6 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
-import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import org.jetbrains.annotations.NotNull;
@@ -21,13 +19,6 @@ public class LoginListener implements Listener {
 
     public LoginListener(MatrixBungeeAPI api) {
         this.api = api;
-    }
-
-    @EventHandler(priority = Byte.MAX_VALUE)
-    public void onServerSwitch(@NotNull ServerSwitchEvent e) {
-        if (e.getPlayer().isConnected()) {
-            e.getPlayer().setTabHeader(TablistManager.getTabHeader(e.getPlayer()), TablistManager.getTabFooter(e.getPlayer()));
-        }
     }
 
     @EventHandler(priority = Byte.MAX_VALUE)

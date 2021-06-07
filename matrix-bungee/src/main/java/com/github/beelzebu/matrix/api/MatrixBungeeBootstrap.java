@@ -23,7 +23,6 @@ import com.github.beelzebu.matrix.bungee.listener.ServerUnregisterListener;
 import com.github.beelzebu.matrix.bungee.motd.MotdManager;
 import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.scheduler.BungeeSchedulerAdapter;
-import com.github.beelzebu.matrix.bungee.tablist.TablistManager;
 import com.github.beelzebu.matrix.task.ServerCleanupTask;
 import java.io.File;
 import java.io.IOException;
@@ -106,12 +105,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
         influencerManager = new InfluencerManager(this);
         influencerManager.loadInfluencers();
-
-        TablistManager.init();
-
-        for (ProxiedPlayer proxiedPlayer : getProxy().getPlayers()) {
-            proxiedPlayer.setTabHeader(TablistManager.getTabHeader(proxiedPlayer), TablistManager.getTabFooter(proxiedPlayer));
-        }
 
         getScheduler().asyncRepeating(new ServerCleanupTask(api), 5, TimeUnit.MINUTES);
     }

@@ -2,7 +2,6 @@ package com.github.beelzebu.matrix.bungee.command;
 
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.bungee.motd.MotdManager;
-import com.github.beelzebu.matrix.bungee.tablist.TablistManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +25,6 @@ public class MatrixCommand extends Command {
                 bungeeBootstrap.getApi().reload();
                 MotdManager.onEnable();
                 bungeeBootstrap.getInfluencerManager().reloadInfluencers();
-                TablistManager.init();
             }
         }
     }
