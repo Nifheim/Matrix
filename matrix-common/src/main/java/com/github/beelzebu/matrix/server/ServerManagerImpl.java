@@ -4,12 +4,10 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerManager;
-import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.util.FinalCachedValue;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -18,8 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -90,7 +86,7 @@ public class ServerManagerImpl implements ServerManager {
                         Matrix.getLogger().debug("  Server " + serverInfo.getServerName() + " is on group " + groupName);
                         servers.add(serverInfo);
                     } catch (IllegalArgumentException | NullPointerException e) {
-                        e.printStackTrace();
+                        throw new JedisException("Error reading data for " + serverName, e);
                     }
                 }
             } catch (JedisException ex) {
@@ -108,19 +104,6 @@ public class ServerManagerImpl implements ServerManager {
                 return Optional.ofNullable(getServer(name, jedis));
             }
         });
-    }
-
-    public @Nullable ServerInfo getServer(@NotNull String name, @NotNull Jedis jedis) {
-        try {
-            Map<String, String> data = jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name);
-            if (data != null && !data.isEmpty()) {
-                return new ServerInfoImpl(name, data);
-            }
-        } catch (@NotNull JedisException | NullPointerException | IllegalArgumentException ex) {
-            Matrix.getLogger().log("An error has occurred getting server with name " + name + "  from cache.");
-            Matrix.getLogger().debug(ex);
-        }
-        return null;
     }
 
     @Override
@@ -210,6 +193,23 @@ public class ServerManagerImpl implements ServerManager {
         });
     }
 
+    @Override
+    public @NotNull String getLobbyForGroup(String groupName) {
+        Matrix.getLogger().debug("Finding lobby for " + groupName);
+        try (Jedis jedis = api.getRedisManager().getResource()) {
+            Set<String> serverNames = jedis.smembers(SERVER_GROUP_KEY_PREFIX + groupName);
+            for (String serverName : serverNames) {
+                if (serverName.matches(groupName + ":lobby\\d?")) {
+                    return serverName;
+                }
+            }
+        } catch (JedisException ex) {
+            Matrix.getLogger().log("An error has occurred getting servers for group " + groupName + " from cache.");
+            Matrix.getLogger().debug(ex);
+        }
+        return "lobby1";
+    }
+
     private void checkServerGroups(@NotNull Jedis jedis) {
         Set<String> deadGroups = new HashSet<>();
         Map<String, Set<String>> deadServers = new HashMap<>();
@@ -239,34 +239,17 @@ public class ServerManagerImpl implements ServerManager {
         }
     }
 
-    @Override
-    public @NotNull String getLobbyForGroup(String groupName) {
-        Matrix.getLogger().debug("Finding lobby for " + groupName);
-        try (Jedis jedis = api.getRedisManager().getResource()) {
-            String cursor = ScanParams.SCAN_POINTER_START;
-            ScanResult<String> scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*lobby*").count(100));
-            int iterations = 0;
-            do {
-                iterations++;
-                Matrix.getLogger().debug("Iteration: " + iterations);
-                for (String serverKey : scan.getResult()) {
-                    Matrix.getLogger().debug("Result: " + serverKey);
-                    try {
-                        String serverName = serverKey.replaceFirst(SERVER_INFO_KEY_PREFIX, "");
-                        ServerInfo serverInfo = new ServerInfoImpl(serverName, jedis.hgetAll(serverKey));
-                        if (serverInfo.getServerType() == ServerType.LOBBY) {
-                            return serverName;
-                        }
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                    }
-                }
-                scan = jedis.scan(cursor, new ScanParams().match(SERVER_INFO_KEY_PREFIX + groupName + "*lobby*").count(100));
-            } while (!Objects.equals(cursor = scan.getCursor(), ScanParams.SCAN_POINTER_START));
-        } catch (JedisException ex) {
-            Matrix.getLogger().log("An error has occurred getting servers for group " + groupName + " from cache.");
+    private @Nullable ServerInfo getServer(@NotNull String name, @NotNull Jedis jedis) {
+        try {
+            Map<String, String> data = jedis.hgetAll(SERVER_INFO_KEY_PREFIX + name);
+            if (data != null && !data.isEmpty()) {
+                return new ServerInfoImpl(name, data);
+            }
+        } catch (@NotNull JedisException | NullPointerException | IllegalArgumentException ex) {
+            Matrix.getLogger().log("An error has occurred getting server with name " + name + "  from cache.");
             Matrix.getLogger().debug(ex);
         }
         return null;
     }
+
 }
