@@ -39,7 +39,7 @@ public class ServerListListener implements Listener {
         @Override
         public @Nullable Favicon load(@NonNull String key) {
             BufferedImage bufferedImage;
-            Matrix.getLogger().info("Searching favicon: " + key);
+            Matrix.getLogger().debug("Searching favicon: " + key);
             try {
                 File imageFile = new File(new File(plugin.getDataFolder(), "favicons"), key + ".png");
                 if (!imageFile.exists()) {

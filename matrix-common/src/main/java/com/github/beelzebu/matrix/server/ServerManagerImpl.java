@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
@@ -66,6 +67,7 @@ public class ServerManagerImpl implements ServerManager {
                         servers.get(group).add(getServer(serverName, jedis));
                     }
                 }
+                checkServerGroups(jedis);
             } catch (JedisException ex) {
                 Matrix.getLogger().log("An error has occurred getting all servers from cache.");
                 Matrix.getLogger().debug(ex);
@@ -157,7 +159,7 @@ public class ServerManagerImpl implements ServerManager {
             Matrix.getLogger().debug("Sending heartbeat");
             try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
                 pipeline.sadd(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
-                pipeline.set(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName(), String.valueOf(System.currentTimeMillis()));
+                pipeline.setex(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName(), Math.toIntExact(TimeUnit.MINUTES.toMillis(15)), String.valueOf(System.currentTimeMillis()));
                 pipeline.sync();
                 Matrix.getLogger().debug("Heartbeat sent");
             }

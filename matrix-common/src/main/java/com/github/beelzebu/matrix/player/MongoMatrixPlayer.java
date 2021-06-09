@@ -573,16 +573,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return Matrix.getAPI().getDatabase().save(id == null ? null : getId(), this);
     }
 
-    @Override
-    public void setField(String fieldName, String json) {
-        Field field = FIELDS.get(fieldName);
-        if (field == null) {
-            Matrix.getLogger().info("Trying to update null field for " + getName() + " field: '" + fieldName + "' value: '" + json + "'");
-            return;
-        }
-        setField(field, json);
-    }
-
     @Deprecated
     public void updateCached(String field) {
         try {

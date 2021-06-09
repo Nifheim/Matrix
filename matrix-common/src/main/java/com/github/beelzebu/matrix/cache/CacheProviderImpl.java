@@ -331,8 +331,8 @@ public class CacheProviderImpl implements CacheProvider {
     public <T> @NotNull T updateCachedFieldById(@Nullable String hexId, @NotNull String field, @Nullable T value) {
         Objects.requireNonNull(hexId, "hexId");
         if (!isCachedById(hexId)) {
-            Matrix.getLogger().info("Trying to update cached field for a non cached player: " + hexId + " field: " + field + " value: " + value);
-            return value;
+            Matrix.getLogger().debug("Trying to update cached field for a non cached player: " + hexId + " field: " + field + " value: " + value + " - Skipping");
+            return Objects.requireNonNull(value, "value");
         }
         if (Objects.equals(field, "name") && value == null) {
             Matrix.getLogger().debug("Trying to save a null name for " + hexId);
