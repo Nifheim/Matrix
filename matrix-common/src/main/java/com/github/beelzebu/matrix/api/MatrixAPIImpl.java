@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.api;
 
+import com.github.beelzebu.matrix.api.command.CommandSource;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.level.LevelProvider;
-import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
@@ -17,6 +17,7 @@ import com.github.beelzebu.matrix.dependency.DependencyManager;
 import com.github.beelzebu.matrix.dependency.DependencyRegistry;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
+import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.player.AbstractPlayerManager;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.server.ServerManagerImpl;
@@ -156,26 +157,26 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
      */
     protected void setup() {
         loadMessages();
-        motd();
+        motd(plugin.getConsole());
         plugin.getBootstrap().getScheduler().asyncRepeating(new HeartbeatTask(this), 1, TimeUnit.MINUTES);
     }
 
-    private void motd() {
-        plugin.getConsole().sendMessage("");
-        plugin.getConsole().sendMessage(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"));
-        plugin.getConsole().sendMessage(StringUtils.replace("        &4Matrix &fBy: &7Beelzebu"));
-        plugin.getConsole().sendMessage("");
+    public void motd(CommandSource commandSource) {
+        commandSource.sendMessage("");
+        commandSource.sendMessage(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"));
+        commandSource.sendMessage(StringUtils.replace("        &4Matrix &fBy: &7Beelzebu"));
+        commandSource.sendMessage("");
         StringBuilder version = new StringBuilder();
         int spaces = (48 - ("v: " + plugin.getVersion()).length()) / 2;
         for (int i = 0; i < spaces; i++) {
             version.append(" ");
         }
         version.append(StringUtils.replace("&4v: &f" + plugin.getVersion()));
-        plugin.getConsole().sendMessage(StringUtils.replace(version.toString()));
-        plugin.getConsole().sendMessage(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"));
-        Matrix.getLogger().info("&7Server Info:");
-        Matrix.getLogger().info("&7Group: &6" + getServerInfo().getGroupName() + " &7Name: &6" + getServerInfo().getServerName());
-        Matrix.getLogger().info("&7ServerType: &6" + getServerInfo().getServerType() + " &7GameMode: &6" + getServerInfo().getDefaultGameMode() + " &7Lobby: &6" + getServerInfo().getLobbyServer().join());
+        commandSource.sendMessage(StringUtils.replace(version.toString()));
+        commandSource.sendMessage(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"));
+        commandSource.sendMessage(StringUtils.replace("&7Server Info:"));
+        commandSource.sendMessage(StringUtils.replace("&7Group: &6" + getServerInfo().getGroupName() + " &7Name: &6" + getServerInfo().getServerName()));
+        commandSource.sendMessage(StringUtils.replace("&7ServerType: &6" + getServerInfo().getServerType() + " &7GameMode: &6" + getServerInfo().getDefaultGameMode() + " &7Lobby: &6" + getServerInfo().getLobbyServer().join()));
     }
 
     private void loadMessages() {
@@ -221,7 +222,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
      * Shutdown this api instance.
      */
     void shutdown() {
-        motd();
+        motd(plugin.getConsole());
     }
 
     @Override

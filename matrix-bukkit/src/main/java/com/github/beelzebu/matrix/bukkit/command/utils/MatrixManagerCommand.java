@@ -1,5 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.command.utils;
 
+import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
+import com.github.beelzebu.matrix.api.command.BukkitCommandSource;
 import java.util.List;
 import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.Material;
@@ -24,6 +26,9 @@ public class MatrixManagerCommand extends MatrixCommand {
     public void onCommand(CommandSender sender, String[] args) {
         if (args[0].equalsIgnoreCase("sound")) {
             _sound(sender, args);
+        }
+        if (args[0].equalsIgnoreCase("motd")) {
+            ((MatrixBukkitAPI) api).motd(new BukkitCommandSource(sender));
         }
     }
 
