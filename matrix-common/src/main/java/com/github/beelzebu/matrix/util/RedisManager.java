@@ -23,9 +23,9 @@ public class RedisManager {
         config.setTestOnBorrow(true);
         config.setTestWhileIdle(true);
         if (password == null || password.trim().isEmpty()) {
-            pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, null, 2);
+            pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, null, 3);
         } else {
-            pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, password, 2);
+            pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, password, 3);
         }
         try (Jedis jedis = pool.getResource()) {
             jedis.ping();

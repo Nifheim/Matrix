@@ -21,7 +21,7 @@ import redis.clients.jedis.exceptions.JedisException;
  */
 public class RedisMessaging implements Messaging {
 
-    public static final String MATRIX_MESSAGING = "matrix:1:message";
+    public static final String MATRIX_MESSAGING = "matrix:2:message";
     private final Set<UUID> messages = new HashSet<>();
     private final Set<MessageListener> messageListeners = new LinkedHashSet<>();
     private final RedisManager redisManager;
