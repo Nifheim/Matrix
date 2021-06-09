@@ -3,9 +3,8 @@ package com.github.beelzebu.matrix.api;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.level.LevelProvider;
-import com.github.beelzebu.matrix.api.messaging.RedisMessaging;
+import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.api.player.GameMode;
-import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerManager;
@@ -134,12 +133,6 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     @Override
     public abstract @NotNull AbstractPlayerManager<?> getPlayerManager();
-
-    @Override
-    @Deprecated
-    public final boolean hasPermission(MatrixPlayer player, String permission) {
-        return false;
-    }
 
     @Override
     protected void initI18n() {

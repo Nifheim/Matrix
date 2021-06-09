@@ -3,9 +3,9 @@ package com.github.beelzebu.matrix.cache;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.cache.CacheProvider;
-import com.github.beelzebu.matrix.api.messaging.message.FieldUpdate;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
+import com.github.beelzebu.matrix.messaging.message.FieldUpdateMessage;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -328,21 +328,19 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public <T> @NotNull T updateCachedFieldById(@Nullable String hexId, @NotNull String field, @NotNull T value) {
-        if (hexId == null) {
-            return value;
-        }
+    public <T> @NotNull T updateCachedFieldById(@Nullable String hexId, @NotNull String field, @Nullable T value) {
+        Objects.requireNonNull(hexId, "hexId");
         if (!isCachedById(hexId)) {
             Matrix.getLogger().info("Trying to update cached field for a non cached player: " + hexId + " field: " + field + " value: " + value);
             return value;
         }
         if (Objects.equals(field, "name") && value == null) {
             Matrix.getLogger().debug("Trying to save a null name for " + hexId);
-            return null;
+            throw new NullPointerException("name");
         }
         if (Objects.equals(field, "uniqueId") && value == null) {
             Matrix.getLogger().debug("Trying to save a null uuid for " + hexId);
-            return null;
+            throw new NullPointerException("uniqueId");
         }
         try (Jedis jedis = api.getRedisManager().getResource()) {
             String jsonValue = Matrix.GSON.toJson(value);
@@ -352,7 +350,7 @@ public class CacheProviderImpl implements CacheProvider {
             } else {
                 jedis.hdel(getUserKey(hexId), field);
             }
-            new FieldUpdate(getUniqueIdById(hexId).orElse(api.getDatabase().getPlayerById(hexId).join().getUniqueId()), field, jsonValue).send();
+            api.getMessaging().sendMessage(new FieldUpdateMessage(hexId, field, value, value.getClass()));
         }
         return value;
     }

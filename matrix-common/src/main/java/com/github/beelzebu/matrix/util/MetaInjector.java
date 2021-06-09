@@ -23,11 +23,11 @@ public abstract class MetaInjector <P> {
         return getMeta(player, ID_KEY, String.class);
     }
 
-    public final @Nullable String getServerGroup(@NotNull P player) { // TODO inject meta on platforms
+    public final @Nullable String getServerGroup(@NotNull P player) {
         return getMeta(player, SERVER_GROUP_KEY, String.class);
     }
 
-    public final @Nullable String getServerName(@NotNull P player) { // TODO inject meta on platforms
+    public final @Nullable String getServerName(@NotNull P player) {
         return getMeta(player, SERVER_NAME_KEY, String.class);
     }
 }

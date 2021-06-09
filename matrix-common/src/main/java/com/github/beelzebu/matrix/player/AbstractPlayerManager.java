@@ -42,11 +42,11 @@ public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
         return metaInjector;
     }
 
-    protected abstract @Nullable P getPlatformPlayer(UUID uniqueId);
+    public abstract @Nullable P getPlatformPlayer(UUID uniqueId);
 
-    protected abstract @Nullable P getPlatformPlayerByName(String name);
+    public abstract @Nullable P getPlatformPlayerByName(String name);
 
-    protected abstract @Nullable P getPlatformPlayerById(String hexId);
+    public abstract @Nullable P getPlatformPlayerById(String hexId);
 
     @Override
     public final @NotNull CompletableFuture<MatrixPlayer> getPlayer(@NotNull P player) {

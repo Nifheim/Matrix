@@ -4,7 +4,6 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.cache.CacheProvider;
 import com.github.beelzebu.matrix.api.database.MatrixDatabase;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.player.PlayStats;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import java.util.Optional;
 import java.util.UUID;
@@ -142,16 +141,6 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     @Override
     public @NotNull CompletableFuture<Void> insertCommandLogEntryById(String hexId, String server, String command) {
         return schedulerAdapter.makeFuture(() -> storage.insertCommandLogEntryById(hexId, server, command));
-    }
-
-    @Override
-    public @NotNull CompletableFuture<Void> insertPlayStatsById(String hexId, String groupName, long playTime) {
-        return schedulerAdapter.makeFuture(() -> storage.insertPlayStatsById(hexId, groupName, playTime));
-    }
-
-    @Override
-    public @NotNull CompletableFuture<PlayStats> getPlayStatsById(String hexId, String groupName) {
-        return schedulerAdapter.makeFuture(() -> storage.getPlayStatsById(hexId, groupName));
     }
 
     @Override

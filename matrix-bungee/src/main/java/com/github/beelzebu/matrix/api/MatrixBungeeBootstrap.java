@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.api;
 
-import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
@@ -14,15 +13,16 @@ import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.bungee.influencer.InfluencerManager;
 import com.github.beelzebu.matrix.bungee.listener.ChatListener;
 import com.github.beelzebu.matrix.bungee.listener.LocaleListener;
-import com.github.beelzebu.matrix.bungee.listener.LoginFieldUpdateListener;
+import com.github.beelzebu.matrix.bungee.messaging.listener.LoginFieldUpdateListener;
 import com.github.beelzebu.matrix.bungee.listener.LoginListener;
 import com.github.beelzebu.matrix.bungee.listener.PermissionListener;
 import com.github.beelzebu.matrix.bungee.listener.ServerListListener;
-import com.github.beelzebu.matrix.bungee.listener.ServerRegisterListener;
-import com.github.beelzebu.matrix.bungee.listener.ServerUnregisterListener;
+import com.github.beelzebu.matrix.bungee.messaging.listener.ServerRegisterListener;
+import com.github.beelzebu.matrix.bungee.messaging.listener.ServerUnregisterListener;
 import com.github.beelzebu.matrix.bungee.motd.MotdManager;
 import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.scheduler.BungeeSchedulerAdapter;
+import com.github.beelzebu.matrix.messaging.message.ServerRequestMessage;
 import com.github.beelzebu.matrix.task.ServerCleanupTask;
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         api.getMessaging().registerListener(new ServerRegisterListener());
         api.getMessaging().registerListener(new ServerUnregisterListener());
         api.getMessaging().registerListener(new LoginFieldUpdateListener(this));
-        new ServerRequestMessage().send();
+        api.getMessaging().sendMessage(new ServerRequestMessage());
 
         influencerManager = new InfluencerManager(this);
         influencerManager.loadInfluencers();

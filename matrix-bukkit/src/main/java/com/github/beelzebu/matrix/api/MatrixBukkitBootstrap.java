@@ -1,8 +1,6 @@
 package com.github.beelzebu.matrix.api;
 
 import com.destroystokyo.paper.PaperConfig;
-import com.github.beelzebu.matrix.api.messaging.message.ServerRegisterMessage;
-import com.github.beelzebu.matrix.api.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
@@ -31,13 +29,17 @@ import com.github.beelzebu.matrix.bukkit.listener.InternalListener;
 import com.github.beelzebu.matrix.bukkit.listener.LoginListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerCommandPreprocessListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerDeathListener;
-import com.github.beelzebu.matrix.bukkit.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.bukkit.listener.VanishListener;
 import com.github.beelzebu.matrix.bukkit.listener.VotifierListener;
+import com.github.beelzebu.matrix.bukkit.messaging.listener.ServerRequestListener;
+import com.github.beelzebu.matrix.bukkit.messaging.listener.StaffChatListener;
+import com.github.beelzebu.matrix.bukkit.messaging.listener.TargetedMessageListener;
 import com.github.beelzebu.matrix.bukkit.plugin.MatrixPluginBukkit;
 import com.github.beelzebu.matrix.bukkit.scheduler.BukkitSchedulerAdapter;
 import com.github.beelzebu.matrix.bukkit.util.PluginsUtility;
 import com.github.beelzebu.matrix.bukkit.util.placeholders.OnlinePlaceholders;
+import com.github.beelzebu.matrix.messaging.message.ServerRegisterMessage;
+import com.github.beelzebu.matrix.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.io.File;
 import java.util.Date;
@@ -93,26 +95,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         }
         saveResource("config.yml", false);
         configuration = new BukkitConfiguration(new File(getDataFolder(), "config.yml"));
-    }
-
-    @Override
-    public void onDisable() {
-        bukkitCoreUtils.disable();
-        if (serverRegisterMessage != null) { // check if server was registered first
-            new ServerUnregisterMessage().send();
-            int players = Bukkit.getOnlinePlayers().size();
-            if (players != 0) {
-                try {
-                    Thread.sleep(500 + players * 50L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        getScheduler().shutdownExecutor();
-        getScheduler().shutdownScheduler();
-        api.shutdown();
-        Bukkit.getScheduler().cancelTasks(this);
     }
 
     @Override
@@ -181,7 +163,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 }
             });
             if (serverRegisterMessage != null) {
-                serverRegisterMessage.send();
+                api.getMessaging().sendMessage(serverRegisterMessage);
             }
         });
         if (api.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
@@ -197,6 +179,8 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             }
         }
         api.getMessaging().registerListener(new ServerRequestListener(this));
+        api.getMessaging().registerListener(new StaffChatListener());
+        api.getMessaging().registerListener(new TargetedMessageListener(this));
         new PlayerOptionChangeEvent.PlayerOptionChangeListener() {
             @Override
             public void onPlayerOptionChange(@NotNull PlayerOptionChangeEvent e) {
@@ -217,6 +201,26 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             }
         };
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+    }
+
+    @Override
+    public void onDisable() {
+        bukkitCoreUtils.disable();
+        if (serverRegisterMessage != null) { // check if server was registered first
+            api.getMessaging().sendMessage(new ServerUnregisterMessage(api.getServerInfo()));
+            int players = Bukkit.getOnlinePlayers().size();
+            if (players != 0) {
+                try {
+                    Thread.sleep(500 + players * 50L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        getScheduler().shutdownExecutor();
+        getScheduler().shutdownScheduler();
+        api.shutdown();
+        Bukkit.getScheduler().cancelTasks(this);
     }
 
     public boolean isVotifier() {

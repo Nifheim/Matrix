@@ -9,7 +9,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Beelzebu
  */
-public final class ServerUtil {
+@Deprecated
+public final class ServerUtil { // TODO: move to auth
 
     public static @Nullable ServerInfo getRandomLobby() {
         return getRandomLobby(null);

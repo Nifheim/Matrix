@@ -30,17 +30,17 @@ public class BungeePlayerManager extends AbstractPlayerManager<ProxiedPlayer> {
     }
 
     @Override
-    protected @Nullable ProxiedPlayer getPlatformPlayer(UUID uniqueId) {
+    public @Nullable ProxiedPlayer getPlatformPlayer(UUID uniqueId) {
         return ProxyServer.getInstance().getPlayer(uniqueId);
     }
 
     @Override
-    protected @Nullable ProxiedPlayer getPlatformPlayerByName(String name) {
+    public @Nullable ProxiedPlayer getPlatformPlayerByName(String name) {
         return ProxyServer.getInstance().getPlayer(name);
     }
 
     @Override
-    protected @Nullable ProxiedPlayer getPlatformPlayerById(String hexId) {
+    public @Nullable ProxiedPlayer getPlatformPlayerById(String hexId) {
         for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
             String playerId = getMetaInjector().getId(player);
             if (playerId == null) {

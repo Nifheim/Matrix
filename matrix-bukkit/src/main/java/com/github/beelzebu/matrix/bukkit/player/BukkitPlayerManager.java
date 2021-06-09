@@ -30,17 +30,17 @@ public class BukkitPlayerManager extends AbstractPlayerManager<Player> {
     }
 
     @Override
-    protected @Nullable Player getPlatformPlayer(@NotNull UUID uniqueId) {
+    public @Nullable Player getPlatformPlayer(@NotNull UUID uniqueId) {
         return Bukkit.getPlayer(uniqueId);
     }
 
     @Override
-    protected @Nullable Player getPlatformPlayerByName(@NotNull String name) {
+    public @Nullable Player getPlatformPlayerByName(@NotNull String name) {
         return Bukkit.getPlayer(name);
     }
 
     @Override
-    protected @Nullable Player getPlatformPlayerById(String hexId) {
+    public @Nullable Player getPlatformPlayerById(String hexId) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             String playerId = getMetaInjector().getId(player);
             if (playerId == null) {

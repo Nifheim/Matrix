@@ -3,8 +3,8 @@ package com.github.beelzebu.matrix.bungee.command;
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import com.github.beelzebu.matrix.api.messaging.message.StaffChatMessage;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.messaging.message.StaffChatMessage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -51,7 +51,7 @@ public class HelpOpCommand extends Command {
             }
             if (!timer.containsKey(uniqueId) || timer.get(uniqueId) <= System.currentTimeMillis()) {
                 String helpopMessageFormatted = I18n.tl(Message.HELPOP_FORMAT, matrixPlayer.getLastLocale()).replace("%server%", ((ProxiedPlayer) sender).getServer().getInfo().getName()).replace("%player_name%", matrixPlayer.getDisplayName()).replace("%message%", message);
-                new StaffChatMessage("matrix.helpop.read", helpopMessageFormatted).send();
+                bootstrap.getApi().getMessaging().sendMessage(new StaffChatMessage("matrix.helpop.read", helpopMessageFormatted));
                 sender.sendMessage(TextComponent.fromLegacyText(helpopMessageFormatted));
                 timer.put(uniqueId, System.currentTimeMillis() + 30000);
             }

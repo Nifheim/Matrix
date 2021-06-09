@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import com.github.beelzebu.matrix.api.messaging.message.TargetedMessage;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.messaging.message.TargetedMessage;
 import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -42,7 +42,7 @@ public class ReplyCommand extends MatrixCommand {
                 }
                 message.append(args[args.length - 1]);
                 message = new StringBuilder(StringUtils.replace(message.toString()));
-                new TargetedMessage(target.getUniqueId(), message.toString()).send();
+                api.getMessaging().sendMessage(new TargetedMessage(target.getUniqueId(), message.toString()));
                 sender.sendMessage(StringUtils.replace("&6Haz enviado el siguiente mensaje a &7" + target.getDisplayName()));
                 sender.sendMessage(message.toString());
             } else {

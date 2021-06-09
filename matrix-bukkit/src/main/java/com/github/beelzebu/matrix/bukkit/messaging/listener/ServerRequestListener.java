@@ -1,36 +1,31 @@
-package com.github.beelzebu.matrix.bukkit.listener;
+package com.github.beelzebu.matrix.bukkit.messaging.listener;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
-import com.github.beelzebu.matrix.api.messaging.RedisMessageListener;
-import com.github.beelzebu.matrix.api.messaging.message.RedisMessageType;
-import com.github.beelzebu.matrix.api.messaging.message.ServerRequestMessage;
-import org.jetbrains.annotations.NotNull;
+import com.github.beelzebu.matrix.api.messaging.MessageListener;
+import com.github.beelzebu.matrix.api.messaging.message.Message;
+import com.github.beelzebu.matrix.api.messaging.message.MessageType;
 
 /**
  * @author Beelzebu
  */
-public class ServerRequestListener implements RedisMessageListener<ServerRequestMessage> {
+public class ServerRequestListener extends MessageListener {
 
     private final MatrixBukkitBootstrap plugin;
 
     public ServerRequestListener(MatrixBukkitBootstrap plugin) {
+        super(MessageType.SERVER_REQUEST);
         this.plugin = plugin;
     }
 
     @Override
-    public void onMessage(ServerRequestMessage message) {
+    public void onMessage(Message message) {
         Matrix.getLogger().info("Bungeecord is requesting all servers, sending info...");
         if (plugin.getServerRegisterMessage() != null) {
             Matrix.getLogger().info("Sending already created server register message.");
-            plugin.getServerRegisterMessage().send();
+            plugin.getApi().getMessaging().sendMessage(plugin.getServerRegisterMessage());
         } else {
             Matrix.getLogger().info("Server register message is null in this server.");
         }
-    }
-
-    @Override
-    public @NotNull RedisMessageType getType() {
-        return RedisMessageType.SERVER_REQUEST;
     }
 }
