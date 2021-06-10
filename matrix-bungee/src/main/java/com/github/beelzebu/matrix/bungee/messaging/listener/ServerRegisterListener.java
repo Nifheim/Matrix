@@ -18,7 +18,6 @@ import net.md_5.bungee.api.config.ServerInfo;
  */
 public class ServerRegisterListener extends MessageListener {
 
-
     public ServerRegisterListener() {
         super(MessageType.SERVER_REGISTER);
     }

@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Beelzebu
  */
-public class StaffChatMessage extends Message {
+public final class StaffChatMessage extends Message {
 
     public StaffChatMessage(@NotNull String permission, @NotNull String message) {
         super(MessageType.STAFF_CHAT);

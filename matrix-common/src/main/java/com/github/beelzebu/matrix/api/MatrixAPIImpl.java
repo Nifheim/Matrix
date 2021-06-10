@@ -18,6 +18,7 @@ import com.github.beelzebu.matrix.dependency.DependencyRegistry;
 import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
 import com.github.beelzebu.matrix.messaging.RedisMessaging;
+import com.github.beelzebu.matrix.messaging.listener.FieldUpdateListener;
 import com.github.beelzebu.matrix.player.AbstractPlayerManager;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.server.ServerManagerImpl;
@@ -159,6 +160,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         loadMessages();
         motd(plugin.getConsole());
         plugin.getBootstrap().getScheduler().asyncRepeating(new HeartbeatTask(this), 1, TimeUnit.MINUTES);
+        getMessaging().registerListener(new FieldUpdateListener(database));
     }
 
     public void motd(CommandSource commandSource) {

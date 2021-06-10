@@ -5,7 +5,6 @@ import com.github.beelzebu.matrix.api.messaging.MessageListener;
 import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.api.messaging.message.MessageType;
 import com.github.beelzebu.matrix.api.server.ServerType;
-import com.github.beelzebu.matrix.bungee.util.ServerUtil;
 import com.github.beelzebu.matrix.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import net.md_5.bungee.api.ProxyServer;
@@ -27,10 +26,10 @@ public class ServerUnregisterListener extends MessageListener {
         ServerInfoImpl info = (ServerInfoImpl) ServerUnregisterMessage.getServerInfo(message);
         Matrix.getLogger().info("Received unregister message for server: " + info.getServerName());
         if (info.getServerType() != ServerType.AUTH) {
-            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(info.getServerName());
+            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(Matrix.getAPI().getServerManager().getLobbyForGroup(info.getGroupName()));
             if (serverInfo != null) {
                 for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
-                    proxiedPlayer.connect(ServerUtil.getRandomLobby(serverInfo.getName()), ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
+                    proxiedPlayer.connect(serverInfo, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
                 }
             }
         }

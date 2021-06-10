@@ -1,10 +1,10 @@
 package com.github.beelzebu.matrix.database;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.cache.CacheProvider;
 import com.github.beelzebu.matrix.api.database.MatrixDatabase;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
+import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -17,10 +17,10 @@ import org.jetbrains.annotations.Nullable;
 public class MatrixDatabaseImpl implements MatrixDatabase {
 
     private final StorageProvider storage;
-    private final CacheProvider cacheProvider;
+    private final CacheProviderImpl cacheProvider;
     private final SchedulerAdapter schedulerAdapter;
 
-    public MatrixDatabaseImpl(StorageProvider storage, CacheProvider cacheProvider, SchedulerAdapter schedulerAdapter) {
+    public MatrixDatabaseImpl(StorageProvider storage, CacheProviderImpl cacheProvider, SchedulerAdapter schedulerAdapter) {
         this.storage = storage;
         this.cacheProvider = cacheProvider;
         this.schedulerAdapter = schedulerAdapter;
@@ -175,7 +175,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     }
 
     @Override
-    public @NotNull CacheProvider getCacheProvider() {
+    public @NotNull CacheProviderImpl getCacheProvider() {
         return cacheProvider;
     }
 

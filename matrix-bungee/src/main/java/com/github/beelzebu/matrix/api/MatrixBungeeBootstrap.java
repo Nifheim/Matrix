@@ -13,7 +13,6 @@ import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.bungee.influencer.InfluencerManager;
 import com.github.beelzebu.matrix.bungee.listener.ChatListener;
 import com.github.beelzebu.matrix.bungee.listener.LocaleListener;
-import com.github.beelzebu.matrix.bungee.messaging.listener.LoginFieldUpdateListener;
 import com.github.beelzebu.matrix.bungee.listener.LoginListener;
 import com.github.beelzebu.matrix.bungee.listener.PermissionListener;
 import com.github.beelzebu.matrix.bungee.listener.ServerListListener;
@@ -100,7 +99,6 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 
         api.getMessaging().registerListener(new ServerRegisterListener());
         api.getMessaging().registerListener(new ServerUnregisterListener());
-        api.getMessaging().registerListener(new LoginFieldUpdateListener(this));
         api.getMessaging().sendMessage(new ServerRequestMessage());
 
         influencerManager = new InfluencerManager(this);

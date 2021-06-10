@@ -448,4 +448,8 @@ public class CacheProviderImpl implements CacheProvider {
     private @NotNull String getUserKey(String hexId) {
         return USER_KEY_PREFIX + hexId;
     }
+
+    public MatrixPlayer getLocalCached(String hexId) {
+        return cachedPlayers.getIfPresent(hexId);
+    }
 }
