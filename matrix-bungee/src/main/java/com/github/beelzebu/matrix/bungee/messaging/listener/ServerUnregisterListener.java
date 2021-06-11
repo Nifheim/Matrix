@@ -26,7 +26,7 @@ public class ServerUnregisterListener extends MessageListener {
         ServerInfoImpl info = (ServerInfoImpl) ServerUnregisterMessage.getServerInfo(message);
         Matrix.getLogger().info("Received unregister message for server: " + info.getServerName());
         if (info.getServerType() != ServerType.AUTH) {
-            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(Matrix.getAPI().getServerManager().getLobbyForGroup(info.getGroupName()));
+            ServerInfo serverInfo = ProxyServer.getInstance().getServerInfo(info.getLobbyServer().join());
             if (serverInfo != null) {
                 for (ProxiedPlayer proxiedPlayer : serverInfo.getPlayers()) {
                     proxiedPlayer.connect(serverInfo, ServerConnectEvent.Reason.SERVER_DOWN_REDIRECT);
