@@ -30,7 +30,6 @@ import com.github.beelzebu.matrix.bukkit.listener.LoginListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerCommandPreprocessListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerDeathListener;
 import com.github.beelzebu.matrix.bukkit.listener.VanishListener;
-import com.github.beelzebu.matrix.bukkit.listener.VotifierListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.StaffChatListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.TargetedMessageListener;
@@ -121,9 +120,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         registerEvents(new PlayerDeathListener(api));
         if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
-        }
-        if (isVotifier()) {
-            registerEvents(new VotifierListener(this));
         }
         registerEvents(new VanishListener(this));
         registerEvents(new LoginListener(api, this));

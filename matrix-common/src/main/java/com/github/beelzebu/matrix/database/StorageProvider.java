@@ -6,15 +6,15 @@ import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayStats;
 import com.github.beelzebu.matrix.database.sql.SQLQuery;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.client.internal.MongoClientImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
-import dev.morphia.converters.UUIDConverter;
+import dev.morphia.mapping.MapperOptions;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,11 +31,13 @@ public class StorageProvider {
     private final Datastore datastore;
 
     public StorageProvider(@NotNull MatrixAPIImpl api) {
-        MongoClient client = new MongoClient(new ServerAddress(api.getConfig().getString("Database.Host"), 27017), MongoCredential.createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()), MongoClientOptions.builder().build());
-        Morphia morphia = new Morphia();
-        morphia.getMapper().getConverters().addConverter(new UUIDConverter());
-        morphia.map(MongoMatrixPlayer.class);
-        this.datastore = morphia.createDatastore(client, "matrix");
+        MongoClientSettings clientSettings = MongoClientSettings.builder().credential(MongoCredential
+                .createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()))
+                .applyConnectionString(new ConnectionString("mongodb://" + api.getConfig().getString("Database.Host") + ":27017")
+                ).build();
+        MongoClientImpl client = new MongoClientImpl(clientSettings, null);
+        this.datastore = Morphia.createDatastore(client, "matrix", MapperOptions.DEFAULT);
+        datastore.getMapper().map(MongoMatrixPlayer.class);
         this.datastore.ensureIndexes();
         HikariConfig hc = new HikariConfig();
         hc.setPoolName("Matrix MySQL Connection Pool");

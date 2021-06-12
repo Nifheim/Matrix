@@ -17,15 +17,6 @@ buildscript {
             mavenCentral()
 
             maven {
-                url = 'https://venus.indiopikaro.cl/nexus/repository/maven-public/'
-
-                credentials {
-                    username "${mavenUser}"
-                    password "${mavenPassword}"
-                }
-            }
-
-            maven {
                 url = 'https://repo.lucko.me/'
             }
 
@@ -54,11 +45,12 @@ buildscript {
             }
 
             maven {
-                url = 'https://dl.bintray.com/ichbinjoe/public/'
+                url = 'https://jitpack.io/'
             }
 
             maven {
-                url = 'https://jitpack.io/'
+                name = 'alesiodp'
+                url = 'https://repo.alessiodp.com/releases/'
             }
         }
 
@@ -68,7 +60,7 @@ buildscript {
             implementation 'org.jetbrains:annotations:20.1.0'
         }
 
-        sourceCompatibility = '1.8'
+        sourceCompatibility = JavaVersion.VERSION_11
 
         tasks.withType(JavaCompile) {
             options.encoding = 'UTF-8'
