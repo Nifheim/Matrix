@@ -47,17 +47,6 @@ buildscript {
             maven {
                 url = 'https://jitpack.io/'
             }
-
-            maven {
-                name = 'alesiodp'
-                url = 'https://repo.alessiodp.com/releases/'
-            }
-        }
-
-        dependencies {
-            implementation 'com.github.beelzebu:jMatrix:2.1-SNAPSHOT'
-            implementation 'com.google.guava:guava:21.0'
-            implementation 'org.jetbrains:annotations:20.1.0'
         }
 
         sourceCompatibility = JavaVersion.VERSION_11

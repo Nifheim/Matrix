@@ -14,17 +14,20 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
-import dev.morphia.mapping.MapperOptions;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("removal")
 public class StorageProvider {
 
     private HikariDataSource dataSource;
@@ -36,20 +39,26 @@ public class StorageProvider {
                 .applyConnectionString(new ConnectionString("mongodb://" + api.getConfig().getString("Database.Host") + ":27017")
                 ).build();
         MongoClientImpl client = new MongoClientImpl(clientSettings, null);
-        this.datastore = Morphia.createDatastore(client, "matrix", MapperOptions.DEFAULT);
+        this.datastore = Morphia.createDatastore(client, "matrix");
         datastore.getMapper().map(MongoMatrixPlayer.class);
         this.datastore.ensureIndexes();
         HikariConfig hc = new HikariConfig();
         hc.setPoolName("Matrix MySQL Connection Pool");
-        hc.setDriverClassName("com.github.beelzebu.lib.mariadb.Driver");
-        hc.addDataSourceProperty("cachePrepStmts", "true");
-        hc.addDataSourceProperty("useServerPrepStmts", "true");
-        hc.addDataSourceProperty("prepStmtCacheSize", "250");
-        hc.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        hc.addDataSourceProperty("encoding", "UTF-8");
-        hc.addDataSourceProperty("characterEncoding", "utf8");
-        hc.addDataSourceProperty("useUnicode", "true");
-        hc.setJdbcUrl("jdbc:mariadb://" + api.getConfig().getString("mysql.host") + ":" + api.getConfig().getInt("mysql.port") + "/" + api.getConfig().getString("mysql.database") + "?autoReconnect=true&useSSL=false");
+        hc.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
+        hc.addDataSourceProperty("serverName", api.getConfig().getString("mysql.host"));
+        hc.addDataSourceProperty("port", api.getConfig().getInt("mysql.port"));
+        hc.addDataSourceProperty("databaseName", api.getConfig().getString("mysql.database"));
+        Map<String, String> properties = new HashMap<>();
+        properties.put("useUnicode", "true");
+        properties.put("characterEncoding", "utf8");
+        properties.put("useSSL", "false");
+        properties.put("verifyServerCertificate", "false");
+        properties.put("autoReconnect", "true");
+        properties.put("useMysqlMetadata", "false");
+        String propertiesString = properties.entrySet().stream()
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(Collectors.joining(";"));
+        hc.addDataSourceProperty("properties", propertiesString);
         hc.setUsername(api.getConfig().getString("mysql.user"));
         hc.setPassword(api.getConfig().getString("mysql.password"));
         hc.setMaxLifetime(60000L);

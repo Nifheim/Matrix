@@ -1,12 +1,15 @@
 dependencies {
+    api 'com.github.beelzebu:jMatrix:2.1-SNAPSHOT'
+    api 'com.google.guava:guava:21.0'
+    api 'org.jetbrains:annotations:20.1.0'
+    api 'com.github.ben-manes.caffeine:caffeine:3.0.2'
     implementation 'cl.indiopikaro:indiofall-chat:1.16-R0.4-SNAPSHOT'
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.0.2'
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'org.apache.commons:commons-pool2:2.9.0'
     implementation 'redis.clients:jedis:3.6.0'
-    implementation 'org.mongodb:mongo-java-driver:3.12.8'
+    implementation 'org.mongodb:mongodb-driver-core:4.2.2'
+    implementation 'org.mongodb:mongodb-driver-sync:4.2.2'
     implementation 'dev.morphia.morphia:morphia-core:2.2.1'
-    implementation 'net.byteflux:libby-core:1.1.1-SNAPSHOT'
 }
 
 description = 'Matrix Common'

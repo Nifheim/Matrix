@@ -3,18 +3,20 @@ plugins {
 }
 
 dependencies {
-    api project(':matrix-common')
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.0.2'
-    implementation 'com.zaxxer:HikariCP:4.0.3'
-    implementation 'org.apache.commons:commons-pool2:2.9.0'
-    implementation 'redis.clients:jedis:3.6.0'
-    implementation 'org.mongodb:mongo-java-driver:3.12.8'
-    implementation 'dev.morphia.morphia:morphia-core:2.2.1'
-    implementation 'net.byteflux:libby-core:1.1.1-SNAPSHOT'
+    implementation project(':matrix-common')
     implementation 'net.nifheim:coreutils:1.1.0-SNAPSHOT'
     implementation 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     implementation 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
     implementation 'me.clip:placeholderapi:2.10.9'
+    runtimeOnly 'com.github.ben-manes.caffeine:caffeine:3.0.2'
+    runtimeOnly 'com.zaxxer:HikariCP:4.0.3'
+    runtimeOnly 'org.apache.commons:commons-pool2:2.9.0'
+    runtimeOnly 'redis.clients:jedis:3.6.0'
+    runtimeOnly 'org.mongodb:bson:4.2.2'
+    runtimeOnly 'org.mongodb:mongodb-driver-core:4.2.2'
+    runtimeOnly 'org.mongodb:mongodb-driver-sync:4.2.2'
+    runtimeOnly 'dev.morphia.morphia:morphia-core:2.2.1'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
 }
 
 artifacts {
@@ -27,20 +29,27 @@ shadowJar {
 
     dependencies {
         include(dependency('com.github.beelzebu:jMatrix'))
-        include(dependency('net.nifheim:coreutils'))
-        include(dependency('net.byteflux:libby-core'))
         include(project(':matrix-common'))
+        include(dependency('net.nifheim:coreutils'))
+        include(dependency('com.github.ben-manes.caffeine:caffeine'))
+        include(dependency('com.zaxxer:HikariCP'))
+        include(dependency('org.apache.commons:commons-pool2'))
+        include(dependency('redis.clients:jedis'))
+        include(dependency('org.mongodb:bson'))
+        include(dependency('org.mongodb:mongodb-driver-core'))
+        include(dependency('org.mongodb:mongodb-driver-sync'))
+        include(dependency('dev.morphia.morphia:morphia-core'))
+        include(dependency('org.mariadb.jdbc:mariadb-java-client'))
     }
 
     relocate 'com.github.benmanes.caffeine', 'com.github.beelzebu.lib.caffeine'
     relocate 'com.zaxxer.hikari', 'com.github.beelzebu.lib.hikari'
     relocate 'org.mariadb.jdbc', 'com.github.beelzebu.lib.mariadb'
-    relocate 'redis.clients.jedis', 'com.github.beelzebu.lib.jedis'
     relocate 'org.apache.commons.pool2', 'com.github.beelzebu.lib.commonspool2'
+    relocate 'redis.clients.jedis', 'com.github.beelzebu.lib.jedis'
     relocate 'com.mongodb', 'com.github.beelzebu.lib.mongodb'
     relocate 'org.bson', 'com.github.beelzebu.lib.bson'
     relocate 'dev.morphia', 'com.github.beelzebu.lib.morphia'
-    relocate 'net.byteflux.libby', 'com.github.beelzebu.lib.libby'
 }
 
 processResources {
