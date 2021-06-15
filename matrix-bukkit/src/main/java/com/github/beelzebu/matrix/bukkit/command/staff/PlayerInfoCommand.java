@@ -1,5 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
@@ -8,7 +10,6 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,11 +21,11 @@ public class PlayerInfoCommand extends MatrixCommand {
 
     @Override
     public void onCommand(@NotNull CommandSender sender, String @NotNull [] args) {
-        api.getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
+        Matrix.getAPI().getPlugin().getBootstrap().getScheduler().executeAsync(() -> {
             if (args.length == 0) {
                 sender.sendMessage(StringUtils.replace("%prefix% &6Por favor usa &e/" + getName() + " <nombre>"));
             } else {
-                MatrixPlayer player = api.getPlayerManager().getPlayerByName(args[0]).join();
+                MatrixPlayer player = Matrix.getAPI().getPlayerManager().getPlayerByName(args[0]).join();
                 if (player != null) {
                     if (args.length >= 2 && args[1].equalsIgnoreCase("json")) {
                         sender.sendMessage(TextComponent.fromLegacyText(new GsonBuilder().setPrettyPrinting().create().toJson(player, MongoMatrixPlayer.class)));

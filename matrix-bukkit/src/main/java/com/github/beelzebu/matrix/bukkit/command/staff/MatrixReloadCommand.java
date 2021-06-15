@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import net.nifheim.bukkit.util.command.MatrixCommand;
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -14,6 +15,6 @@ public class MatrixReloadCommand extends MatrixCommand {
 
     @Override
     public void onCommand(CommandSender sender, String[] args) {
-        api.reload();
+        Matrix.getAPI().reload();
     }
 }

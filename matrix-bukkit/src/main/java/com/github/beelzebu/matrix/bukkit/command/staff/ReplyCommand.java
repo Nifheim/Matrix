@@ -1,8 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.messaging.message.TargetedMessage;
-import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -19,19 +20,19 @@ public class ReplyCommand extends MatrixCommand {
             sender.sendMessage(StringUtils.replace("&cPor favor ingresa un usuario y mensaje para enviar."));
             return;
         }
-        api.getPlayerManager().getPlayerByName(args[0]).thenAccept(target -> {
+        Matrix.getAPI().getPlayerManager().getPlayerByName(args[0]).thenAccept(target -> {
             if (target == null) {
                 sender.sendMessage(StringUtils.replace("&cEl usuario al que intentas responder no existe."));
                 return;
             }
-            if (api.getPlugin().isOnline(target.getUniqueId(), false)) {
+            if (Matrix.getAPI().getPlugin().isOnline(target.getUniqueId(), false)) {
                 String name;
                 if (sender instanceof Player) {
                     if (target.getUniqueId() == ((Player) sender).getUniqueId()) {
                         sender.sendMessage(StringUtils.replace("&cNo te puedes responder a ti mismo."));
                         return;
                     }
-                    name = api.getPlayerManager().getPlayer(((Player) sender).getUniqueId()).join().getDisplayName();
+                    name = Matrix.getAPI().getPlayerManager().getPlayer(((Player) sender).getUniqueId()).join().getDisplayName();
                 } else {
                     name = sender.getName();
                 }
@@ -42,7 +43,7 @@ public class ReplyCommand extends MatrixCommand {
                 }
                 message.append(args[args.length - 1]);
                 message = new StringBuilder(StringUtils.replace(message.toString()));
-                api.getMessaging().sendMessage(new TargetedMessage(target.getUniqueId(), message.toString()));
+                Matrix.getAPI().getMessaging().sendMessage(new TargetedMessage(target.getUniqueId(), message.toString()));
                 sender.sendMessage(StringUtils.replace("&6Haz enviado el siguiente mensaje a &7" + target.getDisplayName()));
                 sender.sendMessage(message.toString());
             } else {

@@ -1,12 +1,13 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
+import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -34,7 +35,7 @@ public class FreezeCommand extends MatrixCommand {
         }
         Player target = Bukkit.getPlayer(args[0]);
         if (target != null) {
-            api.getPlayerManager().getPlayer(target.getUniqueId()).thenAccept(targetMatrixPlayer -> {
+            Matrix.getAPI().getPlayerManager().getPlayer(target.getUniqueId()).thenAccept(targetMatrixPlayer -> {
                 if (FROZEN_PLAYERS.contains(target.getUniqueId())) {
                     FROZEN_PLAYERS.remove(target.getUniqueId());
                     target.setWalkSpeed(0.2f);

@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
-import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +23,7 @@ public class VanishCommand extends MatrixCommand {
     public void onCommand(CommandSender sender, String[] args) {
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            api.getPlayerManager().getPlayer(player.getUniqueId()).thenAccept(matrixPlayer -> {
+            Matrix.getAPI().getPlayerManager().getPlayer(player.getUniqueId()).thenAccept(matrixPlayer -> {
                 boolean vanished = !matrixPlayer.isVanished();
                 matrixPlayer.setVanished(vanished);
                 matrixPlayer.setGameMode(com.github.beelzebu.matrix.api.player.GameMode.valueOf(player.getGameMode().toString()), Matrix.getAPI().getServerInfo().getGroupName());
@@ -35,7 +35,7 @@ public class VanishCommand extends MatrixCommand {
                 if (vanished) {
                     player.setGameMode(GameMode.SPECTATOR);
                 } else {
-                    player.setGameMode(GameMode.valueOf(matrixPlayer.getGameMode(api.getServerInfo().getGroupName()).toString()));
+                    player.setGameMode(GameMode.valueOf(matrixPlayer.getGameMode(Matrix.getAPI().getServerInfo().getGroupName()).toString()));
                 }
             });
         }

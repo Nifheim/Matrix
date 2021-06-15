@@ -88,7 +88,13 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     @Override
     public boolean isOnline(@NotNull UUID uuid, boolean here) {
-        return Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline();
+        boolean foundHere = Bukkit.getPlayer(uuid) != null && Bukkit.getPlayer(uuid).isOnline();
+        if (foundHere) {
+            return true;
+        } else if (here) {
+            return false;
+        }
+        return Matrix.getAPI().getPlayerManager().isOnline(uuid, null, null).join();
     }
 
     @Override

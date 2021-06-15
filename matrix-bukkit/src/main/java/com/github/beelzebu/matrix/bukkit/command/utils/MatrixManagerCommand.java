@@ -1,9 +1,10 @@
 package com.github.beelzebu.matrix.bukkit.command.utils;
 
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.command.BukkitCommandSource;
+import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import java.util.List;
-import net.nifheim.bukkit.util.command.MatrixCommand;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -28,7 +29,7 @@ public class MatrixManagerCommand extends MatrixCommand {
             _sound(sender, args);
         }
         if (args[0].equalsIgnoreCase("motd")) {
-            ((MatrixBukkitAPI) api).motd(new BukkitCommandSource(sender));
+            ((MatrixBukkitAPI) Matrix.getAPI()).motd(new BukkitCommandSource(sender));
         }
     }
 

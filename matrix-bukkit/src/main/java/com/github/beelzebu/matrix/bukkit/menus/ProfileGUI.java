@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.bukkit.menus;
 
-import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
@@ -95,8 +94,8 @@ public class ProfileGUI extends BaseMenu {
     }
 
     private void setItems() {
-        AbstractConfig messages = I18n.getMessagesFile(matrixPlayer.getLastLocale());
-        messages.getKeys("Social.Profile.Items").forEach(itemPath -> items.add(getItem(messages, "Social.Profile.Items." + itemPath)));
+        //AbstractConfig messages = I18n.getMessagesFile(matrixPlayer.getLastLocale());
+        //messages.getKeys("Social.Profile.Items").forEach(itemPath -> items.add(getItem(messages, "Social.Profile.Items." + itemPath)));
         socialItems(getInv());
         items.forEach(this::setItem);
     }

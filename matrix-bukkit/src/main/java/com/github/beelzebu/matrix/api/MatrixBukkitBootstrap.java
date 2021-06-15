@@ -46,9 +46,9 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import net.nifheim.bukkit.commandlib.CommandAPI;
 import net.nifheim.bukkit.util.BukkitCoreUtils;
 import net.nifheim.bukkit.util.CompatUtil;
-import net.nifheim.bukkit.util.command.CommandAPI;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -208,14 +208,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         bukkitCoreUtils.disable();
         if (serverRegisterMessage != null) { // check if server was registered first
             api.getMessaging().sendMessage(new ServerUnregisterMessage(api.getServerInfo()));
-            int players = Bukkit.getOnlinePlayers().size();
-            if (players != 0) {
-                try {
-                    Thread.sleep(500 + players * 50L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
         }
         getScheduler().shutdownExecutor();
         getScheduler().shutdownScheduler();
