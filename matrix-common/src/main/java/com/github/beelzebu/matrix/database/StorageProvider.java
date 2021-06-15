@@ -14,7 +14,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
-import dev.morphia.mapping.MapperOptions;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,6 +23,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,12 +38,13 @@ public class StorageProvider {
     public StorageProvider(@NotNull MatrixAPIImpl api) {
         MongoClientSettings clientSettings = MongoClientSettings.builder().credential(MongoCredential
                 .createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()))
-                .applyConnectionString(new ConnectionString("mongodb://" + api.getConfig().getString("Database.Host") + ":27017")
-                ).build();
+                .applyConnectionString(new ConnectionString("mongodb://" + api.getConfig().getString("Database.Host") + ":27017"))
+                .uuidRepresentation(UuidRepresentation.JAVA_LEGACY).codecRegistry(CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromCodecs(new UuidAsStringCodec())))
+                .build();
         MongoClientImpl client = new MongoClientImpl(clientSettings, null);
-        this.datastore = Morphia.createDatastore(client, "matrix", MapperOptions.DEFAULT);
+        datastore = Morphia.createDatastore(client, "matrix");
         datastore.getMapper().map(MongoMatrixPlayer.class);
-        this.datastore.ensureIndexes();
+        datastore.ensureIndexes();
         HikariConfig hc = new HikariConfig();
         hc.setPoolName("Matrix MySQL Connection Pool");
         hc.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
