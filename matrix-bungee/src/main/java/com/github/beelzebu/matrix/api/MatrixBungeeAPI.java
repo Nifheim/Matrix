@@ -17,7 +17,7 @@ public class MatrixBungeeAPI extends MatrixAPIImpl {
     private final @NotNull BungeePlayerManager bungeePlayerManager;
 
     public MatrixBungeeAPI(@NotNull MatrixPluginBungee plugin) {
-        super(plugin);
+        super(plugin, true);
         plugin.setApi(this);
         bungeePlayerManager = new BungeePlayerManager(this, new BungeeMetaInjector(this));
         BUNGEE_SERVER_INFO = new ServerInfoImpl(ServerType.PROXY, ServerInfoImpl.PROXY_GROUP, null, null, false, null, false);

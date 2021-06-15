@@ -13,9 +13,7 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
 import com.github.beelzebu.matrix.database.MatrixDatabaseImpl;
 import com.github.beelzebu.matrix.database.StorageProvider;
-import com.github.beelzebu.matrix.dependency.DependencyManager;
-import com.github.beelzebu.matrix.dependency.DependencyRegistry;
-import com.github.beelzebu.matrix.dependency.classloader.ReflectionClassLoader;
+import com.github.beelzebu.matrix.dependency.MatrixLibraryManager;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
 import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.messaging.listener.FieldUpdateListener;
@@ -39,6 +37,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import net.byteflux.libby.Library;
+import net.byteflux.libby.LibraryManager;
 import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,7 +59,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
     private LevelProvider levelProvider;
 
-    public MatrixAPIImpl(@NotNull MatrixPlugin plugin) {
+    public MatrixAPIImpl(@NotNull MatrixPlugin plugin, boolean useLibby) {
         GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization()
                 .registerTypeAdapter(ChatColor.class, new ChatColorTypeAdapter())
                 .registerTypeAdapter(ServerInfoImpl.class, new ServerInfoTypeAdapter())
@@ -71,8 +71,18 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         Matrix.GSON = gsonBuilder.create();
         this.plugin = plugin;
         plugin.getDataFolder().mkdirs();
-        DependencyManager dependencyManager = new DependencyManager(plugin, new ReflectionClassLoader(plugin.getBootstrap()), new DependencyRegistry());
-        dependencyManager.loadInternalDependencies();
+        if (useLibby) {
+            LibraryManager libraryManager = new MatrixLibraryManager(plugin.getBootstrap());
+            libraryManager.addMavenCentral();
+            libraryManager.addSonatype();
+            libraryManager.loadLibrary(Library.builder().groupId("com{}github{}ben-manes{}caffeine").artifactId("caffeine").version("3.0.2").build());
+            libraryManager.loadLibrary(Library.builder().groupId("com{}zaxxer").artifactId("HikariCP").version("4.0.3").build());
+            libraryManager.loadLibrary(Library.builder().groupId("org{}mariadb{}jdbc").artifactId("mariadb-java-client").version("2.7.3").build());
+            libraryManager.loadLibrary(Library.builder().groupId("org{}apache{}commons").artifactId("commons-pool2").version("2.9.0").build());
+            libraryManager.loadLibrary(Library.builder().groupId("redis{}clients").artifactId("jedis").version("3.6.0").build());
+            libraryManager.loadLibrary(Library.builder().groupId("org{}mongodb").artifactId("mongo-java-driver").version("3.12.8").build());
+            libraryManager.loadLibrary(Library.builder().groupId("dev{}morphia{}morphia").artifactId("morphia-core").version("2.2.1").build());
+        }
         Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
         Matrix.getLogger().info("Initializing redis manager...");
         redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));

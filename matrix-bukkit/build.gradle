@@ -5,16 +5,10 @@ plugins {
 dependencies {
     api project(':matrix-common')
     implementation 'net.nifheim:coreutils:1.1.0-SNAPSHOT'
-    implementation 'redis.clients:jedis:3.3.0'
-    implementation 'com.github.ben-manes.caffeine:caffeine:2.8.4'
-    implementation 'org.apache.commons:commons-pool2:2.6.2'
-    implementation 'org.mongodb:mongo-java-driver:3.12.5'
-    implementation 'dev.morphia.morphia:core:1.6.0'
-    implementation 'com.zaxxer:HikariCP:3.4.5'
-    implementation 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     implementation 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
     implementation 'me.clip:placeholderapi:2.10.9'
     implementation 'com.vexsoftware:nuvotifier-universal:2.6.0'
+    runtimeOnly 'net.byteflux:libby-core:1.1.0'
 }
 
 artifacts {
@@ -26,16 +20,13 @@ shadowJar {
     getArchiveVersion().set(null)
 
     dependencies {
+        include(project(':matrix-common'))
         include(dependency('com.github.beelzebu:jMatrix'))
         include(dependency('net.nifheim:coreutils'))
-        include(project(':matrix-common'))
+        include(dependency('net.byteflux:libby-core'))
     }
 
-    relocate 'com.github.benmanes.caffeine', 'com.github.beelzebu.lib.caffeine'
-    relocate 'org.mariadb.jdbc', 'com.github.beelzebu.lib.mariadb'
-    relocate 'com.zaxxer.hikari', 'com.github.beelzebu.lib.hikari'
-    relocate 'redis.clients.jedis', 'com.github.beelzebu.lib.jedis'
-    relocate 'org.apache.commons.pool2', 'com.github.beelzebu.lib.commonspool2'
+    relocate 'net.byteflux.libby', 'com.github.beelzebu.lib.libby'
 }
 
 processResources {

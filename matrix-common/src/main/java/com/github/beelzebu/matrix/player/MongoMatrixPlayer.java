@@ -37,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Beelzebu
  */
 @SuppressWarnings("FieldMayBeFinal")
-@Entity(value = "players", noClassnameStored = true)
+@Entity(value = "players")
 public final class MongoMatrixPlayer implements MatrixPlayer {
 
     public static final transient Map<String, Field> FIELDS = new HashMap<>();
