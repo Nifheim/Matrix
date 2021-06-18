@@ -8,6 +8,7 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import net.nifheim.bukkit.util.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -58,7 +59,9 @@ public class FreezeCommand extends MatrixCommand {
                     target.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999999, -5, false, false));
                     target.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 99999999, -5, false, false));
                     target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 99999999, 100, false, false));
-                    target.sendTitle(I18n.tl(Message.ESSENTIALS_FREEZE_TARGET_TITLE, targetMatrixPlayer.getLastLocale()), I18n.tl(Message.ESSENTIALS_FREEZE_TARGET_SUBTITLE, targetMatrixPlayer.getLastLocale()), 20, 200, 30);
+                    if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
+                        target.sendTitle(I18n.tl(Message.ESSENTIALS_FREEZE_TARGET_TITLE, targetMatrixPlayer.getLastLocale()), I18n.tl(Message.ESSENTIALS_FREEZE_TARGET_SUBTITLE, targetMatrixPlayer.getLastLocale()), 20, 200, 30);
+                    }
                     target.sendMessage(I18n.tl(Message.ESSENTIALS_FREEZE_TARGET, targetMatrixPlayer.getLastLocale()));
                     if (args.length >= 2) {
                         StringBuilder sb = new StringBuilder();

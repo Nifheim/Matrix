@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    api project(':matrix-common')
+    implementation project(':matrix-common')
     implementation 'net.nifheim.bukkit:commandlib:1.0-SNAPSHOT'
     implementation 'net.nifheim:coreutils:1.1.0-SNAPSHOT'
     implementation 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'

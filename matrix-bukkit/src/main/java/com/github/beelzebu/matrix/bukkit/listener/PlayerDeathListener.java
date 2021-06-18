@@ -39,7 +39,9 @@ public class PlayerDeathListener implements Listener {
                     return;
                 }
             }
-            player.sendTitle(I18n.tl(Message.DEATH_TITLES_TITLE, player.getLocale().substring(0, 2)), I18n.tl(Message.DEATH_TITLES_SUBTITLE, player.getLocale().substring(0, 2)), 30, stay, 30);
+            if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
+                player.sendTitle(I18n.tl(Message.DEATH_TITLES_TITLE, player.getLocale().substring(0, 2)), I18n.tl(Message.DEATH_TITLES_SUBTITLE, player.getLocale().substring(0, 2)), 30, stay, 30);
+            }
         }, 10L);
     }
 }
