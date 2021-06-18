@@ -49,8 +49,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     @Id
     private ObjectId id;
     @Transient
-    private transient @Nullable
-    String idString = null;
+    private transient @Nullable String idString = null;
     @Indexed(options = @IndexOptions(unique = true))
     private UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
@@ -94,8 +93,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private MongoMatrixPlayer() {
     }
 
-    public static @Nullable
-    MongoMatrixPlayer fromHash(@NotNull Map<String, String> hash) {
+    public static @Nullable MongoMatrixPlayer fromHash(@NotNull Map<String, String> hash) {
         MongoMatrixPlayer mongoMatrixPlayer = new MongoMatrixPlayer();
         for (Map.Entry<String, Field> ent : FIELDS.entrySet()) {
             String id = ent.getKey(); // field id
@@ -114,8 +112,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getId() {
+    public @NotNull String getId() {
         if (id != null && idString == null) {
             return idString = id.toHexString();
         }
@@ -123,13 +120,16 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    UUID getUniqueId() {
-        return uniqueId;
+    public @NotNull UUID getUniqueId() {
+        if (uniqueId == null) {
+            setUniqueId(Matrix.getAPI().getPlayerManager().getUniqueIdById(getId()).join());
+        }
+        return Objects.requireNonNull(uniqueId, "uniqueId");
     }
 
     @Override
     public void setUniqueId(@NotNull UUID uniqueId) {
+        Objects.requireNonNull(uniqueId, "uniqueId");
         if (Objects.equals(this.uniqueId, uniqueId)) {
             return;
         }
@@ -138,16 +138,16 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         } else if (!premium && uniqueId.version() != 3) {
             throw new IllegalArgumentException("Can not use a random generated UUID for a cracked player");
         }
-        updateCached("uniqueId", uniqueId).thenAccept(val -> {
-            this.uniqueId = val;
-            save().join();
-        });
+        this.uniqueId = updateCached("uniqueId", uniqueId).join();
+        save().join();
     }
 
     @Override
-    public @NotNull
-    String getName() {
-        return name;
+    public @NotNull String getName() {
+        if (name == null) {
+            name = Matrix.getAPI().getPlayerManager().getNameById(getId()).join();
+        }
+        return Objects.requireNonNull(name, "name");
     }
 
     @Override
@@ -177,8 +177,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getLowercaseName() {
+    public @NotNull String getLowercaseName() {
         if (!Objects.equals(lowercaseName, getName().toLowerCase())) {
             lowercaseName = getName().toLowerCase();
         }
@@ -186,8 +185,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getDisplayName() {
+    public @NotNull String getDisplayName() {
         return displayName != null ? displayName : getName();
     }
 
@@ -250,8 +248,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getHashedPassword() {
+    public @NotNull String getHashedPassword() {
         return hashedPassword;
     }
 
@@ -283,8 +280,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getLastLocale() {
+    public @NotNull String getLastLocale() {
         return lastLocale;
     }
 
@@ -306,8 +302,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getStaffChannel() {
+    public @NotNull String getStaffChannel() {
         return staffChannel;
     }
 
@@ -350,8 +345,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    Set<PlayerOptionType> getOptions() {
+    public @NotNull Set<PlayerOptionType> getOptions() {
         return options;
     }
 
@@ -374,8 +368,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getIP() {
+    public @NotNull String getIP() {
         return IP;
     }
 
@@ -391,14 +384,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    Set<String> getIpHistory() {
+    public @NotNull Set<String> getIpHistory() {
         return ipHistory;
     }
 
     @Override
-    public @NotNull
-    Date getLastLogin() {
+    public @NotNull Date getLastLogin() {
         return lastLogin;
     }
 
@@ -412,8 +403,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    Date getRegistration() {
+    public @NotNull Date getRegistration() {
         return registration;
     }
 
@@ -426,8 +416,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    String getDiscordId() {
+    public @NotNull String getDiscordId() {
         return discordId;
     }
 
@@ -474,8 +463,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    GameMode getGameMode(String serverGroup) {
+    public @NotNull GameMode getGameMode(String serverGroup) {
         return gameModeByGame.getOrDefault(serverGroup, Matrix.getAPI().getServerInfo().getDefaultGameMode());
     }
 
@@ -489,8 +477,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    CompletableFuture<String> getLastServerGroup() {
+    public @NotNull CompletableFuture<String> getLastServerGroup() {
         return Matrix.getAPI().getPlayerManager().getGroupById(getId());
     }
 
@@ -500,8 +487,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    CompletableFuture<String> getLastServerName() {
+    public @NotNull CompletableFuture<String> getLastServerName() {
         return Matrix.getAPI().getPlayerManager().getServerById(getId());
     }
 
@@ -562,8 +548,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    Collection<String> getPlayedGames() {
+    public @NotNull Collection<String> getPlayedGames() {
         return ImmutableSet.of();//ImmutableSet.copyOf(playedGamesMap.keySet());
     }
 
@@ -584,8 +569,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull
-    CompletableFuture<Boolean> save() {
+    public @NotNull CompletableFuture<Boolean> save() {
         Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
         if (getDisplayName() == null) {
@@ -614,8 +598,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
     }
 
-    public @NotNull
-    Set<String> getKnownNames() {
+    public @NotNull Set<String> getKnownNames() {
         return knownNames;
     }
 
