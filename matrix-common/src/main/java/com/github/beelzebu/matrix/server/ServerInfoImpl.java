@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,7 +58,7 @@ public class ServerInfoImpl extends ServerInfo {
         }
     }
 
-    @Deprecated
+    @ApiStatus.Internal
     public ServerInfoImpl(@NotNull String name, @NotNull Map<String, String> data) {
         this(ServerType.valueOf(Objects.requireNonNull(data.get("servertype"), "servertype for " + name)),
                 Objects.requireNonNull(data.get("group"), "groupName can't be null for " + name),
