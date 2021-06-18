@@ -14,6 +14,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
+import dev.morphia.query.experimental.filters.Filters;
+import dev.morphia.query.experimental.updates.UpdateOperators;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +31,6 @@ import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("removal")
 public class StorageProvider {
 
     private HikariDataSource dataSource;
@@ -39,7 +40,7 @@ public class StorageProvider {
         MongoClientSettings clientSettings = MongoClientSettings.builder().credential(MongoCredential
                 .createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()))
                 .applyConnectionString(new ConnectionString("mongodb://" + api.getConfig().getString("Database.Host") + ":27017"))
-                .uuidRepresentation(UuidRepresentation.JAVA_LEGACY).codecRegistry(CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromCodecs(new UuidAsStringCodec())))
+                .uuidRepresentation(UuidRepresentation.UNSPECIFIED).codecRegistry(CodecRegistries.fromRegistries(CodecRegistries.fromCodecs(new UuidAsStringCodec()), MongoClientSettings.getDefaultCodecRegistry()))
                 .build();
         MongoClientImpl client = new MongoClientImpl(clientSettings, null);
         datastore = Morphia.createDatastore(client, "matrix");
@@ -82,21 +83,21 @@ public class StorageProvider {
 
     public @Nullable MatrixPlayer getPlayer(UUID uniqueId) {
         return this.datastore.find(MongoMatrixPlayer.class)
-                .filter("uniqueId", uniqueId).first();
+                .filter(Filters.eq("uniqueId", uniqueId.toString())).first();
     }
 
     public MatrixPlayer getPlayerByName(@NotNull String name) {
         return Optional.ofNullable(
                 this.datastore.find(MongoMatrixPlayer.class)
-                        .filter("lowercaseName", name.toLowerCase()).first())
+                        .filter(Filters.eq("lowercaseName", name.toLowerCase())).first())
                 .orElse(
                         this.datastore.find(MongoMatrixPlayer.class)
-                                .filter("name", name).first());
+                                .filter(Filters.eq("name", name)).first());
     }
 
     public @Nullable MatrixPlayer getPlayerById(@NotNull String hexId) {
         return this.datastore.find(MongoMatrixPlayer.class)
-                .filter("_id", new ObjectId(hexId)).first();
+                .filter(Filters.eq("_id", new ObjectId(hexId))).first();
     }
 
     public boolean isRegistered(UUID uniqueId) {
@@ -115,7 +116,7 @@ public class StorageProvider {
     }
 
     public void purgeForAllPlayers(String field) {
-        this.datastore.createUpdateOperations(MongoMatrixPlayer.class).unset(field);
+        this.datastore.find(MongoMatrixPlayer.class).update(UpdateOperators.unset(field));
     }
 
     public <T extends MatrixPlayer> T save(T matrixPlayer) {
