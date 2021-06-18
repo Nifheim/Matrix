@@ -31,6 +31,7 @@ import com.github.beelzebu.matrix.bukkit.listener.PlayerCommandPreprocessListene
 import com.github.beelzebu.matrix.bukkit.listener.PlayerDeathListener;
 import com.github.beelzebu.matrix.bukkit.listener.VanishListener;
 import com.github.beelzebu.matrix.bukkit.listener.VotifierListener;
+import com.github.beelzebu.matrix.bukkit.menus.MatrixGUIManager;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.StaffChatListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.TargetedMessageListener;
@@ -201,6 +202,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             }
         };
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+        new MatrixGUIManager(this);
     }
 
     @Override
