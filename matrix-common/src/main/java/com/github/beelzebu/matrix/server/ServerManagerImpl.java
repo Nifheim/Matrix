@@ -59,15 +59,28 @@ public class ServerManagerImpl implements ServerManager {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
             Map<String, Set<ServerInfo>> servers = new HashMap<>();
             try (Jedis jedis = api.getRedisManager().getResource()) {
+                Map<String, Set<String>> invalid = new HashMap<>();
                 Set<String> groups = jedis.smembers(SERVER_GROUPS_KEY);
+                if (groups == null) {
+                    Matrix.getLogger().info("Null groups");
+                    return servers;
+                }
                 for (String group : groups) {
                     servers.put(group, new HashSet<>());
                     Set<String> serverNames = jedis.smembers(SERVER_GROUP_KEY_PREFIX + group);
                     for (String serverName : serverNames) {
-                        servers.get(group).add(getServer(serverName, jedis));
+                        ServerInfo serverInfo = getServer(serverName, jedis);
+                        if (serverInfo == null) {
+                            Matrix.getLogger().debug("A server with the name: " + serverName + " can't be found but is on set " + SERVER_GROUP_KEY_PREFIX + group);
+                            Set<String> invalidOnGroup = invalid.computeIfAbsent(group, k -> new HashSet<>());
+                            invalidOnGroup.add(serverName);
+                            invalid.put(group, invalidOnGroup);
+                            continue;
+                        }
+                        servers.get(group).add(serverInfo);
                     }
                 }
-                checkServerGroups(jedis);
+                removeServers(invalid, jedis);
             } catch (JedisException ex) {
                 Matrix.getLogger().log("An error has occurred getting all servers from cache.");
                 Matrix.getLogger().debug(ex);
@@ -143,14 +156,37 @@ public class ServerManagerImpl implements ServerManager {
     @Override
     public @NotNull CompletableFuture<Void> removeServer(@NotNull ServerInfo serverInfo) {
         return api.getPlugin().getBootstrap().getScheduler().makeFuture(() -> {
-            try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
-                pipeline.srem(SERVER_GROUP_KEY_PREFIX + serverInfo.getGroupName(), serverInfo.getServerName());
-                pipeline.del(SERVER_HEARTBEAT_KEY_PREFIX + serverInfo.getServerName());
-                pipeline.del(SERVER_INFO_KEY_PREFIX + serverInfo.getServerName());
-                pipeline.sync();
-                checkServerGroups(jedis);
+            try (Jedis jedis = api.getRedisManager().getResource()) {
+                removeServer(serverInfo.getGroupName(), serverInfo.getServerName(), jedis);
             }
         });
+    }
+
+    private void removeServer(@NotNull String group, @NotNull String name, Jedis jedis) {
+        try (Pipeline pipeline = jedis.pipelined()) {
+            pipelineRemove(pipeline, group, name);
+            pipeline.sync();
+            checkServerGroups(jedis);
+        }
+    }
+
+    private void removeServers(@NotNull Map<String, Set<String>> servers, Jedis jedis) {
+        try (Pipeline pipeline = jedis.pipelined()) {
+            for (Map.Entry<String, Set<String>> entry : servers.entrySet()) {
+                String group = entry.getKey();
+                for (String name : entry.getValue()) {
+                    pipelineRemove(pipeline, group, name);
+                }
+            }
+            pipeline.sync();
+            checkServerGroups(jedis);
+        }
+    }
+
+    private void pipelineRemove(Pipeline pipeline, String group, String name) {
+        pipeline.srem(SERVER_GROUP_KEY_PREFIX + group, name);
+        pipeline.del(SERVER_HEARTBEAT_KEY_PREFIX + name);
+        pipeline.del(SERVER_INFO_KEY_PREFIX + name);
     }
 
     @Override
