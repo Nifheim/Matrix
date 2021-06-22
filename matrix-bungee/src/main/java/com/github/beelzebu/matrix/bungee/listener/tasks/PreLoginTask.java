@@ -123,7 +123,7 @@ public class PreLoginTask implements Runnable {
                 event.getConnection().setOnlineMode(true);
             }
         } catch (Exception e) {
-            event.setCancelReason(new TextComponent("There was a problem processing your login, error code: " + (player == null ? ErrorCodes.NULL_PLAYER.getId() : ErrorCodes.UNKNOWN.getId())));
+            event.setCancelReason(new TextComponent("There was a problem processing your pre login, error code: " + (player == null ? ErrorCodes.NULL_PLAYER.getId() : ErrorCodes.UNKNOWN.getId())));
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
         } finally {

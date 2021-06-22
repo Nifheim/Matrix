@@ -40,7 +40,7 @@ public class PostLoginTask implements Runnable {
             }
             api.getPlayerManager().getMetaInjector().setMeta(event.getPlayer(), MetaInjector.ID_KEY, player.getId());
         } catch (Exception e) {
-            event.getPlayer().disconnect(new TextComponent("There was a problem processing your login, error code: " + ErrorCodes.UNKNOWN.getId()));
+            event.getPlayer().disconnect(new TextComponent("There was a problem processing your post login, error code: " + ErrorCodes.UNKNOWN.getId()));
             Matrix.getLogger().debug(e);
         }
     }

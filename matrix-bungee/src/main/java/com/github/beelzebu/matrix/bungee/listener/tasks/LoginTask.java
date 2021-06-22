@@ -66,8 +66,7 @@ public class LoginTask implements Runnable {
                 player.setLoggedIn(true);
             }
             player.setLastLogin(new Date());
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             event.setCancelReason(new TextComponent("There was a problem processing your login, error code: " + ErrorCodes.UNKNOWN.getId()));
             event.setCancelled(true);
             Matrix.getLogger().debug(e);
