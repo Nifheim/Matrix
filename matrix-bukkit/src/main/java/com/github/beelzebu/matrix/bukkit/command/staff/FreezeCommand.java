@@ -4,6 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +13,7 @@ import net.nifheim.bukkit.util.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +26,7 @@ public class FreezeCommand extends MatrixCommand {
     public static final Set<UUID> FROZEN_PLAYERS = new HashSet<>();
 
     public FreezeCommand() {
-        super("freeze", "matrix.command.freeze", false);
+        super("freeze", "matrix.command.freeze", true);
     }
 
     @Override
@@ -36,7 +38,8 @@ public class FreezeCommand extends MatrixCommand {
         }
         Player target = Bukkit.getPlayer(args[0]);
         if (target != null) {
-            Matrix.getAPI().getPlayerManager().getPlayer(target.getUniqueId()).thenAccept(targetMatrixPlayer -> {
+            MatrixPlayer targetMatrixPlayer = Matrix.getAPI().getPlayerManager().getPlayer(target.getUniqueId()).join();
+            Bukkit.getScheduler().runTask((Plugin) Matrix.getAPI().getPlugin().getBootstrap(), () -> {
                 if (FROZEN_PLAYERS.contains(target.getUniqueId())) {
                     FROZEN_PLAYERS.remove(target.getUniqueId());
                     target.setWalkSpeed(0.2f);
