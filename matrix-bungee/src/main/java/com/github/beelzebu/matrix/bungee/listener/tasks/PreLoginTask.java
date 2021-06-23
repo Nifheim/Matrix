@@ -3,7 +3,6 @@ package com.github.beelzebu.matrix.bungee.listener.tasks;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
-import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
 import com.github.games647.craftapi.model.Profile;
@@ -35,46 +34,10 @@ public class PreLoginTask implements Runnable {
     public void run() {
         try {
             String name = Objects.requireNonNull(event.getConnection().getName(), "name");
-            boolean fetchedProfile = false;
-            Profile profile = null;
-            try {
-                profile = RESOLVER.findProfile(name).orElse(null);
-                fetchedProfile = true;
-            } catch (@NotNull RateLimitException | IOException e) {
-                e.printStackTrace();
-            }
-            if (profile != null) {
-                Matrix.getLogger().info("Premium account detected for " + name);
-                player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(profile.getId()).join();
-                if (player != null) {
-                    player.setPremium(true);
-                    player.setName(name);
-                    if (!player.isBedrock()) {
-                        event.getConnection().setUniqueId(profile.getId());
-                        event.getConnection().setOnlineMode(true);
-                    }
-                } else {
-                    Matrix.getLogger().info(name + " is not premium on the server");
-                }
-            }
-            if (player == null) {
-                player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(name).join();
-                if (player == null) {
-                    player = new MongoMatrixPlayer(UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes()), name);
-                    player.save().join(); // block until player is saved
-                    player.setOption(PlayerOptionType.SPEED, true);
-                    player.setLastLocale("es");
-                } else {
-                    if (player.isPremium() && profile != null) {
-                        player.setUniqueId(profile.getId());
-                    }
-                }
-                if (fetchedProfile && profile == null) {
-                    player.setPremium(false);
-                }
-            }
+            Matrix.getLogger().debug("Processing pre login for " + name);
+            // validate the hostname that the player tried to use to connect
             String host = event.getConnection().getVirtualHost().getHostName();
-            if (host == null) {
+            if (host == null) { // hostname not present, cancel connection
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("\n" +
                         "Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\n" +
@@ -89,7 +52,7 @@ public class PreLoginTask implements Runnable {
                     break;
                 }
             }
-            if (badDomain) {
+            if (badDomain) { // hostname not in our whitelist, may be bot attack, cancel connection
                 event.setCancelled(true);
                 event.setCancelReason(new TextComponent("\n" +
                         "Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\n" +
@@ -97,6 +60,7 @@ public class PreLoginTask implements Runnable {
                         "Por favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
                 return;
             }
+            // validate username
             if (!name.matches("^\\w{3,16}$")) {
                 String goodName = name.replaceAll("[^\\w]", "");
                 event.setCancelReason(new TextComponent("\n" +
@@ -108,15 +72,57 @@ public class PreLoginTask implements Runnable {
                 event.setCancelled(true);
                 return;
             }
-            for (String domain : MatrixAPIImpl.DOMAIN_NAMES) {
-                if (host.equals("premium." + domain)) {
+            boolean fetchedProfile = false;
+            Profile profile = null;
+            try {
+                profile = RESOLVER.findProfile(name).orElse(null);
+                fetchedProfile = true;
+            } catch (@NotNull RateLimitException | IOException e) {
+                e.printStackTrace();
+            }
+            if (profile != null || host.startsWith("premium.")) {
+                Matrix.getLogger().info("Premium account detected for " + name);
+                if (profile != null) {
+                    player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(profile.getId()).join();
+                } else {
+                    player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
+                }
+                if (player != null) {
+                    player.setPremium(true);
+                    player.setName(name);
                     if (!player.isBedrock()) {
+                        // event.getConnection().setUniqueId(profile.getId()); // TODO: check uuid was being forced for online mode connections
                         event.getConnection().setOnlineMode(true);
                     }
-                    if (!player.isPremium()) {
+                } else {
+                    Matrix.getLogger().info(name + " is not premium on the server");
+                }
+            }
+            if (player == null) {
+                player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(name).join();
+                if (player == null) {
+                    if (profile != null) {
+                        // TODO: set new premium players as premium on first login
+                        /*
+                        player = new MongoMatrixPlayer(profile.getId(), name);
                         player.setPremium(true);
+                        player.save().join();
+                        event.setCancelReason(new TextComponent("Estamos validando que no seas un bot, por favor reconecta..."));
+                        event.setCancelled(true);
+                        return;
+                         */
+                    } else {
+                        player = new MongoMatrixPlayer(UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes()), name);
                     }
-                    break;
+                    player.setLastLocale("es");
+                    player.save().join(); // block until player is saved
+                } else {
+                    if (player.isPremium() && profile != null) {
+                        player.setUniqueId(profile.getId());
+                    }
+                }
+                if (fetchedProfile && profile == null) {
+                    player.setPremium(false);
                 }
             }
             if (player.isPremium() && !player.isBedrock()) {
