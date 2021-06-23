@@ -312,7 +312,11 @@ public class CacheProviderImpl implements CacheProvider {
 
     @Override
     public boolean isCachedById(@NotNull String hexId) {
-        if (cachedPlayers.getIfPresent(hexId) != null) {
+        return isCachedById(hexId, true);
+    }
+
+    public boolean isCachedById(@NotNull String hexId, boolean includeLocal) {
+        if (includeLocal && cachedPlayers.getIfPresent(hexId) != null) {
             return true;
         }
         try (Jedis jedis = api.getRedisManager().getResource()) {
@@ -330,7 +334,7 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public <T> @NotNull T updateCachedFieldById(@Nullable String hexId, @NotNull String field, @Nullable T value) {
         Objects.requireNonNull(hexId, "hexId");
-        if (!isCachedById(hexId)) {
+        if (!isCachedById(hexId, false)) {
             Matrix.getLogger().debug("Trying to update cached field for a non cached player: " + hexId + " field: " + field + " value: " + value + " - Skipping");
             return Objects.requireNonNull(value, "value");
         }
@@ -363,6 +367,7 @@ public class CacheProviderImpl implements CacheProvider {
             Matrix.getLogger().info("Tried to save already cached player");
             return matrixPlayer;
         }
+        cachedPlayers.put(matrixPlayer.getId(), matrixPlayer);
         if (Objects.isNull(matrixPlayer.getLowercaseName())) {
             matrixPlayer.setName(matrixPlayer.getName());
         }
