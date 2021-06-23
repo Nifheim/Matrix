@@ -25,11 +25,9 @@ public class DisconnectTask implements Runnable {
     public void run() {
         MatrixPlayer player = api.getPlayerManager().getPlayer(event.getPlayer()).join();
         if (player != null) {
+            Matrix.getLogger().debug("Processing disconnect for matrix player " + player.getName() + " " + player.getId());
             try {
                 player.setLoggedIn(false);
-                if (player.isAdmin() && !event.getPlayer().hasPermission("matrix.admin")) {
-                    player.setAdmin(false);
-                }
                 if (player.getLastLogin() != null && player.getRegistration() != null && player.getRegistration().after(player.getLastLogin())) {
                     ((MongoMatrixPlayer) player).setRegistration(player.getLastLogin());
                 }
@@ -39,6 +37,8 @@ public class DisconnectTask implements Runnable {
                 event.getPlayer().disconnect(new TextComponent(e.getLocalizedMessage()));
                 Matrix.getLogger().debug(e);
             }
+        } else {
+            Matrix.getLogger().debug("Skipping disconnection for null matrix player: " + event.getPlayer().getName() + " " + event.getPlayer().getUniqueId());
         }
     }
 }

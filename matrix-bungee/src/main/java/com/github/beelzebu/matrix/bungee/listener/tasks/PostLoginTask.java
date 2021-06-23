@@ -29,11 +29,7 @@ public class PostLoginTask implements Runnable {
         MatrixPlayer player = api.getPlayerManager().getPlayer(event.getPlayer().getUniqueId()).join();
         try {
             Objects.requireNonNull(player, "player");
-            if (event.getPlayer().hasPermission("matrix.admin")) {
-                player.setAdmin(true);
-            } else if (player.isAdmin()) {
-                player.setAdmin(false);
-            }
+            Matrix.getLogger().debug("Processing post login for " + player.getName() + " " + player.getId());
             player.setIP(event.getPlayer().getPendingConnection().getAddress().getAddress().getHostAddress());
             if (!player.isPremium()) {
                 player.sendMessage(I18n.tl(Message.PREMIUM_SUGGESTION, player.getLastLocale()));

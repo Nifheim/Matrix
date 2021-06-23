@@ -27,10 +27,13 @@ public class LoginTask implements Runnable {
     @Override
     public void run() {
         try {
+            Matrix.getLogger().debug("Processing login for " + event.getConnection().getName());
             MongoMatrixPlayer player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(event.getConnection().getUniqueId()).join();
             if (player == null) {
+                Matrix.getLogger().debug("Player by uuid is null for " + event.getConnection().getName());
                 player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
                 if (event.getConnection().getUniqueId().version() == 4) {
+                    Matrix.getLogger().debug("UUID for the connection seems to be premium, forcing premium for " + player.getName() + " " + player.getId());
                     player.setPremium(true);
                     player.setUniqueId(event.getConnection().getUniqueId());
                     player.save().join();
@@ -42,8 +45,9 @@ public class LoginTask implements Runnable {
                 event.setCancelReason(new TextComponent("Internal error: " + ErrorCodes.NULL_PLAYER.getId()));
                 return;
             }
+            Matrix.getLogger().debug("Login started for " + player.getName() + " " + player.getId());
             PendingConnection pendingConnection = event.getConnection();
-            if (!event.getConnection().getName().equalsIgnoreCase("Beelzebu") && api.getMaintenanceManager().isMaintenance() && !player.isAdmin()) {
+            if (api.getMaintenanceManager().isMaintenance()) {
                 event.setCancelled(true);
                 event.setCancelReason(TextComponent.fromLegacyText(I18n.tl(Message.MAINTENANCE, player.getLastLocale())));
                 return;
