@@ -3,7 +3,6 @@ package com.github.beelzebu.matrix.player;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.google.common.collect.ImmutableSet;
@@ -36,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Beelzebu
  */
-@SuppressWarnings("FieldMayBeFinal")
+@SuppressWarnings({"FieldMayBeFinal", "UnstableApiUsage"})
 @Entity(value = "players")
 public final class MongoMatrixPlayer implements MatrixPlayer {
 
@@ -56,31 +55,22 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private String name;
     @Indexed(options = @IndexOptions(unique = true))
     private String lowercaseName;
-    private @NotNull
-    Set<String> knownNames = new HashSet<>();
+    private @NotNull Set<String> knownNames = new HashSet<>();
     private String displayName;
     private boolean premium;
     private boolean bedrock;
     private boolean registered;
-    private boolean admin;
-    private String hashedPassword;
     private boolean loggedIn;
     private String lastLocale;
-    private String staffChannel;
     private boolean watcher;
-    private HashSet<PlayerOptionType> options = new HashSet<>();
     @Indexed
     private String IP;
-    private @NotNull
-    Set<String> ipHistory = new LinkedHashSet<>();
+    private @NotNull Set<String> ipHistory = new LinkedHashSet<>();
     private Date lastLogin;
     private Date registration;
-    private String discordId;
     private int censoringLevel;
     private int spammingLevel;
-    private boolean vanished;
-    private @NotNull
-    HashMap<String, GameMode> gameModeByGame = new HashMap<>();
+    private @NotNull HashMap<String, GameMode> gameModeByGame = new HashMap<>();
 
     public MongoMatrixPlayer(UUID uniqueId, @NotNull String name) {
         this();
@@ -144,9 +134,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public @NotNull String getName() {
-        if (name == null) {
-            name = Matrix.getAPI().getPlayerManager().getNameById(getId()).join();
-        }
         return Objects.requireNonNull(name, "name");
     }
 
@@ -235,30 +222,20 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public boolean isAdmin() {
-        return admin;
+        return false;
     }
 
     @Override
     public void setAdmin(boolean admin) {
-        if (this.admin == admin) {
-            return;
-        }
-        this.admin = admin;
-        updateCached("admin");
     }
 
     @Override
     public @NotNull String getHashedPassword() {
-        return hashedPassword;
+        return "";
     }
 
     @Override
     public void setHashedPassword(String hashedPassword) {
-        if (Objects.equals(this.hashedPassword, hashedPassword)) {
-            return;
-        }
-        this.hashedPassword = hashedPassword;
-        updateCached("hashedPassword");
     }
 
     @Override
@@ -286,9 +263,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void setLastLocale(@NotNull Locale lastLocale) {
-        if (Objects.isNull(lastLocale)) {
-            return;
-        }
         setLastLocale(lastLocale.getLanguage());
     }
 
@@ -302,17 +276,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull String getStaffChannel() {
-        return staffChannel;
+    public @Nullable String getStaffChannel() {
+        return null;
     }
 
     @Override
     public void setStaffChannel(String staffChannel) {
-        if (Objects.equals(this.staffChannel, staffChannel)) {
-            return;
-        }
-        this.staffChannel = staffChannel;
-        updateCached("staffChannel");
     }
 
     @Override
@@ -346,25 +315,16 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public @NotNull Set<PlayerOptionType> getOptions() {
-        return options;
+        return new HashSet<>();
     }
 
     @Override
     public boolean getOption(PlayerOptionType option) {
-        return options.contains(option);
+        return false;
     }
 
     @Override
     public void setOption(PlayerOptionType option, boolean status) {
-        if (status && options.contains(option)) {
-            return;
-        } else if (!status && !options.contains(option)) {
-            return;
-        }
-        if (status ? options.add(option) : options.remove(option)) {
-            updateCached("options");
-            PlayerOptionChangeEvent.LISTENERS.forEach(playerOptionChangeListener -> playerOptionChangeListener.onPlayerOptionChange(new PlayerOptionChangeEvent(this, option, !status, status)));
-        }
     }
 
     @Override
@@ -416,17 +376,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull String getDiscordId() {
-        return discordId;
+    public @Nullable String getDiscordId() {
+        return null;
     }
 
     @Override
     public void setDiscordId(String discordId) {
-        if (Objects.equals(this.discordId, discordId)) {
-            return;
-        }
-        this.discordId = discordId;
-        updateCached("discordId");
     }
 
     @Override
@@ -453,13 +408,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public boolean isVanished() {
-        return vanished;
+        return false;
     }
 
     @Override
     public void setVanished(boolean vanished) {
-        this.vanished = vanished;
-        updateCached("vanished");
     }
 
     @Override
@@ -581,7 +534,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return Matrix.getAPI().getDatabase().save(id == null ? null : getId(), this);
     }
 
-    @Deprecated
     public void updateCached(String field) {
         try {
             Matrix.getAPI().getDatabase().updateFieldById(getId(), field, MongoMatrixPlayer.FIELDS.get(field).get(this));
