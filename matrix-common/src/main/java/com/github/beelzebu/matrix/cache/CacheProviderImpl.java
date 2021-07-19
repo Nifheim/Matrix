@@ -195,11 +195,6 @@ public class CacheProviderImpl implements CacheProvider {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try (Jedis jedis = api.getRedisManager().getResource()) {
-            return getPlayer(jedis, hexId);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return Optional.empty();
     }
 
@@ -238,6 +233,10 @@ public class CacheProviderImpl implements CacheProvider {
         try {
             Map<String, String> jsonPlayer = jedis.hgetAll(USER_KEY_PREFIX + hexId);
             if (jsonPlayer == null || jsonPlayer.isEmpty()) {
+                return Optional.empty();
+            }
+            if (!jsonPlayer.containsKey("name") || jsonPlayer.get("name").isEmpty()) {
+                jedis.del(USER_KEY_PREFIX + hexId);
                 return Optional.empty();
             }
             return Optional.ofNullable(MongoMatrixPlayer.fromHash(jsonPlayer));
@@ -280,9 +279,6 @@ public class CacheProviderImpl implements CacheProvider {
                 if (player.isPremium()) {
                     if (cachedPlayer.getUniqueId() != player.getUniqueId()) {
                         cachedPlayer.setUniqueId(player.getUniqueId());
-                    }
-                    if (!Objects.equals(cachedPlayer.getName(), player.getName())) {
-                        cachedPlayer.setName(player.getName());
                     }
                 }
                 cachedPlayer.save();
@@ -362,15 +358,17 @@ public class CacheProviderImpl implements CacheProvider {
     @Override
     public @NotNull MatrixPlayer saveToCache(@NotNull MatrixPlayer matrixPlayer) {
         Objects.requireNonNull(matrixPlayer.getUniqueId(), "UUID can't be null");
-        Objects.requireNonNull(matrixPlayer.getName(), "name can't be null");
+        try {
+            Objects.requireNonNull(matrixPlayer.getName(), "name can't be null");
+        } catch (NullPointerException e) {
+            Matrix.getLogger().info("Null name for player " + matrixPlayer.getUniqueId());
+            return matrixPlayer;
+        }
         if (isCached(matrixPlayer.getUniqueId())) {
             Matrix.getLogger().info("Tried to save already cached player");
             return matrixPlayer;
         }
-        cachedPlayers.put(matrixPlayer.getId(), matrixPlayer);
-        if (Objects.isNull(matrixPlayer.getLowercaseName())) {
-            matrixPlayer.setName(matrixPlayer.getName());
-        }
+        //cachedPlayers.put(matrixPlayer.getId(), matrixPlayer);
         try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
             MongoMatrixPlayer.FIELDS.forEach((id, field) -> {
                 try {
