@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.bson.UuidRepresentation;
@@ -87,12 +86,17 @@ public class StorageProvider {
     }
 
     public MatrixPlayer getPlayerByName(@NotNull String name) {
-        return Optional.ofNullable(
-                this.datastore.find(MongoMatrixPlayer.class)
-                        .filter(Filters.eq("lowercaseName", name.toLowerCase())).first())
-                .orElse(
-                        this.datastore.find(MongoMatrixPlayer.class)
-                                .filter(Filters.eq("name", name)).first());
+        MongoMatrixPlayer mongoMatrixPlayer = this.datastore.find(MongoMatrixPlayer.class)
+                .filter(Filters.eq("lowercaseName", name.toLowerCase())).first();
+        if (mongoMatrixPlayer == null) {
+            Matrix.getLogger().debug("Player not found by lowercaseName");
+            mongoMatrixPlayer = this.datastore.find(MongoMatrixPlayer.class)
+                    .filter(Filters.eq("name", name)).first();
+            if (mongoMatrixPlayer == null) {
+                Matrix.getLogger().debug("Player not found by name");
+            }
+        }
+        return mongoMatrixPlayer;
     }
 
     public @Nullable MatrixPlayer getPlayerById(@NotNull String hexId) {
@@ -120,6 +124,15 @@ public class StorageProvider {
     }
 
     public <T extends MatrixPlayer> T save(T matrixPlayer) {
+        try {
+            if (matrixPlayer.getUniqueId() == null) {
+                return matrixPlayer;
+            }
+            matrixPlayer.getName();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            return matrixPlayer;
+        }
         this.datastore.save(matrixPlayer);
         return matrixPlayer;
     }

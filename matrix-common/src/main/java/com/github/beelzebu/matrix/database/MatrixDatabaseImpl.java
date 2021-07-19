@@ -144,7 +144,7 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     }
 
     @Override
-    public <T> @NotNull CompletableFuture<T> updateFieldById(String hexId, @NotNull String s, T t) {
+    public <T> @NotNull CompletableFuture<T> updateFieldById(@NotNull String hexId, @NotNull String s, T t) {
         return schedulerAdapter.makeFuture(() -> cacheProvider.updateCachedFieldById(hexId, s, t));
     }
 
