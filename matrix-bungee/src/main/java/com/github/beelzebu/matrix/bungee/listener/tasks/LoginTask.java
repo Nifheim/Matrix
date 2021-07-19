@@ -55,7 +55,6 @@ public class LoginTask implements Runnable {
             if (pendingConnection.getUniqueId().version() == 4 && player.getUniqueId() != pendingConnection.getUniqueId()) {
                 player.setUniqueId(pendingConnection.getUniqueId());
             }
-            player.setName(pendingConnection.getName());
             if (pendingConnection.isOnlineMode() || player.isBedrock()) {
                 player.setPremium(true);
                 player.setRegistered(true);
