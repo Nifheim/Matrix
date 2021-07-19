@@ -7,9 +7,9 @@ import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.google.gson.JsonObject;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.Jedis;
@@ -23,7 +23,7 @@ public class RedisMessaging implements Messaging {
 
     public static final String MATRIX_MESSAGING = "matrix:2:message";
     private final Set<UUID> messages = new HashSet<>();
-    private final Set<MessageListener> messageListeners = new LinkedHashSet<>();
+    private final ConcurrentLinkedDeque<MessageListener> messageListeners = new ConcurrentLinkedDeque<>();
     private final RedisManager redisManager;
     private final @NotNull PubSubListener pubSubListener;
 
