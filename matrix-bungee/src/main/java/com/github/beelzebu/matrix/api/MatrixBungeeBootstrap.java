@@ -22,7 +22,7 @@ import com.github.beelzebu.matrix.bungee.motd.MotdManager;
 import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.scheduler.BungeeSchedulerAdapter;
 import com.github.beelzebu.matrix.messaging.message.ServerRequestMessage;
-import com.github.beelzebu.matrix.task.ServerCleanupTask;
+import com.github.beelzebu.matrix.bungee.util.ServerCleanupTask;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
