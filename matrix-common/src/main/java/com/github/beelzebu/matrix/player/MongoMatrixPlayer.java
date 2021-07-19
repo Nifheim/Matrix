@@ -7,12 +7,10 @@ import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.IndexOptions;
 import dev.morphia.annotations.Indexed;
-import dev.morphia.annotations.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -36,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Beelzebu
  */
 @SuppressWarnings({"FieldMayBeFinal", "UnstableApiUsage"})
-@Entity(value = "players")
+@Entity(value = "players", useDiscriminator = false)
 public final class MongoMatrixPlayer implements MatrixPlayer {
 
     public static final transient Map<String, Field> FIELDS = new HashMap<>();
@@ -47,8 +45,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Id
     private ObjectId id;
-    @Transient
-    private transient @Nullable String idString = null;
+    private @Nullable String idString = null;
     @Indexed(options = @IndexOptions(unique = true))
     private UUID uniqueId;
     @Indexed(options = @IndexOptions(unique = true))
@@ -89,7 +86,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
             String id = ent.getKey(); // field id
             Field field = ent.getValue(); // field object
             try {
-                if (hash.containsKey(id)) { // hash contains field
+                if (Objects.equals(id, "name")) {
+                    mongoMatrixPlayer.name = hash.get(id).replace("\"", "");
+                } else if (hash.containsKey(id)) { // hash contains field
                     mongoMatrixPlayer.setField(field, hash.get(id));
                 }
             } catch (@NotNull IllegalArgumentException | NullPointerException | JsonSyntaxException e) {
@@ -103,6 +102,9 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public @NotNull String getId() {
+        if (id == null) {
+            Matrix.getLogger().info("Id not set yet");
+        }
         if (id != null && idString == null) {
             return idString = id.toHexString();
         }
@@ -134,23 +136,18 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public @NotNull String getName() {
-        return Objects.requireNonNull(name, "name");
+        return Objects.requireNonNull(this.name, "name");
     }
 
     @Override
     public void setName(@NotNull String name) {
-        if (Objects.equals(this.name, name)) {
-            return;
-        }
-        if (!premium) {
-            throw new RuntimeException("Can't update name for cracked player");
-        }
-        this.name = Objects.requireNonNull(name, "name can't be null.");
-        lowercaseName = name.toLowerCase();
+        Objects.requireNonNull(name, "name");
         knownNames.add(name);
-        updateCached("name");
-        updateCached("lowercaseName");
-        updateCached("knownNames");
+        this.name = name;
+        this.lowercaseName = name.toLowerCase();
+        updateCached("name", name).thenAccept(val -> Objects.requireNonNull(this.name = val, "name can't be null."));
+        updateCached("lowercaseName", lowercaseName).thenAccept(val -> Objects.requireNonNull(this.lowercaseName = val, "name can't be null."));
+        updateCached("knownNames", knownNames).thenAccept(val -> Objects.requireNonNull(this.knownNames = val, "known names"));
     }
 
     @Override
@@ -523,13 +520,15 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public @NotNull CompletableFuture<Boolean> save() {
-        Objects.requireNonNull(getName(), "Can't save a player with null name");
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
-        if (getDisplayName() == null) {
-            setDisplayName(getName());
-        }
-        if (lowercaseName == null) {
-            setName(name);
+        Objects.requireNonNull(this.name, "Can't save a player with null name");
+        if (this.name != null) {
+            if (getDisplayName() == null) {
+                setDisplayName(getName());
+            }
+            if (lowercaseName == null) {
+                setName(name);
+            }
         }
         return Matrix.getAPI().getDatabase().save(id == null ? null : getId(), this);
     }
@@ -589,41 +588,22 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (field.getName().equals("uniqueId")) {
             Objects.requireNonNull(json, "uniqueId");
         }
-        if (field.getName().equals("options")) {
-            Object value = Matrix.GSON.fromJson(json, new TypeToken<HashSet<PlayerOptionType>>() {
-            }.getType());
+        try {
+            Object value = Matrix.GSON.fromJson(json, field.getGenericType());
             setField(field, value);
-        } else {
-            try {
-                Object value = Matrix.GSON.fromJson(json, field.getGenericType());
-                setField(field, value);
-            } catch (JsonSyntaxException | IllegalStateException e) {
-                Matrix.getLogger().warn("Field: " + field.getName() + " Json: " + json);
-                e.printStackTrace();
-            }
+        } catch (JsonSyntaxException | IllegalStateException e) {
+            Matrix.getLogger().warn("Field: " + field.getName() + " Json: " + json);
+            e.printStackTrace();
         }
     }
 
     private void setField(@NotNull Field field, Object value) {
         try {
-            switch (field.getName()) {
-                case "name":
-                    Objects.requireNonNull(value, "name");
-                    break;
-                case "uniqueId":
-                    Objects.requireNonNull(value, "uniqueId");
-                    break;
-                case "options":
-                    if (value != null) {
-                        field.set(this, value);
-                    } else {
-                        field.set(this, new HashSet<>());
-                    }
-                    break;
-                default:
-                    field.set(this, value);
-                    break;
+            String fieldName = field.getName();
+            if (fieldName.equals("name") || fieldName.equals("uniqueId")) {
+                Objects.requireNonNull(value, "uniqueId or name");
             }
+            field.set(this, value);
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
