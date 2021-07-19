@@ -1,6 +1,8 @@
 package com.github.beelzebu.matrix.api;
 
 import com.destroystokyo.paper.PaperConfig;
+import com.github.beelzebu.matrix.api.messaging.message.Message;
+import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
@@ -15,9 +17,6 @@ import com.github.beelzebu.matrix.bukkit.command.staff.PlayerInfoCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.ReloadCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.ReplyCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.StopCommand;
-import com.github.beelzebu.matrix.bukkit.command.staff.VanishCommand;
-import com.github.beelzebu.matrix.bukkit.command.user.OptionsCommand;
-import com.github.beelzebu.matrix.bukkit.command.user.ProfileCommand;
 import com.github.beelzebu.matrix.bukkit.command.user.SpitCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.AddLoreCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.MatrixManagerCommand;
@@ -29,7 +28,6 @@ import com.github.beelzebu.matrix.bukkit.listener.InternalListener;
 import com.github.beelzebu.matrix.bukkit.listener.LoginListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerCommandPreprocessListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerDeathListener;
-import com.github.beelzebu.matrix.bukkit.listener.VanishListener;
 import com.github.beelzebu.matrix.bukkit.listener.VotifierListener;
 import com.github.beelzebu.matrix.bukkit.menus.MatrixGUIManager;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.ServerRequestListener;
@@ -41,6 +39,7 @@ import com.github.beelzebu.matrix.bukkit.util.PluginsUtility;
 import com.github.beelzebu.matrix.bukkit.util.placeholders.OnlinePlaceholders;
 import com.github.beelzebu.matrix.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.messaging.message.ServerUnregisterMessage;
+import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.util.ReadURL;
 import java.io.File;
 import java.util.Date;
@@ -52,6 +51,7 @@ import net.nifheim.bukkit.util.BukkitCoreUtils;
 import net.nifheim.bukkit.util.CompatUtil;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -126,13 +126,11 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         if (isVotifier()) {
             registerEvents(new VotifierListener(this));
         }
-        registerEvents(new VanishListener(this));
         registerEvents(new LoginListener(api, this));
         // Register commands
         CommandAPI.registerCommand(this, new CommandWatcherCommand());
         CommandAPI.registerCommand(this, new FreezeCommand());
         CommandAPI.registerCommand(this, new MatrixReloadCommand());
-        CommandAPI.registerCommand(this, new OptionsCommand());
         CommandAPI.registerCommand(this, new RemoveLoreCommand());
         CommandAPI.registerCommand(this, new AddLoreCommand());
         CommandAPI.registerCommand(this, new RenameCommand());
@@ -140,8 +138,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         CommandAPI.registerCommand(this, new SpitCommand());
         CommandAPI.registerCommand(this, new ReloadCommand());
         CommandAPI.registerCommand(this, new StopCommand());
-        CommandAPI.registerCommand(this, new VanishCommand());
-        CommandAPI.registerCommand(this, new ProfileCommand());
         CommandAPI.registerCommand(this, new BungeeTPCommand());
         CommandAPI.registerCommand(this, new CrackedCommand());
         CommandAPI.registerCommand(this, new MatrixServersCommand());
@@ -201,6 +197,11 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
                 }
             }
         };
+        ConfigurationSection servers = getConfig().getConfigurationSection("servers");
+        servers.getKeys(false).forEach(server -> {
+            Message message = new ServerRegisterMessage(new ServerInfoImpl(ServerType.SURVIVAL, "extra", server, GameMode.SURVIVAL, true), servers.getString(server + ".address"), servers.getInt(server + ".port"));
+            Matrix.getAPI().getMessaging().sendMessage(message);
+        });
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         new MatrixGUIManager(this);
     }

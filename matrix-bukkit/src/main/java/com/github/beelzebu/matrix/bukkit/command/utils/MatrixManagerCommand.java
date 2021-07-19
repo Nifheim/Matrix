@@ -3,7 +3,7 @@ package com.github.beelzebu.matrix.bukkit.command.utils;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBukkitAPI;
 import com.github.beelzebu.matrix.api.command.BukkitCommandSource;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -20,11 +20,11 @@ public class MatrixManagerCommand extends MatrixCommand {
 
 
     public MatrixManagerCommand() {
-        super("matrix", "matrix.command.matrix");
+        super("matrix", "matrix.command.matrix", false);
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String label, String[] args) {
         if (args[0].equalsIgnoreCase("sound")) {
             _sound(sender, args);
         }

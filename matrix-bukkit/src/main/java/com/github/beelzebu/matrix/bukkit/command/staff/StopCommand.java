@@ -1,12 +1,13 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import com.github.beelzebu.matrix.bukkit.util.BungeeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -18,7 +19,7 @@ public class StopCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
         if (sender instanceof ConsoleCommandSender) {
             Matrix.getAPI().getServerInfo().getLobbyServer().thenAcceptAsync(lobby -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {

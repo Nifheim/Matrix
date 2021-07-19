@@ -17,4 +17,12 @@ public class BungeeUtil {
         out.writeUTF(server);
         player.sendPluginMessage(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class), "BungeeCord", out.toByteArray());
     }
+
+    public static void move(@NotNull Player sender, @NotNull String name, @NotNull String server) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("ConnectOther");
+        out.writeUTF(name);
+        out.writeUTF(server);
+        sender.sendPluginMessage(MatrixBukkitBootstrap.getPlugin(MatrixBukkitBootstrap.class), "BungeeCord", out.toByteArray());
+    }
 }

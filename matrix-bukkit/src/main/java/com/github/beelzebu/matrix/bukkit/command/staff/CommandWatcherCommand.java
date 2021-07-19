@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -16,11 +16,11 @@ public class CommandWatcherCommand extends MatrixCommand {
     public static @NotNull String PERMISSION = "matrix.command.commandwatcher";
 
     public CommandWatcherCommand() {
-        super("cw", PERMISSION, "vc");
+        super("cw", PERMISSION, false, "vc");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
         if (!(sender instanceof Player)) {
             return;
         }

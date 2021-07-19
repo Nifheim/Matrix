@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.command.utils;
 
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Material;
@@ -22,7 +22,7 @@ public class AddLoreCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String @NotNull [] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(I18n.tl(Message.GENERAL_NO_CONSOLE, I18n.DEFAULT_LOCALE));
             return;

@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import com.github.beelzebu.matrix.messaging.message.TargetedMessage;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
 public class ReplyCommand extends MatrixCommand {
 
     public ReplyCommand() {
-        super("responder", "matrix.command.reply", "reply");
+        super("responder", "matrix.command.reply", true, "reply");
     }
 
     @Override
-    public void onCommand(@NotNull CommandSender sender, String @NotNull [] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
         if (args.length < 2) {
             sender.sendMessage(StringUtils.replace("&cPor favor ingresa un usuario y mensaje para enviar."));
             return;

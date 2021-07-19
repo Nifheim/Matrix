@@ -4,8 +4,8 @@ plugins {
 
 dependencies {
     implementation project(':matrix-common')
-    implementation 'net.nifheim.bukkit:commandlib:1.0-SNAPSHOT'
-    implementation 'net.nifheim:coreutils:1.1.0-SNAPSHOT'
+    implementation 'net.nifheim:commandlib:1.1-SNAPSHOT'
+    implementation 'net.nifheim:coreutils:1.2.0-SNAPSHOT'
     implementation 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
     implementation 'me.clip:placeholderapi:2.10.9'
     implementation 'com.vexsoftware:nuvotifier-universal:2.6.0'
@@ -24,7 +24,7 @@ shadowJar {
         include(project(':matrix-common'))
         include(dependency('com.github.beelzebu:jMatrix'))
         include(dependency('net.nifheim:coreutils'))
-        include(dependency('net.nifheim.bukkit:commandlib'))
+        include(dependency('net.nifheim:commandlib'))
         include(dependency('net.byteflux:libby-core'))
     }
 

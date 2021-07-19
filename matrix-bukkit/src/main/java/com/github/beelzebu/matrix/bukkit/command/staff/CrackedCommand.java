@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -14,11 +14,11 @@ import org.jetbrains.annotations.NotNull;
 public class CrackedCommand extends MatrixCommand {
 
     public CrackedCommand() {
-        super("cracked", "matrix.command.cracked");
+        super("cracked", "matrix.command.cracked", false);
     }
 
     @Override
-    public void onCommand(@NotNull CommandSender sender, String @NotNull [] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
         if (args.length != 1) {
             sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.GENERAL_NO_TARGET, I18n.DEFAULT_LOCALE)));
             return;

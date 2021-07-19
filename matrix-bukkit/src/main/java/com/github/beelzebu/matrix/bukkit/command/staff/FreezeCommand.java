@@ -1,11 +1,11 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +30,7 @@ public class FreezeCommand extends MatrixCommand {
     }
 
     @Override
-    public void onCommand(CommandSender sender, String @NotNull [] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
         String senderLocale = sender instanceof Player ? ((Player) sender).getLocale().substring(0, 2) : I18n.DEFAULT_LOCALE;
         if (args.length < 1) {
             sender.sendMessage(I18n.tl(Message.ESSENTIALS_FREEZE_USAGE, senderLocale));

@@ -1,7 +1,8 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
@@ -9,10 +10,10 @@ import org.bukkit.command.CommandSender;
 public class ReloadCommand extends MatrixCommand {
 
     public ReloadCommand() {
-        super("reload", "matrix.admin", "bukkit:reload", "spigot:reload", "rl", "bukkit:rl", "spigot:rl");
+        super("reload", "matrix.admin", false, "bukkit:reload", "spigot:reload", "rl", "bukkit:rl", "spigot:rl");
     }
 
     @Override
-    public void onCommand(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
     }
 }

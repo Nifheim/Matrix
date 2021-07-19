@@ -1,9 +1,9 @@
 package com.github.beelzebu.matrix.bukkit.command.staff;
 
 import com.github.beelzebu.matrix.api.Matrix;
-import com.github.beelzebu.matrix.api.command.MatrixCommand;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,11 +23,11 @@ import org.jetbrains.annotations.NotNull;
 public class MatrixServersCommand extends MatrixCommand {
 
     public MatrixServersCommand() {
-        super("mservers", "matrix.command.servers");
+        super("mservers", "matrix.command.servers", false);
     }
 
     @Override
-    public void onCommand(@NotNull CommandSender commandSender, String @NotNull [] args) {
+    public void onCommand(CommandSender sender, String label, String @NotNull [] args) {
         Matrix.getAPI().getServerManager().getAllServers().thenAcceptAsync(groupServers -> {
             List<BaseComponent[]> components = new ArrayList<>();
             components.add(TextComponent.fromLegacyText(StringUtils.replace("&6Jugadores en linea: &a" + Matrix.getAPI().getPlayerManager().getOnlinePlayerCount().join())));
@@ -53,7 +53,7 @@ public class MatrixServersCommand extends MatrixCommand {
                 }
             }
             for (BaseComponent[] baseComponents : components) {
-                commandSender.sendMessage(baseComponents);
+                sender.sendMessage(baseComponents);
             }
         });
     }
