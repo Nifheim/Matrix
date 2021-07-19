@@ -80,6 +80,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
             libraryManager.loadLibrary(Library.builder().groupId("org{}mariadb{}jdbc").artifactId("mariadb-java-client").version("2.7.3").build());
             libraryManager.loadLibrary(Library.builder().groupId("org{}apache{}commons").artifactId("commons-pool2").version("2.9.0").build());
             libraryManager.loadLibrary(Library.builder().groupId("redis{}clients").artifactId("jedis").version("3.6.0").build());
+            libraryManager.loadLibrary(Library.builder().groupId("org{}mongodb").artifactId("bson").version("4.2.2").build());
             libraryManager.loadLibrary(Library.builder().groupId("org{}mongodb").artifactId("mongodb-driver-core").version("4.2.2").build());
             libraryManager.loadLibrary(Library.builder().groupId("org{}mongodb").artifactId("mongodb-driver-sync").version("4.2.2").build());
             libraryManager.loadLibrary(Library.builder().groupId("dev{}morphia{}morphia").artifactId("morphia-core").version("2.2.1").build());
