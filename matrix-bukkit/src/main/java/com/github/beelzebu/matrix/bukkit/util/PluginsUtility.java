@@ -9,7 +9,7 @@ import org.bukkit.plugin.Plugin;
 public class PluginsUtility {
 
     private final String[] pluginNames = {
-            "TAB",
+            "CMI",
             "Spartan",
             "NoCheatPlus",
             "SkinsRestorer",
@@ -21,7 +21,6 @@ public class PluginsUtility {
     };
 
     public PluginsUtility() {
-
     }
 
     public void checkForPluginsToRemove() {

@@ -6,6 +6,7 @@ author: Beelzebu
 softdepend: [ PlaceholderAPI, Votifier ]
 loadbefore: [ NetworkLevels ]
 api-version: 1.16
+provides: [ CommandLib, CoreUtils ]
 libraries:
 - com.github.ben-manes.caffeine:caffeine:3.0.2
 - com.zaxxer:HikariCP:4.0.3

@@ -53,7 +53,9 @@ import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -128,21 +130,21 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         }
         registerEvents(new LoginListener(api, this));
         // Register commands
-        CommandAPI.registerCommand(this, new CommandWatcherCommand());
-        CommandAPI.registerCommand(this, new FreezeCommand());
-        CommandAPI.registerCommand(this, new MatrixReloadCommand());
-        CommandAPI.registerCommand(this, new RemoveLoreCommand());
-        CommandAPI.registerCommand(this, new AddLoreCommand());
-        CommandAPI.registerCommand(this, new RenameCommand());
-        CommandAPI.registerCommand(this, new MatrixManagerCommand());
-        CommandAPI.registerCommand(this, new SpitCommand());
-        CommandAPI.registerCommand(this, new ReloadCommand());
-        CommandAPI.registerCommand(this, new StopCommand());
-        CommandAPI.registerCommand(this, new BungeeTPCommand());
-        CommandAPI.registerCommand(this, new CrackedCommand());
-        CommandAPI.registerCommand(this, new MatrixServersCommand());
-        CommandAPI.registerCommand(this, new PlayerInfoCommand());
-        CommandAPI.registerCommand(this, new ReplyCommand());
+        new CommandWatcherCommand();
+        new FreezeCommand();
+        new MatrixReloadCommand();
+        new RemoveLoreCommand();
+        new AddLoreCommand();
+        new RenameCommand();
+        new MatrixManagerCommand();
+        new SpitCommand();
+        new ReloadCommand();
+        new StopCommand();
+        new BungeeTPCommand();
+        new CrackedCommand();
+        new MatrixServersCommand();
+        new PlayerInfoCommand();
+        new ReplyCommand();
 
         pluginsUtility = new PluginsUtility();
 
@@ -150,6 +152,12 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             pluginsUtility.checkForPluginsToRemove();
+            Bukkit.getPluginManager().registerEvents(new Listener() {
+                @EventHandler
+                public void onPluginEnable(PluginEnableEvent e) {
+                    pluginsUtility.checkForPluginsToRemove();
+                }
+            }, this);
             Bukkit.getOperators().forEach(op -> op.setOp(false)); // remove operators
             Stream.of(BanList.Type.values()).map(Bukkit::getBanList).forEach(banList -> banList.getBanEntries().forEach(banEntry -> banEntry.setExpiration(new Date()))); // expire vanilla bans
             Bukkit.getOnlinePlayers().forEach(p -> {
@@ -198,10 +206,12 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             }
         };
         ConfigurationSection servers = getConfig().getConfigurationSection("servers");
-        servers.getKeys(false).forEach(server -> {
-            Message message = new ServerRegisterMessage(new ServerInfoImpl(ServerType.SURVIVAL, "extra", server, GameMode.SURVIVAL, true), servers.getString(server + ".address"), servers.getInt(server + ".port"));
-            Matrix.getAPI().getMessaging().sendMessage(message);
-        });
+        if (servers != null) {
+            servers.getKeys(false).forEach(server -> {
+                Message message = new ServerRegisterMessage(new ServerInfoImpl(ServerType.SURVIVAL, "extra", server, GameMode.SURVIVAL, true), servers.getString(server + ".address"), servers.getInt(server + ".port"));
+                Matrix.getAPI().getMessaging().sendMessage(message);
+            });
+        }
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         new MatrixGUIManager(this);
     }
@@ -216,6 +226,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         getScheduler().shutdownScheduler();
         api.shutdown();
         Bukkit.getScheduler().cancelTasks(this);
+        CommandAPI.unregister(this);
     }
 
     public boolean isVotifier() {
