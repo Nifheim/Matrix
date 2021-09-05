@@ -58,7 +58,6 @@ public class ServerCleanupTask implements Runnable {
                     groups.remove();
                 }
             }
-            ProxyServer.getInstance().getServers().keySet().removeIf(server -> !map.containsKey(server));
         });
     }
 }
