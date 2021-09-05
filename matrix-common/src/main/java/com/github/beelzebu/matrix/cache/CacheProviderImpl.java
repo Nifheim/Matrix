@@ -281,8 +281,7 @@ public class CacheProviderImpl implements CacheProvider {
                         cachedPlayer.setUniqueId(player.getUniqueId());
                     }
                 }
-                cachedPlayer.save();
-                jedis.del(USER_KEY_PREFIX + player.getUniqueId()); // remove it from redis
+                cachedPlayer.save().thenAccept(p -> jedis.del(USER_KEY_PREFIX + player.getUniqueId())); // remove it from redis
             } catch (DuplicateKeyException e) {
                 e.printStackTrace();
             }
@@ -341,6 +340,9 @@ public class CacheProviderImpl implements CacheProvider {
         if (Objects.equals(field, "uniqueId") && value == null) {
             Matrix.getLogger().debug("Trying to save a null uuid for " + hexId);
             throw new NullPointerException("uniqueId");
+        }
+        if (value == null) {
+            Matrix.getLogger().info("Updating field " + field + " with null value for " + hexId);
         }
         try (Jedis jedis = api.getRedisManager().getResource()) {
             String jsonValue = Matrix.GSON.toJson(value);
