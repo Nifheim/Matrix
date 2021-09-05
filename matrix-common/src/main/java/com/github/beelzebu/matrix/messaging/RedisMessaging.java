@@ -5,7 +5,6 @@ import com.github.beelzebu.matrix.api.messaging.MessageListener;
 import com.github.beelzebu.matrix.api.messaging.Messaging;
 import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.util.RedisManager;
-import com.google.gson.JsonObject;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -93,19 +92,19 @@ public class RedisMessaging implements Messaging {
     private class JedisPubSubHandler extends JedisPubSub {
 
         @Override
-        public void onMessage(String channel, String message) {
-            JsonObject jobj = Matrix.GSON.fromJson(message, JsonObject.class);
-            if (messages.contains(UUID.fromString(jobj.get("uniqueId").getAsString()))) {
+        public synchronized void onMessage(String channel, String message) {
+            Message matrixMessage = Matrix.GSON.fromJson(message, Message.class);
+            if (messages.contains(matrixMessage.getUniqueId())) {
                 return;
             }
-            Matrix.getLogger().debug("Redis Log: Message is:");
-            Message matrixMessage = Matrix.GSON.fromJson(message, Message.class);
+            Matrix.getLogger().debug("Redis Log: Message is: " + message);
             for (MessageListener messageListener : messageListeners) {
                 try {
                     if (messageListener.getMessageType() == matrixMessage.getMessageType()) {
                         messageListener.onMessage(matrixMessage);
                     }
-                } catch (Exception ignored) {
+                } catch (Exception exception) {
+                    Matrix.getLogger().debug(exception);
                 }
             }
         }
