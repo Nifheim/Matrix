@@ -3,6 +3,7 @@ package com.github.beelzebu.matrix.bungee.listener.tasks;
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.util.Throwing;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Date;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -11,7 +12,7 @@ import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 /**
  * @author Beelzebu
  */
-public class DisconnectTask implements Runnable {
+public class DisconnectTask implements Throwing.Runnable {
 
     private final MatrixBungeeAPI api;
     private final PlayerDisconnectEvent event;

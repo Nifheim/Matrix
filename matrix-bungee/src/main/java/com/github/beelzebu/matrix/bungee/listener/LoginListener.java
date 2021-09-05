@@ -1,10 +1,14 @@
 package com.github.beelzebu.matrix.bungee.listener;
 
+import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.bungee.listener.tasks.DisconnectTask;
 import com.github.beelzebu.matrix.bungee.listener.tasks.LoginTask;
 import com.github.beelzebu.matrix.bungee.listener.tasks.PostLoginTask;
 import com.github.beelzebu.matrix.bungee.listener.tasks.PreLoginTask;
+import com.github.beelzebu.matrix.util.LoginState;
+import java.util.HashMap;
+import java.util.Map;
 import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -16,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 public class LoginListener implements Listener {
 
     private final MatrixBungeeAPI api;
+    private final Map<String, LoginState> loginStateMap = new HashMap<>();
 
     public LoginListener(MatrixBungeeAPI api) {
         this.api = api;
@@ -27,7 +32,10 @@ public class LoginListener implements Listener {
             return;
         }
         e.registerIntent(api.getPlugin().getBootstrap());
-        api.getPlugin().getBootstrap().getScheduler().executeAsync(new PreLoginTask(api, e));
+        api.getPlugin().getBootstrap().getScheduler().makeFuture(new PreLoginTask(api, e)).thenRun(() -> {
+            loginStateMap.put(e.getConnection().getName(), LoginState.PRE_LOGIN);
+            Matrix.getLogger().info("Pre login state for " + e.getConnection().getName());
+        });
     }
 
     @EventHandler(priority = Byte.MAX_VALUE)
@@ -36,16 +44,25 @@ public class LoginListener implements Listener {
             return;
         }
         e.registerIntent(api.getPlugin().getBootstrap());
-        api.getPlugin().getBootstrap().getScheduler().executeAsync(new LoginTask(api, e));
+        api.getPlugin().getBootstrap().getScheduler().makeFuture(new LoginTask(api, e)).thenRun(() -> {
+            loginStateMap.put(e.getConnection().getName(), LoginState.LOGIN);
+            Matrix.getLogger().info("Login state for " + e.getConnection().getName());
+        });
     }
 
     @EventHandler(priority = Byte.MIN_VALUE)
     public void onPostLogin(PostLoginEvent e) {
-        api.getPlugin().getBootstrap().getScheduler().executeAsync(new PostLoginTask(api, e));
+        api.getPlugin().getBootstrap().getScheduler().makeFuture(new PostLoginTask(api, e, false)).thenRun(() -> {
+            loginStateMap.put(e.getPlayer().getName(), LoginState.POST_LOGIN);
+            Matrix.getLogger().info("Post login state for " + e.getPlayer().getName());
+        });
     }
 
     @EventHandler(priority = Byte.MAX_VALUE)
     public void onDisconnect(PlayerDisconnectEvent e) {
-        api.getPlugin().getBootstrap().getScheduler().executeAsync(new DisconnectTask(api, e));
+        api.getPlugin().getBootstrap().getScheduler().makeFuture(new DisconnectTask(api, e)).thenRun(() -> {
+            loginStateMap.remove(e.getPlayer().getName());
+            Matrix.getLogger().info("Removed state for " + e.getPlayer().getName());
+        });
     }
 }
