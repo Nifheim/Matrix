@@ -1,5 +1,6 @@
 package com.github.beelzebu.matrix.util;
 
+import com.github.beelzebu.matrix.api.Matrix;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
@@ -16,7 +17,6 @@ public class RedisManager {
 
     public RedisManager(String host, int port, @Nullable String password) {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMinIdle(30);
         config.setMaxTotal(30);
         config.setMaxWaitMillis(1000);
         config.setBlockWhenExhausted(true);
@@ -33,7 +33,24 @@ public class RedisManager {
     }
 
     public Jedis getResource() {
-        return pool.getResource();
+        return getResource(1);
+    }
+
+    private Jedis getResource(int tries) {
+        try {
+            return pool.getResource();
+        } catch (ClassCastException e) {
+            Matrix.getLogger().warn("Error obtaining resource, tried " + tries + " times");
+            if (tries >= 10) {
+                return null;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            return getResource(++tries);
+        }
     }
 
     public void shutdown() {
