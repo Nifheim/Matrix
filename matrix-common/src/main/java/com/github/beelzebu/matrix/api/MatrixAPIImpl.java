@@ -75,6 +75,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
             LibraryManager libraryManager = new MatrixLibraryManager(plugin.getBootstrap());
             libraryManager.addMavenCentral();
             libraryManager.addSonatype();
+            libraryManager.loadLibrary(Library.builder().groupId("org{}slf4j").artifactId("slf4j-api").version("1.7.30").build());
             libraryManager.loadLibrary(Library.builder().groupId("com{}github{}ben-manes{}caffeine").artifactId("caffeine").version("3.0.2").build());
             libraryManager.loadLibrary(Library.builder().groupId("com{}zaxxer").artifactId("HikariCP").version("4.0.3").build());
             libraryManager.loadLibrary(Library.builder().groupId("org{}mariadb{}jdbc").artifactId("mariadb-java-client").version("2.7.3").build());
