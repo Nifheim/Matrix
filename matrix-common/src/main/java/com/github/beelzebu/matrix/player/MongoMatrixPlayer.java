@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Stream;
 import org.bson.types.ObjectId;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -213,8 +214,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (this.registered == registered) {
             return;
         }
-        this.registered = registered;
-        updateCached("registered");
+        this.registered = updateCached("registered", registered).join();
     }
 
     @Override
@@ -245,7 +245,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         if (this.loggedIn == loggedIn) {
             return;
         }
-        updateCached("loggedIn", loggedIn).thenAccept(val -> this.loggedIn = val);
+        this.loggedIn = updateCached("loggedIn", loggedIn).join();
         if (loggedIn) {
             Matrix.getAPI().getPlayerManager().setOnlineById(getId());
         } else {
@@ -533,6 +533,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return Matrix.getAPI().getDatabase().save(id == null ? null : getId(), this);
     }
 
+    @Deprecated
+    @ApiStatus.ScheduledForRemoval(inVersion = "1.3")
     public void updateCached(String field) {
         try {
             Matrix.getAPI().getDatabase().updateFieldById(getId(), field, MongoMatrixPlayer.FIELDS.get(field).get(this));
@@ -551,20 +553,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     public @NotNull Set<String> getKnownNames() {
         return knownNames;
-    }
-
-    public boolean isBedrock() {
-        return bedrock;
-    }
-
-    public void setBedrock(boolean bedrock) {
-        if (!bedrock) {
-            throw new IllegalArgumentException("Bedrock can't be disabled for this player");
-        }
-        if (!isPremium()) {
-            setPremium(true);
-        }
-        updateCached("bedrock", true).thenAccept(val -> this.bedrock = val);
     }
 
     @Override
