@@ -4,7 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CentredMessage {
+public class CenteredMessage {
 
     private final static int CENTER_PX = 154;
 

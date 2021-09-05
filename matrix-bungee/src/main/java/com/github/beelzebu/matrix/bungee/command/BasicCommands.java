@@ -1,6 +1,6 @@
 package com.github.beelzebu.matrix.bungee.command;
 
-import com.github.beelzebu.matrix.api.CentredMessage;
+import com.github.beelzebu.matrix.api.CenteredMessage;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
@@ -44,7 +44,7 @@ public class BasicCommands {
                 if (sender instanceof ProxiedPlayer) {
                     api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
                         for (String line : I18n.tls(Message.COMMAND_SOCIAL_TWITTER, matrixPlayer.getLastLocale())) {
-                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                            sender.sendMessage(TextComponent.fromLegacyText(CenteredMessage.generate(line)));
                         }
                     });
                 }
@@ -56,7 +56,7 @@ public class BasicCommands {
                 if (sender instanceof ProxiedPlayer) {
                     api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
                         for (String line : I18n.tls(Message.COMMAND_SOCIAL_FACEBOOK, matrixPlayer.getLastLocale())) {
-                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                            sender.sendMessage(TextComponent.fromLegacyText(CenteredMessage.generate(line)));
                         }
                     });
                 }
@@ -68,7 +68,7 @@ public class BasicCommands {
                 if (sender instanceof ProxiedPlayer) {
                     api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
                         for (String line : I18n.tls(Message.COMMAND_SOCIAL_INSTAGRAM, matrixPlayer.getLastLocale())) {
-                            sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                            sender.sendMessage(TextComponent.fromLegacyText(CenteredMessage.generate(line)));
                         }
                     });
                 }
@@ -81,7 +81,7 @@ public class BasicCommands {
                     if (sender instanceof ProxiedPlayer) {
                         api.getPlayerManager().getPlayer((ProxiedPlayer) sender).thenAccept(matrixPlayer -> {
                             for (String line : I18n.tls(Message.COMMAND_SOCIAL_DISCORD, matrixPlayer.getLastLocale())) {
-                                sender.sendMessage(TextComponent.fromLegacyText(CentredMessage.generate(line)));
+                                sender.sendMessage(TextComponent.fromLegacyText(CenteredMessage.generate(line)));
                             }
                         });
                     }
