@@ -21,6 +21,7 @@ public class LoginListener implements Listener {
 
     private final MatrixBungeeAPI api;
     private final Map<String, LoginState> loginStateMap = new HashMap<>();
+    private final Map<String, Boolean> profile = new HashMap<>();
 
     public LoginListener(MatrixBungeeAPI api) {
         this.api = api;
@@ -32,8 +33,10 @@ public class LoginListener implements Listener {
             return;
         }
         e.registerIntent(api.getPlugin().getBootstrap());
-        api.getPlugin().getBootstrap().getScheduler().makeFuture(new PreLoginTask(api, e)).thenRun(() -> {
+        PreLoginTask preLoginTask = new PreLoginTask(api, e);
+        api.getPlugin().getBootstrap().getScheduler().makeFuture(preLoginTask).thenRun(() -> {
             loginStateMap.put(e.getConnection().getName(), LoginState.PRE_LOGIN);
+            profile.put(e.getConnection().getName(), preLoginTask.getProfile() != null);
             Matrix.getLogger().info("Pre login state for " + e.getConnection().getName());
         });
     }
@@ -52,7 +55,8 @@ public class LoginListener implements Listener {
 
     @EventHandler(priority = Byte.MIN_VALUE)
     public void onPostLogin(PostLoginEvent e) {
-        api.getPlugin().getBootstrap().getScheduler().makeFuture(new PostLoginTask(api, e, false)).thenRun(() -> {
+        Boolean premiumProfile = profile.remove(e.getPlayer().getName());
+        api.getPlugin().getBootstrap().getScheduler().makeFuture(new PostLoginTask(api, e, premiumProfile != null && premiumProfile)).thenRun(() -> {
             loginStateMap.put(e.getPlayer().getName(), LoginState.POST_LOGIN);
             Matrix.getLogger().info("Post login state for " + e.getPlayer().getName());
         });

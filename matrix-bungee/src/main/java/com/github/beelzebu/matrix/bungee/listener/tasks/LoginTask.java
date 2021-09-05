@@ -8,8 +8,9 @@ import com.github.beelzebu.matrix.api.util.Throwing;
 import com.github.beelzebu.matrix.exception.LoginException;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
-import com.github.beelzebu.matrix.util.LoginState;
 import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.LoginEvent;
@@ -30,20 +31,14 @@ public class LoginTask implements Throwing.Runnable {
     @Override
     public void run() {
         try {
-            Matrix.getLogger().debug("Processing login for " + event.getConnection().getName());
-            MongoMatrixPlayer player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(event.getConnection().getUniqueId()).join();
-            if (player == null) { // this shouldn't happen
-                Matrix.getLogger().info("Player by uuid is null for " + event.getConnection().getName());
-                player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(event.getConnection().getName()).join();
-                if (event.getConnection().getUniqueId().version() == 4) {
-                    Matrix.getLogger().info("UUID for the connection seems to be premium, forcing premium for " + player.getName() + " " + player.getId());
-                    player.setPremium(true);
-                    player.setUniqueId(event.getConnection().getUniqueId());
-                    player.save().join();
-                }
-            }
-            if (player == null) {
-                throw new LoginException(ErrorCodes.NULL_PLAYER, LoginState.LOGIN);
+            String name = Objects.requireNonNull(event.getConnection().getName(), "name");
+            UUID uniqueId = Objects.requireNonNull(event.getConnection().getUniqueId(), "uniqueId");
+            Matrix.getLogger().debug("Processing login for " + name);
+            MongoMatrixPlayer player = (MongoMatrixPlayer) api.getPlayerManager().getPlayerByName(name).join();
+            if (player == null) { // new player, so we need to create it
+                player = new MongoMatrixPlayer(uniqueId, name);
+                player.save().join(); // block until player is saved
+                player.setLastLocale("es");
             }
             Matrix.getLogger().debug("Login started for " + player.getName() + " " + player.getId());
             PendingConnection pendingConnection = event.getConnection();

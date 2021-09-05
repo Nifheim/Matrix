@@ -4,19 +4,19 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.util.Throwing;
-import com.github.beelzebu.matrix.exception.LoginException;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.github.beelzebu.matrix.util.ErrorCodes;
-import com.github.beelzebu.matrix.util.LoginState;
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.MojangResolver;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.UUID;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
@@ -27,6 +27,7 @@ public class PreLoginTask implements Throwing.Runnable {
     private final MatrixBungeeAPI api;
     private final PreLoginEvent event;
     private MongoMatrixPlayer player;
+    private Profile profile;
 
     public PreLoginTask(MatrixBungeeAPI api, PreLoginEvent event) {
         this.api = api;
@@ -75,6 +76,50 @@ public class PreLoginTask implements Throwing.Runnable {
                 event.setCancelled(true);
                 return;
             }
+
+            player = (MongoMatrixPlayer) Matrix.getAPI().getPlayerManager().getPlayerByName(name).join();
+            if (player != null) { // player already exists in our database
+                if (!Objects.equals(name, player.getName())) { // username doesn't match
+                    if (player.isPremium()) { // player is premium, so we can safely update the username.
+                        player.setName(name);
+                    } else { // we must cancel the login to avoid data loss
+                        BaseComponent[] reason = new ComponentBuilder("Debes ingresar usando el nombre\n").append(player.getName() + "\n").bold(true).append("Revisa mayúsculas y minúsculas.").bold(false).create();
+                        event.setCancelReason(reason);
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            } else { // new player handling
+                boolean fetchedProfile = false;
+                profile = null;
+                try {
+                    profile = RESOLVER.findProfile(name).orElse(null);
+                    fetchedProfile = true;
+                } catch (@NotNull RateLimitException | IOException e) {
+                    e.printStackTrace();
+                }
+                if (profile != null) { // premium account exists with the name of this player
+                    Matrix.getLogger().info("Premium account detected for " + name);
+                    player = (MongoMatrixPlayer) api.getPlayerManager().getPlayer(profile.getId()).join();
+                    if (player != null) { // we have a player with the found uuid for the name
+                        player.setPremium(true);
+                        player.setName(name);
+                        player.setUniqueId(profile.getId());
+                        player.setRegistered(true);
+                        player.setPremium(true);
+                    }
+                } else if (!fetchedProfile) {
+                    Matrix.getLogger().warn("Can't fetch profile for " + name);
+                }
+            }
+            if (player != null) {
+                if (player.isPremium()) {
+                    event.getConnection().setOnlineMode(true);
+                    player.setLoggedIn(true);
+                }
+            }
+
+            /*
             boolean fetchedProfile = false;
             Profile profile = null;
             try {
@@ -131,6 +176,7 @@ public class PreLoginTask implements Throwing.Runnable {
                 event.getConnection().setOnlineMode(true);
                 player.setLoggedIn(true);
             }
+             */
         } catch (Exception e) {
             event.setCancelReason(new TextComponent("There was a problem processing your pre login, error code: " + (player == null ? ErrorCodes.NULL_PLAYER.getId() : ErrorCodes.UNKNOWN.getId())));
             event.setCancelled(true);
@@ -138,5 +184,9 @@ public class PreLoginTask implements Throwing.Runnable {
         } finally {
             event.completeIntent(api.getPlugin().getBootstrap());
         }
+    }
+
+    public @Nullable Profile getProfile() {
+        return profile;
     }
 }

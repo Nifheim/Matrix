@@ -10,6 +10,7 @@ import com.github.beelzebu.matrix.exception.LoginException;
 import com.github.beelzebu.matrix.util.ErrorCodes;
 import com.github.beelzebu.matrix.util.LoginState;
 import com.github.beelzebu.matrix.util.MetaInjector;
+import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 
@@ -38,7 +39,7 @@ public class PostLoginTask implements Throwing.Runnable {
             Matrix.getLogger().debug("Processing post login for " + player.getName() + " " + player.getId());
             player.setIP(event.getPlayer().getPendingConnection().getAddress().getAddress().getHostAddress());
             if (!player.isPremium() && profile) {
-                player.sendMessage(I18n.tl(Message.PREMIUM_SUGGESTION, player.getLastLocale()));
+                api.getPlugin().getBootstrap().getScheduler().asyncLater(() -> player.sendMessage(I18n.tl(Message.PREMIUM_SUGGESTION, player.getLastLocale())), 5, TimeUnit.SECONDS);
             }
             api.getPlayerManager().getMetaInjector().setMeta(event.getPlayer(), MetaInjector.ID_KEY, player.getId());
         } catch (Exception e) {
