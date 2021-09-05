@@ -4,21 +4,20 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import com.github.beelzebu.matrix.bukkit.util.BungeeUtil;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.nifheim.bukkit.commandlib.RegistrableCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Beelzebu
  */
-public class BungeeTPCommand extends RegistrableCommand {
+public class BungeeTPCommand extends MatrixCommand {
 
     public BungeeTPCommand() {
-        super((Plugin) Matrix.getAPI().getPlugin().getBootstrap(), "btp", "matrix.command.btp", false, "bungeetp");
+        super("btp", "matrix.command.btp", false, "bungeetp");
     }
 
     @Override
