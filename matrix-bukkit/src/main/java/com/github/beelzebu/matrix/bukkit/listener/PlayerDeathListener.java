@@ -24,7 +24,7 @@ public class PlayerDeathListener implements Listener {
     public void onDeath(@NotNull PlayerDeathEvent e) {
         int stay = api.getConfig().getInt("Death Titles.Stay", 60);
         Player player = e.getEntity();
-        if (!CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12)) {
+        if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_12) && CompatUtil.VERSION.isPrevOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_15)) {
             try {
                 Bukkit.getScheduler().runTaskLater(api.getPlugin().getBootstrap(), () -> player.spigot().respawn(), 1L);
             } catch (Exception ignore) { // Doesn't work in 1.8 or earlier
