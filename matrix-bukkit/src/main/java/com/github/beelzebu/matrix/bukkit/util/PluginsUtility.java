@@ -9,10 +9,8 @@ import org.bukkit.plugin.Plugin;
 public class PluginsUtility {
 
     private final String[] pluginNames = {
-            "CMI",
             "Spartan",
             "NoCheatPlus",
-            "SkinsRestorer",
             "40ServidoresMC",
             "IPWhiteList",
             "LuckPerms-GUI",
