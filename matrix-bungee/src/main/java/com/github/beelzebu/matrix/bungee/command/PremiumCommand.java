@@ -1,10 +1,15 @@
 package com.github.beelzebu.matrix.bungee.command;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.i18n.Message;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
+import com.github.beelzebu.matrix.api.util.StringUtils;
+import com.github.games647.craftapi.model.Profile;
+import com.github.games647.craftapi.resolver.RateLimitException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -44,8 +49,20 @@ public class PremiumCommand extends Command {
                     sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.PREMIUM_ERROR_LOGGED_OUT, matrixPlayer.getLastLocale())));
                     return;
                 }
+                try {
+                    Profile profile = MatrixBungeeAPI.RESOLVER.findProfile(sender.getName()).orElse(null);
+                    if (profile == null) {
+                        sender.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&cTu cuenta no parece ser una cuenta premium.")));
+                        return;
+                    }
+                } catch (RateLimitException | IOException e) {
+                    e.printStackTrace();
+                    sender.sendMessage(TextComponent.fromLegacyText(StringUtils.replace("&cHa ocurrido un error al procesar tu solicitud.")));
+                    return;
+                }
                 if (players.containsKey(sender.getName())) {
-                    matrixPlayer.setPremium(true);
+                    matrixPlayer.setPremium(true).join();
+                    matrixPlayer.setRegistered(false).join();
                     players.remove(sender.getName());
                     ((ProxiedPlayer) sender).disconnect(TextComponent.fromLegacyText(I18n.tl(Message.PREMIUM_KICK, matrixPlayer.getLastLocale())));
                 } else {
@@ -66,7 +83,8 @@ public class PremiumCommand extends Command {
                 sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.GENERAL_NO_TARGET, I18n.DEFAULT_LOCALE).replace("%target%", name)));
                 return;
             }
-            matrixPlayer.setPremium(true);
+            matrixPlayer.setPremium(true).join();
+            matrixPlayer.setRegistered(false).join();
             sender.sendMessage(TextComponent.fromLegacyText(I18n.tl(Message.PREMIUM_KICK, I18n.DEFAULT_LOCALE)));
         }
     }

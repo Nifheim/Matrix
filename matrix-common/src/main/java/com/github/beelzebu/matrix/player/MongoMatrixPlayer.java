@@ -5,7 +5,6 @@ import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.player.PlayerOptionType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonSyntaxException;
 import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
@@ -13,7 +12,6 @@ import dev.morphia.annotations.IndexOptions;
 import dev.morphia.annotations.Indexed;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Stream;
 import org.bson.types.ObjectId;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +53,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     private @NotNull Set<String> knownNames = new HashSet<>();
     private String displayName;
     private boolean premium;
-    private boolean bedrock;
     private boolean registered;
     private boolean loggedIn;
     private String lastLocale;
@@ -72,6 +68,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     public MongoMatrixPlayer(UUID uniqueId, @NotNull String name) {
         this();
+        this.id = ObjectId.get();
         this.uniqueId = uniqueId;
         this.name = name;
         this.lowercaseName = name.toLowerCase();
@@ -121,18 +118,17 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setUniqueId(@NotNull UUID uniqueId) {
+    public CompletableFuture<Void> setUniqueId(@NotNull UUID uniqueId) {
         Objects.requireNonNull(uniqueId, "uniqueId");
         if (Objects.equals(this.uniqueId, uniqueId)) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         if (premium && uniqueId.version() != 4) {
             throw new IllegalArgumentException("Only random uuids are allowed for premium players");
         } else if (!premium && uniqueId.version() != 3) {
             throw new IllegalArgumentException("Can not use a random generated UUID for a cracked player");
         }
-        this.uniqueId = updateCached("uniqueId", uniqueId).join();
-        save().join();
+        return updateCached("uniqueId", uniqueId).thenAccept(val -> this.uniqueId = val);
     }
 
     @Override
@@ -141,14 +137,19 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setName(@NotNull String name) {
+    public CompletableFuture<Void> setName(@NotNull String name) {
         Objects.requireNonNull(name, "name");
         knownNames.add(name);
         this.name = name;
         this.lowercaseName = name.toLowerCase();
-        updateCached("name", name).thenAccept(val -> Objects.requireNonNull(this.name = val, "name can't be null."));
-        updateCached("lowercaseName", lowercaseName).thenAccept(val -> Objects.requireNonNull(this.lowercaseName = val, "name can't be null."));
-        updateCached("knownNames", knownNames).thenAccept(val -> Objects.requireNonNull(this.knownNames = val, "known names"));
+        return updateCached("name", name)
+                .thenAccept(val -> Objects.requireNonNull(this.name = val, "name can't be null."))
+                .thenRun(() ->
+                        updateCached("lowercaseName", lowercaseName)
+                                .thenAccept(val -> Objects.requireNonNull(this.lowercaseName = val, "name can't be (null.")))
+                .thenRun(() ->
+                        updateCached("knownNames", knownNames)
+                                .thenAccept(val -> Objects.requireNonNull(this.knownNames = val, "known names")));
     }
 
     @Override
@@ -175,15 +176,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setDisplayName(String displayName) {
-        if (Objects.equals(this.displayName, displayName)) {
-            return;
+    public CompletableFuture<Void> setDisplayName(String displayName) {
+        if (Objects.equals(this.displayName, displayName) || Objects.isNull(displayName)) {
+            return CompletableFuture.completedFuture(null);
         }
-        if (Objects.isNull(displayName)) {
-            displayName = getName();
-        }
-        this.displayName = displayName;
-        updateCached("displayName");
+        return updateCached("displayName", displayName).thenAccept(val -> this.displayName = val);
     }
 
     @Override
@@ -192,11 +189,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setPremium(boolean premium) {
+    public CompletableFuture<Void> setPremium(boolean premium) {
         if (this.premium == premium) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        updateCached("premium", premium).thenAccept(val -> {
+        return updateCached("premium", premium).thenAccept(val -> {
             this.premium = val;
             if (!val) {
                 setUniqueId(UUID.nameUUIDFromBytes(("OfflinePlayer:" + getName()).getBytes()));
@@ -210,29 +207,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setRegistered(boolean registered) {
+    public CompletableFuture<Void> setRegistered(boolean registered) {
         if (this.registered == registered) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        this.registered = updateCached("registered", registered).join();
-    }
-
-    @Override
-    public boolean isAdmin() {
-        return false;
-    }
-
-    @Override
-    public void setAdmin(boolean admin) {
-    }
-
-    @Override
-    public @NotNull String getHashedPassword() {
-        return "";
-    }
-
-    @Override
-    public void setHashedPassword(String hashedPassword) {
+        return updateCached("registered", registered).thenAccept(val -> this.registered = val);
     }
 
     @Override
@@ -241,16 +220,19 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLoggedIn(boolean loggedIn) {
+    public CompletableFuture<Void> setLoggedIn(boolean loggedIn) {
         if (this.loggedIn == loggedIn) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        this.loggedIn = updateCached("loggedIn", loggedIn).join();
-        if (loggedIn) {
-            Matrix.getAPI().getPlayerManager().setOnlineById(getId());
-        } else {
-            Matrix.getAPI().getPlayerManager().setOfflineById(getId());
-        }
+        // TODO: check future chaining instead of locking
+        return updateCached("loggedIn", loggedIn).thenAccept(val -> {
+            this.loggedIn = val;
+            if (val) {
+                Matrix.getAPI().getPlayerManager().setOnlineById(getId());
+            } else {
+                Matrix.getAPI().getPlayerManager().setOfflineById(getId());
+            }
+        });
     }
 
     @Override
@@ -259,26 +241,16 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLastLocale(@NotNull Locale lastLocale) {
-        setLastLocale(lastLocale.getLanguage());
+    public CompletableFuture<Void> setLastLocale(@NotNull Locale lastLocale) {
+        return setLastLocale(lastLocale.getLanguage());
     }
 
     @Override
-    public void setLastLocale(String lastLocale) {
+    public CompletableFuture<Void> setLastLocale(String lastLocale) {
         if (Objects.equals(this.lastLocale, lastLocale)) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        this.lastLocale = lastLocale;
-        updateCached("lastLocale");
-    }
-
-    @Override
-    public @Nullable String getStaffChannel() {
-        return null;
-    }
-
-    @Override
-    public void setStaffChannel(String staffChannel) {
+        return updateCached("lastLocale", lastLocale).thenAccept(val -> this.lastLocale = val);
     }
 
     @Override
@@ -287,12 +259,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setWatcher(boolean watcher) {
+    public CompletableFuture<Void> setWatcher(boolean watcher) {
         if (this.watcher == watcher) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         this.watcher = watcher;
-        updateCached("watcher");
+        return updateCached("watcher", watcher).thenAccept(val -> this.watcher = val);
     }
 
     @Override
@@ -301,8 +273,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setExp(long l) {
-        Matrix.getAPI().getLevelProvider().setExpByUniqueId(uniqueId, l);
+    public CompletableFuture<Void> setExp(long l) {
+        return Matrix.getAPI().getPlugin().getBootstrap().getScheduler().makeFuture(() -> Matrix.getAPI().getLevelProvider().setExpByUniqueId(uniqueId, l));
     }
 
     @Override
@@ -311,17 +283,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public @NotNull Set<PlayerOptionType> getOptions() {
-        return new HashSet<>();
-    }
-
-    @Override
     public boolean getOption(PlayerOptionType option) {
         return false;
     }
 
     @Override
-    public void setOption(PlayerOptionType option, boolean status) {
+    public CompletableFuture<Void> setOption(PlayerOptionType option, boolean status) {
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -330,14 +298,13 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setIP(String IP) {
+    public CompletableFuture<Void> setIP(String IP) {
         if (Objects.equals(this.IP, IP)) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         this.IP = IP;
         ipHistory.add(IP);
-        updateCached("IP");
-        updateCached("ipHistory");
+        return updateCached("IP", IP).thenAccept(val -> this.IP = val).thenRun(() -> updateCached("ipHistory", ipHistory).thenAccept(val -> this.ipHistory = val));
     }
 
     @Override
@@ -351,12 +318,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLastLogin(Date lastLogin) {
+    public CompletableFuture<Void> setLastLogin(Date lastLogin) {
         if (Objects.equals(this.lastLogin, lastLogin)) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        this.lastLogin = lastLogin;
-        updateCached("lastLogin");
+        return updateCached("lastLogin", lastLogin).thenAccept(val -> this.lastLogin = val);
     }
 
     @Override
@@ -364,21 +330,11 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         return registration;
     }
 
-    public void setRegistration(Date registration) {
+    public CompletableFuture<Void> setRegistration(Date registration) {
         if (Objects.equals(this.registration, registration)) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
-        this.registration = registration;
-        updateCached("registration");
-    }
-
-    @Override
-    public @Nullable String getDiscordId() {
-        return null;
-    }
-
-    @Override
-    public void setDiscordId(String discordId) {
+        return updateCached("registration", registration).thenAccept(val -> this.registration = val);
     }
 
     @Override
@@ -388,8 +344,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void incrCensoringLevel() {
-        censoringLevel++;
-        updateCached("censoringLevel");
+        updateCached("censoringLevel", censoringLevel++).thenAccept(val -> this.censoringLevel = val);
     }
 
     @Override
@@ -399,17 +354,7 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
 
     @Override
     public void incrSpammingLevel() {
-        spammingLevel++;
-        updateCached("spammingLevel");
-    }
-
-    @Override
-    public boolean isVanished() {
-        return false;
-    }
-
-    @Override
-    public void setVanished(boolean vanished) {
+        updateCached("spammingLevel", spammingLevel++).thenAccept(val -> this.spammingLevel = val);
     }
 
     @Override
@@ -418,12 +363,12 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setGameMode(GameMode gameMode, String serverGroup) {
+    public CompletableFuture<Void> setGameMode(GameMode gameMode, String serverGroup) {
         if (Objects.equals(gameModeByGame.get(serverGroup), gameMode)) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         gameModeByGame.put(serverGroup, gameMode);
-        updateCached("gameModeByGame");
+        return updateCached("gameModeByGame", gameModeByGame).thenAccept(val -> this.gameModeByGame = val);
     }
 
     @Override
@@ -432,8 +377,8 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLastServerGroup(String serverGroup) {
-        Matrix.getAPI().getPlayerManager().setGroupById(getId(), serverGroup);
+    public CompletableFuture<Void> setLastServerGroup(String serverGroup) {
+        return Matrix.getAPI().getPlayerManager().setGroupById(getId(), serverGroup);
     }
 
     @Override
@@ -442,105 +387,18 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setLastServerName(String lastServerName) {
-        Matrix.getAPI().getPlayerManager().setServerById(getId(), lastServerName);
-    }
-
-    @Override
-    public long getTotalPlayTime(String serverGroup) {
-        return 0;//totalPlayTimeByGame.getOrDefault(gameType, 0L);
-    }
-
-    @Override
-    public long getGlobalTotalPlayTime() {
-        long total = 0;
-        /*
-        for (long i : totalPlayTimeByGame.values()) {
-            total += i;
-        }
-         */
-        return total;
-    }
-
-    @Override
-    public long getLastPlayTime(String serverGroup) {
-        return 0;//playTimeByGame.getOrDefault(gameType, 0L);
-    }
-
-    @Override
-    public long getGlobalLastPlayTime() {
-        long total = 0;
-        /*
-        for (long i : playTimeByGame.values()) {
-            total += i;
-        }
-        */
-        return total;
-    }
-
-    @Override
-    public void setLastPlayTime(String serverGroup, long playTime) {
-        /*
-        if (gameType == GameType.NONE) {
-            return;
-        }
-        if (playTime <= 0) {
-            throw new IllegalArgumentException("playTime can't be equal or less than zero.");
-        }
-        if (getLastPlayTime(gameType) == playTime) {
-            return;
-        }
-        playTimeByGame.put(gameType, playTime);
-        totalPlayTimeByGame.put(gameType, getTotalPlayTime(gameType) + playTime);
-        updateCached("playTimeByGame");
-        updateCached("totalPlayTimeByGame");
-         */
-    }
-
-    @Override
-    public @NotNull Collection<String> getPlayedGames() {
-        return ImmutableSet.of();//ImmutableSet.copyOf(playedGamesMap.keySet());
-    }
-
-    @Override
-    public long getJoins(String serverGroup) {
-        return 0;//playedGamesMap.getOrDefault(gameType, 0L);
-    }
-
-    @Override
-    public void addPlayedGame(String serverGroup) {
-        /*
-        if (gameType == GameType.NONE) {
-            return;
-        }
-        playedGamesMap.put(gameType, playedGamesMap.getOrDefault(gameType, 0L) + 1);
-        updateCached("playedGamesMap");
-         */
+    public CompletableFuture<Void> setLastServerName(String lastServerName) {
+        return Matrix.getAPI().getPlayerManager().setServerById(getId(), lastServerName);
     }
 
     @Override
     public @NotNull CompletableFuture<Boolean> save() {
         Objects.requireNonNull(getUniqueId(), "Can't save a player with null uniqueId");
         Objects.requireNonNull(this.name, "Can't save a player with null name");
-        if (this.name != null) {
-            if (getDisplayName() == null) {
-                setDisplayName(getName());
-            }
-            if (lowercaseName == null) {
-                setName(name);
-            }
+        if (lowercaseName == null) {
+            setName(name);
         }
         return Matrix.getAPI().getDatabase().save(id == null ? null : getId(), this);
-    }
-
-    @Deprecated
-    @ApiStatus.ScheduledForRemoval(inVersion = "1.3")
-    public void updateCached(String field) {
-        try {
-            Matrix.getAPI().getDatabase().updateFieldById(getId(), field, MongoMatrixPlayer.FIELDS.get(field).get(this));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public <T> @NotNull CompletableFuture<T> updateCached(String field, T value) {
@@ -556,20 +414,20 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
     }
 
     @Override
-    public void setField(String name, String json) {
+    public CompletableFuture<Void> setField(String name, String json) {
         Field field = FIELDS.get(name);
         Objects.requireNonNull(field, "field");
-        setField(field, json);
+        return setField(field, json);
     }
 
     @Override
-    public void setField(String name, Object value) {
+    public CompletableFuture<Void> setField(String name, Object value) {
         Field field = FIELDS.get(name);
         Objects.requireNonNull(field, "field");
-        setField(field, value);
+        return setField(field, value);
     }
 
-    private void setField(@NotNull Field field, String json) {
+    private CompletableFuture<Void> setField(@NotNull Field field, String json) {
         if (field.getName().equals("name")) {
             Objects.requireNonNull(json, "name");
         }
@@ -578,14 +436,15 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         }
         try {
             Object value = Matrix.GSON.fromJson(json, field.getGenericType());
-            setField(field, value);
+            return setField(field, value);
         } catch (JsonSyntaxException | IllegalStateException e) {
             Matrix.getLogger().warn("Field: " + field.getName() + " Json: " + json);
             e.printStackTrace();
         }
+        return CompletableFuture.completedFuture(null);
     }
 
-    private void setField(@NotNull Field field, Object value) {
+    private CompletableFuture<Void> setField(@NotNull Field field, Object value) {
         try {
             String fieldName = field.getName();
             if (fieldName.equals("name") || fieldName.equals("uniqueId")) {
@@ -595,5 +454,6 @@ public final class MongoMatrixPlayer implements MatrixPlayer {
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
         }
+        return CompletableFuture.completedFuture(null);
     }
 }

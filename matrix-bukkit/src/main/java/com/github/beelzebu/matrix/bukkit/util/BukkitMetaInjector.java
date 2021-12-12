@@ -16,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Beelzebu
  */
+@SuppressWarnings("unchecked")
 public class BukkitMetaInjector extends MetaInjector<Player> {
 
     private final MatrixBukkitAPI api;

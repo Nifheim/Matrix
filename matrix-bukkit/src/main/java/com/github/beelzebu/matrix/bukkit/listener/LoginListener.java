@@ -52,12 +52,10 @@ public class LoginListener implements Listener {
         });
         // Async task
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            if (plugin.isVotifier()) {
-                try {
-                    ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + player.getName() + "&clave=" + plugin.getConfig().getString("clave"));
-                } catch (Exception ex) {
-                    Logger.getLogger(LoginListener.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", player.getName());
-                }
+            try {
+                ReadURL.read("http://40servidoresmc.es/api2.php?nombre=" + player.getName() + "&clave=" + plugin.getConfig().getString("clave"));
+            } catch (Exception ex) {
+                Logger.getLogger(LoginListener.class.getName()).log(Level.WARNING, "Can''t send the vote for {0}", player.getName());
             }
         });
         // Later task

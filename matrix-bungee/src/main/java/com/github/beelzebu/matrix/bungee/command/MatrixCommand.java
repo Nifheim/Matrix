@@ -24,7 +24,6 @@ public class MatrixCommand extends Command {
             if ("reload".equals(args[0])) {
                 bungeeBootstrap.getApi().reload();
                 MotdManager.onEnable();
-                bungeeBootstrap.getInfluencerManager().reloadInfluencers();
             }
         }
     }

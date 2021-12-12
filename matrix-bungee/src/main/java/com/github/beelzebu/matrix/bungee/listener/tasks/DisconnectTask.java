@@ -29,8 +29,10 @@ public class DisconnectTask implements Throwing.Runnable {
             Matrix.getLogger().debug("Processing disconnect for matrix player " + player.getName() + " " + player.getId());
             try {
                 player.setLoggedIn(false);
-                if (player.getLastLogin() != null && player.getRegistration() != null && player.getRegistration().after(player.getLastLogin())) {
-                    ((MongoMatrixPlayer) player).setRegistration(player.getLastLogin());
+                if (player.getLastLogin() != null) {
+                    if (player.getRegistration().after(player.getLastLogin())) {
+                        ((MongoMatrixPlayer) player).setRegistration(player.getLastLogin());
+                    }
                 }
                 player.setLastLogin(new Date());
                 api.getDatabase().cleanUp(player);

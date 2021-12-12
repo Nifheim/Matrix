@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.Favicon;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -23,6 +24,7 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.protocol.ProtocolConstants;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +36,6 @@ public class ServerListListener implements Listener {
 
     private final MatrixBungeeBootstrap plugin;
     private final UUID emptyUUID = UUID.fromString("0-0-0-0-0");
-    private final String[] playerHover;
     private final LoadingCache<String, Favicon> favicons = Caffeine.newBuilder().weakValues().expireAfterWrite(10, TimeUnit.MINUTES).build(new CacheLoader<String, Favicon>() {
         @Override
         public @Nullable Favicon load(@NonNull String key) {
@@ -56,10 +57,14 @@ public class ServerListListener implements Listener {
             return Favicon.create(bufferedImage);
         }
     });
+    private final ServerPing.PlayerInfo[] playerInfos;
 
     public ServerListListener(MatrixBungeeBootstrap plugin, String[] playerHover) {
         this.plugin = plugin;
-        this.playerHover = playerHover;
+        playerInfos = new ServerPing.PlayerInfo[playerHover.length];
+        for (int i = 0; i < playerHover.length; i++) {
+            playerInfos[i] = new ServerPing.PlayerInfo(ChatColor.translateAlternateColorCodes('&', playerHover[i]), emptyUUID);
+        }
     }
 
     @EventHandler(priority = 127)
@@ -103,10 +108,6 @@ public class ServerListListener implements Listener {
                 }
                 e.getResponse().setDescriptionComponent(tc);
                 // set player hover
-                ServerPing.PlayerInfo[] playerInfos = new ServerPing.PlayerInfo[playerHover.length];
-                for (int i = 0; i < playerHover.length; i++) {
-                    playerInfos[i] = new ServerPing.PlayerInfo(StringUtils.replace(playerHover[i]), emptyUUID);
-                }
                 e.getResponse().getPlayers().setSample(playerInfos);
                 String faviconName = host.split("\\.", 2)[1];
                 if (!faviconName.contains(".")) {
@@ -115,6 +116,9 @@ public class ServerListListener implements Listener {
                 Favicon favicon = favicons.get(faviconName);
                 if (favicon != null) {
                     e.getResponse().setFavicon(favicon);
+                }
+                if (e.getConnection().getVersion() < ProtocolConstants.MINECRAFT_1_18) {
+                    e.getResponse().getVersion().setProtocol(ProtocolConstants.MINECRAFT_1_18);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

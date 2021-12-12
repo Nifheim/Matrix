@@ -15,6 +15,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import org.jetbrains.annotations.NotNull;
 
 public class LoginListener implements Listener {
@@ -27,13 +28,13 @@ public class LoginListener implements Listener {
         this.api = api;
     }
 
-    @EventHandler(priority = Byte.MAX_VALUE)
+    @EventHandler(priority = EventPriority.LOWEST - 1)
     public void onPreLogin(@NotNull PreLoginEvent e) {
         if (e.isCancelled()) {
             return;
         }
         e.registerIntent(api.getPlugin().getBootstrap());
-        PreLoginTask preLoginTask = new PreLoginTask(api, e);
+        PreLoginTask preLoginTask = new PreLoginTask(api, e, loginStateMap.get(e.getConnection().getName()));
         api.getPlugin().getBootstrap().getScheduler().makeFuture(preLoginTask).thenRun(() -> {
             loginStateMap.put(e.getConnection().getName(), LoginState.PRE_LOGIN);
             profile.put(e.getConnection().getName(), preLoginTask.getProfile() != null);

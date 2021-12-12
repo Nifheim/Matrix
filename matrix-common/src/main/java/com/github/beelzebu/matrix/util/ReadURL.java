@@ -26,7 +26,7 @@ public class ReadURL {
             while ((line = bf_reader.readLine()) != null) {
                 sb.append(line).append("\n");
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         } finally {
             try {
                 is.close();

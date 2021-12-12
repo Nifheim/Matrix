@@ -6,6 +6,7 @@ import com.github.beelzebu.matrix.bungee.player.BungeePlayerManager;
 import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.util.BungeeMetaInjector;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
+import com.github.games647.craftapi.resolver.MojangResolver;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,11 +14,12 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MatrixBungeeAPI extends MatrixAPIImpl {
 
+    public static final MojangResolver RESOLVER = new MojangResolver();
     public static ServerInfo BUNGEE_SERVER_INFO;
     private final @NotNull BungeePlayerManager bungeePlayerManager;
 
     public MatrixBungeeAPI(@NotNull MatrixPluginBungee plugin) {
-        super(plugin, true);
+        super(plugin);
         plugin.setApi(this);
         bungeePlayerManager = new BungeePlayerManager(this, new BungeeMetaInjector(this));
         BUNGEE_SERVER_INFO = new ServerInfoImpl(ServerType.PROXY, ServerInfoImpl.PROXY_GROUP, null, null, false, null, false);

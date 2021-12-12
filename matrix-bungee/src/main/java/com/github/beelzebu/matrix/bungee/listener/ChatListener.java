@@ -50,7 +50,7 @@ public class ChatListener implements Listener {
                     api.getDatabase().insertCommandLogEntryById(matrixPlayer.getId(), matrixPlayer.getLastServerName().join(), e.getMessage());
                 }
             }
-            if (matrixPlayer.isAdmin()) {
+            if (((ProxiedPlayer) e.getSender()).hasPermission("matrix.admin")) {
                 return;
             }
             for (String blockedCommand : blockedCommands) {
@@ -67,7 +67,7 @@ public class ChatListener implements Listener {
             return;
         }
         api.getPlayerManager().getPlayer((ProxiedPlayer) e.getSender()).thenAccept(matrixPlayer -> {
-            if (matrixPlayer.isAdmin()) {
+            if (((ProxiedPlayer) e.getSender()).hasPermission("matrix.admin")) {
                 return;
             }
             String command = e.getCursor().replaceFirst("/", "").split(":", 2)[0].toLowerCase();
@@ -100,7 +100,7 @@ public class ChatListener implements Listener {
             return;
         }
         api.getPlayerManager().getPlayerById(api.getPlayerManager().getMetaInjector().getId((ProxiedPlayer) e.getReceiver())).thenAccept(matrixPlayer -> {
-            if (matrixPlayer.isAdmin()) {
+            if (((ProxiedPlayer) e.getReceiver()).hasPermission("matrix.admin")) {
                 return;
             }
             Iterator<String> it = e.getSuggestions().iterator();

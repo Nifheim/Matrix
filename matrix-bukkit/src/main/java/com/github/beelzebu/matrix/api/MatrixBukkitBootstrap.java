@@ -16,7 +16,6 @@ import com.github.beelzebu.matrix.bukkit.command.staff.MatrixServersCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.PlayerInfoCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.ReloadCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.ReplyCommand;
-import com.github.beelzebu.matrix.bukkit.command.staff.StopCommand;
 import com.github.beelzebu.matrix.bukkit.command.user.SpitCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.AddLoreCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.MatrixManagerCommand;
@@ -28,8 +27,6 @@ import com.github.beelzebu.matrix.bukkit.listener.InternalListener;
 import com.github.beelzebu.matrix.bukkit.listener.LoginListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerCommandPreprocessListener;
 import com.github.beelzebu.matrix.bukkit.listener.PlayerDeathListener;
-import com.github.beelzebu.matrix.bukkit.listener.VotifierListener;
-import com.github.beelzebu.matrix.bukkit.menus.MatrixGUIManager;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.StaffChatListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.TargetedMessageListener;
@@ -78,12 +75,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     @Override
     public void onLoad() {
-        if (Bukkit.getIp().isEmpty() || Bukkit.getIp().equals("0.0.0.0")) {
-            if (System.getProperty("ILiveOnTheEdge") == null) {
-                getLogger().warning("Server must not run on a public address.");
-                Bukkit.shutdown();
-            }
-        }
         if (!SpigotConfig.bungee) {
             getLogger().warning("Bungee is disabled in spigot config, forcing it to true.");
             SpigotConfig.bungee = true;
@@ -107,7 +98,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             bukkitCoreUtils.init(this);
         } catch (Exception e) {
             e.printStackTrace();
-            getLogger().warning("Can't init a CompatUtil instance.");
+            getLogger().severe("Can't init a CompatUtil instance.");
             Bukkit.shutdown();
             return;
         }
@@ -125,9 +116,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         if (api.getServerInfo().getServerType().equals(ServerType.SURVIVAL)) {
             registerEvents(new DupepatchListener(this));
         }
-        if (isVotifier()) {
-            registerEvents(new VotifierListener(this));
-        }
         registerEvents(new LoginListener(api, this));
         // Register commands
         new CommandWatcherCommand();
@@ -139,7 +127,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         new MatrixManagerCommand();
         new SpitCommand();
         new ReloadCommand();
-        new StopCommand();
+        //new StopCommand();
         new BungeeTPCommand();
         new CrackedCommand();
         new MatrixServersCommand();
@@ -213,7 +201,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             });
         }
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        new MatrixGUIManager(this);
     }
 
     @Override
@@ -227,13 +214,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         api.shutdown();
         Bukkit.getScheduler().cancelTasks(this);
         CommandAPI.unregister(this);
-    }
-
-    public boolean isVotifier() {
-        if (Bukkit.getPluginManager().getPlugin("Votifier") != null) {
-            return Bukkit.getPluginManager().getPlugin("Votifier").isEnabled();
-        }
-        return false;
     }
 
     public MatrixBukkitAPI getApi() {
@@ -270,6 +250,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             Matrix.getLogger().info("PlaceholderAPI found, hooking into it.");
             new OnlinePlaceholders(api).register();
         } else {
+            getLogger().severe("Missing PlaceholderAPI");
             Bukkit.shutdown();
         }
     }

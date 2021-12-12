@@ -3,17 +3,19 @@ main: com.github.beelzebu.matrix.api.MatrixBukkitBootstrap
 description: 'Network management plugin'
 version: ${pluginVersion}
 author: Beelzebu
-softdepend: [ PlaceholderAPI, Votifier ]
+depend: [ PlaceholderAPI ]
 loadbefore: [ NetworkLevels ]
 api-version: 1.16
 provides: [ CommandLib, CoreUtils ]
 libraries:
-- com.github.ben-manes.caffeine:caffeine:3.0.2
-- com.zaxxer:HikariCP:4.0.3
-- org.mariadb.jdbc:mariadb-java-client:2.7.3
-- org.apache.commons:commons-pool2:2.9.0
-- redis.clients:jedis:3.3.0
-- org.mongodb:bson:4.2.2
-- org.mongodb:mongodb-driver-core:4.2.2
-- org.mongodb:mongodb-driver-sync:4.2.2
-- dev.morphia.morphia:morphia-core:2.2.1
+- 'com.github.ben-manes.caffeine:caffeine:3.0.4'
+- 'com.zaxxer:HikariCP:4.0.3'
+- 'org.slf4j:slf4j-api:1.7.32'
+- 'org.slf4j:slf4j-nop:1.7.32'
+- 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
+- 'org.apache.commons:commons-pool2:2.10.0'
+- 'redis.clients:jedis:3.6.3'
+- 'org.mongodb:bson:4.4.0'
+- 'org.mongodb:mongodb-driver-core:4.4.0'
+- 'org.mongodb:mongodb-driver-sync:4.4.0'
+- 'dev.morphia.morphia:morphia-core:2.2.3'

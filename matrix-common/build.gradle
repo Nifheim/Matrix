@@ -1,14 +1,17 @@
 dependencies {
-    implementation 'net.byteflux:libby-core:1.1.0'
     implementation 'io.github.waterfallmc:waterfall-chat:1.17-R0.1-SNAPSHOT'
-    implementation 'com.zaxxer:HikariCP:4.0.3'
+    implementation 'com.zaxxer:HikariCP:5.0.0'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
-    implementation 'org.apache.commons:commons-pool2:2.9.0'
-    implementation 'redis.clients:jedis:3.3.0'
-    implementation 'org.mongodb:bson:4.2.2'
-    implementation 'org.mongodb:mongodb-driver-core:4.2.2'
-    implementation 'org.mongodb:mongodb-driver-sync:4.2.2'
-    implementation 'dev.morphia.morphia:morphia-core:2.2.1'
+    implementation 'org.apache.commons:commons-pool2:2.10.0'
+    implementation 'redis.clients:jedis:3.6.3'
+    implementation 'org.mongodb:bson:4.4.0'
+    implementation 'org.mongodb:mongodb-driver-core:4.4.0'
+    implementation 'org.mongodb:mongodb-driver-sync:4.4.0'
+    implementation 'dev.morphia.morphia:morphia-core:2.2.3'
 }
 
 description = 'Matrix Common'
+
+repositories {
+    mavenCentral()
+}

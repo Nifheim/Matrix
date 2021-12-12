@@ -34,12 +34,19 @@ public class PostLoginTask implements Throwing.Runnable {
         MatrixPlayer player = api.getPlayerManager().getPlayer(event.getPlayer().getUniqueId()).join();
         try {
             if (player == null) {
-                throw new LoginException(ErrorCodes.NULL_PLAYER, LoginState.POST_LOGIN);
+                player = api.getPlayerManager().getPlayerByName(event.getPlayer().getName()).join();
+                if (player == null) {
+                    throw new LoginException(ErrorCodes.NULL_PLAYER, LoginState.POST_LOGIN);
+                }
+                if (!player.isPremium() && player.getUniqueId().version() == 4) {
+                    player.setUniqueId(event.getPlayer().getUniqueId()).join();
+                }
             }
             Matrix.getLogger().debug("Processing post login for " + player.getName() + " " + player.getId());
             player.setIP(event.getPlayer().getPendingConnection().getAddress().getAddress().getHostAddress());
             if (!player.isPremium() && profile) {
-                api.getPlugin().getBootstrap().getScheduler().asyncLater(() -> player.sendMessage(I18n.tl(Message.PREMIUM_SUGGESTION, player.getLastLocale())), 5, TimeUnit.SECONDS);
+                MatrixPlayer finalPlayer = player;
+                api.getPlugin().getBootstrap().getScheduler().asyncLater(() -> finalPlayer.sendMessage(I18n.tl(Message.PREMIUM_SUGGESTION, finalPlayer.getLastLocale())), 5, TimeUnit.SECONDS);
             }
             api.getPlayerManager().getMetaInjector().setMeta(event.getPlayer(), MetaInjector.ID_KEY, player.getId());
         } catch (Exception e) {

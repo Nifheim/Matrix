@@ -22,6 +22,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class MatrixPluginBungee implements MatrixPlugin {
 
@@ -55,12 +56,22 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     @Override
     public void sendMessage(String name, @NotNull String message) {
-        ProxyServer.getInstance().getPlayer(name).sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
+        sendMessage(ProxyServer.getInstance().getPlayer(name), message);
     }
 
     @Override
     public void sendMessage(UUID uuid, @NotNull String message) {
-        ProxyServer.getInstance().getPlayer(uuid).sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
+        sendMessage(ProxyServer.getInstance().getPlayer(uuid), message);
+    }
+
+    public void sendMessage(ProxiedPlayer proxiedPlayer, @NotNull String message) {
+        if (proxiedPlayer == null) {
+            return;
+        }
+        if (!proxiedPlayer.isConnected()) {
+            return;
+        }
+        proxiedPlayer.sendMessage(TextComponent.fromLegacyText(StringUtils.replace(message)));
     }
 
     @Override
@@ -105,7 +116,7 @@ public class MatrixPluginBungee implements MatrixPlugin {
     }
 
     @Override
-    public @NotNull UUID getUniqueId(String name) {
+    public @Nullable UUID getUniqueId(String name) {
         ProxiedPlayer proxiedPlayer = ProxyServer.getInstance().getPlayer(name);
         if (proxiedPlayer != null) {
             return proxiedPlayer.getUniqueId();
