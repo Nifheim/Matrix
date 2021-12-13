@@ -12,6 +12,7 @@ buildNumber.properties
 .idea/uiDesigner.xml
 .idea/misc.xml
 out/
+bin/
 .gradle/
 */build/
 build/
