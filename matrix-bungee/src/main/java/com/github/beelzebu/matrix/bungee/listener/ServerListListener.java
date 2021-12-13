@@ -92,10 +92,6 @@ public class ServerListListener implements Listener {
                     e.getResponse().setDescriptionComponent(new TextComponent("Please join using " + MatrixAPIImpl.DOMAIN_NAME + "\nPor favor ingresa usando " + MatrixAPIImpl.DOMAIN_NAME));
                     return;
                 }
-                if (((MatrixAPIImpl) Matrix.getAPI()).getMaintenanceManager().isMaintenance()) {
-                    e.getResponse().getVersion().setProtocol(-1);
-                    e.getResponse().getVersion().setName("§cEn mantenimiento");
-                }
                 // select random motd
                 Motd motd = MotdManager.getForcedMotd(host);
                 if (motd == null) {
@@ -116,6 +112,11 @@ public class ServerListListener implements Listener {
                 Favicon favicon = favicons.get(faviconName);
                 if (favicon != null) {
                     e.getResponse().setFavicon(favicon);
+                }
+                if (((MatrixAPIImpl) Matrix.getAPI()).getMaintenanceManager().isMaintenance()) {
+                    e.getResponse().getVersion().setProtocol(-1);
+                    e.getResponse().getVersion().setName("§cEn mantenimiento");
+                    return;
                 }
                 if (e.getConnection().getVersion() < ProtocolConstants.MINECRAFT_1_18) {
                     e.getResponse().getVersion().setProtocol(ProtocolConstants.MINECRAFT_1_18);
