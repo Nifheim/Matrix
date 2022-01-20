@@ -3,12 +3,14 @@ main: com.github.beelzebu.matrix.api.MatrixBungeeBootstrap
 version: ${pluginVersion}
 author: Beelzebu
 libraries:
-- 'com.github.ben-manes.caffeine:caffeine:3.0.4'
-- 'com.zaxxer:HikariCP:5.0.0'
+- 'com.github.ben-manes.caffeine:caffeine:3.1.1'
+- 'org.slf4j:slf4j-api:1.7.32'
+- 'org.slf4j:slf4j-nop:1.7.32'
+- 'com.zaxxer:HikariCP:5.0.1'
 - 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
-- 'org.apache.commons:commons-pool2:2.10.0'
-- 'redis.clients:jedis:3.6.3'
-- 'org.mongodb:bson:4.4.0'
-- 'org.mongodb:mongodb-driver-core:4.4.0'
-- 'org.mongodb:mongodb-driver-sync:4.4.0'
-- 'dev.morphia.morphia:morphia-core:2.2.3'
+- 'org.apache.commons:commons-pool2:2.11.1'
+- 'redis.clients:jedis:3.9.0'
+- 'org.mongodb:bson:4.7.1'
+- 'org.mongodb:mongodb-driver-core:4.7.1'
+- 'org.mongodb:mongodb-driver-sync:4.7.1'
+- 'dev.morphia.morphia:morphia-core:2.2.7'

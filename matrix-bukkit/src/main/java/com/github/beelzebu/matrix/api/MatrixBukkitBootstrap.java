@@ -1,6 +1,5 @@
 package com.github.beelzebu.matrix.api;
 
-import com.destroystokyo.paper.PaperConfig;
 import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.player.PlayerOptionChangeEvent;
@@ -38,13 +37,13 @@ import com.github.beelzebu.matrix.messaging.message.ServerRegisterMessage;
 import com.github.beelzebu.matrix.messaging.message.ServerUnregisterMessage;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.util.ReadURL;
+import io.papermc.paper.configuration.GlobalConfiguration;
 import java.io.File;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import net.nifheim.bukkit.commandlib.CommandAPI;
-import net.nifheim.bukkit.util.BukkitCoreUtils;
 import net.nifheim.bukkit.util.CompatUtil;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -64,7 +63,6 @@ import org.spigotmc.SpigotConfig;
  */
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 
-    private final BukkitCoreUtils bukkitCoreUtils = new BukkitCoreUtils();
     private MatrixBukkitAPI api;
     private boolean chatMuted = false;
     private BukkitConfiguration configuration;
@@ -94,14 +92,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     @Override
     public void onEnable() {
         scheduler = new BukkitSchedulerAdapter(this);
-        try {
-            bukkitCoreUtils.init(this);
-        } catch (Exception e) {
-            e.printStackTrace();
-            getLogger().severe("Can't init a CompatUtil instance.");
-            Bukkit.shutdown();
-            return;
-        }
         api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this));
 
         api.setup();
@@ -163,9 +153,9 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             try {
                 Class.forName("com.destroystokyo.paper.PaperConfig");
                 if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
-                    if (PaperConfig.enablePlayerCollisions) {
+                    if (GlobalConfiguration.get().collisions.enablePlayerCollisions) {
                         getLogger().warning("EnablePlayerCollisions is enabled in paper config, forcing it to false.");
-                        PaperConfig.enablePlayerCollisions = false;
+                        GlobalConfiguration.get().collisions.enablePlayerCollisions = false;
                     }
                 }
             } catch (ClassNotFoundException ignored) { // doesn't exists on spigot lol
@@ -205,7 +195,6 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
 
     @Override
     public void onDisable() {
-        bukkitCoreUtils.disable();
         if (serverRegisterMessage != null) { // check if server was registered first
             api.getMessaging().sendMessage(new ServerUnregisterMessage(api.getServerInfo()));
         }

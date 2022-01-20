@@ -92,7 +92,7 @@ public abstract class AbstractJavaScheduler implements SchedulerAdapter {
     }
 
     @Override
-    public @NotNull CompletableFuture<Void> makeFuture(Throwing.@NotNull Runnable runnable) {
+    public @NotNull CompletableFuture<Void> makeFuture(Throwing.Runnable runnable) {
         return CompletableFuture.runAsync(() -> {
             try {
                 runnable.run();

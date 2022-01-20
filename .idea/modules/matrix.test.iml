@@ -10,5 +10,4 @@
     <orderEntry type="library" name="Gradle: com.google.guava:guava:21.0" level="project" />
     <orderEntry type="library" name="Gradle: com.github.beelzebu:jMatrix:2.0-SNAPSHOT" level="project" />
   </component>
-  <component name="TestModuleProperties" production-module="matrix.main" />
 </module>

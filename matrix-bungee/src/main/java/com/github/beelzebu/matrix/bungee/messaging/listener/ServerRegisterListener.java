@@ -26,12 +26,15 @@ public class ServerRegisterListener extends MessageListener {
     public void onMessage(Message message) {
         ServerInfoImpl info = (ServerInfoImpl) ServerRegisterMessage.getServerInfo(message);
         String address = ServerRegisterMessage.getAddress(message);
+        if (Objects.equals(address, "0.0.0.0")) { // pterodactyl docker network workaround
+            address = "172.1.0.1";
+        }
         int port = ServerRegisterMessage.getPort(message);
         if (ProxyServer.getInstance().getServers().containsKey(info.getServerName())) {
             Matrix.getLogger().info("Server already registered: " + info.getServerName());
             return;
         }
-        Matrix.getLogger().info("Adding server: " + info.getServerName());
+        Matrix.getLogger().info("Adding server: " + info.getServerName() + " " + address + ":" + port);
         ServerInfo serverInfo = ProxyServer.getInstance().constructServerInfo(info.getServerName(), Util.getAddr(address + ":" + port), "", false);
         ProxyServer.getInstance().getServers().remove("lobby");
         Matrix.getAPI().getServerManager().addServer(info);

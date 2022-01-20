@@ -33,7 +33,7 @@ public class RedisManager {
     }
 
     public Jedis getResource() {
-        return getResource(1);
+        return getResource(3);
     }
 
     private Jedis getResource(int tries) {

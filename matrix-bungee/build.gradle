@@ -22,7 +22,7 @@ repositories {
 
 dependencies {
     implementation project(':matrix-common')
-    implementation 'io.github.waterfallmc:waterfall-api:1.18-R0.1-SNAPSHOT'
+    implementation 'io.github.waterfallmc:waterfall-api:1.19-R0.1-SNAPSHOT'
     implementation 'com.github.games647:craftapi:0.4'
     implementation 'org.geysermc.floodgate:api:2.0-SNAPSHOT'
 }

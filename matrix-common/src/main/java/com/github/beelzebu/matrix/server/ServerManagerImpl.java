@@ -271,6 +271,7 @@ public class ServerManagerImpl implements ServerManager {
                 pipeline.srem(SERVER_GROUP_KEY_PREFIX + entry.getKey(), entry.getValue().toArray(new String[0]));
                 for (String server : entry.getValue()) {
                     pipeline.del(SERVER_HEARTBEAT_KEY_PREFIX + server);
+                    Matrix.getLogger().info("Removed server " + server + " from group " + entry.getKey());
                 }
             }
             pipeline.sync();

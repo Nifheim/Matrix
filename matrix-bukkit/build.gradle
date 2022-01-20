@@ -1,9 +1,13 @@
+plugins {
+    id("io.papermc.paperweight.userdev") version "1.3.8"
+}
+
 dependencies {
     implementation project(':matrix-common')
     implementation 'net.nifheim:commandlib:1.1-SNAPSHOT'
     implementation 'net.nifheim:coreutils:1.2.0-SNAPSHOT'
-    implementation 'com.destroystokyo.paper:paper:1.16.5-R0.1-SNAPSHOT'
-    implementation 'me.clip:placeholderapi:2.10.9'
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.2-R0.1-SNAPSHOT")
+    implementation 'me.clip:placeholderapi:2.11.2'
 }
 
 artifacts {
@@ -19,6 +23,12 @@ shadowJar {
         include(dependency('com.github.beelzebu:jMatrix'))
         include(dependency('net.nifheim:coreutils'))
         include(dependency('net.nifheim:commandlib'))
+    }
+}
+
+tasks {
+    assemble {
+        dependsOn(reobfJar)
     }
 }
 
