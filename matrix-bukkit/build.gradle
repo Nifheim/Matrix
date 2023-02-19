@@ -1,12 +1,12 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "1.3.8"
+    id('io.papermc.paperweight.userdev') version '1.3.8'
 }
 
 dependencies {
     implementation project(':matrix-common')
     implementation 'net.nifheim:commandlib:1.1-SNAPSHOT'
     implementation 'net.nifheim:coreutils:1.2.0-SNAPSHOT'
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.2-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle('io.papermc.paper:dev-bundle:1.19.3-R0.1-SNAPSHOT')
     implementation 'me.clip:placeholderapi:2.11.2'
 }
 
@@ -15,8 +15,9 @@ artifacts {
 }
 
 shadowJar {
-    getArchiveClassifier().set(null)
-    getArchiveVersion().set(null)
+    archiveClassifier.set(null)
+    archiveVersion.set(null)
+    destinationDirectory = file("$rootDir/bin/")
 
     dependencies {
         include(project(':matrix-common'))

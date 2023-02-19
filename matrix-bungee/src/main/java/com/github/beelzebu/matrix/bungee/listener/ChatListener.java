@@ -1,6 +1,7 @@
 package com.github.beelzebu.matrix.bungee.listener;
 
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -26,6 +27,7 @@ public class ChatListener implements Listener {
             }
             loggedCommands.add(command.split(" ", 2)[0]);
         }
+        Collections.addAll(loggedCommands, blockedCommands);
     }
 
     @EventHandler(priority = 127)

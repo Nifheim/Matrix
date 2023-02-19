@@ -6,8 +6,7 @@ import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bukkit.command.MatrixCommand;
 import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import com.google.gson.GsonBuilder;
-import java.util.Collection;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,17 +24,11 @@ public class PlayerInfoCommand extends MatrixCommand {
             } else {
                 MatrixPlayer player = Matrix.getAPI().getPlayerManager().getPlayerByName(args[0]).join();
                 if (player != null) {
-                    sender.sendMessage(TextComponent.fromLegacyText(new GsonBuilder().setPrettyPrinting().create().toJson(player, MongoMatrixPlayer.class)));
+                    sender.sendMessage(Component.text(new GsonBuilder().setPrettyPrinting().create().toJson(player, MongoMatrixPlayer.class)));
                 } else {
                     sender.sendMessage(StringUtils.replace("%prefix% No se ha encontrado a " + args[0] + " en la base de datos."));
                 }
             }
         });
-    }
-
-    private @NotNull String createList(@NotNull Collection<String> collection) {
-        StringBuilder list = new StringBuilder();
-        collection.forEach(entry -> list.append(StringUtils.replace("  &f- &7" + entry + "\n")));
-        return list.toString();
     }
 }

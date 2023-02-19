@@ -24,6 +24,7 @@ import com.github.beelzebu.matrix.util.FileManager;
 import com.github.beelzebu.matrix.util.MaintenanceManager;
 import com.github.beelzebu.matrix.util.RedisManager;
 import com.github.beelzebu.matrix.util.adapter.ChatColorTypeAdapter;
+import com.github.beelzebu.matrix.util.adapter.ObjectIdTypeAdapter;
 import com.github.beelzebu.matrix.util.adapter.ServerInfoTypeAdapter;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.GsonBuilder;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
+import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -58,6 +60,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public MatrixAPIImpl(@NotNull MatrixPlugin plugin) {
         GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization()
+                .registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter())
                 .registerTypeAdapter(ChatColor.class, new ChatColorTypeAdapter())
                 .registerTypeAdapter(ServerInfoImpl.class, new ServerInfoTypeAdapter())
                 .registerTypeAdapter(ServerInfo.class, new ServerInfoTypeAdapter())
@@ -165,9 +168,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         commandSource.sendMessage("");
         StringBuilder version = new StringBuilder();
         int spaces = (48 - ("v: " + plugin.getVersion()).length()) / 2;
-        for (int i = 0; i < spaces; i++) {
-            version.append(" ");
-        }
+        version.append(" ".repeat(Math.max(0, spaces)));
         version.append(StringUtils.replace("&4v: &f" + plugin.getVersion()));
         commandSource.sendMessage(StringUtils.replace(version.toString()));
         commandSource.sendMessage(StringUtils.replace("&6-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"));

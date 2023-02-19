@@ -32,8 +32,9 @@ artifacts {
 }
 
 shadowJar {
-    getArchiveClassifier().set(null)
-    getArchiveVersion().set(null)
+    archiveClassifier.set(null)
+    archiveVersion.set(null)
+    destinationDirectory = file("$rootDir/bin/")
 
     dependencies {
         include(project(':matrix-common'))

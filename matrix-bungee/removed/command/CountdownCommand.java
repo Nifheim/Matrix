@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bungee.command;
+package com.github.beelzebu.matrix.bungee.command.removed;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;

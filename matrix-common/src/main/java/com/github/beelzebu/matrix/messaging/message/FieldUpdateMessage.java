@@ -4,19 +4,21 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.api.messaging.message.MessageType;
 import com.google.gson.JsonObject;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Beelzebu
  */
 public final class FieldUpdateMessage extends Message {
 
-    public FieldUpdateMessage(@NotNull String hexId, @NotNull String field, @NotNull Object value, @NotNull Class<?> type) {
+    public FieldUpdateMessage(@NotNull String hexId, @NotNull String field, @Nullable Object value, @Nullable Class<?> type) {
         super(MessageType.FIELD_UPDATE);
         content = new JsonObject();
         content.addProperty("hexId", hexId);
         content.addProperty("field", field);
-        content.add("value", Matrix.GSON.toJsonTree(value, type));
+        content.add("value", value != null ? Matrix.GSON.toJsonTree(value, Objects.requireNonNull(type)) : null);
     }
 
     public static String getPlayerId(Message message) {

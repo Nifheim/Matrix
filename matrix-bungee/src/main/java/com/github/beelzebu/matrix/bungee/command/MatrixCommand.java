@@ -1,7 +1,6 @@
 package com.github.beelzebu.matrix.bungee.command;
 
 import com.github.beelzebu.matrix.api.MatrixBungeeBootstrap;
-import com.github.beelzebu.matrix.bungee.motd.MotdManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +22,6 @@ public class MatrixCommand extends Command {
         if (args.length >= 1) {
             if ("reload".equals(args[0])) {
                 bungeeBootstrap.getApi().reload();
-                MotdManager.onEnable();
             }
         }
     }

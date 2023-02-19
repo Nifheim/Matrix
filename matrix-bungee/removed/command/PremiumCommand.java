@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bungee.command;
+package com.github.beelzebu.matrix.bungee.command.removed;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixBungeeAPI;

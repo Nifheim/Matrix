@@ -26,7 +26,7 @@ public class DupepatchListener implements Listener {
                 e.setCancelled(true);
             } else {
                 switch (e.getEntityType()) {
-                    case EXPERIENCE_ORB:
+                    case EntityType.EXPERIENCE_ORB:
 
                 }
             }

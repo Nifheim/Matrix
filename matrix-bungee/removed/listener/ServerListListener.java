@@ -1,4 +1,4 @@
-package com.github.beelzebu.matrix.bungee.listener;
+package com.github.beelzebu.matrix.bungee.listener.listener;
 
 import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;

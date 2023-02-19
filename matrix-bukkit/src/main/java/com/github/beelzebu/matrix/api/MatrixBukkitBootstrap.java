@@ -7,25 +7,13 @@ import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.bukkit.command.staff.BungeeTPCommand;
-import com.github.beelzebu.matrix.bukkit.command.staff.CommandWatcherCommand;
-import com.github.beelzebu.matrix.bukkit.command.staff.CrackedCommand;
-import com.github.beelzebu.matrix.bukkit.command.staff.FreezeCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.MatrixReloadCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.MatrixServersCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.PlayerInfoCommand;
 import com.github.beelzebu.matrix.bukkit.command.staff.ReloadCommand;
-import com.github.beelzebu.matrix.bukkit.command.staff.ReplyCommand;
 import com.github.beelzebu.matrix.bukkit.command.user.SpitCommand;
-import com.github.beelzebu.matrix.bukkit.command.utils.AddLoreCommand;
 import com.github.beelzebu.matrix.bukkit.command.utils.MatrixManagerCommand;
-import com.github.beelzebu.matrix.bukkit.command.utils.RemoveLoreCommand;
-import com.github.beelzebu.matrix.bukkit.command.utils.RenameCommand;
 import com.github.beelzebu.matrix.bukkit.config.BukkitConfiguration;
-import com.github.beelzebu.matrix.bukkit.listener.DupepatchListener;
-import com.github.beelzebu.matrix.bukkit.listener.InternalListener;
-import com.github.beelzebu.matrix.bukkit.listener.LoginListener;
-import com.github.beelzebu.matrix.bukkit.listener.PlayerCommandPreprocessListener;
-import com.github.beelzebu.matrix.bukkit.listener.PlayerDeathListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.ServerRequestListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.StaffChatListener;
 import com.github.beelzebu.matrix.bukkit.messaging.listener.TargetedMessageListener;
@@ -99,6 +87,7 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
         // Load things
         loadManagers();
 
+        /*
         // Register events
         registerEvents(new InternalListener());
         registerEvents(new PlayerCommandPreprocessListener(api));
@@ -107,22 +96,25 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
             registerEvents(new DupepatchListener(this));
         }
         registerEvents(new LoginListener(api, this));
+        */
         // Register commands
+        /*
         new CommandWatcherCommand();
         new FreezeCommand();
-        new MatrixReloadCommand();
         new RemoveLoreCommand();
         new AddLoreCommand();
         new RenameCommand();
+        new CrackedCommand();
+        new ReplyCommand();
+        */
+        new MatrixReloadCommand();
         new MatrixManagerCommand();
         new SpitCommand();
         new ReloadCommand();
         //new StopCommand();
         new BungeeTPCommand();
-        new CrackedCommand();
         new MatrixServersCommand();
         new PlayerInfoCommand();
-        new ReplyCommand();
 
         pluginsUtility = new PluginsUtility();
 

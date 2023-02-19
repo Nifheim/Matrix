@@ -10,6 +10,7 @@ import dev.morphia.annotations.Entity;
 import dev.morphia.annotations.Id;
 import dev.morphia.annotations.IndexOptions;
 import dev.morphia.annotations.Indexed;
+import dev.morphia.annotations.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Date;
@@ -31,10 +32,11 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Beelzebu
  */
-@SuppressWarnings({"FieldMayBeFinal", "UnstableApiUsage"})
+@SuppressWarnings({"FieldMayBeFinal"})
 @Entity(value = "players", useDiscriminator = false)
 public final class MongoMatrixPlayer implements MatrixPlayer {
 
+    @Transient
     public static final transient Map<String, Field> FIELDS = new HashMap<>();
 
     static {

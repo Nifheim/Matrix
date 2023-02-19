@@ -3,19 +3,15 @@ package com.github.beelzebu.matrix.api;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
 import com.github.beelzebu.matrix.api.plugin.MatrixBootstrap;
 import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
-import com.github.beelzebu.matrix.bungee.command.CountdownCommand;
 import com.github.beelzebu.matrix.bungee.command.HelpOpCommand;
 import com.github.beelzebu.matrix.bungee.command.MaintenanceCommand;
 import com.github.beelzebu.matrix.bungee.command.MatrixCommand;
-import com.github.beelzebu.matrix.bungee.command.PremiumCommand;
 import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
 import com.github.beelzebu.matrix.bungee.listener.ChatListener;
 import com.github.beelzebu.matrix.bungee.listener.LocaleListener;
 import com.github.beelzebu.matrix.bungee.listener.LoginListener;
-import com.github.beelzebu.matrix.bungee.listener.ServerListListener;
 import com.github.beelzebu.matrix.bungee.messaging.listener.ServerRegisterListener;
 import com.github.beelzebu.matrix.bungee.messaging.listener.ServerUnregisterListener;
-import com.github.beelzebu.matrix.bungee.motd.MotdManager;
 import com.github.beelzebu.matrix.bungee.plugin.MatrixPluginBungee;
 import com.github.beelzebu.matrix.bungee.scheduler.BungeeSchedulerAdapter;
 import com.github.beelzebu.matrix.bungee.util.ServerCleanupTask;
@@ -64,16 +60,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
     public void onEnable() {
         loadManagers();
         registerListener(new ChatListener(api));
-        registerListener(new ServerListListener(this, config.getStringList("Motd Hover").toArray(new String[0])));
         registerListener(new LoginListener(api));
         registerListener(new LocaleListener(api));
         registerCommand(new HelpOpCommand(this));
         registerCommand(new MaintenanceCommand(api));
-        registerCommand(new CountdownCommand());
-        registerCommand(new PremiumCommand(this));
         registerCommand(new MatrixCommand(this));
-        //0registerCommand(new StaffListCommand());
-        MotdManager.onEnable();
         ProxyServer.getInstance().getScheduler().schedule(this, () -> matrixPlugin.getLoggedInPlayers().thenAcceptAsync(matrixPlayers -> {
             for (MatrixPlayer matrixPlayer : matrixPlayers) {
                 if (matrixPlayer.isLoggedIn()) {

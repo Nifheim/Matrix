@@ -327,10 +327,11 @@ public class CacheProviderImpl implements CacheProvider {
     }
 
     @Override
-    public <T> @NotNull T updateCachedFieldById(@Nullable String hexId, @NotNull String field, @Nullable T value) {
+    public <T> @Nullable T updateCachedFieldById(@Nullable String hexId, @NotNull String field, @Nullable T value) {
         Objects.requireNonNull(hexId, "hexId");
+        Objects.requireNonNull(field, "field");
         if (!isCachedById(hexId, false)) {
-            Matrix.getLogger().debug("Trying to update cached field for a non cached player: " + hexId + " field: " + field + " value: " + value + " - Skipping");
+            Matrix.getLogger().warn("Trying to update cached field for a non cached player: " + hexId + " field: " + field + " value: " + value + " - Skipping");
             return Objects.requireNonNull(value, "value");
         }
         if (Objects.equals(field, "name") && value == null) {
@@ -352,7 +353,7 @@ public class CacheProviderImpl implements CacheProvider {
             } else {
                 jedis.hdel(getUserKey(hexId), field);
             }
-            api.getMessaging().sendMessage(new FieldUpdateMessage(hexId, field, value, value.getClass()));
+            api.getMessaging().sendMessage(new FieldUpdateMessage(hexId, field, value, value != null ? value.getClass() : null));
         }
         return value;
     }
@@ -370,7 +371,7 @@ public class CacheProviderImpl implements CacheProvider {
             Matrix.getLogger().info("Tried to save already cached player");
             return matrixPlayer;
         }
-        //cachedPlayers.put(matrixPlayer.getId(), matrixPlayer);
+        cachedPlayers.put(matrixPlayer.getId(), matrixPlayer);
         try (Jedis jedis = api.getRedisManager().getResource(); Pipeline pipeline = jedis.pipelined()) {
             MongoMatrixPlayer.FIELDS.forEach((id, field) -> {
                 try {
