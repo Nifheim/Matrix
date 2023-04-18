@@ -16,7 +16,7 @@ import redis.clients.jedis.JedisPubSub;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class RedisMessaging implements Messaging {
 

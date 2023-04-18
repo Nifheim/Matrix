@@ -28,7 +28,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
 

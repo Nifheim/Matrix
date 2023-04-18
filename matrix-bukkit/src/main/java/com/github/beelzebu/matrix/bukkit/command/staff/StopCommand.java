@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class StopCommand extends MatrixCommand {
 

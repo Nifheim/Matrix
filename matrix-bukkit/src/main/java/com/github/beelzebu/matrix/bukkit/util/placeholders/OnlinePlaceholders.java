@@ -17,7 +17,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class OnlinePlaceholders extends PlaceholderExpansion {
 

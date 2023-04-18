@@ -4,7 +4,7 @@ import com.github.beelzebu.matrix.api.messaging.message.Message;
 import com.github.beelzebu.matrix.api.messaging.message.MessageType;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public  final class ServerRequestMessage extends Message {
 

@@ -5,7 +5,7 @@ import net.nifheim.bukkit.commandlib.RegistrableCommand;
 import org.bukkit.plugin.Plugin;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public abstract class MatrixCommand extends RegistrableCommand {
 

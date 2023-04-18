@@ -6,7 +6,7 @@ import net.md_5.bungee.api.plugin.Command;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class MatrixCommand extends Command {
 

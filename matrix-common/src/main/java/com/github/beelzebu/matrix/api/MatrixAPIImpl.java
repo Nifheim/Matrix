@@ -43,7 +43,7 @@ import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public abstract class MatrixAPIImpl extends MatrixAPI {
 

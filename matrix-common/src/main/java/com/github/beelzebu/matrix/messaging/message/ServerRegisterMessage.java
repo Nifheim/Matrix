@@ -8,7 +8,7 @@ import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.google.gson.JsonObject;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public  final class ServerRegisterMessage extends Message {
 

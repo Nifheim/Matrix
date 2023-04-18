@@ -18,7 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class MatrixServersCommand extends MatrixCommand {
 

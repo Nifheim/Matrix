@@ -13,7 +13,7 @@ import net.md_5.bungee.api.scheduler.ScheduledTask;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class BungeeSchedulerAdapter extends AbstractJavaScheduler {
 

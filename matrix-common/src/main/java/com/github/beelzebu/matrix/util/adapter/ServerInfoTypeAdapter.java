@@ -13,7 +13,7 @@ import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class ServerInfoTypeAdapter extends TypeAdapter<ServerInfo> {
 

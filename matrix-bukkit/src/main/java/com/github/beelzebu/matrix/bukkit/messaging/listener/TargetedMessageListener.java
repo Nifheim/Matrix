@@ -8,7 +8,7 @@ import com.github.beelzebu.matrix.messaging.message.TargetedMessage;
 import org.bukkit.entity.Player;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class TargetedMessageListener extends MessageListener {
 

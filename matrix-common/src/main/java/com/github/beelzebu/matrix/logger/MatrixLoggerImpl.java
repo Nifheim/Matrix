@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public final class MatrixLoggerImpl implements MatrixLogger {
 

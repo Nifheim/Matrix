@@ -10,7 +10,7 @@ import com.github.games647.craftapi.resolver.MojangResolver;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class MatrixBungeeAPI extends MatrixAPIImpl {
 

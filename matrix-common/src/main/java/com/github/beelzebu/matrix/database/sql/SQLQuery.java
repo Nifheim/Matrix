@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.database.sql;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public enum SQLQuery {
     /**

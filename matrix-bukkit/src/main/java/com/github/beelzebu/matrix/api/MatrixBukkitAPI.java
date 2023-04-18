@@ -6,7 +6,7 @@ import com.github.beelzebu.matrix.bukkit.util.BukkitMetaInjector;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class MatrixBukkitAPI extends MatrixAPIImpl {
 

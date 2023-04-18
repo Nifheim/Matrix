@@ -8,7 +8,7 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class UuidAsStringCodec implements Codec<UUID> {
 

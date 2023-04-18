@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class BungeeMetaInjector extends MetaInjector<ProxiedPlayer> implements Listener {
 

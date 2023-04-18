@@ -6,7 +6,7 @@ import org.bukkit.entity.LlamaSpit;
 import org.bukkit.entity.Player;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class SpitCommand extends MatrixCommand {
 

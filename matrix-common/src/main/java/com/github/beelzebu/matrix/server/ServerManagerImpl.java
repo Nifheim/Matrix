@@ -20,7 +20,7 @@ import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class ServerManagerImpl implements ServerManager {
 

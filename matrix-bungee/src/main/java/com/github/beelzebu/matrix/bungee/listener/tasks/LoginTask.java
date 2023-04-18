@@ -17,7 +17,7 @@ import net.md_5.bungee.api.event.LoginEvent;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class LoginTask implements Throwing.Runnable {
 

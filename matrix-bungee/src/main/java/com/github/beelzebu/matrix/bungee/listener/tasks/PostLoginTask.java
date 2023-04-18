@@ -15,7 +15,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class PostLoginTask implements Throwing.Runnable {
 

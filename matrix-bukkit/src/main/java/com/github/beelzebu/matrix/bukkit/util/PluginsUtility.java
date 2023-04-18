@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class PluginsUtility {
 

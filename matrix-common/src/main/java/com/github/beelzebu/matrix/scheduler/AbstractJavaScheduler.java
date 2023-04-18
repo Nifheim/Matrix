@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public abstract class AbstractJavaScheduler implements SchedulerAdapter {
 

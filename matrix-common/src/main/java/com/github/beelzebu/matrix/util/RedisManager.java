@@ -9,7 +9,7 @@ import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class RedisManager {
 

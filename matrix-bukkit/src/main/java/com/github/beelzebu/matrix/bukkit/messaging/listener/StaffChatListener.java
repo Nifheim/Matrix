@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class StaffChatListener extends MessageListener {
 

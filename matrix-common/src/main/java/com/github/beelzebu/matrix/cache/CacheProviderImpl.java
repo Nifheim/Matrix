@@ -29,7 +29,7 @@ import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class CacheProviderImpl implements CacheProvider {
 

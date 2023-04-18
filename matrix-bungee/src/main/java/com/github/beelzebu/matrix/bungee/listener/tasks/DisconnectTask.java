@@ -10,7 +10,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class DisconnectTask implements Throwing.Runnable {
 

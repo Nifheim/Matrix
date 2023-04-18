@@ -11,7 +11,7 @@ import com.github.beelzebu.matrix.player.MongoMatrixPlayer;
 import java.util.Objects;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class FieldUpdateListener extends MessageListener {
 

@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public final class TargetedMessage extends Message {
 

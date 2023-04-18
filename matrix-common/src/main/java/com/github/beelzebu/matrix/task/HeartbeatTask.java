@@ -4,7 +4,7 @@ import com.github.beelzebu.matrix.api.Matrix;
 import com.github.beelzebu.matrix.api.MatrixAPIImpl;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class HeartbeatTask implements Runnable {
 

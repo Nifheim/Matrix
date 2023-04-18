@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class BungeePlayerManager extends AbstractPlayerManager<ProxiedPlayer> {
 

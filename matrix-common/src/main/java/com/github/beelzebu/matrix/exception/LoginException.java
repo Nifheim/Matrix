@@ -4,7 +4,7 @@ import com.github.beelzebu.matrix.util.ErrorCodes;
 import com.github.beelzebu.matrix.util.LoginState;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class LoginException extends Exception {
 

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public abstract class MetaInjector <P> {
 

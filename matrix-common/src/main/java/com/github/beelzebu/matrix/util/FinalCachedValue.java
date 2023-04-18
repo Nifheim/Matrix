@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class FinalCachedValue <T> extends SingleCachedValue<T> {
 

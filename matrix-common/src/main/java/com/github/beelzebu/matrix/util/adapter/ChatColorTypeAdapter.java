@@ -8,7 +8,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class ChatColorTypeAdapter extends TypeAdapter<ChatColor> {
 

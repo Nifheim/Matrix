@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 @SuppressWarnings("unchecked")
 public class BukkitMetaInjector extends MetaInjector<Player> {

@@ -7,7 +7,7 @@ import java.util.concurrent.Executor;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class BukkitSchedulerAdapter extends AbstractJavaScheduler implements SchedulerAdapter {
 

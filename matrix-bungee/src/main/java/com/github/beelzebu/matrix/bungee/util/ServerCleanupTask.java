@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ProxyServer;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class ServerCleanupTask implements Runnable {
 

@@ -14,7 +14,7 @@ import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.config.ServerInfo;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class ServerRegisterListener extends MessageListener {
 

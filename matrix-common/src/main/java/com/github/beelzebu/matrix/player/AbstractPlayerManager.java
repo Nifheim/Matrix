@@ -16,7 +16,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public abstract class AbstractPlayerManager <P> implements PlayerManager<P> {
 

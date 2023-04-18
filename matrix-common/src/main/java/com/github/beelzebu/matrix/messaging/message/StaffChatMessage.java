@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public final class StaffChatMessage extends Message {
 

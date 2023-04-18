@@ -19,7 +19,7 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class PreLoginTask implements Throwing.Runnable {
 

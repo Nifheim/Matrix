@@ -1,7 +1,7 @@
 package com.github.beelzebu.matrix.util;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public enum LoginState {
     PRE_LOGIN,

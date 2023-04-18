@@ -3,7 +3,7 @@ package com.github.beelzebu.matrix.util;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public enum ErrorCodes {
 

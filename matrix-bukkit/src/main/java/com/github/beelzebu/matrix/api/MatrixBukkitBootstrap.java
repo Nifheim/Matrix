@@ -47,7 +47,7 @@ import org.jetbrains.annotations.NotNull;
 import org.spigotmc.SpigotConfig;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap {
 

@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import redis.clients.jedis.Jedis;
 
 /**
- * @author Beelzebu
+ * @author Jaime Suárez
  */
 public class MaintenanceManager {
 
