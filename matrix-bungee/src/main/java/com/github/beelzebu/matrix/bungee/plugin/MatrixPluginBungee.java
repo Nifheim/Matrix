@@ -7,9 +7,10 @@ import com.github.beelzebu.matrix.api.command.CommandSource;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.config.MatrixConfig;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bungee.config.BungeeConfiguration;
+import com.github.beelzebu.matrix.config.MatrixConfiguration;
+import com.github.beelzebu.matrix.plugin.MatrixPluginCommon;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
@@ -24,7 +25,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class MatrixPluginBungee implements MatrixPlugin {
+public class MatrixPluginBungee implements MatrixPluginCommon {
 
     private final MatrixBungeeBootstrap bootstrap;
     private final CommandSource console = new BungeeCommandSource(ProxyServer.getInstance().getConsole());
@@ -194,5 +195,11 @@ public class MatrixPluginBungee implements MatrixPlugin {
 
     public void setApi(MatrixBungeeAPI api) {
         this.api = api;
+    }
+
+    @Override
+    public MatrixConfiguration getMatrixConfiguration() {
+        // TODO: implement
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }

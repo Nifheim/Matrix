@@ -1,8 +1,8 @@
 package com.github.beelzebu.matrix.util;
 
 import com.github.beelzebu.matrix.api.Matrix;
+import com.github.beelzebu.matrix.config.MatrixConfiguration;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -15,17 +15,19 @@ public class RedisManager {
 
     private final @NotNull JedisPool pool;
 
-    public RedisManager(String host, int port, @Nullable String password) {
+    public RedisManager(MatrixConfiguration.RedisConfiguration redisConfiguration) {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(30);
+        config.setMaxTotal(redisConfiguration.getMaxActive());
+        config.setMaxIdle(Math.min(redisConfiguration.getMaxActive(), redisConfiguration.getMaxIdle()));
+        config.setMinIdle(Math.min(redisConfiguration.getMaxActive(), redisConfiguration.getMinIdle()));
         config.setMaxWaitMillis(1000);
-        config.setBlockWhenExhausted(true);
-        config.setTestOnBorrow(true);
-        config.setTestWhileIdle(true);
-        if (password == null || password.trim().isEmpty()) {
-            pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, null, 3);
+        config.setBlockWhenExhausted(redisConfiguration.isBlockWhenExhausted());
+        config.setTestOnBorrow(redisConfiguration.isTestOnBorrow());
+        config.setTestWhileIdle(redisConfiguration.isTestWhileIdle());
+        if (redisConfiguration.getPassword() == null || redisConfiguration.getPassword().trim().isEmpty()) {
+            pool = new JedisPool(config, redisConfiguration.getHost(), redisConfiguration.getPort(), Protocol.DEFAULT_TIMEOUT, null, redisConfiguration.getDatabase());
         } else {
-            pool = new JedisPool(config, host, port, Protocol.DEFAULT_TIMEOUT, password, 3);
+            pool = new JedisPool(config, redisConfiguration.getHost(), redisConfiguration.getPort(), Protocol.DEFAULT_TIMEOUT, redisConfiguration.getPassword(), redisConfiguration.getDatabase());
         }
         try (Jedis jedis = pool.getResource()) {
             jedis.ping();

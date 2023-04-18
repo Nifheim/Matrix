@@ -5,6 +5,8 @@ server-info:
 
 # storage and caching settings
 Database:
+  username: 'admin'
+  database: 'admin'
   Host: 172.20.0.3
   Password: ''
 

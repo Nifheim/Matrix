@@ -18,7 +18,7 @@ public class MatrixBungeeAPI extends MatrixAPIImpl {
     public static ServerInfo BUNGEE_SERVER_INFO;
     private final @NotNull BungeePlayerManager bungeePlayerManager;
 
-    public MatrixBungeeAPI(@NotNull MatrixPluginBungee plugin) {
+    public MatrixBungeeAPI(@NotNull MatrixPluginBungee plugin) throws Exception {
         super(plugin);
         plugin.setApi(this);
         bungeePlayerManager = new BungeePlayerManager(this, new BungeeMetaInjector(this));

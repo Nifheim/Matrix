@@ -36,10 +36,13 @@ public class StorageProvider {
     private final Datastore datastore;
 
     public StorageProvider(@NotNull MatrixAPIImpl api) {
-        MongoClientSettings clientSettings = MongoClientSettings.builder().credential(MongoCredential
-                .createCredential("admin", "admin", api.getConfig().getString("Database.Password").toCharArray()))
-                .applyConnectionString(new ConnectionString("mongodb://" + api.getConfig().getString("Database.Host") + ":27017"))
-                .uuidRepresentation(UuidRepresentation.UNSPECIFIED).codecRegistry(CodecRegistries.fromRegistries(CodecRegistries.fromCodecs(new UuidAsStringCodec()), MongoClientSettings.getDefaultCodecRegistry()))
+        MongoClientSettings clientSettings = MongoClientSettings.builder().credential(MongoCredential.createCredential(
+                        api.getConfig().getString("Database.username", "admin"),
+                        api.getConfig().getString("Database.database", "admin"),
+                        api.getConfig().getString("Database.Password").toCharArray())
+                ).applyConnectionString(new ConnectionString("mongodb://" + api.getConfig().getString("Database.Host") + ":27017"))
+                .uuidRepresentation(UuidRepresentation.UNSPECIFIED)
+                .codecRegistry(CodecRegistries.fromRegistries(CodecRegistries.fromCodecs(new UuidAsStringCodec()), MongoClientSettings.getDefaultCodecRegistry()))
                 .build();
         MongoClientImpl client = new MongoClientImpl(clientSettings, null);
         datastore = Morphia.createDatastore(client, "matrix");

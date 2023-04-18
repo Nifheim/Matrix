@@ -12,7 +12,7 @@ public class MatrixBukkitAPI extends MatrixAPIImpl {
 
     private final @NotNull BukkitPlayerManager playerManager;
 
-    public MatrixBukkitAPI(@NotNull MatrixPluginBukkit plugin) {
+    public MatrixBukkitAPI(@NotNull MatrixPluginBukkit plugin) throws Exception {
         super(plugin);
         this.playerManager = new BukkitPlayerManager(this, new BukkitMetaInjector(this));
         plugin.setApi(this);

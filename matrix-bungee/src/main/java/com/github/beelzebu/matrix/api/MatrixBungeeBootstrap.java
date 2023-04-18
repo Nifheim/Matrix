@@ -51,7 +51,11 @@ public class MatrixBungeeBootstrap extends Plugin implements MatrixBootstrap {
         }
         config = new BungeeConfiguration(configFile);
         scheduler = new BungeeSchedulerAdapter(this);
-        api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this));
+        try {
+            api = new MatrixBungeeAPI(matrixPlugin = new MatrixPluginBungee(this));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         api.getServerManager().addServer(api.getServerInfo()); // add proxy to server cache since it doesn't get registered
         api.setup();
     }

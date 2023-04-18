@@ -80,7 +80,12 @@ public class MatrixBukkitBootstrap extends JavaPlugin implements MatrixBootstrap
     @Override
     public void onEnable() {
         scheduler = new BukkitSchedulerAdapter(this);
-        api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this));
+        try {
+            api = new MatrixBukkitAPI(matrixPlugin = new MatrixPluginBukkit(this));
+        } catch (Exception e) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            throw new RuntimeException(e);
+        }
 
         api.setup();
 

@@ -6,11 +6,11 @@ import com.github.beelzebu.matrix.api.MatrixBukkitBootstrap;
 import com.github.beelzebu.matrix.api.command.BukkitCommandSource;
 import com.github.beelzebu.matrix.api.command.CommandSource;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
-import com.github.beelzebu.matrix.api.config.MatrixConfig;
 import com.github.beelzebu.matrix.api.player.MatrixPlayer;
-import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.bukkit.config.BukkitConfiguration;
+import com.github.beelzebu.matrix.config.MatrixConfiguration;
+import com.github.beelzebu.matrix.plugin.MatrixPluginCommon;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * @author Beelzebu
  */
-public class MatrixPluginBukkit implements MatrixPlugin {
+public class MatrixPluginBukkit implements MatrixPluginCommon {
 
     private final MatrixBukkitBootstrap bootstrap;
     private final CommandSource console = new BukkitCommandSource(Bukkit.getConsoleSender());
@@ -37,7 +37,7 @@ public class MatrixPluginBukkit implements MatrixPlugin {
     }
 
     @Override
-    public @NotNull MatrixConfig getConfig() {
+    public @NotNull BukkitConfiguration getConfig() {
         return bootstrap.getConfiguration();
     }
 
@@ -185,5 +185,10 @@ public class MatrixPluginBukkit implements MatrixPlugin {
 
     public void setApi(MatrixBukkitAPI api) {
         this.api = api;
+    }
+
+    @Override
+    public MatrixConfiguration getMatrixConfiguration() {
+        return getConfig();
     }
 }

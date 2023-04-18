@@ -29,15 +29,22 @@ public class ServerInfoImpl extends ServerInfo {
     private final boolean unique;
     private final @NotNull SingleCachedValue<String> lobby;
 
+
+    public ServerInfoImpl(ServerInfo serverInfo) {
+        // TODO: check lobby server, maybe a consumer
+        this(serverInfo.getServerType(), serverInfo.getGroupName(), serverInfo.getServerName(), serverInfo.getDefaultGameMode(), serverInfo.isUnique(), serverInfo.getLobbyServer().join(), true);
+    }
+
     public ServerInfoImpl(@NotNull ServerType serverType, @NotNull String groupName, @NotNull String serverName, GameMode gameMode, boolean unique) {
         this(serverType, groupName, serverName, gameMode, unique, Matrix.getAPI().getConfig().getString("server-info.lobby"), false);
     }
 
-    public ServerInfoImpl(@NotNull ServerType serverType, @NotNull String groupName, @NotNull String serverName, @Nullable GameMode gameMode, boolean unique, @Nullable String lobby, boolean decoded) {
+    public ServerInfoImpl(@NotNull ServerType serverType, @NotNull String groupName, @Nullable String serverName, @Nullable GameMode gameMode, boolean unique, @Nullable String lobby, boolean decoded) {
         this.serverType = Objects.requireNonNull(serverType, "serverType name can't be null");
         this.groupName = Objects.requireNonNull(groupName, "groupName can't be null").toLowerCase();
         this.unique = !Objects.isNull(serverName) && unique;
         if (decoded) {
+            Objects.requireNonNull(serverName, "serverName can't be null");
             this.serverName = serverName.toLowerCase();
         } else {
             this.serverName = generateServerName(serverType, groupName, serverName);

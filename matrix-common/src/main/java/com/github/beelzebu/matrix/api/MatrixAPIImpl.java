@@ -4,19 +4,20 @@ import com.github.beelzebu.matrix.api.command.CommandSource;
 import com.github.beelzebu.matrix.api.config.AbstractConfig;
 import com.github.beelzebu.matrix.api.i18n.I18n;
 import com.github.beelzebu.matrix.api.level.LevelProvider;
-import com.github.beelzebu.matrix.api.player.GameMode;
 import com.github.beelzebu.matrix.api.plugin.MatrixPlugin;
+import com.github.beelzebu.matrix.api.scheduler.SchedulerAdapter;
 import com.github.beelzebu.matrix.api.server.ServerInfo;
 import com.github.beelzebu.matrix.api.server.ServerManager;
-import com.github.beelzebu.matrix.api.server.ServerType;
 import com.github.beelzebu.matrix.api.util.StringUtils;
 import com.github.beelzebu.matrix.cache.CacheProviderImpl;
+import com.github.beelzebu.matrix.config.MatrixConfiguration;
 import com.github.beelzebu.matrix.database.MatrixDatabaseImpl;
 import com.github.beelzebu.matrix.database.StorageProvider;
 import com.github.beelzebu.matrix.logger.MatrixLoggerImpl;
 import com.github.beelzebu.matrix.messaging.RedisMessaging;
 import com.github.beelzebu.matrix.messaging.listener.FieldUpdateListener;
 import com.github.beelzebu.matrix.player.AbstractPlayerManager;
+import com.github.beelzebu.matrix.plugin.MatrixPluginCommon;
 import com.github.beelzebu.matrix.server.ServerInfoImpl;
 import com.github.beelzebu.matrix.server.ServerManagerImpl;
 import com.github.beelzebu.matrix.task.HeartbeatTask;
@@ -48,7 +49,7 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
 
     public static final String DOMAIN_NAME = "mc.nifheim.net";
     public static final Set<String> DOMAIN_NAMES = ImmutableSet.of(DOMAIN_NAME);
-    private final @NotNull MatrixPlugin plugin;
+    private final @NotNull MatrixPluginCommon plugin;
     private final @NotNull MatrixDatabaseImpl database;
     private final @NotNull RedisManager redisManager;
     private final @NotNull RedisMessaging messaging;
@@ -58,29 +59,47 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
     private final Map<String, AbstractConfig> messagesMap = new HashMap<>();
     private LevelProvider levelProvider;
 
-    public MatrixAPIImpl(@NotNull MatrixPlugin plugin) {
+    public MatrixAPIImpl(@NotNull MatrixPluginCommon plugin) throws Exception {
+        this(plugin.getMatrixConfiguration(), plugin.getConsole(), plugin.getBootstrap().getScheduler(), plugin);
+    }
+
+    public MatrixAPIImpl(@NotNull MatrixConfiguration configuration, @NotNull CommandSource console, @NotNull SchedulerAdapter schedulerAdapter, @NotNull MatrixPluginCommon plugin) throws Exception {
         GsonBuilder gsonBuilder = new GsonBuilder().enableComplexMapKeySerialization()
                 .registerTypeAdapter(ObjectId.class, new ObjectIdTypeAdapter())
                 .registerTypeAdapter(ChatColor.class, new ChatColorTypeAdapter())
                 .registerTypeAdapter(ServerInfoImpl.class, new ServerInfoTypeAdapter())
                 .registerTypeAdapter(ServerInfo.class, new ServerInfoTypeAdapter())
                 .setDateFormat(DateFormat.LONG);
-        if (plugin.getConfig().getBoolean("Debug")) {
+        if (configuration.isDebug()) {
             gsonBuilder.setPrettyPrinting();
         }
         Matrix.GSON = gsonBuilder.create();
-        this.plugin = plugin;
-        plugin.getDataFolder().mkdirs();
-        Matrix.setLogger(new MatrixLoggerImpl(plugin.getConsole(), plugin.getConfig().getBoolean("Debug")));
+        Matrix.setLogger(new MatrixLoggerImpl(console, configuration.isDebug()));
         Matrix.getLogger().info("Initializing redis manager...");
-        redisManager = new RedisManager(getConfig().getString("Redis.Host"), getConfig().getInt("Redis.Port"), getConfig().getString("Redis.Password"));
-        Matrix.getLogger().info("Redis manager initialized!");
-        Matrix.getLogger().info("Initializing database manager..");
-        database = new MatrixDatabaseImpl(new StorageProvider(this), new CacheProviderImpl(this), plugin.getBootstrap().getScheduler());
-        Matrix.getLogger().info("Database manager initialized!");
+        try {
+            redisManager = new RedisManager(configuration.getRedisConfig());
+            Matrix.getLogger().info("Redis manager initialized!");
+        } catch (Exception e) {
+            Matrix.getLogger().info("Could not connect to Redis server");
+            // TODO: add generic disable method
+            throw e;
+        }
         Matrix.getLogger().info("Initializing messaging service...");
-        messaging = new RedisMessaging(redisManager, r -> plugin.getBootstrap().getScheduler().executeAsync(r));
-        Matrix.getLogger().info("Messaging service initialized!");
+        try {
+            messaging = new RedisMessaging(redisManager, schedulerAdapter::executeAsync);
+            Matrix.getLogger().info("Messaging service initialized!");
+        } catch (Exception e) {
+            Matrix.getLogger().info("Could not connect to Redis server");
+            throw e;
+        }
+        Matrix.getLogger().info("Initializing database manager..");
+        try {
+            database = new MatrixDatabaseImpl(new StorageProvider(this), new CacheProviderImpl(this), schedulerAdapter);
+            Matrix.getLogger().info("Database manager initialized!");
+        } catch (Exception e) {
+            Matrix.getLogger().info("Could not connect to database");
+            throw e;
+        }
         Matrix.getLogger().info("Initializing maintenance manager...");
         maintenanceManager = new MaintenanceManager(redisManager);
         Matrix.getLogger().info("Maintenance manager initialized!");
@@ -90,18 +109,10 @@ public abstract class MatrixAPIImpl extends MatrixAPI {
         serverManager = new ServerManagerImpl(this);
         Matrix.getLogger().info("Server manager initialized!");
         Matrix.getLogger().info("Creating server info for current server...");
-        if (plugin.getConfig().getString("server-info.game-mode") == null) {
-            Matrix.getLogger().info("server-info.game-mode config option is missing, please add it to config.yml");
-        }
-        serverInfo = new ServerInfoImpl(
-                ServerType.valueOf(plugin.getConfig().getString("server-info.server-type", plugin.getConfig().getString("Server Type")).toUpperCase()),
-                plugin.getConfig().getString("server-info.group", null),
-                plugin.getConfig().getString("server-info.name", null),
-                plugin.getConfig().get("server-info.game-mode") != null ? GameMode.valueOf(plugin.getConfig().getString("server-info.game-mode").toUpperCase()) : null,
-                plugin.getConfig().getBoolean("server-info.unique", false)
-        );
+        serverInfo = new ServerInfoImpl(configuration.getServerInfo());
         Matrix.getLogger().info("Server info created!");
         Matrix.getLogger().info("Matrix API is now fully initialized.");
+        this.plugin = plugin;
     }
 
     public @NotNull MaintenanceManager getMaintenanceManager() {

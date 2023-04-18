@@ -36,6 +36,7 @@ public class BungeeMetaInjector extends MetaInjector<ProxiedPlayer> implements L
         cachedMeta.put(player.getUniqueId(), playerMeta);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> @Nullable T getMeta(@NotNull ProxiedPlayer player, @NotNull String key, @NotNull Class<T> clazz) {
         Map<String, Object> meta = cachedMeta.get(player.getUniqueId());
@@ -45,6 +46,7 @@ public class BungeeMetaInjector extends MetaInjector<ProxiedPlayer> implements L
         return (T) meta.get(key);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> @NotNull Collection<T> getMeta(@NotNull ProxiedPlayer player, @NotNull Class<T> clazz) {
         return (Collection<T>) cachedMeta.get(player.getUniqueId()).values().stream().filter(clazz::isInstance).collect(Collectors.toList());
