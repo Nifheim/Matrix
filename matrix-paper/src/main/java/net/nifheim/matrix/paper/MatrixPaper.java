@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import net.kyori.adventure.audience.Audience;
 import net.nifheim.bukkit.commandlib.CommandAPI;
-import net.nifheim.bukkit.util.CompatUtil;
 import net.nifheim.matrix.api.environment.Environment;
 import net.nifheim.matrix.api.server.ServerType;
 import net.nifheim.matrix.common.messaging.message.ServerRegisterMessage;
@@ -66,10 +65,6 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
         paperConfig.chunkSystem.ioThreads = 4;
         paperConfig.chunkSystem.workerThreads = -1;
         paperConfig.chunkSystem.genParallelism = "true";
-        try {
-            paperConfig.timings.enabled = false;
-        } catch (Exception ignored) {
-        }
         try {
             Class.forName("org.spigotmc.SpigotConfig").getField("debug");
             if (SpigotConfig.debug) {
@@ -151,11 +146,9 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
         if (matrixPlugin.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
             try {
                 Class.forName("io.papermc.paper.configuration.GlobalConfiguration");
-                if (CompatUtil.VERSION.isAfterOrEq(CompatUtil.MinecraftVersion.MINECRAFT_1_9)) {
-                    if (GlobalConfiguration.get().collisions.enablePlayerCollisions) {
-                        getPlatformLogger().warn("EnablePlayerCollisions is enabled in paper config, forcing it to false.");
-                        GlobalConfiguration.get().collisions.enablePlayerCollisions = false;
-                    }
+                if (GlobalConfiguration.get().collisions.enablePlayerCollisions) {
+                    getPlatformLogger().warn("EnablePlayerCollisions is enabled in paper config, forcing it to false.");
+                    GlobalConfiguration.get().collisions.enablePlayerCollisions = false;
                 }
             } catch (ClassNotFoundException ignored) { // doesn't exists on spigot lol
             }

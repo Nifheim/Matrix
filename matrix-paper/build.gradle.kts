@@ -1,15 +1,24 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("io.papermc.paperweight.userdev") version "1.7.4"
+}
+
+repositories {
+    maven {
+        url = uri("https://jitpack.io/")
+    }
+
+    maven {
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
 }
 
 description = "Matrix Paper"
 
 dependencies {
     implementation(project(":matrix-common"))
-    implementation("net.nifheim:commandlib:1.1-SNAPSHOT")
-    implementation("net.nifheim:coreutils:1.2.0-SNAPSHOT")
-    paperweight.paperDevBundle("1.21-R0.1-SNAPSHOT")
-    implementation("me.clip:placeholderapi:2.11.2")
+    implementation("com.github.nifheim:commandlib:master-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
+    implementation("me.clip:placeholderapi:2.11.6")
 }
 
 tasks {

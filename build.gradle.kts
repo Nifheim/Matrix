@@ -20,36 +20,7 @@ allprojects {
     apply(plugin = "idea")
 
     repositories {
-        mavenLocal()
         mavenCentral()
-
-        maven {
-            url = uri("https://repo.maven.apache.org/maven2")
-        }
-
-        maven {
-            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
-        }
-
-        maven {
-            url = uri("https://repo.md-5.net/content/repositories/snapshots/")
-        }
-
-        maven {
-            url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-        }
-
-        maven {
-            url = uri("https://repo.destroystokyo.com/repository/maven-snapshots/")
-        }
-
-        maven {
-            url = uri("https://repo.dmulloy2.net/nexus/repository/public/")
-        }
-
-        maven {
-            url = uri("https://jitpack.io/")
-        }
     }
 
     dependencies {
