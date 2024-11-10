@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../.." dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/.." />
+      <excludeFolder url="file://$MODULE_DIR$/../../auth/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../matrix-api/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../matrix-common/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../matrix-paper/.gradle" />
+      <excludeFolder url="file://$MODULE_DIR$/../../matrix-paper/build" />
+      <excludeFolder url="file://$MODULE_DIR$/../../matrix-velocity/build" />
+    </content>
+  </component>
+</module>

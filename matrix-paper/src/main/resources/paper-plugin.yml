@@ -1,0 +1,19 @@
+name: Matrix-Paper
+main: net.nifheim.matrix.paper.MatrixPaper
+bootstrapper: net.nifheim.matrix.paper.bootstrap.MatrixPaperBootstrap
+loader: net.nifheim.matrix.paper.bootstrap.MatrixPluginLoader
+description: 'Network management plugin'
+version: '${pluginVersion}'
+author: Beelzebu
+api-version: '1.20'
+provides: [ CommandLib, CoreUtils ]
+dependencies:
+  server:
+    ProtocolLib:
+      load: BEFORE
+    Vault:
+      load: BEFORE
+    PlaceholderAPI:
+      load: BEFORE
+    LuckPerms:
+      load: BEFORE

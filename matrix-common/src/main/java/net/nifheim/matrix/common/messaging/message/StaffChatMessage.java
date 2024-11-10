@@ -1,0 +1,31 @@
+package net.nifheim.matrix.common.messaging.message;
+
+import net.nifheim.matrix.api.messaging.message.Message;
+import net.nifheim.matrix.api.messaging.message.StandardChannel;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * @author Jaime Suárez
+ */
+public final class StaffChatMessage extends Message {
+
+    public StaffChatMessage(@NotNull String permission, @NotNull String message) {
+        super(StandardChannel.MESSAGE_BROADCAST);
+        content.addProperty("permission", permission);
+        content.addProperty("message", message);
+    }
+
+    public static String getPermission(Message message) {
+        if (message.getContent() == null || !message.getContent().has("permission")) {
+            throw new IllegalArgumentException("Message doesn't contain permission");
+        }
+        return message.getContent().get("permission").getAsString();
+    }
+
+    public static String getMessage(Message message) {
+        if (message.getContent() == null || !message.getContent().has("message")) {
+            throw new IllegalArgumentException("Message doesn't contain message");
+        }
+        return message.getContent().get("message").getAsString();
+    }
+}

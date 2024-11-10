@@ -1,0 +1,15 @@
+{
+  "id": "matrix-auth-proxy",
+  "name": "MatrixAuthProxy",
+  "version": "${pluginVersion}",
+  "description": "Auth module for Matrix",
+  "authors": [
+    "Beelzebu"
+  ],
+  "dependencies": [
+    {
+      "id": "matrix-velocity"
+    }
+  ],
+  "main": "net.nifheim.matrix.auth.proxy.MatrixAuth"
+}

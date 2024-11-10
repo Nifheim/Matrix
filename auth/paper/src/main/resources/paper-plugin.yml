@@ -1,0 +1,11 @@
+name: 'Matrix-Auth-Paper'
+main: net.nifheim.matrix.auth.paper.MatrixAuth
+loader: net.nifheim.matrix.auth.paper.MatrixAuthPluginLoader
+description: 'Matrix auth integration on paper'
+version: '${pluginVersion}'
+author: Beelzebu
+api-version: '1.20'
+dependencies:
+  server:
+    Matrix-Paper:
+      load: BEFORE

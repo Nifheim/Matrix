@@ -1,0 +1,11 @@
+guest:
+  allowed-commands:
+  - 'login'
+  - 'l'
+  - 'register'
+  - 'reg'
+  - 'premium'
+login:
+  target: 'towny'
+auth:
+  target: 'auth1'

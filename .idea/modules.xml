@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/paper/matrix.auth.paper.main.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/paper/matrix.auth.paper.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/paper/matrix.auth.paper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/paper/matrix.auth.paper.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/proxy/matrix.auth.proxy.main.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/proxy/matrix.auth.proxy.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/auth/proxy/matrix.auth.proxy.test.iml" filepath="$PROJECT_DIR$/.idea/modules/auth/proxy/matrix.auth.proxy.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-common/matrix.matrix-common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-common/matrix.matrix-common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-common/matrix.matrix-common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-common/matrix.matrix-common.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-paper/matrix.matrix-paper.main.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-paper/matrix.matrix-paper.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-paper/matrix.matrix-paper.test.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-paper/matrix.matrix-paper.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-velocity/matrix.matrix-velocity.main.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-velocity/matrix.matrix-velocity.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/matrix-velocity/matrix.matrix-velocity.test.iml" filepath="$PROJECT_DIR$/.idea/modules/matrix-velocity/matrix.matrix-velocity.test.iml" />
+    </modules>
+  </component>
+</project>

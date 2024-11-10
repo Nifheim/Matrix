@@ -1,0 +1,29 @@
+mongo:
+  host: localhost
+  port: 27017
+  database: matrix
+  username: root
+  password: root
+mariadb:
+  host: localhost
+  port: 3306
+  database: matrix
+  username: root
+  password: root
+  poolSize: 10
+redis:
+  host: localhost
+  port: 6379
+  password: null
+  database: 0
+  min-idle: 5
+  max-idle: 10
+  max-active: 20
+  test-on-borrow: true
+  test-while-idle: true
+  block-when-exhausted: true
+server-info:
+  game-mode: SPECTATOR
+  group-name: default
+  server-type: PROXY
+  lobby-server: null

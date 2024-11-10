@@ -1,0 +1,11 @@
+{
+  "id": "matrix-velocity",
+  "name": "Matrix",
+  "version": "${pluginVersion}",
+  "description": "Network management plugin for Velocity.",
+  "authors": [
+    "Beelzebu"
+  ],
+  "dependencies": [],
+  "main": "net.nifheim.matrix.velocity.bootstrap.MatrixVelocityBootstrap"
+}
