@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
     id("java-library")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.3.0"
     id("idea")
 }
 
@@ -16,7 +16,7 @@ allprojects {
     version = "2.0.0-SNAPSHOT"
 
     apply(plugin = "java-library")
-    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.gradleup.shadow")
     apply(plugin = "idea")
 
     repositories {
@@ -29,8 +29,8 @@ allprojects {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     idea {
