@@ -3,22 +3,22 @@ package net.nifheim.matrix.common.cache;
 import java.util.Optional;
 import java.util.UUID;
 import net.nifheim.matrix.api.cache.CacheProvider;
-import net.nifheim.matrix.api.messaging.MessagingService;
 import net.nifheim.matrix.api.player.MatrixPlayer;
 import net.nifheim.matrix.api.server.ServerManager;
-import net.nifheim.matrix.common.player.MongoMatrixPlayer;
+import net.nifheim.matrix.common.messaging.MessagingService;
 import net.nifheim.matrix.common.util.RedisManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 /**
- * Represents a cache that has an underlying implementation composed of a local cache and a redis cache and uses both caches to store and provide the cached information, using the locally cached
- * version if exists first, then fetching it from the remote cache.
+ * Represents a cache that has an underlying implementation composed of a local cache and a redis cache and uses both
+ * caches to store and provide the cached information, using the locally cached version if exists first, then fetching
+ * it from the remote cache.
  *
  * @author Jaime Suárez
  */
-public class UnifiedCacheProvider implements CacheProvider<MongoMatrixPlayer> {
+public class UnifiedCacheProvider implements CacheProvider<MatrixPlayer> {
 
     private final LocalCacheProvider localCacheProvider;
     private final RedisCacheProvider redisCacheProvider;
@@ -29,65 +29,41 @@ public class UnifiedCacheProvider implements CacheProvider<MongoMatrixPlayer> {
     }
 
     @Override
-    public @NotNull Optional<@NotNull String> getHexId(@NotNull UUID uniqueId) {
-        Optional<String> hexId = localCacheProvider.getHexId(uniqueId);
-        if (hexId.isPresent()) {
-            return hexId;
-        }
-        return redisCacheProvider.getHexId(uniqueId);
-    }
-
-    @Override
-    public @NotNull Optional<UUID> getUniqueId(String hexId) {
-        Optional<UUID> uniqueId = localCacheProvider.getUniqueId(hexId);
-        if (uniqueId.isPresent()) {
-            return uniqueId;
-        }
-        return redisCacheProvider.getUniqueId(hexId);
-    }
-
-    @Override
-    public void update(@NotNull UUID uniqueId, @NotNull String hexId) {
-        localCacheProvider.update(uniqueId, hexId);
-        redisCacheProvider.update(uniqueId, hexId);
-    }
-
-    @Override
-    public @NotNull Optional<MongoMatrixPlayer> getPlayer(@NotNull String hexId) {
-        Optional<MongoMatrixPlayer> player = localCacheProvider.getPlayer(hexId);
+    public @NotNull Optional<MatrixPlayer> getPlayer(@NotNull UUID uniqueId) {
+        Optional<MatrixPlayer> player = localCacheProvider.getPlayer(uniqueId);
         if (player.isPresent()) {
             return player;
         }
-        return redisCacheProvider.getPlayer(hexId);
+        return redisCacheProvider.getPlayer(uniqueId);
     }
 
     @Override
-    public MongoMatrixPlayer removePlayer(@NotNull MongoMatrixPlayer player) {
-        MongoMatrixPlayer cachedPlayer = localCacheProvider.removePlayer(player);
+    public MatrixPlayer removePlayer(@NotNull MatrixPlayer player) {
+        MatrixPlayer cachedPlayer = localCacheProvider.removePlayer(player);
         return cachedPlayer != null ? cachedPlayer : player;
     }
 
     @Override
-    public boolean isCached(@NotNull String hexId) {
-        return localCacheProvider.isCached(hexId) && redisCacheProvider.isCached(hexId);
+    public boolean isCached(UUID uniqueId) {
+        return localCacheProvider.isCached(uniqueId) && redisCacheProvider.isCached(uniqueId);
     }
 
     @Override
-    public void updateCachedFieldById(@NotNull String hexId, @NotNull String field, @Nullable Object value) {
-        localCacheProvider.updateCachedFieldById(hexId, field, value);
-        redisCacheProvider.updateCachedFieldById(hexId, field, value);
+    public void updateCachedFieldById(@NotNull UUID uniqueId, @NotNull String field, @Nullable Object value) {
+        localCacheProvider.updateCachedFieldById(uniqueId, field, value);
+        redisCacheProvider.updateCachedFieldById(uniqueId, field, value);
     }
 
     @Override
-    public void add(@NotNull MongoMatrixPlayer matrixPlayer) {
-        localCacheProvider.add(matrixPlayer);
-        redisCacheProvider.add(matrixPlayer);
+    public void add(@NotNull MatrixPlayer player) {
+        localCacheProvider.add(player);
+        redisCacheProvider.add(player);
     }
 
     @Override
-    public void update(@NotNull MongoMatrixPlayer matrixPlayer) {
-        localCacheProvider.update(matrixPlayer);
-        redisCacheProvider.update(matrixPlayer);
+    public void update(@NotNull MatrixPlayer player) {
+        localCacheProvider.update(player);
+        redisCacheProvider.update(player);
     }
 
     @Override
@@ -99,9 +75,5 @@ public class UnifiedCacheProvider implements CacheProvider<MongoMatrixPlayer> {
     @Override
     public boolean isActive() {
         return localCacheProvider.isActive() && redisCacheProvider.isActive();
-    }
-
-    public Optional<MongoMatrixPlayer> getLocallyCached(String hexId) {
-        return localCacheProvider.getPlayer(hexId);
     }
 }

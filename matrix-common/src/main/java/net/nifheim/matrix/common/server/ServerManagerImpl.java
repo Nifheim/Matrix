@@ -203,7 +203,7 @@ public class ServerManagerImpl implements ServerManager {
         } catch (NumberFormatException ex) {
             logger.warn("Error getting heartbeat for: {}", serverInfo.getName());
             try (Jedis jedis = redisManager.getResource()) {
-                jedis.hgetAll(SERVER_INFO_KEY_PREFIX + serverInfo.getName()).forEach((k, v) -> logger.info(k + ":" + v));
+                jedis.hgetAll(SERVER_INFO_KEY_PREFIX + serverInfo.getName()).forEach((k, v) -> logger.info("{}:{}", k, v));
             }
             logger.error("Error getting heartbeat for: " + serverInfo.getName(), ex);
         }

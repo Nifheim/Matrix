@@ -1,21 +1,16 @@
 package net.nifheim.matrix.common.database;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCredential;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.internal.MongoClientImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.morphia.Datastore;
-import dev.morphia.Morphia;
-import dev.morphia.query.FindOptions;
-import dev.morphia.query.filters.Filters;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -29,11 +24,7 @@ import net.nifheim.matrix.api.player.MatrixPlayer;
 import net.nifheim.matrix.api.service.InactiveServiceException;
 import net.nifheim.matrix.common.config.MatrixConfiguration;
 import net.nifheim.matrix.common.database.sql.SQLQuery;
-import net.nifheim.matrix.common.player.MongoMatrixPlayer;
-import org.bson.Document;
-import org.bson.UuidRepresentation;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.types.ObjectId;
+import net.nifheim.matrix.common.player.MatrixPlayerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -47,12 +38,9 @@ import org.slf4j.Logger;
  */
 public class MatrixDatabaseImpl implements MatrixDatabase {
 
-    private static final FindOptions SINGLE_RESULT = new FindOptions().limit(1);
-    private final MatrixConfiguration config;
     private final Logger logger;
     private HikariDataSource dataSource;
-    private final Datastore datastore;
-    private final ConcurrentMap<String, Lock> locks = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Long, Lock> locks = new ConcurrentHashMap<>();
 
     // SQL prepared statements parameter setters
     private static final Map<Class<?>, PreparedStatementSetter> TYPE_SETTERS = new HashMap<>();
@@ -64,16 +52,12 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
         TYPE_SETTERS.put(Long.class, (ps, entry) -> ps.setLong(entry.getKey(), (Long) entry.getValue()));
         TYPE_SETTERS.put(Boolean.class, (ps, entry) -> ps.setBoolean(entry.getKey(), (Boolean) entry.getValue()));
         TYPE_SETTERS.put(UUID.class, (ps, entry) -> ps.setString(entry.getKey(), entry.getValue().toString()));
+        TYPE_SETTERS.put(Locale.class, (ps, entry) -> ps.setString(entry.getKey(), entry.getValue().toString()));
+        TYPE_SETTERS.put(Date.class, (ps, entry) -> ps.setDate(entry.getKey(), new java.sql.Date(((Date) entry.getValue()).getTime())));
     }
 
     public MatrixDatabaseImpl(@NotNull MatrixConfiguration config, Logger logger) {
-        this.config = config;
         this.logger = logger;
-        MongoClientSettings clientSettings = MongoClientSettings.builder().credential(MongoCredential.createCredential(config.getMongoConfig().getUsername(), config.getMongoConfig().getDatabase(), config.getMongoConfig().getPassword().toCharArray())).applyConnectionString(new ConnectionString("mongodb://%s:%s".formatted(config.getMongoConfig().getHost(), config.getMongoConfig().getPort()))).uuidRepresentation(UuidRepresentation.UNSPECIFIED).codecRegistry(CodecRegistries.fromRegistries(CodecRegistries.fromCodecs(new UuidAsStringCodec()), MongoClientSettings.getDefaultCodecRegistry())).build();
-        MongoClientImpl client = new MongoClientImpl(clientSettings, null);
-        datastore = Morphia.createDatastore(client, "matrix");
-        datastore.getMapper().map(MongoMatrixPlayer.class);
-        datastore.ensureIndexes();
         HikariConfig hc = new HikariConfig();
         hc.setPoolName("Matrix MySQL Connection Pool");
         hc.setDataSourceClassName("org.mariadb.jdbc.MariaDbDataSource");
@@ -105,147 +89,140 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     }
 
     @Override
-    public @Nullable MongoMatrixPlayer getPlayer(@NotNull UUID uniqueId) {
+    public @Nullable MatrixPlayer getPlayer(@NotNull UUID uniqueId) {
         Objects.requireNonNull(uniqueId);
-        Lock lock = locks.get(uniqueId.toString());
+        Lock lock = locks.get(uniqueId);
         if (lock != null) {
             lock.lock();
         }
-        try {
-            return this.datastore.find(MongoMatrixPlayer.class).filter(Filters.eq("uniqueId", uniqueId.toString())).first(SINGLE_RESULT);
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.SELECT_PLAYER_BY_UUID, uniqueId); ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                return new MatrixPlayerImpl(resultSet);
+            }
+
+        } catch (SQLException ex) {
+            logger.error("An exception has occurred while retrieving player", ex);
         } finally {
             if (lock != null) {
                 lock.unlock();
             }
         }
+        return null;
     }
 
     @Override
-    public @Nullable MongoMatrixPlayer getPlayer(@NotNull String hexId) {
-        Objects.requireNonNull(hexId);
-        if (hexId.isBlank()) {
-            throw new IllegalArgumentException("hexId cannot be blank");
-        }
-        if (!ObjectId.isValid(hexId)) {
-            throw new IllegalArgumentException("hexId is not a valid ObjectId");
-        }
-        Lock lock = locks.get(hexId);
-        if (lock != null) {
-            lock.lock();
-        }
-        try {
-            return datastore.find(MongoMatrixPlayer.class).filter(Filters.eq("_id", new ObjectId(hexId))).first(SINGLE_RESULT);
-        } finally {
-            if (lock != null) {
-                lock.unlock();
+    public MatrixPlayer createPlayer(UUID uniqueId, String name, Locale locale) {
+        try (Connection c = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.INSERT_PLAYER, uniqueId, name, locale)) {
+                preparedStatement.executeUpdate();
             }
+            try (PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.SELECT_PLAYER_BY_UUID, uniqueId); ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new MatrixPlayerImpl(resultSet);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("An error has occurred while creating player", ex);
         }
+        throw new RuntimeException("Player not found");
     }
 
-    public @Nullable MongoMatrixPlayer getPlayerByName(@NotNull String name) {
-        if (name == null || name.isBlank() || name.length() > 16 || name.length() < 2) {
+    public @Nullable MatrixPlayer getPlayerByName(@NotNull String name) {
+        if (name.isBlank() || name.length() > 16 || name.length() < 2) {
             throw new IllegalArgumentException("name must be valid");
         }
-        return datastore.find(MongoMatrixPlayer.class).filter(Filters.eq("lowercaseName", name.toLowerCase())).first(SINGLE_RESULT);
-    }
-
-    @Override
-    public boolean isStored(@NotNull MatrixPlayer matrixPlayer) {
-        if (matrixPlayer.getId() != null) {
-            return isStored(matrixPlayer.getId());
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.SELECT_PLAYER_BY_NAME, name); ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                return new MatrixPlayerImpl(resultSet);
+            }
+        } catch (SQLException ex) {
+            logger.error("An exception has occurred while retrieving player", ex);
         }
-        return isStored(matrixPlayer.getUniqueId());
+        return null;
     }
 
     @Override
     public boolean isStored(UUID uniqueId) {
-        try (MongoCursor<Document> cursor = datastore.getDatabase().getCollection(config.getMongoConfig().getDatabase()).find(new Document("uniqueId", uniqueId)).limit(1).cursor()) {
-            return cursor.hasNext();
-        }
-    }
-
-    @Override
-    public boolean isStored(String hexId) {
-        // TODO: if it works with the hexId without transforming it to ObjectId, then keep it
-        try (MongoCursor<Document> cursor = datastore.getDatabase().getCollection(config.getMongoConfig().getDatabase()).find(new Document("_id", hexId)).limit(1).cursor()) {
-            return cursor.hasNext();
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.SELECT_PLAYER_BY_UUID, uniqueId); ResultSet resultSet = preparedStatement.executeQuery()) {
+            return resultSet.next();
+        } catch (SQLException ex) {
+            throw new RuntimeException("An error has occurred while retrieving player", ex);
         }
     }
 
     @NotNull
-    public <T extends MatrixPlayer> T save(@NotNull T matrixPlayer) {
-        Objects.requireNonNull(matrixPlayer.getUniqueId());
-        Objects.requireNonNull(matrixPlayer.getName());
-        Lock lock = locks.computeIfAbsent(matrixPlayer.getId(), k -> new ReentrantLock());
-        boolean locked = lock.tryLock();
-        if (locked) {
-            try {
-                logger.info("Saving player {} ({} - {})", matrixPlayer.getName(), matrixPlayer.getId(), matrixPlayer.getUniqueId());
-                this.datastore.save(matrixPlayer);
-                updateStats(matrixPlayer);
-            } catch (Exception ex) {
-                logger.error("An exception has occurred while saving player", ex);
-            } finally {
-                lock.unlock();
-                locks.remove(matrixPlayer.getId());
+    public MatrixPlayer save(@NotNull MatrixPlayer player) {
+        Objects.requireNonNull(player.getUniqueId());
+        Objects.requireNonNull(player.getName());
+        Lock lock = locks.computeIfAbsent(player.getId(), k -> new ReentrantLock());
+        lock.lock();
+        try {
+            logger.info("Saving player {} ({} - {})", player.getName(), player.getId(), player.getUniqueId());
+            try (Connection c = dataSource.getConnection()) {
+                // update the player, then select the updated player from the database
+                try (PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.UPDATE_PLAYER, player.getUniqueId(), player.getDiscordId(), player.getName(), player.getDisplayName(), player.isPremium(), player.isRegistered(), player.getLocale(), player.getRegistration(), player.getId())) {
+                    preparedStatement.executeUpdate();
+                }
+                try (PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.SELECT_PLAYER_BY_UUID, player.getUniqueId()); ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return new MatrixPlayerImpl(resultSet);
+                    }
+                }
             }
+        } catch (Exception ex) {
+            logger.error("An exception has occurred while saving player", ex);
+        } finally {
+            lock.unlock();
+            locks.remove(player.getId());
         }
-        return matrixPlayer;
+
+        throw new RuntimeException("Player not found");
     }
 
     @Override
     public void shutdown() throws InactiveServiceException {
-
+        if (!locks.isEmpty()) {
+            locks.values().forEach(Lock::lock);
+            locks.clear();
+        }
+        dataSource.close();
     }
 
     @Override
     public boolean isActive() {
-        return false;
+        return dataSource != null && dataSource.isRunning() && !dataSource.isClosed();
     }
 
-    public void storeHandshakeRequest(InetAddress address, int protocol, String version, String hostname) {
-        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement =
-                prepareStatement(c, SQLQuery.INSERT_HANDSHAKE.getQuery(), address.getHostAddress(), protocol, version, hostname)) {
+    @Override
+    public long saveHandshakeRequest(InetAddress address, int protocol, String version, @Nullable String hostname) {
+        try (Connection c = dataSource.getConnection()) {
+            try (PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.INSERT_PLAYER_HANDSHAKE, address.getHostAddress(), protocol, version, hostname)) {
+                preparedStatement.executeUpdate();
+                try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
+                    if (resultSet.next()) {
+                        return resultSet.getLong(1);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("An error has occurred while storing handshake request", ex);
+        }
+        throw new RuntimeException("An error has occurred while storing handshake request");
+    }
+
+    public void saveLoginState(long handshakeId, SQLQuery.LoginState loginState) {
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.INSERT_PLAYER_LOGIN_STATE, handshakeId, loginState.getState())) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            logger.error("An exception has occurred while storing handshake request", ex);
+            throw new RuntimeException("An error has occurred while storing login state", ex);
         }
     }
 
-    public void updateStats(MatrixPlayer player) {
-        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement =
-                prepareStatement(c, SQLQuery.INSERT_PLAYER.getQuery(), player.getId(), player.getUniqueId(), player.getName(), player.getId(), player.getUniqueId(), player.getName())) {
+    public void linkHandshake(@NotNull MatrixPlayer player, long handshakeId) {
+        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = prepareStatement(c, SQLQuery.LINK_HANDSHAKE, player.getId(), handshakeId)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            logger.error("An exception has occurred while storing player", ex);
-        }
-    }
-
-    public void saveAddress(MatrixPlayer player, InetAddress address) {
-        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareStatement(SQLQuery.INSERT_PLAYER_ADDRESS.getQuery())) {
-            preparedStatement.setString(1, address.getHostAddress());
-            preparedStatement.setString(2, player.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            logger.error("An exception has occurred while storing player address", ex);
-        }
-    }
-
-    public void saveLogin(MatrixPlayer player) {
-        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareStatement(SQLQuery.INSERT_PLAYER_LOGIN.getQuery())) {
-            preparedStatement.setString(1, player.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            logger.error("An exception has occurred while storing player login", ex);
-        }
-    }
-
-    public void saveLogout(MatrixPlayer player) {
-        try (Connection c = dataSource.getConnection(); PreparedStatement preparedStatement = c.prepareStatement(SQLQuery.INSERT_PLAYER_LOGOUT.getQuery())) {
-            preparedStatement.setString(1, player.getId());
-            preparedStatement.executeUpdate();
-        } catch (SQLException ex) {
-            logger.error("An exception has occurred while storing player logout", ex);
+            throw new RuntimeException("An error has occurred while linking handshake", ex);
         }
     }
 
@@ -260,13 +237,21 @@ public class MatrixDatabaseImpl implements MatrixDatabase {
     }
 
     public PreparedStatement prepareStatement(Connection connection, String query, Object... params) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
         int i = 1;
         for (Object param : params) {
             final int index = i;
-            TYPE_SETTERS.get(param.getClass()).apply(preparedStatement, Map.entry(index, param));
+            if (param == null) {
+                preparedStatement.setObject(index, null);
+            } else {
+                TYPE_SETTERS.get(param.getClass()).apply(preparedStatement, Map.entry(index, param));
+            }
             i++;
         }
         return preparedStatement;
+    }
+
+    public PreparedStatement prepareStatement(Connection connection, SQLQuery query, Object... params) throws SQLException {
+        return prepareStatement(connection, query.getQuery(), params);
     }
 }

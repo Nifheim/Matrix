@@ -1,8 +1,8 @@
 package net.nifheim.matrix.common.messaging.message;
 
 import java.util.UUID;
-import net.nifheim.matrix.api.messaging.message.Message;
-import net.nifheim.matrix.api.messaging.message.StandardChannel;
+import net.nifheim.matrix.api.messaging.Message;
+import net.nifheim.matrix.api.messaging.StandardChannel;
 import org.jetbrains.annotations.NotNull;
 
 /**

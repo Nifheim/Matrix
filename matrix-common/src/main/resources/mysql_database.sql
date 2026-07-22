@@ -1,7 +1,17 @@
+-- schema
+CREATE DATABASE IF NOT EXISTS matrix;
+USE matrix;
 -- enable scheduler
 SET GLOBAL event_scheduler = ON;
+-- servers tables
+DROP TABLE IF EXISTS failed_login;
+DROP TABLE IF EXISTS command_log;
+DROP TABLE IF EXISTS server;
+DROP TABLE IF EXISTS server_group;
+--
 -- players and sessions
-DROP TABLE IF EXISTS player_logout;
+DROP TABLE IF EXISTS player_locale;
+DROP TABLE IF EXISTS locale;
 DROP TABLE IF EXISTS player_login;
 DROP TABLE IF EXISTS player_address;
 -- drop tables, events and procedures
@@ -15,88 +25,137 @@ DROP VIEW IF EXISTS play_stats_total;
 DROP PROCEDURE IF EXISTS insert_stats;
 DROP EVENT IF EXISTS drop_monthly_stats;
 DROP EVENT IF EXISTS drop_weekly_stats;
-DROP TABLE IF EXISTS player;
+DROP TABLE IF EXISTS player_identity;
 DROP TABLE IF EXISTS handshake;
+DROP TABLE IF EXISTS player;
 
--- create players and sessions tables
-CREATE TABLE IF NOT EXISTS handshake
+-- create servers tables
+CREATE TABLE IF NOT EXISTS server_group
 (
-    id        UUID         NOT NULL PRIMARY KEY DEFAULT UUID(),
-    ip        VARCHAR(15)  NOT NULL,
-    protocol  INT UNSIGNED NOT NULL,
-    version   VARCHAR(32)  NOT NULL,
-    hostname  VARCHAR(255) NULL,
-    timestamp TIMESTAMP    NOT NULL             DEFAULT NOW(),
-    FULLTEXT (ip)
+    id          INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    name        VARCHAR(20)  NOT NULL,
+    description VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS server
+(
+    id          INT UNSIGNED                                        NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    group_id    INT UNSIGNED                                        NOT NULL REFERENCES server_group (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    name        VARCHAR(50)                                         NOT NULL,
+    description VARCHAR(255)                                        NOT NULL,
+    status      ENUM ('OPEN', 'WHITELIST', 'MAINTENANCE', 'CLOSED') NOT NULL                            DEFAULT 'MAINTENANCE',
+    UNIQUE KEY uq_server (group_id, name)
+);
+
+-- create players
+CREATE TABLE IF NOT EXISTS locale
+(
+    id   INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    code CHAR(4)      NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS player
 (
-    id       UUID        NOT NULL PRIMARY KEY DEFAULT UUID(),
-    hexId    char(24)    NOT NULL UNIQUE,
-    uniqueId UUID        NOT NULL UNIQUE,
-    name     VARCHAR(16) NOT NULL
+    id            BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    uniqueId      UUID            NOT NULL UNIQUE,
+    discordId     BIGINT UNSIGNED NULL UNIQUE                         DEFAULT NULL,
+    name          VARCHAR(16)     NOT NULL COLLATE utf8mb4_unicode_ci,
+    display_name  VARCHAR(128)    NULL                                DEFAULT NULL,
+    premium       BOOLEAN         NOT NULL                            DEFAULT FALSE,
+    registered    BOOLEAN         NOT NULL                            DEFAULT FALSE,
+    locale        CHAR(5)         NULL,
+    registered_at TIMESTAMP       NULL,
+    created_at    TIMESTAMP       NOT NULL                            DEFAULT NOW(),
+    updated_at    TIMESTAMP       NULL                                DEFAULT NULL ON UPDATE NOW()
 );
 
-CREATE TABLE IF NOT EXISTS player_address
+CREATE TABLE IF NOT EXISTS player_locale
 (
-    id        UUID        NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    ip        VARCHAR(15) NOT NULL,
-    timestamp TIMESTAMP   NOT NULL DEFAULT NOW()
+    id         BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    player_id  BIGINT UNSIGNED NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    locale_id  INT UNSIGNED    NOT NULL REFERENCES locale (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    created_at TIMESTAMP       NOT NULL                            DEFAULT NOW()
+);
+
+-- login and sessions
+CREATE TABLE IF NOT EXISTS handshake
+(
+    id        BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    player_id BIGINT UNSIGNED NULL REFERENCES player (id) ON UPDATE CASCADE,
+    ip        VARCHAR(15)     NOT NULL,
+    protocol  INT UNSIGNED    NOT NULL,
+    version   VARCHAR(32)     NOT NULL,
+    hostname  VARCHAR(255)    NULL,
+    timestamp TIMESTAMP       NOT NULL                            DEFAULT NOW(),
+    FULLTEXT (ip)
 );
 
 CREATE TABLE IF NOT EXISTS player_login
 (
-    id        UUID      NOT NULL PRIMARY KEY DEFAULT UUID(),
-    player_id UUID      NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    timestamp TIMESTAMP NOT NULL             DEFAULT NOW()
+    id           BIGINT UNSIGNED                                         NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    handshake_id BIGINT UNSIGNED                                         NOT NULL REFERENCES handshake (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    state        ENUM ('PRE_LOGIN', 'LOGIN', 'POST_LOGIN', 'DISCONNECT') NOT NULL,
+    timestamp    TIMESTAMP                                               NOT NULL                            DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS player_logout
+CREATE TABLE IF NOT EXISTS failed_login
 (
-    id        UUID      NOT NULL PRIMARY KEY DEFAULT UUID(),
-    player_id UUID      NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    timestamp TIMESTAMP NOT NULL             DEFAULT NOW()
+    id        BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    server_id INT UNSIGNED    NOT NULL REFERENCES server (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    player_id BIGINT UNSIGNED NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    uniqueId  UUID            NOT NULL,
+    name      VARCHAR(16)     NOT NULL,
+    ip        VARCHAR(15)     NOT NULL,
+    message   TEXT            NULL                                DEFAULT NULL,
+    timestamp TIMESTAMP       NOT NULL                            DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS command_log
+(
+    id           BIGINT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT DEFAULT NULL,
+    player_id    BIGINT UNSIGNED NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    server_id    INT UNSIGNED    NOT NULL REFERENCES server (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    command      VARCHAR(256)    NOT NULL,
+    full_command LONGTEXT        NOT NULL,
+    date         DATETIME        NOT NULL                            DEFAULT SYSDATE()
+);
+
+CREATE OR REPLACE TRIGGER tr_player_locale_update
+    AFTER UPDATE
+    ON player
+    FOR EACH ROW
+BEGIN
+    INSERT INTO locale(code) VALUES (new.locale) ON DUPLICATE KEY UPDATE id = id;
+    INSERT INTO player_locale(player_id, locale_id) VALUES (new.id, (SELECT id FROM locale WHERE code = new.locale));
+END;
+
+CREATE OR REPLACE TRIGGER tr_player_locale_insert
+    AFTER INSERT
+    ON player
+    FOR EACH ROW
+BEGIN
+    INSERT INTO locale(code) VALUES (new.locale) ON DUPLICATE KEY UPDATE id = id;
+    INSERT INTO player_locale(player_id, locale_id) VALUES (new.id, (SELECT id FROM locale WHERE code = new.locale));
+END;
 
 -- stats
 -- create stats tables
+/*
 CREATE TABLE IF NOT EXISTS stats_total
 (
-    player_id    UUID PRIMARY KEY NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    server       VARCHAR(50)      NOT NULL,
-    kills        BIGINT UNSIGNED  NOT NULL DEFAULT 0,
-    mobKills     BIGINT UNSIGNED  NOT NULL DEFAULT 0,
-    deaths       BIGINT UNSIGNED  NOT NULL DEFAULT 0,
-    blocksBroken BIGINT UNSIGNED  NOT NULL DEFAULT 0,
-    blocksPlaced BIGINT UNSIGNED  NOT NULL DEFAULT 0,
-    UNIQUE KEY user_server_uq (player_id, server)
+    player_id    BIGINT UNSIGNED NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    server       VARCHAR(50)     NOT NULL,
+    kills        BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    mobKills     BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    deaths       BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    blocksBroken BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    blocksPlaced BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    PRIMARY KEY pk_user_server (player_id, server)
 );
 
 CREATE TABLE IF NOT EXISTS stats_monthly LIKE stats_total;
 
 CREATE TABLE IF NOT EXISTS stats_weekly LIKE stats_total;
-
-CREATE TABLE IF NOT EXISTS failed_login
-(
-    id        UUID PRIMARY KEY NOT NULL DEFAULT UUID(),
-    date      DATETIME         NOT NULL DEFAULT SYSDATE(),
-    player_id UUID             NOT NULL,
-    name      VARCHAR(16)      NOT NULL,
-    server    VARCHAR(35)      NOT NULL,
-    message   TEXT                      DEFAULT NULL,
-    UNIQUE KEY date_user (date, player_id)
-);
-
-CREATE TABLE IF NOT EXISTS command_log
-(
-    id        UUID PRIMARY KEY NOT NULL DEFAULT UUID(),
-    player_id UUID             NOT NULL REFERENCES player (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    server    VARCHAR(50)      NOT NULL,
-    command   VARCHAR(256)     NOT NULL,
-    date      DATETIME         NOT NULL DEFAULT SYSDATE()
-);
 
 CREATE TABLE IF NOT EXISTS play_stats
 (
@@ -169,3 +228,5 @@ CREATE EVENT drop_weekly_stats ON SCHEDULE EVERY 1 WEEK
     BEGIN
         TRUNCATE stats_weekly;
     END;
+
+ */

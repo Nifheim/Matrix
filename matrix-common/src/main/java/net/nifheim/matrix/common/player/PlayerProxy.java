@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
  * @author Jaime Suárez
  * @see net.nifheim.matrix.api.player.PlayerManager
  * @see net.nifheim.matrix.api.player.MatrixPlayer
- * @see net.nifheim.matrix.common.player.meta.PlayerMetaInjector
  */
 @FunctionalInterface
 public interface PlayerProxy <P extends Identified> {

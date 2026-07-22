@@ -13,12 +13,12 @@ import net.nifheim.matrix.api.MatrixAPI;
 import net.nifheim.matrix.api.MatrixProvider;
 import net.nifheim.matrix.api.database.MatrixDatabase;
 import net.nifheim.matrix.api.environment.Environment;
-import net.nifheim.matrix.api.messaging.MessagingService;
 import net.nifheim.matrix.api.server.ServerInfo;
 import net.nifheim.matrix.api.server.ServerManager;
 import net.nifheim.matrix.api.service.MatrixService;
 import net.nifheim.matrix.common.database.MatrixDatabaseImpl;
-import net.nifheim.matrix.common.messaging.listener.FieldUpdateListener;
+import net.nifheim.matrix.common.messaging.MessagingService;
+import net.nifheim.matrix.common.messaging.rabbitmq.RabbitMQService;
 import net.nifheim.matrix.common.player.PlayerManagerImpl;
 import net.nifheim.matrix.common.plugin.MatrixPluginCommon;
 import net.nifheim.matrix.common.task.HeartbeatTask;
@@ -43,6 +43,10 @@ public class MatrixCommon <P extends Identified> implements MatrixAPI {
 
     public @NotNull MaintenanceManager getMaintenanceManager() {
         return plugin.getMaintenanceManager();
+    }
+
+    public @NotNull RabbitMQService getRabbitMQManager() {
+        return plugin.getRabbitMQManager();
     }
 
     @Override
@@ -92,7 +96,7 @@ public class MatrixCommon <P extends Identified> implements MatrixAPI {
         SERVICE_REGISTRY.put(type, service);
     }
 
-    private <S extends MatrixService> S getService(Class<S> service) {
+    public <S extends MatrixService> S getService(Class<S> service) {
         MatrixService registeredService = SERVICE_REGISTRY.get(service);
         if (registeredService == null) {
             throw new UnsupportedOperationException("Service not registered");
@@ -114,7 +118,6 @@ public class MatrixCommon <P extends Identified> implements MatrixAPI {
     public void setup() {
         motd(plugin.getConsole());
         plugin.getBootstrap().getScheduler().asyncRepeating(new HeartbeatTask(getServerManager(), getLogger()), 1, TimeUnit.MINUTES);
-        getMessaging().registerListener(new FieldUpdateListener(plugin.getPlayerManager(), getLogger()));
         MatrixProvider.setAPI(this);
     }
 

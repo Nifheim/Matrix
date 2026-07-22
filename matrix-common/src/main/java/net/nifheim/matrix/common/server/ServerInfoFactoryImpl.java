@@ -3,6 +3,7 @@ package net.nifheim.matrix.common.server;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import net.nifheim.matrix.api.player.gamemode.GameMode;
 import net.nifheim.matrix.api.server.ServerInfo;
 import net.nifheim.matrix.api.server.ServerInfoFactory;
@@ -111,7 +112,12 @@ public final class ServerInfoFactoryImpl implements ServerInfoFactory {
 
     private void validateServer(ServerInfo serverInfo) {
         if (!serverInfo.isUnique() && serverManager.isServerRegisteredInGroupSync(serverInfo.getGroupName(), serverInfo.getName())) {
-            logger.error("Server with name {} already exists", serverInfo.getName());
+            // check server last heartbeat
+            long lastHeartbeat = serverManager.getLastHeartbeatSync(serverInfo).orElse(0);
+            if (lastHeartbeat == 0 || lastHeartbeat + TimeUnit.MINUTES.toMillis(5) < System.currentTimeMillis()) {
+                serverManager.removeServer(serverInfo);
+                return;
+            }
             throw new IllegalArgumentException("Server with name " + serverInfo.getName() + " already exists");
         }
     }

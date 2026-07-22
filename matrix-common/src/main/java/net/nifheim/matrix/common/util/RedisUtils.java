@@ -2,10 +2,13 @@ package net.nifheim.matrix.common.util;
 
 import com.google.gson.JsonSyntaxException;
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.Map;
-import net.nifheim.matrix.common.player.MongoMatrixPlayer;
+import net.nifheim.matrix.api.player.MatrixPlayer;
+import net.nifheim.matrix.common.player.MatrixPlayerImpl;
 import net.nifheim.matrix.common.player.PlayerManagerImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public final class RedisUtils {
@@ -28,26 +31,16 @@ public final class RedisUtils {
         return instance;
     }
 
-    public static MongoMatrixPlayer deserializePlayerFromHash(@NotNull Map<String, String> hash, Logger logger) {
-        MongoMatrixPlayer player = new MongoMatrixPlayer();
-        String objectId = hash.get("id");
-        String name = hash.get("name");
-        String uniqueId = hash.get("uniqueId");
-        for (Map.Entry<String, Field> ent : PlayerManagerImpl.FIELDS.entrySet()) {
-            String id = ent.getKey(); // field id
-            Field field = ent.getValue(); // field object
-            try {
-                Object value = JsonUtils.parseJsonValue(hash.get(id), field.getType());
-                ReflectionUtils.setField(player, field, value);
-            } catch (@NotNull IllegalArgumentException | NullPointerException | JsonSyntaxException | ReflectiveOperationException e) {
-                logger.warn("Error setting field {} with value {} for player {} ({}) with uniqueId {}", id, hash.get(id), objectId, name, uniqueId);
-                logger.error("Error setting field", e);
-                if (id.equals("name") || id.equals("uniqueId") || id.equals("id")) {
-                    logger.error("Error setting field {} with value {}, returning null", id, hash.get(id));
-                    return null;
-                }
+    public static @Nullable MatrixPlayer deserializePlayerFromHash(@NotNull Map<String, String> hash, Logger logger) {
+        try {
+            Map<String, Object> decodedHash = HashMap.newHashMap(hash.size());
+            for (Map.Entry<String, String> ent : hash.entrySet()) {
+                decodedHash.put(ent.getKey(), JsonUtils.parseJsonValue(ent.getValue(), PlayerManagerImpl.FIELDS.get(ent.getKey()).getType()));
             }
+            return new MatrixPlayerImpl(decodedHash);
+        } catch (JsonSyntaxException ex) {
+            logger.error("An exception has occurred while deserializing player", ex);
+            return null;
         }
-        return player;
     }
 }

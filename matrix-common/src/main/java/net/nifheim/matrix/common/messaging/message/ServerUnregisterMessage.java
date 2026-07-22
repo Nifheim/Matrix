@@ -1,7 +1,7 @@
 package net.nifheim.matrix.common.messaging.message;
 
-import net.nifheim.matrix.api.messaging.message.Message;
-import net.nifheim.matrix.api.messaging.message.StandardChannel;
+import net.nifheim.matrix.api.messaging.Message;
+import net.nifheim.matrix.api.messaging.StandardChannel;
 import net.nifheim.matrix.api.server.ServerInfo;
 import net.nifheim.matrix.common.api.MatrixCommon;
 import net.nifheim.matrix.common.server.ServerInfoImpl;
