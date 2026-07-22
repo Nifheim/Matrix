@@ -1,22 +1,18 @@
 package net.nifheim.matrix.paper.messaging;
 
-import net.nifheim.matrix.api.messaging.MessageListener;
-import net.nifheim.matrix.api.messaging.message.StandardChannel;
+import java.util.function.BiConsumer;
 import net.nifheim.matrix.common.messaging.message.StaffChatMessage;
+import net.nifheim.matrix.common.messaging.rabbitmq.AbstractRabbitMQConsumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
  * @author Jaime Suárez
  */
-public class StaffChatListener extends MessageListener<StaffChatMessage> {
-
-    public StaffChatListener() {
-        super(StandardChannel.MESSAGE_BROADCAST);
-    }
+public class StaffChatListener implements BiConsumer<StaffChatMessage, AbstractRabbitMQConsumer.DeliveryContext> {
 
     @Override
-    public void onMessage(StaffChatMessage message) {
+    public void accept(StaffChatMessage message, AbstractRabbitMQConsumer.DeliveryContext context) {
         String permission = StaffChatMessage.getPermission(message);
         String sMessage = StaffChatMessage.getMessage(message);
         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -24,6 +20,11 @@ public class StaffChatListener extends MessageListener<StaffChatMessage> {
                 continue;
             }
             player.sendMessage(sMessage);
+        }
+        try {
+            context.acknowledge();
+        } catch (Exception e) {
+            Bukkit.getLogger().severe("Error acknowledging staff chat message: " + e.getMessage());
         }
     }
 }

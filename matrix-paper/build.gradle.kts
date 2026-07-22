@@ -1,5 +1,5 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "1.7.4"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
 }
 
 repositories {
@@ -17,7 +17,7 @@ description = "Matrix Paper"
 dependencies {
     implementation(project(":matrix-common"))
     implementation("com.github.nifheim:commandlib:master-SNAPSHOT")
-    paperweight.paperDevBundle("1.21.3-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
     implementation("me.clip:placeholderapi:2.11.6")
 }
 
@@ -43,8 +43,7 @@ tasks {
         dependencies {
             include(project(":matrix-api"))
             include(project(":matrix-common"))
-            include(dependency("net.nifheim:coreutils"))
-            include(dependency("net.nifheim:commandlib"))
+            include(dependency("com.github.nifheim:commandlib"))
         }
     }
 

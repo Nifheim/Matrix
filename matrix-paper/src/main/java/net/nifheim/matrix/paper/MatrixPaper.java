@@ -1,13 +1,19 @@
 package net.nifheim.matrix.paper;
 
 import io.papermc.paper.configuration.GlobalConfiguration;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import net.kyori.adventure.audience.Audience;
 import net.nifheim.bukkit.commandlib.CommandAPI;
 import net.nifheim.matrix.api.environment.Environment;
 import net.nifheim.matrix.api.server.ServerType;
+import net.nifheim.matrix.common.messaging.MessagingService;
 import net.nifheim.matrix.common.messaging.message.ServerRegisterMessage;
+import net.nifheim.matrix.common.messaging.rabbitmq.RabbitMQService;
+import net.nifheim.matrix.common.messaging.rabbitmq.ServerRegisterProducer;
+import net.nifheim.matrix.common.messaging.rabbitmq.ServerRequestConsumer;
+import net.nifheim.matrix.common.messaging.rabbitmq.StaffChatConsumer;
 import net.nifheim.matrix.common.plugin.MatrixBootstrap;
 import net.nifheim.matrix.common.plugin.MatrixPluginCommon;
 import net.nifheim.matrix.common.scheduler.SchedulerAdapter;
@@ -20,9 +26,7 @@ import net.nifheim.matrix.paper.command.user.SpitCommand;
 import net.nifheim.matrix.paper.config.MatrixPaperConfiguration;
 import net.nifheim.matrix.paper.messaging.ServerRequestListener;
 import net.nifheim.matrix.paper.messaging.StaffChatListener;
-import net.nifheim.matrix.paper.messaging.TargetedMessageListener;
 import net.nifheim.matrix.paper.scheduler.PaperSchedulerAdapter;
-import net.nifheim.matrix.paper.util.PaperPlayerMetaInjector;
 import net.nifheim.matrix.paper.util.PluginsUtility;
 import org.bukkit.BanList;
 import org.bukkit.Bukkit;
@@ -52,7 +56,6 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
         this.serverPlatformInfo = serverPlatformInfo;
     }
 
-    @SuppressWarnings("removal")
     @Override
     public void onLoad() {
         GlobalConfiguration paperConfig = GlobalConfiguration.get();
@@ -64,7 +67,6 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
         paperConfig.chunkLoadingAdvanced.autoConfigSendDistance = true;
         paperConfig.chunkSystem.ioThreads = 4;
         paperConfig.chunkSystem.workerThreads = -1;
-        paperConfig.chunkSystem.genParallelism = "true";
         try {
             Class.forName("org.spigotmc.SpigotConfig").getField("debug");
             if (SpigotConfig.debug) {
@@ -75,7 +77,7 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
         }
         saveResource("config.yml", false);
         configuration = new MatrixPaperConfiguration(this);
-        matrixPlugin = new MatrixPluginCommon<>(this, configuration, new PaperPlayerMetaInjector(this), Bukkit::getPlayer);
+        matrixPlugin = new MatrixPluginCommon<>(this, configuration, Bukkit::getPlayer);
         matrixPlugin.load();
     }
 
@@ -140,7 +142,12 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
                 });
             }
             if (serverRegisterMessage != null) {
-                matrixPlugin.getMessaging().sendMessage(serverRegisterMessage);
+                try {
+                    MessagingService messagingService = matrixPlugin.getApi().getMessaging();
+                    messagingService.getProducer(ServerRegisterProducer.class).sendMessage(serverRegisterMessage);
+                } catch (IOException | java.util.concurrent.TimeoutException e) {
+                    getPlatformLogger().error("Error sending server register message", e);
+                }
             }
         });
         if (matrixPlugin.getServerInfo().getServerType().equals(ServerType.LOBBY)) {
@@ -153,9 +160,21 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
             } catch (ClassNotFoundException ignored) { // doesn't exists on spigot lol
             }
         }
-        matrixPlugin.getMessaging().registerListener(new ServerRequestListener(this));
-        matrixPlugin.getMessaging().registerListener(new StaffChatListener());
-        matrixPlugin.getMessaging().registerListener(new TargetedMessageListener());
+        try {
+            MessagingService messagingService = matrixPlugin.getApi().getMessaging();
+            RabbitMQService rabbitMQService = matrixPlugin.getApi().getService(RabbitMQService.class);
+
+            ServerRequestConsumer requestConsumer = new ServerRequestConsumer(rabbitMQService, getPlatformLogger());
+            StaffChatConsumer staffChatConsumer = new StaffChatConsumer(rabbitMQService, getPlatformLogger());
+
+            messagingService.registerConsumer(ServerRequestConsumer.class, requestConsumer);
+            messagingService.registerConsumer(StaffChatConsumer.class, staffChatConsumer);
+
+            requestConsumer.consume(new ServerRequestListener(this));
+            staffChatConsumer.consume(new StaffChatListener());
+        } catch (IOException e) {
+            getPlatformLogger().error("Error starting messaging listeners", e);
+        }
         Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 

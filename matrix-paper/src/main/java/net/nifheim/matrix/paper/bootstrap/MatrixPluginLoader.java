@@ -20,12 +20,9 @@ public class MatrixPluginLoader implements PluginLoader {
         resolver.addDependency(new Dependency(new DefaultArtifact("org.mariadb.jdbc:mariadb-java-client:2.7.3"), null));
         resolver.addDependency(new Dependency(new DefaultArtifact("org.apache.commons:commons-pool2:2.11.1"), null));
         resolver.addDependency(new Dependency(new DefaultArtifact("redis.clients:jedis:3.9.0"), null));
-        resolver.addDependency(new Dependency(new DefaultArtifact("org.mongodb:bson:4.7.1"), null));
-        resolver.addDependency(new Dependency(new DefaultArtifact("org.mongodb:mongodb-driver-core:4.7.1"), null));
-        resolver.addDependency(new Dependency(new DefaultArtifact("org.mongodb:mongodb-driver-sync:4.7.1"), null));
-        resolver.addDependency(new Dependency(new DefaultArtifact("dev.morphia.morphia:morphia-core:2.4.12"), null));
+        resolver.addDependency(new Dependency(new DefaultArtifact("com.rabbitmq:amqp-client:5.27.0"), null));
 
-        resolver.addRepository(new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2/").build());
+        resolver.addRepository(new RemoteRepository.Builder("central", "default", MavenLibraryResolver.MAVEN_CENTRAL_DEFAULT_MIRROR).build());
 
         classpathBuilder.addLibrary(resolver);
     }
