@@ -3,7 +3,7 @@ version = "1.0.0-SNAPSHOT"
 
 repositories {
     maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven {
         url = uri("https://repo.codemc.org/repository/maven-public/")

@@ -11,11 +11,11 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.nifheim.bukkit.commandlib.RegistrableCommand;
 import net.nifheim.matrix.api.MatrixProvider;
+import net.nifheim.matrix.api.player.MatrixPlayer;
+import net.nifheim.matrix.api.player.PlayerManager;
 import net.nifheim.matrix.auth.paper.database.AuthDatabase;
 import net.nifheim.matrix.auth.paper.exception.InvalidPasswordException;
 import net.nifheim.matrix.auth.paper.security.PasswordEncryption;
-import net.nifheim.matrix.common.player.MongoMatrixPlayer;
-import net.nifheim.matrix.common.player.PlayerManagerImpl;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -29,11 +29,12 @@ public class RegisterCommand extends RegistrableCommand {
         TranslatableComponent error = Component.translatable("register.error.password");
         switch (e.getReason()) {
             case LENGTH -> sender.sendMessage(error.arguments(Component.translatable("register.error.invalid.length")));
-            case BLACKLISTED -> sender.sendMessage(error.arguments(Component.translatable("register.error.invalid.blacklist")));
+            case BLACKLISTED ->
+                    sender.sendMessage(error.arguments(Component.translatable("register.error.invalid.blacklist")));
             default -> sender.sendMessage(error);
         }
     };
-    private final PlayerManagerImpl<Player> playerManager = (PlayerManagerImpl<Player>) MatrixProvider.getAPI().getPlayerManager();
+    private final PlayerManager playerManager = MatrixProvider.getAPI().getPlayerManager();
     private final AuthDatabase authDatabase;
     private final Logger logger;
 
@@ -74,14 +75,14 @@ public class RegisterCommand extends RegistrableCommand {
         if (args.length == 2) {
             String password = args[0];
             String passwordConfirmation = args[1];
-            MongoMatrixPlayer matrixPlayer = playerManager.getPlayerByUniqueIdSync(player.getUniqueId());
+            MatrixPlayer matrixPlayer = playerManager.getPlayerSync(player.getUniqueId());
+            Objects.requireNonNull(matrixPlayer, "matrixPlayer");
             if (validPlayerRegistrationConditions(player, password, passwordConfirmation, matrixPlayer)) {
                 performRegistration(sender, player.getUniqueId(), password, () -> {
                     try {
                         authDatabase.insertHashedPassword(player.getUniqueId(), PasswordEncryption.computeHash(password));
                         matrixPlayer.setRegistered(true);
                         matrixPlayer.setLoggedIn(true);
-                        playerManager.propagateUpdate(matrixPlayer);
                         sender.sendMessage(Component.translatable("register.success", TextColor.color(0x6FE331)));
                     } catch (Exception e) {
                         sender.sendMessage(Component.translatable("error.unknown"));
@@ -93,7 +94,7 @@ public class RegisterCommand extends RegistrableCommand {
         }
     }
 
-    private boolean validPlayerRegistrationConditions(Player player, String password, String passwordConfirmation, MongoMatrixPlayer matrixPlayer) {
+    private boolean validPlayerRegistrationConditions(Player player, String password, String passwordConfirmation, MatrixPlayer matrixPlayer) {
         if (!Objects.equals(password, passwordConfirmation)) {
             player.sendMessage(Component.translatable("register.error.match", NamedTextColor.RED));
             return false;

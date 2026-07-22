@@ -14,6 +14,6 @@ public abstract class MatrixPlayerListener {
     }
 
     protected CompletableFuture<Void> executePlayerLogic(UUID uniqueId, Consumer<MatrixPlayer> logic) {
-        return MatrixProvider.getAPI().getPlayerManager().getPlayerByUniqueId(uniqueId).thenAccept(logic);
+        return MatrixProvider.getAPI().getPlayerManager().getPlayer(uniqueId).thenAccept(logic);
     }
 }

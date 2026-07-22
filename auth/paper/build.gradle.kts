@@ -3,7 +3,7 @@ version = "1.0.0-SNAPSHOT"
 
 repositories {
     maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
 
     maven {
@@ -15,7 +15,7 @@ dependencies {
     api(project(":matrix-api"))
     api(project(":matrix-common"))
     implementation("com.github.nifheim:commandlib:master-SNAPSHOT")
-    implementation("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+    implementation("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     implementation("de.rtner:PBKDF2:1.1.4")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")

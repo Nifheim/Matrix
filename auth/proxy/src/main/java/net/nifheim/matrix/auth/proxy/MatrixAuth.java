@@ -10,9 +10,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import net.nifheim.matrix.api.MatrixProvider;
 import net.nifheim.matrix.auth.proxy.config.ConfigurationFile;
 import net.nifheim.matrix.auth.proxy.listener.CommandListener;
 import net.nifheim.matrix.auth.proxy.listener.ServerSwitchListener;
+import net.nifheim.matrix.auth.proxy.listener.messaging.LoginListener;
+import net.nifheim.matrix.common.messaging.MessagingService;
+import net.nifheim.matrix.common.messaging.rabbitmq.LoginConsumer;
+import net.nifheim.matrix.common.messaging.rabbitmq.RabbitMQService;
 import org.slf4j.Logger;
 import org.spongepowered.configurate.ConfigurateException;
 
@@ -63,6 +68,15 @@ public class MatrixAuth {
     private void registerListeners() {
         server.getEventManager().register(this, new CommandListener(logger, configuration));
         server.getEventManager().register(this, new ServerSwitchListener(logger, configuration, server));
+
+        MessagingService messagingService = MatrixProvider.getAPI().getService(MessagingService.class);
+        LoginConsumer loginConsumer = new LoginConsumer(MatrixProvider.getAPI().getService(RabbitMQService.class), logger);
+        messagingService.registerConsumer(LoginConsumer.class, loginConsumer);
+        try {
+            loginConsumer.consume("auth:proxy:login", new LoginListener(logger, configuration, server));
+        } catch (IOException e) {
+            logger.error("Error starting LoginConsumer", e);
+        }
     }
 
     public ConfigurationFile getConfiguration() {

@@ -6,12 +6,15 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.nifheim.bukkit.commandlib.RegistrableCommand;
 import net.nifheim.matrix.api.MatrixProvider;
+import net.nifheim.matrix.api.player.MatrixPlayer;
+import net.nifheim.matrix.api.player.PlayerManager;
 import net.nifheim.matrix.auth.paper.database.AuthDatabase;
 import net.nifheim.matrix.auth.paper.exception.UserNotRegisteredException;
 import net.nifheim.matrix.auth.paper.security.HashedPassword;
 import net.nifheim.matrix.auth.paper.security.PasswordEncryption;
-import net.nifheim.matrix.common.player.MongoMatrixPlayer;
-import net.nifheim.matrix.common.player.PlayerManagerImpl;
+import net.nifheim.matrix.common.messaging.MessagingService;
+import net.nifheim.matrix.common.messaging.message.LoginMessage;
+import net.nifheim.matrix.common.messaging.rabbitmq.LoginProducer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -19,7 +22,7 @@ import org.slf4j.Logger;
 
 public class LoginCommand extends RegistrableCommand {
 
-    private final PlayerManagerImpl<Player> playerManager = (PlayerManagerImpl<Player>) MatrixProvider.getAPI().getPlayerManager();
+    private final PlayerManager playerManager = MatrixProvider.getAPI().getPlayerManager();
     private final AuthDatabase authDatabase;
     private final Logger logger;
 
@@ -45,13 +48,17 @@ public class LoginCommand extends RegistrableCommand {
             HashedPassword hashedPassword = authDatabase.getPasswordHash(player.getUniqueId());
             logger.info("hashedPassword: {} password: {}", hashedPassword, password);
             if (PasswordEncryption.comparePassword(password, hashedPassword)) {
-                MongoMatrixPlayer matrixPlayer = playerManager.getPlayerByUniqueIdSync(player.getUniqueId());
+                MatrixPlayer matrixPlayer = playerManager.getPlayerSync(player.getUniqueId());
                 if (matrixPlayer == null) {
                     player.kick(Component.text("Error validating your session"));
                     return;
                 }
-                matrixPlayer.setLoggedIn(true);
-                playerManager.propagateUpdate(matrixPlayer);
+                try {
+                    MessagingService messagingService = MatrixProvider.getAPI().getService(MessagingService.class);
+                    messagingService.getProducer(LoginProducer.class).sendMessage(new LoginMessage(player.getUniqueId(), player.getName()));
+                } catch (Exception e) {
+                    logger.error("Error sending login message", e);
+                }
                 player.sendMessage(Component.translatable("login.success", TextColor.color(0x6FE331)));
             } else {
                 player.sendMessage(Component.translatable("login.error.password", NamedTextColor.RED));
