@@ -7,8 +7,8 @@ import com.velocitypowered.api.proxy.server.ServerPing;
 
 public class PingListener {
 
-    private static final String PROTOCOL_VERSION_NAME = "Nifheim 1.21";
-    private static final ProtocolVersion PROTOCOL_VERSION = ProtocolVersion.MINECRAFT_1_21_9;
+    private static final String PROTOCOL_VERSION_NAME = "Nifheim 26.2";
+    private static final ProtocolVersion PROTOCOL_VERSION = ProtocolVersion.MINECRAFT_26_2;
 
     public PingListener() {
     }
