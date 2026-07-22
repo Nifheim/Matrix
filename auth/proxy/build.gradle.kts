@@ -13,8 +13,8 @@ repositories {
 dependencies {
     api(project(":matrix-api"))
     api(project(":matrix-common"))
-    compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:4.1.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:4.1.0-SNAPSHOT")
     implementation("org.spongepowered:configurate-yaml:4.1.2")
 }
 

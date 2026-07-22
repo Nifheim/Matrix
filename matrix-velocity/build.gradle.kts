@@ -2,6 +2,7 @@ description = "Matrix Velocity"
 
 repositories {
     maven {
+        name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven {
@@ -11,8 +12,8 @@ repositories {
 
 dependencies {
     implementation(project(":matrix-common"))
-    compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:4.1.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:4.1.0-SNAPSHOT")
     implementation("org.spongepowered:configurate-yaml:4.1.2")
     implementation("com.github.games647:craftapi:0.6.2")
 }
