@@ -1,9 +1,8 @@
-package net.nifheim.matrix.api.messaging.message;
+package net.nifheim.matrix.api.messaging;
 
 import com.google.gson.JsonObject;
 import java.util.UUID;
 import net.nifheim.matrix.api.MatrixProvider;
-import net.nifheim.matrix.api.server.ServerManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

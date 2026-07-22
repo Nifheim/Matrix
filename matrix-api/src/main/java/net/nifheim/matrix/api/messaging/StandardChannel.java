@@ -1,4 +1,4 @@
-package net.nifheim.matrix.api.messaging.message;
+package net.nifheim.matrix.api.messaging;
 
 /**
  * Enum for default channels used to send and request information across matrix instances.
@@ -13,8 +13,7 @@ public enum StandardChannel {
     MESSAGE_BROADCAST("message:broadcast"),
     SERVER_REGISTER("server:register"),
     SERVER_UNREGISTER("server:unregister"),
-    SERVER_REQUEST("server:request"),
-    UNDEFINED("undefined");
+    SERVER_REQUEST("server:request");
 
     private final String channel;
 

@@ -2,7 +2,6 @@ package net.nifheim.matrix.api;
 
 import net.nifheim.matrix.api.database.MatrixDatabase;
 import net.nifheim.matrix.api.environment.Environment;
-import net.nifheim.matrix.api.messaging.MessagingService;
 import net.nifheim.matrix.api.player.PlayerManager;
 import net.nifheim.matrix.api.server.ServerInfo;
 import net.nifheim.matrix.api.server.ServerManager;
@@ -25,12 +24,12 @@ public interface MatrixAPI {
     Logger getLogger();
 
     /**
-     * {@link MessagingService} service used by this {@link MatrixAPI} instance to communicate with other running matrix
+     * {@link MatrixService} service used by this {@link MatrixAPI} instance to communicate with other running matrix
      * instances, it may or may not be inactive.
      *
-     * @return current {@link MessagingService} service instance.
+     * @return current {@link MatrixService} service instance.
      */
-    @NotNull MessagingService getMessaging();
+    @NotNull MatrixService getMessaging();
 
     /**
      * {@link MatrixDatabase} service used by this {@link MatrixAPI} instance to handle persistent data across different
@@ -88,7 +87,7 @@ public interface MatrixAPI {
     /**
      * Get the {@link PlayerManager} instance in use by this implementation. It can be used to fetch information about
      * online and offline players, any update to {@link net.nifheim.matrix.api.player.MatrixPlayer}s obtained
-     * using this service will be synced with other matrix instances connected to the same {@link MessagingService}.
+     * using this service will be synced with other matrix instances connected to the same messaging service.
      *
      * @return current {@link PlayerManager} instance.
      */
@@ -104,4 +103,14 @@ public interface MatrixAPI {
      * @throws UnsupportedOperationException when the implementation can't set or override the new service.
      */
     <S extends MatrixService> void setService(Class<S> type, MatrixService service) throws UnsupportedOperationException;
+
+    /**
+     * Retrieves the specified service instance based on the provided service class type.
+     * This method ensures the returned service instance is of the type specified by the class parameter.
+     *
+     * @param <S>     the type of the service, extending {@link MatrixService}.
+     * @param service the {@link Class} object representing the type of the service to retrieve.
+     * @return an instance of the requested service that matches the specified type.
+     */
+    <S extends MatrixService> S getService(Class<S> service);
 }
