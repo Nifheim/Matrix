@@ -14,11 +14,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.audience.Audience;
 import net.nifheim.matrix.api.environment.Environment;
+import net.nifheim.matrix.common.messaging.MessagingService;
 import net.nifheim.matrix.common.messaging.message.ServerRequestMessage;
-import net.nifheim.matrix.common.player.meta.IdentifiedPlayerMetaCache;
+import net.nifheim.matrix.common.messaging.rabbitmq.RabbitMQService;
+import net.nifheim.matrix.common.messaging.rabbitmq.ServerRegisterConsumer;
+import net.nifheim.matrix.common.messaging.rabbitmq.ServerRequestProducer;
+import net.nifheim.matrix.common.messaging.rabbitmq.ServerUnregisterConsumer;
+import net.nifheim.matrix.common.player.PlayerProxy;
 import net.nifheim.matrix.common.plugin.MatrixBootstrap;
 import net.nifheim.matrix.common.plugin.MatrixPluginCommon;
 import net.nifheim.matrix.common.scheduler.SchedulerAdapter;
@@ -31,6 +37,7 @@ import net.nifheim.matrix.velocity.listener.messaging.ServerUnregisterListener;
 import net.nifheim.matrix.velocity.scheduler.VelocitySchedulerAdapter;
 import net.nifheim.matrix.velocity.task.ServerCleanupTask;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class MatrixVelocityBootstrap implements MatrixBootstrap<Player> {
@@ -67,7 +74,12 @@ public class MatrixVelocityBootstrap implements MatrixBootstrap<Player> {
         }
         this.serverPlatformInfo = new ServerPlatformInfo(server.getBoundAddress().getAddress().getHostAddress(), server.getBoundAddress().getPort(), server.getConfiguration().getShowMaxPlayers());
         this.configuration = new MatrixVelocityConfiguration(new File(dataDirectory.toFile(), "config.yml"));
-        plugin = new MatrixPluginCommon<>(this, configuration, new IdentifiedPlayerMetaCache<>(), uuid -> server.getPlayer(uuid).orElse(null));
+        plugin = new MatrixPluginCommon<>(this, configuration, new PlayerProxy<>() {
+            @Override
+            public @Nullable Player getPlatformPlayer(UUID uniqueId) {
+                return server.getPlayer(uniqueId).orElse(null);
+            }
+        });
         plugin.load();
     }
 
@@ -82,11 +94,30 @@ public class MatrixVelocityBootstrap implements MatrixBootstrap<Player> {
         // register this server on the server manager
         schedulerAdapter.asyncRepeating(new ServerCleanupTask(logger, plugin.getServerManager(), server), 1, TimeUnit.MINUTES);
         plugin.getServerManager().addServer(plugin.getServerInfo());
-        plugin.getMessaging().registerListener(new ServerRegisterListener(logger, server, plugin.getServerManager()));
-        plugin.getMessaging().registerListener(new ServerUnregisterListener(logger, server, plugin.getServerManager()));
         server.getEventManager().register(this, new LoginListener(logger, schedulerAdapter, plugin.getDatabase(), plugin.getPlayerManager()));
         server.getEventManager().register(this, new PingListener());
-        plugin.getMessaging().sendMessage(new ServerRequestMessage());
+
+        MessagingService messagingService = (MessagingService) plugin.getApi().getMessaging();
+        RabbitMQService rabbitMQService = plugin.getApi().getService(RabbitMQService.class);
+
+        ServerRegisterConsumer registerConsumer = new ServerRegisterConsumer(rabbitMQService, logger);
+        ServerUnregisterConsumer unregisterConsumer = new ServerUnregisterConsumer(rabbitMQService, logger);
+
+        messagingService.registerConsumer(ServerRegisterConsumer.class, registerConsumer);
+        messagingService.registerConsumer(ServerUnregisterConsumer.class, unregisterConsumer);
+
+        try {
+            registerConsumer.consume(new ServerRegisterListener(logger, server, plugin.getServerManager()));
+            unregisterConsumer.consume(new ServerUnregisterListener(logger, server, plugin.getServerManager()));
+        } catch (IOException e) {
+            logger.error("Error starting messaging listeners", e);
+        }
+
+        try {
+            messagingService.getProducer(ServerRequestProducer.class).sendMessage(new ServerRequestMessage());
+        } catch (IOException | java.util.concurrent.TimeoutException e) {
+            logger.error("Error sending server request message", e);
+        }
     }
 
     @Subscribe

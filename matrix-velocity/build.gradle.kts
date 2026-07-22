@@ -2,7 +2,7 @@ description = "Matrix Velocity"
 
 repositories {
     maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven {
         url = uri("https://repo.codemc.org/repository/maven-public/")
@@ -11,8 +11,8 @@ repositories {
 
 dependencies {
     implementation(project(":matrix-common"))
-    compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
+    annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
     implementation("org.spongepowered:configurate-yaml:4.1.2")
     implementation("com.github.games647:craftapi:0.6.2")
 }
@@ -35,10 +35,8 @@ tasks {
             include(dependency("org.mariadb.jdbc:mariadb-java-client"))
             include(dependency("org.apache.commons:commons-pool2"))
             include(dependency("redis.clients:jedis"))
-            include(dependency("org.mongodb:bson"))
-            include(dependency("org.mongodb:mongodb-driver-core"))
-            include(dependency("org.mongodb:mongodb-driver-sync"))
-            include(dependency("dev.morphia.morphia:morphia-core"))
+            // com.rabbitmq:amqp-client:5.27.0
+            include(dependency("com.rabbitmq:amqp-client"))
         }
 
         // relocate dependencies to avoid conflicts
@@ -47,8 +45,7 @@ tasks {
         relocate("org.mariadb.jdbc", "net.nifheim.matrix.lib.mariadb")
         relocate("org.apache.commons.pool2", "net.nifheim.matrix.lib.commons.pool2")
         relocate("redis.clients.jedis", "net.nifheim.matrix.lib.jedis")
-        relocate("org.mongodb", "net.nifheim.matrix.lib.mongodb")
-        relocate("dev.morphia.morphia", "net.nifheim.matrix.lib.morphia")
+        relocate("com.rabbitmq.client", "net.nifheim.matrix.lib.rabbitmq")
     }
 
     processResources {

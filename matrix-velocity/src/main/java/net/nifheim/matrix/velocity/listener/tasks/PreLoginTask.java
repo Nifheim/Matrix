@@ -3,16 +3,15 @@ package net.nifheim.matrix.velocity.listener.tasks;
 import com.github.games647.craftapi.model.Profile;
 import com.github.games647.craftapi.resolver.RateLimitException;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
-import com.velocitypowered.api.proxy.Player;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.nifheim.matrix.api.player.MatrixPlayer;
+import net.nifheim.matrix.api.player.PlayerManager;
 import net.nifheim.matrix.common.api.MatrixCommon;
-import net.nifheim.matrix.common.player.MongoMatrixPlayer;
-import net.nifheim.matrix.common.player.PlayerManagerImpl;
 import net.nifheim.matrix.common.scheduler.Throwing;
 import net.nifheim.matrix.common.util.ErrorCodes;
 import net.nifheim.matrix.velocity.bootstrap.MatrixVelocityBootstrap;
@@ -28,10 +27,10 @@ public class PreLoginTask extends AbstractAuthTask implements Throwing.Runnable 
     private final PreLoginEvent event;
     private final LoginState state;
     @Nullable
-    private MongoMatrixPlayer player;
+    private MatrixPlayer player;
     private Profile profile;
 
-    public PreLoginTask(Logger logger, PreLoginEvent event, LoginState state, PlayerManagerImpl<Player> playerManager) {
+    public PreLoginTask(Logger logger, PreLoginEvent event, LoginState state, PlayerManager playerManager) {
         super(logger, playerManager);
         this.event = event;
         this.state = state;
@@ -44,7 +43,7 @@ public class PreLoginTask extends AbstractAuthTask implements Throwing.Runnable 
             logger.info("Processing pre login for {}", name);
             // validate the hostname that the player tried to use to connect
             InetSocketAddress address = event.getConnection().getVirtualHost().orElse(null);
-            if (address == null) { // hostname not present, cancel connection
+            if (address == null) { // hostname is not present, cancel connection
                 logger.error("Hostname not present, canceling connection for {}", name);
                 event.setResult(PreLoginEvent.PreLoginComponentResult.denied(Component.text("\n" + "Please join using " + MatrixCommon.DOMAIN_NAME + "\n" + "\n" + "Por favor ingresa usando " + MatrixCommon.DOMAIN_NAME)));
                 return;
@@ -57,14 +56,14 @@ public class PreLoginTask extends AbstractAuthTask implements Throwing.Runnable 
                     break;
                 }
             }
-            if (badDomain) { // hostname not in our whitelist, may be bot attack, cancel connection
+            if (badDomain) { // hostname not in our whitelist, it might be a bot attack, cancel connection
                 logger.error("Hostname {} not in whitelist, cancelling connection for {}", host, name);
                 event.setResult(PreLoginEvent.PreLoginComponentResult.denied(Component.text("Please join using " + MatrixCommon.DOMAIN_NAME + "\n" + "\n" + "Por favor ingresa usando " + MatrixCommon.DOMAIN_NAME)));
                 return;
             }
-            player = playerManager.getPlayerByNameSync(name);
+            player = playerManager.getPlayerSync(name);
             if (state == LoginState.PRE_LOGIN && player != null) {
-                logger.warn("Stored " + LoginState.PRE_LOGIN + " for " + name + " checking invalid premium.");
+                logger.warn("Stored {} for {} checking invalid premium.", LoginState.PRE_LOGIN, name);
                 if (player.isPremium() && !player.isRegistered()) {
                     player.setPremium(false);
                 }
@@ -103,8 +102,6 @@ public class PreLoginTask extends AbstractAuthTask implements Throwing.Runnable 
             logger.error("An exception has occurred while processing pre login for %s".formatted(event.getUsername()), e);
         } finally {
             if (player != null) {
-                logger.info("Saving {}", player.getName());
-                playerManager.loginSync(player, event.getConnection().getRemoteAddress().getAddress());
                 if (player.isPremium()) {
                     event.setResult(PreLoginEvent.PreLoginComponentResult.forceOnlineMode());
                 }
@@ -116,6 +113,10 @@ public class PreLoginTask extends AbstractAuthTask implements Throwing.Runnable 
 
     public @Nullable Profile getProfile() {
         return profile;
+    }
+
+    public @Nullable MatrixPlayer getPlayer() {
+        return player;
     }
 
     private void updatePremiumPlayer(UUID uniqueId, String name) {

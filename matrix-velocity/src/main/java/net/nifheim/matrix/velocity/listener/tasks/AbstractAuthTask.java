@@ -1,40 +1,36 @@
 package net.nifheim.matrix.velocity.listener.tasks;
 
-import com.velocitypowered.api.proxy.Player;
 import java.util.UUID;
-import net.nifheim.matrix.common.player.MongoMatrixPlayer;
-import net.nifheim.matrix.common.player.PlayerManagerImpl;
+import net.nifheim.matrix.api.player.MatrixPlayer;
+import net.nifheim.matrix.api.player.PlayerManager;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public abstract class AbstractAuthTask {
 
     protected final Logger logger;
-    protected final PlayerManagerImpl<Player> playerManager;
+    protected final PlayerManager playerManager;
 
-    protected AbstractAuthTask(Logger logger, PlayerManagerImpl<Player> playerManager) {
+    protected AbstractAuthTask(Logger logger, PlayerManager playerManager) {
         this.logger = logger;
         this.playerManager = playerManager;
     }
 
     /**
-     * Get the player from the database, try first with the hex if it exits, then try uniqueId, if there is no player with that uniqueId, then the player does not exist.
+     * Get the player from the database, try first with the hex if it exits, then try uniqueId, if there is no player
+     * with that uniqueId, then the player does not exist.
      *
      * @param uniqueId the uniqueId of the player
      * @param name     the name of the player
      * @return the player from the database
      */
-    protected final @Nullable MongoMatrixPlayer getPlayer(UUID uniqueId, String name) {
-        MongoMatrixPlayer player = null;
-        String hexId = playerManager.getHexId(uniqueId);
-        if (hexId != null) {
-            player = playerManager.getPlayerByIdSync(hexId);
-        }
+    public final @Nullable MatrixPlayer getPlayer(UUID uniqueId, String name) {
+        MatrixPlayer player = playerManager.getPlayerSync(uniqueId);
         if (player == null) {
-            logger.warn("Player not found by hexId for {} ({})", name, uniqueId);
-            player = playerManager.getPlayerByUniqueIdSync(uniqueId);
+            logger.warn("Player not found by UUID for {} ({})", name, uniqueId);
+            player = playerManager.getPlayerSync(name);
             if (player == null) {
-                logger.warn("Player not found by uniqueId for {} ({})", name, uniqueId);
+                logger.warn("Player not found by name for {} ({})", name, uniqueId);
             }
         }
         return player;
