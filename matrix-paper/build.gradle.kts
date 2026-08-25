@@ -1,5 +1,5 @@
 plugins {
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.21"
 }
 
 repositories {
@@ -17,7 +17,7 @@ description = "Matrix Paper"
 dependencies {
     implementation(project(":matrix-common"))
     implementation("com.github.nifheim:commandlib:master-SNAPSHOT")
-    paperweight.paperDevBundle("1.21.11-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("26.2.build.+")
     implementation("me.clip:placeholderapi:2.11.6")
 }
 
@@ -29,10 +29,6 @@ tasks {
 
     artifacts {
         archives(shadowJar)
-    }
-
-    assemble {
-        dependsOn(reobfJar)
     }
 
     shadowJar {

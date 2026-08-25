@@ -232,10 +232,6 @@ public class MatrixPaper extends JavaPlugin implements MatrixBootstrap<Player> {
     }
 
     private void loadManagers() {
-        if (requirePlugin("ProtocolLib")) {
-            getPlatformLogger().info("ProtocolLib found, hooking into it.");
-            //new ProtocolLibManager(this);
-        }
         if (requirePlugin("Vault")) {
             getPlatformLogger().info("Vault found, hooking into it.");
             //new VaultManager(this);
