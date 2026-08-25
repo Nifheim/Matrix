@@ -8,13 +8,13 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
-import net.kyori.adventure.util.UTF8ResourceBundleControl;
+import net.kyori.adventure.translation.TranslationStore;
 import net.nifheim.bukkit.commandlib.CommandAPI;
 import net.nifheim.matrix.auth.paper.command.LoginCommand;
 import net.nifheim.matrix.auth.paper.command.RegisterCommand;
@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class MatrixAuth extends JavaPlugin {
 
-    private final TranslationRegistry translationRegistry = TranslationRegistry.create(Key.key("matrix:auth"));
+    private final TranslationStore.StringBased<MessageFormat> translationRegistry = TranslationStore.messageFormat(Key.key("matrix:auth"));
 
     @Override
     public void onEnable() {
@@ -75,8 +75,7 @@ public class MatrixAuth extends JavaPlugin {
     private void copyFileIfNotExists(Path parentPath, String fileName) throws IOException {
         Path filePath = parentPath.resolve(fileName);
         if (!Files.exists(filePath)) {
-            try (Reader reader = new InputStreamReader(Objects.requireNonNull(getClassLoader().getResourceAsStream(fileName)), StandardCharsets.UTF_8);
-                 Writer writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
+            try (Reader reader = new InputStreamReader(Objects.requireNonNull(getClassLoader().getResourceAsStream(fileName)), StandardCharsets.UTF_8); Writer writer = Files.newBufferedWriter(filePath, StandardCharsets.UTF_8)) {
                 char[] buffer = new char[1024];
                 int read;
                 while ((read = reader.read(buffer)) != -1) {
@@ -96,7 +95,7 @@ public class MatrixAuth extends JavaPlugin {
             for (File file : messageFiles) {
                 if (file.isFile()) {
                     Locale locale = getLocale(file);
-                    ResourceBundle bundle = ResourceBundle.getBundle("messages", locale, UTF8ResourceBundleControl.get());
+                    ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
                     translationRegistry.registerAll(locale, bundle, false);
                     getSLF4JLogger().info("Registered messages for {}", locale);
                 }

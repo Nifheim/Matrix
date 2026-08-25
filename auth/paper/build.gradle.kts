@@ -15,10 +15,11 @@ dependencies {
     api(project(":matrix-api"))
     api(project(":matrix-common"))
     implementation("com.github.nifheim:commandlib:master-SNAPSHOT")
-    implementation("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    implementation("io.papermc.paper:paper-api:26.2.build.+")
     implementation("de.rtner:PBKDF2:1.1.4")
-    testImplementation(platform("org.junit:junit-bom:5.9.1"))
+    testImplementation(platform("org.junit:junit-bom:5.14.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks {
