@@ -54,7 +54,7 @@ public class MatrixPlayerImpl implements MatrixPlayer {
 
     @Override
     public Long getDiscordId() {
-        return 0L;
+        return null;
     }
 
     @Override
